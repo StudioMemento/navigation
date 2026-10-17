@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0f0f0f">
+  <meta name="description" content="Bundle, web, 3D, video, visual e branding. Esplora il mondo Memento: servizi, risultati e percorsi per il tuo prossimo progetto.">
+  <title>Servizi & percorsi — Memento Design Studio</title>
+  <link rel="icon" href="data:,">
+  <link rel="preload" href="assets/fonts/InterVariable.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="assets/b-online.webp" as="image" fetchpriority="high">
+  <link rel="stylesheet" href="catalogo.css">
+  <script src="catalogo-data.js" defer></script>
+  <script src="catalogo-editorial.js" defer></script>
+  <script src="catalogo-carousel.js" defer></script>
+  <script src="catalogo.js" defer></script>
+</head>
+<body>
+<a class="skip-link" href="#catalogo">Vai al catalogo completo</a>
+<main id="memento-catalogo">
+  <h1 class="sr-only">Servizi e percorsi Memento Design Studio</h1>
+  <section class="bundle-opening" id="bundles" aria-labelledby="bundles-heading">
+    <div class="section-kicker page-width"><h2 id="bundles-heading">Percorsi integrati</h2><span>Bundle Memento</span></div>
+    <div id="bundle-carousel" class="carousel bundle-carousel" role="region" aria-roledescription="carosello" aria-label="Bundle Memento"></div>
+    <div class="carousel-controls" id="bundle-controls"></div>
+  </section>
+  <nav id="section-nav" class="section-nav page-width" aria-label="Esplora le aree Memento"></nav>
+  <div id="category-sections"></div>
+
+  <section class="catalogue page-width" id="catalogo" aria-labelledby="catalogue-heading">
+    <div class="catalogue-heading"><div><span class="eyebrow">Ogni dettaglio, al suo posto</span><h2 id="catalogue-heading">Il catalogo.</h2></div><span id="total-count" class="catalogue-count"></span></div>
+    <div class="catalogue-tools"><div class="catalogue-filters" role="group" aria-label="Filtra il catalogo"><button data-medium="all" aria-pressed="true">Tutti</button><button data-medium="digital" aria-pressed="false">Digitale</button><button data-medium="physical" aria-pressed="false">Fisico</button></div><label class="catalogue-search"><span class="sr-only">Cerca un servizio</span><input id="service-search" type="search" placeholder="Cerca un servizio" autocomplete="off"></label></div>
+    <div id="catalogue-groups"></div>
+    <div id="empty-results" class="empty-results" hidden><p>Nessun servizio con questo nome.</p><button class="text-button" data-action="reset-search">Mostra tutti i servizi</button></div>
+  </section>
+  <section class="levelup page-width" aria-labelledby="levelup-heading"><h2 id="levelup-heading">LevelUp</h2><button class="levelup-link" data-action="levelup">Troviamo il tuo percorso <img class="chevron" src="assets/icons/caret-right.svg" alt=""></button></section>
+  <div class="sr-only" id="catalog-status" aria-live="polite" aria-atomic="true"></div>
+</main>
+<dialog id="detail-dialog" aria-labelledby="detail-title">
+  <button class="dialog-close" data-action="close-detail" aria-label="Chiudi dettaglio"><img src="assets/icons/x.svg" alt=""></button>
+  <div id="detail-content"></div>
+</dialog>
+<dialog id="lead-dialog" aria-labelledby="lead-title">
+  <button class="dialog-close" data-action="close-lead" aria-label="Chiudi LevelUp"><img src="assets/icons/x.svg" alt=""></button>
+  <div class="lead-heading"><span class="eyebrow">LevelUp</span><h2 id="lead-title">Da dove<br>cominciamo?</h2><p>Raccontaci cosa vuoi far crescere.</p></div>
+  <form id="lead-form">
+    <label for="lead-goal">Il tuo obiettivo</label>
+    <select id="lead-goal" name="goal" required>
+      <option value="" disabled selected>Scegli un punto di partenza</option>
+      <option>Costruire la mia identità</option>
+      <option>Lanciare un prodotto o un’attività</option>
+      <option>Migliorare la mia presenza online</option>
+      <option>Creare nuovi contenuti</option>
+      <option>Esplorare un’idea insieme</option>
+    </select>
+    <div class="form-pair"><div><label for="lead-name">Il tuo nome</label><input id="lead-name" name="name" autocomplete="name" maxlength="100" pattern=".*\S.*" required></div><div><label for="lead-email">La tua email</label><input id="lead-email" name="email" type="email" autocomplete="email" maxlength="200" required></div></div>
+    <label for="lead-note">Qualcosa in più sul progetto</label>
+    <textarea id="lead-note" name="note" rows="3" maxlength="2000" placeholder="La tua attività, un’idea, quello che hai in mente…"></textarea>
+    <p id="lead-context" class="lead-context" hidden></p>
+    <button type="submit" class="primary-link">Prepara email <img class="chevron" src="assets/icons/caret-right.svg" alt=""></button>
+    <p class="form-help">La richiesta si apre nella tua app email. L’invio lo confermi tu.</p>
+  </form>
+  <div id="lead-result" hidden aria-live="polite"><h3>La tua richiesta è pronta.</h3><p>Aprila nella tua app email, oppure copia il testo e scrivici a <a href="mailto:info@mementostudio.it">info@mementostudio.it</a>.</p><div class="result-actions"><a id="email-link" class="primary-link">Apri email <img class="chevron" src="assets/icons/caret-right.svg" alt=""></a><button id="copy-request" class="text-button">Copia richiesta</button></div><pre id="request-preview"></pre><button class="text-button" id="edit-request">Modifica richiesta</button></div>
+</dialog>
+<noscript><p class="no-script">Attiva JavaScript per esplorare il catalogo. Puoi contattarci a <a href="mailto:info@mementostudio.it">info@mementostudio.it</a>.</p></noscript>
+</body>
+</html>
