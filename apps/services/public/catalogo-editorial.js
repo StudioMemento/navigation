@@ -59,13 +59,59 @@ const MEMENTO_PLANNING = {
 };
 
 const MEMENTO_SECTIONS = [
-  {id: 'web', label: 'WEB', subtitle: 'Siti, strumenti, esperienze.', ids: ['sito', 'landing', 'ecommerce', 'menu-digitale', 'app-dedicata', 'catalogo', 'vetrina']},
-  {id: '3d', label: '3D', subtitle: 'Il prodotto, oltre l’immagine.', ids: ['esperienza-digitale', 'configuratore', 'render-animazione', 'showroom', 'realta-aumentata', 'modello-3d']},
-  {id: 'video', label: 'VIDEO', subtitle: 'Storie che prendono movimento.', ids: ['video-lancio', 'video-aziendali', 'video-esplicativi', 'motion', 'logo-animato', 'video-social', 'teaser', 'trailer']},
-  {id: 'visual', label: 'VISUAL', subtitle: 'Fotografia. Luce. Carattere.', ids: ['foto-prodotti', 'foto-spazi', 'foto-food', 'foto-emozionali']},
-  {id: 'branding', label: 'BRANDING', subtitle: 'Identità, stampa e spazio fisico.', ids: ['branding', 'guida-brand', 'grafiche-pubblicitarie', 'template-social', 'brochure', 'presentazione', 'menu-listini', 'biglietti', 'carta', 'moduli', 'merchandising', 'tessere', 'gadget', 'scatole', 'shopper', 'etichette', 'insegne', 'espositori', 'grafica-spazi']},
-  {id: 'rd', label: 'R&D', subtitle: 'Ricerca & sviluppo.', ids: []}
+  {id: 'web', label: 'WEB', subtitle: 'Siti, strumenti, esperienze.', hero: 'hero-web', ids: ['sito', 'landing', 'ecommerce', 'menu-digitale', 'app-dedicata', 'catalogo', 'vetrina']},
+  {id: '3d', label: '3D', subtitle: 'Il prodotto, oltre l’immagine.', hero: 'hero-3d', ids: ['esperienza-digitale', 'configuratore', 'render-animazione', 'showroom', 'realta-aumentata', 'modello-3d']},
+  {id: 'video', label: 'VIDEO', subtitle: 'Storie che prendono movimento.', hero: 'hero-video', ids: ['video-lancio', 'video-aziendali', 'video-esplicativi', 'motion', 'logo-animato', 'video-social', 'teaser', 'trailer']},
+  {id: 'visual', label: 'VISUAL', subtitle: 'Fotografia. Luce. Carattere.', hero: 'hero-fotografia', ids: ['foto-prodotti', 'foto-spazi', 'foto-food', 'foto-emozionali']},
+  {id: 'branding', label: 'BRANDING', subtitle: 'Un’identità. Ogni dettaglio.', hero: 'hero-branding', ids: ['branding', 'guida-brand', 'scatole', 'merchandising', 'insegne', 'grafica-spazi'], catalogueIds: ['branding', 'guida-brand', 'scatole', 'merchandising', 'insegne', 'grafica-spazi', 'biglietti', 'carta', 'tessere', 'gadget', 'shopper', 'etichette']},
+  {id: 'grafica', label: 'GRAFICA', subtitle: 'Idee che trovano forma.', hero: 'hero-stampa', ids: ['grafiche-pubblicitarie', 'template-social', 'presentazione', 'brochure', 'menu-listini', 'espositori'], catalogueIds: ['grafiche-pubblicitarie', 'template-social', 'presentazione', 'brochure', 'menu-listini', 'espositori', 'moduli']}
 ];
+
+// The overview presents broad areas; the complete catalogue retains individual products.
+const MEMENTO_SHOWCASE_TITLES = {
+  scatole: 'Packaging design', merchandising: 'Merchandising', insegne: 'Insegne & segnaletica',
+  'grafica-spazi': 'Identità degli spazi', 'grafiche-pubblicitarie': 'Campagne pubblicitarie',
+  'template-social': 'Grafica social', presentazione: 'Presentazioni', brochure: 'Design editoriale', espositori: 'Grafica per eventi'
+};
+const MEMENTO_SLIDE_COPY = {
+  sito: ['Il tuo brand, nel suo spazio.', 'Pagine che invitano a scoprirti.'],
+  landing: ['Un’offerta, un obiettivo.', 'Dall’interesse al contatto.'],
+  ecommerce: ['Prodotti, carrello e acquisti.', 'Tutto segue il tuo brand.'],
+  'menu-digitale': ['Piatti e storie da esplorare.', 'A portata di smartphone.'],
+  'app-dedicata': ['Il tuo modo di lavorare.', 'In uno strumento su misura.'],
+  catalogo: ['La tua collezione, online.', 'Da sfogliare e approfondire.'],
+  vetrina: ['La tua attività, in una pagina.', 'Le informazioni giuste, subito.'],
+  'esperienza-digitale': ['Immagini, spazio e interazione.', 'Il tuo brand diventa esperienza.'],
+  configuratore: ['Materiali, colori e varianti.', 'Ogni scelta prende forma.'],
+  'render-animazione': ['Luce, materia e movimento.', 'Il prodotto come lo immagini.'],
+  showroom: ['Uno spazio da esplorare.', 'Ogni prodotto da scoprire.'],
+  'realta-aumentata': ['Il tuo prodotto, nel loro spazio.', 'Direttamente dallo smartphone.'],
+  'modello-3d': ['Forme, materiali e dettagli.', 'Una nuova dimensione digitale.'],
+  'video-lancio': ['La tua novità entra in scena.', 'Un racconto che lascia il segno.'],
+  'video-aziendali': ['Persone, luoghi e visione.', 'Fai vedere chi sei.'],
+  'video-esplicativi': ['Un processo diventa racconto.', 'Ciò che fai, finalmente chiaro.'],
+  motion: ['Grafica che prende movimento.', 'Dai ritmo alla tua identità.'],
+  'logo-animato': ['Il carattere del tuo marchio.', 'In una firma che prende vita.'],
+  'video-social': ['Il tuo mondo, in pochi secondi.', 'Contenuti pensati per i social.'],
+  teaser: ['Un indizio. Un’anticipazione.', 'Accendi la curiosità.'],
+  trailer: ['Il ritmo della tua storia.', 'Fai venire voglia di vederla.'],
+  'foto-prodotti': ['Forme, texture e materiali.', 'Il valore si vede nei dettagli.'],
+  'foto-spazi': ['Interni, esterni e prospettive.', 'Fai sentire l’atmosfera.'],
+  'foto-food': ['Ingredienti e consistenze.', 'Prima del gusto, lo sguardo.'],
+  'foto-emozionali': ['Un’immagine, un’idea.', 'Il carattere della tua campagna.'],
+  branding: ['Segni, colori e caratteri.', 'Riconoscibile, ovunque.'],
+  'guida-brand': ['Regole chiare, identità coerente.', 'Un linguaggio da condividere.'],
+  scatole: ['Forma e identità del prodotto.', 'L’esperienza comincia da fuori.'],
+  merchandising: ['Il brand diventa quotidiano.', 'Capi e accessori coordinati.'],
+  insegne: ['Il primo segno della tua attività.', 'Fatti riconoscere, da fuori.'],
+  'grafica-spazi': ['Ambienti che parlano di te.', 'L’identità prende spazio.'],
+  'grafiche-pubblicitarie': ['Un’idea, ogni formato.', 'Il tuo messaggio si fa vedere.'],
+  'template-social': ['Un sistema per i tuoi contenuti.', 'Coerente, anche quando cambia.'],
+  presentazione: ['Dai ordine alle tue idee.', 'Una proposta che si fa capire.'],
+  brochure: ['Testi e immagini, in equilibrio.', 'Una storia da sfogliare.'],
+  'menu-listini': ['Il valore della tua offerta.', 'Chiaro, dalla prima lettura.'],
+  espositori: ['Stand, eventi e punti vendita.', 'Una presenza che si fa notare.']
+};
 
 const MEMENTO_BUNDLE_EDITORIAL = {
   'b-online': {

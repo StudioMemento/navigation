@@ -4,11 +4,11 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#0f0f0f">
-  <meta name="description" content="Bundle, web, 3D, video, visual e branding. Esplora il mondo Memento: servizi, risultati e percorsi per il tuo prossimo progetto.">
+  <meta name="description" content="Web, 3D, video, visual, branding e grafica. Esplora i servizi e i percorsi Memento per il tuo prossimo progetto.">
   <title>Servizi & percorsi — Memento Design Studio</title>
   <link rel="icon" href="data:,">
   <link rel="preload" href="assets/fonts/InterVariable.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="preload" href="assets/b-online.webp" as="image" fetchpriority="high">
+  <link rel="preload" href="assets/hero-web.webp" as="image" fetchpriority="high">
   <link rel="stylesheet" href="catalogo.css">
   <script src="catalogo-data.js" defer></script>
   <script src="catalogo-editorial.js" defer></script>
@@ -19,21 +19,22 @@
 <a class="skip-link" href="#catalogo">Vai al catalogo completo</a>
 <main id="memento-catalogo">
   <h1 class="sr-only">Servizi e percorsi Memento Design Studio</h1>
-  <section class="bundle-opening" id="bundles" aria-labelledby="bundles-heading">
-    <div class="section-kicker page-width"><h2 id="bundles-heading">Percorsi integrati</h2><span>Bundle Memento</span></div>
-    <div id="bundle-carousel" class="carousel bundle-carousel" role="region" aria-roledescription="carosello" aria-label="Bundle Memento"></div>
-    <div class="carousel-controls" id="bundle-controls"></div>
+  <section class="macro-hero" id="inizio" aria-label="Le sei aree Memento">
+    <div id="hero-carousel" class="carousel macro-carousel" role="region" aria-roledescription="carosello" aria-label="Aree Memento"></div>
+    <div class="carousel-controls hero-controls" id="hero-controls"></div>
   </section>
-  <nav id="section-nav" class="section-nav page-width" aria-label="Esplora le aree Memento"></nav>
   <div id="category-sections"></div>
-
-  <section class="catalogue page-width" id="catalogo" aria-labelledby="catalogue-heading">
-    <div class="catalogue-heading"><div><span class="eyebrow">Ogni dettaglio, al suo posto</span><h2 id="catalogue-heading">Il catalogo.</h2></div><span id="total-count" class="catalogue-count"></span></div>
-    <div class="catalogue-tools"><div class="catalogue-filters" role="group" aria-label="Filtra il catalogo"><button data-medium="all" aria-pressed="true">Tutti</button><button data-medium="digital" aria-pressed="false">Digitale</button><button data-medium="physical" aria-pressed="false">Fisico</button></div><label class="catalogue-search"><span class="sr-only">Cerca un servizio</span><input id="service-search" type="search" placeholder="Cerca un servizio" autocomplete="off"></label></div>
-    <div id="catalogue-groups"></div>
-    <div id="empty-results" class="empty-results" hidden><p>Nessun servizio con questo nome.</p><button class="text-button" data-action="reset-search">Mostra tutti i servizi</button></div>
+  <section class="bundle-section" id="bundles" aria-labelledby="bundles-heading">
+    <div class="bundle-heading page-width"><h2 id="bundles-heading">Insieme,<br>un passo avanti.</h2><p>I bundle Memento.</p></div>
+    <div id="bundle-boards"></div>
   </section>
-  <section class="levelup page-width" aria-labelledby="levelup-heading"><h2 id="levelup-heading">LevelUp</h2><button class="levelup-link" data-action="levelup">Troviamo il tuo percorso <img class="chevron" src="assets/icons/caret-right.svg" alt=""></button></section>
+  <section class="catalogue page-width" id="catalogo" aria-labelledby="catalogue-heading">
+    <div class="catalogue-heading"><h2 id="catalogue-heading">Il catalogo.</h2><div class="catalogue-filters" role="group" aria-label="Tipo di servizio" data-selected="digital"><span class="filter-thumb" aria-hidden="true"></span><button data-medium="digital" aria-pressed="true" aria-controls="catalogue-groups"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="13" rx="2"/><path d="M8 21h8M12 17v4"/></svg><span>Digitale</span></button><button data-medium="physical" aria-pressed="false" aria-controls="catalogue-groups"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 2 9 5v10l-9 5-9-5V7Zm0 10 9-5M12 12 3 7m9 5v10M7.5 4.5l9 5v5"/></svg><span>Fisico</span></button></div></div>
+    <div class="catalogue-tools"><label class="catalogue-search"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 5 5"/></svg><span class="sr-only">Cerca un servizio</span><input id="service-search" type="search" placeholder="Cerca un servizio" autocomplete="off"></label><span id="total-count" class="catalogue-count"></span></div>
+    <div id="catalogue-groups"></div>
+    <div id="empty-results" class="empty-results" hidden><p>Nessun servizio con questo nome in questa selezione.</p><button class="text-button" data-action="reset-search">Azzera la ricerca</button></div>
+  </section>
+  <section class="levelup full-board" aria-labelledby="levelup-heading"><img class="board-visual" src="assets/esperienza-digitale.webp" loading="lazy" alt="" width="1120" height="1120"><div class="board-shade"></div><div class="board-content page-width"><p class="levelup-intro">Pronto a fare</p><h2 id="levelup-heading">LEVEL UP?</h2><p class="board-description">Il prossimo passo comincia dalla tua idea.<br>Troviamo insieme la direzione.</p><button class="board-action" data-action="levelup" aria-label="Parliamo del tuo Level Up"><img class="chevron" src="assets/icons/caret-right.svg" alt=""></button></div></section>
   <div class="sr-only" id="catalog-status" aria-live="polite" aria-atomic="true"></div>
 </main>
 <dialog id="detail-dialog" aria-labelledby="detail-title">
