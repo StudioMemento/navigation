@@ -1,6 +1,6 @@
 {
   "name": "memento-servizi-slideshow",
-  "version": "10.0.0",
+  "version": "13.0.0",
   "private": true,
   "description": "Export Vercel della versione pubblicata del catalogo servizi Memento",
   "type": "module",

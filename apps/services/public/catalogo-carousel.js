@@ -1,8 +1,9 @@
 /* Pointer-driven carousel. Slow autoplay, continuous drag and damped release share one position. */
 class MementoCarousel {
-  constructor(element, {initial = 0, onSettle = () => {}, onOpen = () => {}} = {}) {
+  constructor(element, {initial = 0, onSettle = () => {}, onOpen = () => {}, externalGestures = false} = {}) {
     this.element = element;
     this.hero = element.classList.contains('macro-carousel');
+    this.flat = this.hero;
     this.cards = [...element.querySelector('.carousel-stage').children];
     this.count = this.cards.length;
     this.current = this.target = this.active = initial;
@@ -21,7 +22,7 @@ class MementoCarousel {
     this.measure = () => {
       this.width = this.cards[0]?.offsetWidth || 1;
       this.height = this.cards[0]?.offsetHeight || 1;
-      this.stride = this.width * (this.hero ? 1 : this.compact.matches ? .94 : .69);
+      this.stride = this.width * (this.flat ? 1 : this.compact.matches ? .94 : .69);
       this.render();
     };
     this.observer = new ResizeObserver(this.measure);
@@ -35,10 +36,12 @@ class MementoCarousel {
       this.visibilityObserver.observe(element);
     }
     element.addEventListener('dragstart', event => event.preventDefault());
+    if (!externalGestures) {
     element.addEventListener('pointerdown', event => this.down(event));
     element.addEventListener('pointermove', event => this.move(event), {passive: false});
     element.addEventListener('pointerup', event => this.up(event));
     element.addEventListener('pointercancel', event => this.up(event, true));
+    }
     element.addEventListener('lostpointercapture', event => {
       // Implicit touch capture on a child is released when the carousel takes ownership.
       // That bubbling event is not a cancellation of the carousel's new capture.
@@ -59,7 +62,8 @@ class MementoCarousel {
     });
     element.addEventListener('click', event => {
       const card = event.target.closest('[data-slide]');
-      if (!card) return;
+      if (!card || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+      event.preventDefault();
       if (this.suppressClick) { event.preventDefault(); event.stopPropagation(); return; }
       const index = Number(card.dataset.slide);
       if (Math.abs(this.delta(index - this.current)) > .025) this.select(index);
@@ -86,19 +90,23 @@ class MementoCarousel {
   delta(value) { return this.mod(value + this.count / 2) - this.count / 2; }
   render() {
     const active = this.mod(Math.round(this.current));
-    const flat = this.hero || this.compact.matches;
+    const flat = this.flat;
+    const compact = this.compact.matches;
     // Hide cards before they wrap, including the four-card VISUAL stack.
-    const edge = flat ? 1.5 : Math.min(2.7, this.count / 2 - .06);
+    const edge = flat ? Math.min(1.5, this.count / 2) : Math.min(2.7, this.count / 2 - .06);
     this.cards.forEach((card, index) => {
       const distance = this.delta(index - this.current);
       const amount = Math.abs(distance);
       const x = distance * this.stride;
-      const y = this.height * .035 * Math.min(amount, 2.6);
-      const scale = Math.pow(.88, amount);
-      const yaw = -Math.sign(distance) * Math.min(38, amount * 24);
+      const y = this.height * (compact ? .008 : .025) * Math.min(amount, 2.6);
+      const scale = Math.pow(compact ? .97 : .9, amount);
+      const yaw = -Math.sign(distance) * Math.min(compact ? 22 : 38, amount * (compact ? 12 : 24));
       card.style.transform = flat
         ? 'translate3d(calc(-50% + ' + x.toFixed(3) + 'px), 0, 0)'
-        : 'translate3d(calc(-50% + ' + x.toFixed(3) + 'px), ' + y.toFixed(3) + 'px, ' + (-amount * 55).toFixed(3) + 'px) rotateY(' + yaw.toFixed(3) + 'deg) scale(' + scale.toFixed(5) + ')';
+        : 'translate3d(calc(-50% + ' + x.toFixed(3) + 'px), ' + y.toFixed(3) + 'px, ' + (-amount * (compact ? 16 : 55)).toFixed(3) + 'px) rotateY(' + yaw.toFixed(3) + 'deg) scale(' + scale.toFixed(5) + ')';
+      // Light and text follow distance continuously, including both sides of a swipe.
+      const fade = Math.min(1, amount);
+      card.style.setProperty('--slide-focus', (1 - fade * fade * (3 - 2 * fade)).toFixed(4));
       card.style.opacity = Math.max(0, Math.min(1, (edge - amount) / .6)).toFixed(4);
       card.style.zIndex = String(100 - Math.round(amount * 20));
       const isActive = index === active;

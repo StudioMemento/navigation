@@ -1,6 +1,7 @@
 /* MEMENTO — landing → categoria → servizio. Immagini originali dal catalogo. */
 const MEMENTO_CONFIG = {
-  "version": "2026-10-15.3",
+  "version": "2026-10-18.13",
+  "homeUrl": "https://mementostudio.it/",
   "email": "info@mementostudio.it",
   "phone": "+393285454661",
   "phoneLabel": "+39 328 5454 661",
