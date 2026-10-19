@@ -63,8 +63,8 @@ const MEMENTO_SECTIONS = [
   {id: '3d', label: '3D', subtitle: 'Il prodotto, oltre l’immagine.', hero: 'hero-3d', ids: ['esperienza-digitale', 'configuratore', 'render-animazione', 'showroom', 'realta-aumentata', 'modello-3d']},
   {id: 'video', label: 'VIDEO', subtitle: 'Storie che prendono movimento.', hero: 'hero-video', ids: ['video-lancio', 'video-aziendali', 'video-esplicativi', 'motion', 'logo-animato', 'video-social', 'teaser', 'trailer']},
   {id: 'visual', label: 'VISUAL', subtitle: 'Fotografia. Luce. Carattere.', hero: 'hero-fotografia', ids: ['foto-prodotti', 'foto-spazi', 'foto-food', 'foto-emozionali']},
-  {id: 'branding', label: 'BRANDING', subtitle: 'Un’identità. Ogni dettaglio.', hero: 'hero-branding', ids: ['branding', 'guida-brand', 'scatole', 'merchandising', 'insegne', 'grafica-spazi'], catalogueIds: ['branding', 'guida-brand', 'scatole', 'merchandising', 'insegne', 'grafica-spazi', 'biglietti', 'carta', 'tessere', 'gadget', 'shopper', 'etichette']},
-  {id: 'grafica', label: 'GRAFICA', subtitle: 'Idee che trovano forma.', hero: 'hero-stampa', ids: ['grafiche-pubblicitarie', 'template-social', 'presentazione', 'brochure', 'menu-listini', 'espositori'], catalogueIds: ['grafiche-pubblicitarie', 'template-social', 'presentazione', 'brochure', 'menu-listini', 'espositori', 'moduli']}
+  {id: 'grafica', label: 'GRAFICA', subtitle: 'Idee che trovano forma.', hero: 'hero-stampa', ids: ['grafiche-pubblicitarie', 'template-social', 'presentazione', 'brochure', 'menu-listini', 'espositori'], catalogueIds: ['grafiche-pubblicitarie', 'template-social', 'presentazione', 'brochure', 'menu-listini', 'espositori', 'moduli']},
+  {id: 'branding', label: 'BRANDING', subtitle: 'Un’identità. Ogni dettaglio.', hero: 'hero-branding', ids: ['branding', 'guida-brand', 'scatole', 'merchandising', 'insegne', 'grafica-spazi'], catalogueIds: ['branding', 'guida-brand', 'scatole', 'merchandising', 'insegne', 'grafica-spazi', 'biglietti', 'carta', 'tessere', 'gadget', 'shopper', 'etichette']}
 ];
 
 // The overview presents broad areas; the complete catalogue retains individual products.
@@ -73,44 +73,184 @@ const MEMENTO_SHOWCASE_TITLES = {
   'grafica-spazi': 'Identità degli spazi', 'grafiche-pubblicitarie': 'Campagne pubblicitarie',
   'template-social': 'Grafica social', presentazione: 'Presentazioni', brochure: 'Design editoriale', espositori: 'Grafica per eventi'
 };
+// Approved service copy, transcribed from Catalogo_Servizi_042(2).pdf, pp. 4–19.
 const MEMENTO_SLIDE_COPY = {
-  sito: ['Il tuo brand, nel suo spazio.', 'Pagine che invitano a scoprirti.'],
-  landing: ['Un’offerta, un obiettivo.', 'Dall’interesse al contatto.'],
-  ecommerce: ['Prodotti, carrello e acquisti.', 'Tutto segue il tuo brand.'],
-  'menu-digitale': ['Piatti e storie da esplorare.', 'A portata di smartphone.'],
-  'app-dedicata': ['Il tuo modo di lavorare.', 'In uno strumento su misura.'],
-  catalogo: ['La tua collezione, online.', 'Da sfogliare e approfondire.'],
-  vetrina: ['La tua attività, in una pagina.', 'Le informazioni giuste, subito.'],
-  'esperienza-digitale': ['Immagini, spazio e interazione.', 'Il tuo brand diventa esperienza.'],
-  configuratore: ['Materiali, colori e varianti.', 'Ogni scelta prende forma.'],
-  'render-animazione': ['Luce, materia e movimento.', 'Il prodotto come lo immagini.'],
-  showroom: ['Uno spazio da esplorare.', 'Ogni prodotto da scoprire.'],
-  'realta-aumentata': ['Il tuo prodotto, nel loro spazio.', 'Direttamente dallo smartphone.'],
-  'modello-3d': ['Forme, materiali e dettagli.', 'Una nuova dimensione digitale.'],
-  'video-lancio': ['La tua novità entra in scena.', 'Un racconto che lascia il segno.'],
-  'video-aziendali': ['Persone, luoghi e visione.', 'Fai vedere chi sei.'],
-  'video-esplicativi': ['Un processo diventa racconto.', 'Ciò che fai, finalmente chiaro.'],
-  motion: ['Grafica che prende movimento.', 'Dai ritmo alla tua identità.'],
-  'logo-animato': ['Il carattere del tuo marchio.', 'In una firma che prende vita.'],
-  'video-social': ['Il tuo mondo, in pochi secondi.', 'Contenuti pensati per i social.'],
-  teaser: ['Un indizio. Un’anticipazione.', 'Accendi la curiosità.'],
-  trailer: ['Il ritmo della tua storia.', 'Fai venire voglia di vederla.'],
-  'foto-prodotti': ['Forme, texture e materiali.', 'Il valore si vede nei dettagli.'],
-  'foto-spazi': ['Interni, esterni e prospettive.', 'Fai sentire l’atmosfera.'],
-  'foto-food': ['Ingredienti e consistenze.', 'Prima del gusto, lo sguardo.'],
-  'foto-emozionali': ['Un’immagine, un’idea.', 'Il carattere della tua campagna.'],
-  branding: ['Segni, colori e caratteri.', 'Riconoscibile, ovunque.'],
-  'guida-brand': ['Regole chiare, identità coerente.', 'Un linguaggio da condividere.'],
-  scatole: ['Forma e identità del prodotto.', 'L’esperienza comincia da fuori.'],
-  merchandising: ['Il brand diventa quotidiano.', 'Capi e accessori coordinati.'],
-  insegne: ['Il primo segno della tua attività.', 'Fatti riconoscere, da fuori.'],
-  'grafica-spazi': ['Ambienti che parlano di te.', 'L’identità prende spazio.'],
-  'grafiche-pubblicitarie': ['Un’idea, ogni formato.', 'Il tuo messaggio si fa vedere.'],
-  'template-social': ['Un sistema per i tuoi contenuti.', 'Coerente, anche quando cambia.'],
-  presentazione: ['Dai ordine alle tue idee.', 'Una proposta che si fa capire.'],
-  brochure: ['Testi e immagini, in equilibrio.', 'Una storia da sfogliare.'],
-  'menu-listini': ['Il valore della tua offerta.', 'Chiaro, dalla prima lettura.'],
-  espositori: ['Stand, eventi e punti vendita.', 'Una presenza che si fa notare.']
+  "modello-3d": [
+    "Il tuo prodotto in tre dimensioni,",
+    "pronto per immagini, video ed esperienze interattive."
+  ],
+  "render-animazione": [
+    "Immagini e animazioni per mostrare materiali,",
+    "dettagli e funzionamento del prodotto."
+  ],
+  "realta-aumentata": [
+    "Il prodotto nell’ambiente del cliente,",
+    "visibile dal telefono o dal tablet."
+  ],
+  "configuratore": [
+    "Colori, materiali e varianti da combinare",
+    "per esplorare e trovare la propria versione."
+  ],
+  "showroom": [
+    "Uno spazio online per esplorare la tua offerta,",
+    "muoversi tra i prodotti e scoprirne i dettagli."
+  ],
+  "esperienza-digitale": [
+    "Immagini, movimento e interazioni in un percorso",
+    "su misura per raccontare il tuo brand."
+  ],
+  "landing": [
+    "Una pagina dedicata a un’offerta o a un evento,",
+    "pensata per raccogliere richieste di contatto."
+  ],
+  "sito": [
+    "Servizi, progetti e informazioni organizzati",
+    "per presentare la tua attività e farti contattare."
+  ],
+  "catalogo": [
+    "Prodotti e collezioni da sfogliare e filtrare,",
+    "con schede dedicate e richieste di informazioni."
+  ],
+  "ecommerce": [
+    "Prodotti, ordini e vendite online,",
+    "dal catalogo al carrello, fino al pagamento."
+  ],
+  "vetrina": [
+    "La tua attività in una pagina essenziale,",
+    "con presentazione, orari, contatti e indicazioni."
+  ],
+  "menu-digitale": [
+    "Piatti, bevande, ingredienti e prezzi,",
+    "a portata di mano su telefono e tablet."
+  ],
+  "video-aziendali": [
+    "Persone, spazi e lavorazioni",
+    "per raccontare la tua attività."
+  ],
+  "video-esplicativi": [
+    "Prodotti, passaggi e funzioni",
+    "spiegati con qualità cinematica."
+  ],
+  "video-social": [
+    "Video brevi per condividere",
+    "prodotti, novità ed opportunità."
+  ],
+  "video-lancio": [
+    "Un video per presentare",
+    "un prodotto o una collezione."
+  ],
+  "teaser": [
+    "Un’anteprima per creare hype",
+    "e comunicare al mondo."
+  ],
+  "trailer": [
+    "Un’anteprima per creare hype",
+    "e comunicare al mondo."
+  ],
+  "motion": [
+    "Grafiche e sequenze per creare",
+    "video con effetti speciali."
+  ],
+  "foto-prodotti": [
+    "Composizioni e ambientazioni",
+    "dedicate per annunci e campagne."
+  ],
+  "foto-spazi": [
+    "Interni ed esterni per raccontare",
+    "spazi, dettagli e atmosfera."
+  ],
+  "foto-emozionali": [
+    "Luce e composizioni per dare",
+    "forma al carattere del tuo brand."
+  ],
+  "template-social": [
+    "Modelli coordinati per post e storie,",
+    "pronti da riutilizzare nei tuoi contenuti."
+  ],
+  "grafiche-pubblicitarie": [
+    "Grafiche per annunci, banner e stampati,",
+    "coordinate in tutti i formati della campagna."
+  ],
+  "insegne": [
+    "Segni, informazioni e grafiche",
+    "per farti riconoscere dall’esterno."
+  ],
+  "espositori": [
+    "Pannelli, roll-up e fondali",
+    "per negozi, fiere ed eventi."
+  ],
+  "grafica-spazi": [
+    "Rivestimenti e indicazioni",
+    "per dare identità agli ambienti."
+  ],
+  "branding": [
+    "Logo, colori e caratteri per creare",
+    "o rinnovare l’identità della tua attività."
+  ],
+  "guida-brand": [
+    "Regole ed esempi per usare logo, colori",
+    "e caratteri con coerenza, in ogni applicazione."
+  ],
+  "presentazione": [
+    "Slide coordinate per presentare",
+    "attività, progetti e offerte."
+  ],
+  "menu-listini": [
+    "Piatti, prodotti, servizi e prezzi",
+    "in un formato facile da consultare."
+  ],
+  "brochure": [
+    "Prodotti, servizi e collezioni",
+    "da sfogliare e condividere."
+  ],
+  "biglietti": [
+    "Nome, ruolo e contatti",
+    "da lasciare al cliente."
+  ],
+  "carta": [
+    "Documenti e comunicazioni",
+    "coordinati con la tua identità."
+  ],
+  "moduli": [
+    "Moduli e materiali cartacei per",
+    "organizzare il lavoro quotidiano."
+  ],
+  "merchandising": [
+    "Capi e accessori coordinati",
+    "per il tuo team e i tuoi eventi."
+  ],
+  "tessere": [
+    "Buoni regalo e tessere su misura",
+    "per clienti, servizi e contatti."
+  ],
+  "gadget": [
+    "Penne, taccuini, tazze e accessori",
+    "per regali e kit di benvenuto."
+  ],
+  "scatole": [
+    "Confezioni curate per presentare",
+    "e proteggere i tuoi prodotti."
+  ],
+  "shopper": [
+    "Borse e sacchetti coordinati",
+    "per acquisti, prodotti e regali."
+  ],
+  "etichette": [
+    "Marchio e informazioni di prodotto",
+    "su etichette e cartellini coordinati."
+  ],
+  "app-dedicata": [
+    "Il tuo modo di lavorare.",
+    "In uno strumento su misura."
+  ],
+  "logo-animato": [
+    "Il carattere del tuo marchio.",
+    "In una firma che prende vita."
+  ],
+  "foto-food": [
+    "Ingredienti e consistenze.",
+    "Prima del gusto, lo sguardo."
+  ]
 };
 
 const MEMENTO_BUNDLE_EDITORIAL = {

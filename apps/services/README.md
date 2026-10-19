@@ -1,36 +1,25 @@
-# Memento Servizi — V13 per Vercel
+# Memento — Servizi V22
 
-Versione pubblicata del 18 ottobre 2026.
+Catalogo completo per Vercel, aggiornato il 19 ottobre 2026.
+WEB e 3D sono compatti e centrati; gli altri titoli rimangono edge to edge.
+Include bundle e popup aggiornati e catalogo con immagini square.
 
-## Utilizzo
+## Pubblicazione su Vercel
 
-1. Estrai lo ZIP e copia il suo contenuto nella radice del repository del sito.
-2. Sostituisci i file della versione precedente. Mantieni la cartella `.git` del tuo repository.
-3. Esegui commit e push dal tuo client Git.
+1. Estrai lo ZIP nella root del repository: `package.json`, `vercel.json`, `public/` e `scripts/` devono stare allo stesso livello. Per aggiornare un repository esistente, sostituisci i file corrispondenti conservando la cartella `.git`.
+2. Esegui commit e push sul repository collegato a Vercel, oppure importa un nuovo repository su Vercel.
+3. Framework Preset: **Other**. Root Directory: la cartella che contiene `package.json`. La configurazione inclusa imposta Build Command `npm run build` e Output Directory `dist`.
 
-Il file `vercel.json` contiene già la configurazione:
+Il build copia `public/` in `dist/`. Non richiede dipendenze, variabili ambiente o servizi backend. Font, icone e immagini sono inclusi. I collegamenti ai dettagli usano hash e non richiedono regole di riscrittura.
 
-- Framework Preset: Other
-- Root Directory: radice del repository (campo vuoto)
-- Build Command: `npm run build`
-- Output Directory: `dist`
-- Node.js: 22 o superiore
+## Verifica locale
 
-Non servono dipendenze npm né variabili d’ambiente.
+```sh
+npm ci
+npm run build
+python3 -m http.server 8080 --directory dist
+```
 
-## Contenuto
-
-`public/` contiene tutti gli HTML, CSS, JavaScript, immagini, font e icone locali.
-`scripts/build.mjs` genera `dist/` copiando i file pubblici.
-`package.json`, `package-lock.json` e `vercel.json` completano il progetto.
-
-Per verificare la build in locale, esegui `npm run build`.
-La cartella `dist/` viene generata dalla build e non è duplicata nello ZIP.
-
-## V13
-
-Tipografia proporzionata anche per le parole lunghe; immagini con fade non lineare;
-selezione e menu contestuale disabilitati nella UI con link nativi per il tasto centrale;
-bundle con nome, copy e mini player allineati e chevron in alto a destra.
-
-Il modulo Level Up prepara una bozza email da inviare nella propria app di posta.
+Apri `http://localhost:8080`.
+Per modificare il sito, intervieni nei file di `public/` e ripeti il build.
+Il modulo LevelUp prepara una bozza nella propria app email; l'invio rimane manuale.

@@ -1,6 +1,6 @@
 /* MEMENTO — landing → categoria → servizio. Immagini originali dal catalogo. */
 const MEMENTO_CONFIG = {
-  "version": "2026-10-18.13",
+  "version": "2026-10-18.19",
   "homeUrl": "https://mementostudio.it/",
   "email": "info@mementostudio.it",
   "phone": "+393285454661",
@@ -208,8 +208,8 @@ const MEMENTO_SERVICES = [
     "kind": "service",
     "chapter": "visualizzazione",
     "image": "modello-3d",
-    "title": "Modello 3D di prodotto",
-    "description": "Una versione digitale fedele a forme, materiali e dettagli del tuo prodotto.",
+    "title": "Modello 3D del tuo prodotto",
+    "description": "Il tuo prodotto in tre dimensioni, pronto per immagini, video ed esperienze interattive.",
     "features": [
       "Modellazione da misure e riferimenti",
       "Materiali e texture del prodotto",
@@ -235,7 +235,7 @@ const MEMENTO_SERVICES = [
     "chapter": "visualizzazione",
     "image": "render-animazione",
     "title": "Render & animazione 3D",
-    "description": "Inquadrature, materiali e movimento per mostrare il prodotto al suo meglio.",
+    "description": "Immagini e animazioni per mostrare materiali, dettagli e funzionamento del prodotto.",
     "features": [
       "Direzione di luce e inquadrature",
       "Visual di prodotto o sequenze animate",
@@ -260,7 +260,7 @@ const MEMENTO_SERVICES = [
     "chapter": "esplorazione",
     "image": "realta-aumentata",
     "title": "Realtà aumentata",
-    "description": "Il tuo prodotto nell’ambiente del cliente, dal telefono o dal tablet.",
+    "description": "Il prodotto nell’ambiente del cliente, visibile dal telefono o dal tablet.",
     "features": [
       "Preparazione dell’asset per AR",
       "Pagina di accesso all’esperienza",
@@ -285,7 +285,7 @@ const MEMENTO_SERVICES = [
     "chapter": "esplorazione",
     "image": "configuratore",
     "title": "Configuratore di prodotto",
-    "description": "Colori, materiali e varianti. Il cliente trova la propria combinazione.",
+    "description": "Colori, materiali e varianti da combinare per esplorare e trovare la propria versione.",
     "features": [
       "Visualizzazione interattiva del prodotto",
       "Selezione delle varianti concordate",
@@ -310,7 +310,7 @@ const MEMENTO_SERVICES = [
     "chapter": "esperienze",
     "image": "showroom",
     "title": "Showroom interattivo",
-    "description": "Uno spazio online per esplorare la tua offerta e scoprirne i dettagli.",
+    "description": "Uno spazio online per esplorare la tua offerta, muoversi tra i prodotti e scoprirne i dettagli.",
     "features": [
       "Presentazione dei prodotti",
       "Viste e punti di approfondimento",
@@ -335,7 +335,7 @@ const MEMENTO_SERVICES = [
     "chapter": "esperienze",
     "image": "esperienza-digitale",
     "title": "Esperienza digitale",
-    "description": "Immagini, movimento e interazioni in un percorso che racconta il tuo brand.",
+    "description": "Immagini, movimento e interazioni in un percorso su misura per raccontare il tuo brand.",
     "features": [
       "Concept e direzione dell’esperienza",
       "Motion e interazioni su misura",
@@ -360,7 +360,7 @@ const MEMENTO_SERVICES = [
     "chapter": "web",
     "image": "landing",
     "title": "Landing page",
-    "description": "Una pagina con un obiettivo: far compiere il prossimo passo.",
+    "description": "Una pagina dedicata a un’offerta o a un evento, pensata per raccogliere richieste di contatto.",
     "features": [
       "Struttura dedicata all’offerta",
       "Layout desktop e mobile",
@@ -385,7 +385,7 @@ const MEMENTO_SERVICES = [
     "chapter": "web",
     "image": "sito",
     "title": "Sito web",
-    "description": "Il tuo spazio online, costruito attorno a ciò che ti rende riconoscibile.",
+    "description": "Servizi, progetti e informazioni organizzati per presentare la tua attività e farti contattare.",
     "features": [
       "Architettura delle pagine",
       "Interfaccia e sviluppo responsive",
@@ -410,7 +410,7 @@ const MEMENTO_SERVICES = [
     "chapter": "vendita",
     "image": "catalogo",
     "title": "Catalogo online",
-    "description": "Prodotti e collezioni da sfogliare, confrontare e approfondire.",
+    "description": "Prodotti e collezioni da sfogliare e filtrare, con schede dedicate e richieste di informazioni.",
     "features": [
       "Schede e categorie prodotto",
       "Filtri per esplorare l’offerta",
@@ -435,7 +435,7 @@ const MEMENTO_SERVICES = [
     "chapter": "vendita",
     "image": "ecommerce",
     "title": "E-commerce & gestionale",
-    "description": "Dal catalogo al carrello, fino alla gestione delle vendite online.",
+    "description": "Prodotti, ordini e vendite online, dal catalogo al carrello, fino al pagamento.",
     "features": [
       "Catalogo e schede prodotto",
       "Carrello e percorso di acquisto",
@@ -460,7 +460,7 @@ const MEMENTO_SERVICES = [
     "chapter": "menu",
     "image": "vetrina",
     "title": "Vetrina digitale",
-    "description": "La tua attività in una pagina essenziale, subito utile a chi ti cerca.",
+    "description": "La tua attività in una pagina essenziale, con presentazione, orari, contatti e indicazioni.",
     "features": [
       "Presentazione dell’attività",
       "Orari, contatti e indicazioni",
@@ -485,7 +485,7 @@ const MEMENTO_SERVICES = [
     "chapter": "menu",
     "image": "menu-digitale",
     "title": "Menù digitale",
-    "description": "Piatti, bevande e dettagli da esplorare, direttamente dal proprio telefono.",
+    "description": "Piatti, bevande, ingredienti e prezzi, a portata di mano su telefono e tablet.",
     "features": [
       "Categorie e schede del menù",
       "Ingredienti e informazioni fornite",
@@ -509,7 +509,7 @@ const MEMENTO_SERVICES = [
     "kind": "service",
     "chapter": "video",
     "image": "video-aziendali",
-    "title": "Video aziendali e promozionali",
+    "title": "Video aziendali",
     "description": "Persone, spazi e lavorazioni per raccontare la tua attività.",
     "features": [
       "Concept e struttura del racconto",
@@ -536,7 +536,7 @@ const MEMENTO_SERVICES = [
     "chapter": "video",
     "image": "video-esplicativi",
     "title": "Video esplicativi",
-    "description": "Rendi comprensibili prodotti, passaggi e funzioni attraverso le immagini.",
+    "description": "Prodotti, passaggi e funzioni spiegati con qualità cinematica.",
     "features": [
       "Struttura del messaggio",
       "Grafica, riprese o animazioni",
@@ -561,7 +561,7 @@ const MEMENTO_SERVICES = [
     "chapter": "video",
     "image": "video-social",
     "title": "Video social & reel",
-    "description": "Contenuti brevi per dare presenza a prodotti, novità e momenti della tua attività.",
+    "description": "Video brevi per condividere prodotti, novità ed opportunità.",
     "features": [
       "Idea e struttura del contenuto",
       "Montaggio per il formato verticale",
@@ -586,7 +586,7 @@ const MEMENTO_SERVICES = [
     "chapter": "motion",
     "image": "video-lancio",
     "title": "Video di lancio",
-    "description": "Una presentazione dedicata al tuo nuovo prodotto o alla tua collezione.",
+    "description": "Un video per presentare un prodotto o una collezione.",
     "features": [
       "Concept e direzione visiva",
       "Produzione delle scene concordate",
@@ -611,7 +611,7 @@ const MEMENTO_SERVICES = [
     "chapter": "motion",
     "image": "teaser",
     "title": "Teaser",
-    "description": "Una breve anticipazione che accende la curiosità verso ciò che sta per arrivare.",
+    "description": "Un’anteprima per creare hype e comunicare al mondo.",
     "features": [
       "Selezione dei momenti chiave",
       "Ritmo, titoli e costruzione dell’attesa",
@@ -636,8 +636,8 @@ const MEMENTO_SERVICES = [
     "kind": "service",
     "chapter": "motion",
     "image": "motion",
-    "title": "Loop e motion graphics",
-    "description": "Grafica in movimento per dare ritmo e carattere alla tua comunicazione.",
+    "title": "Motion Graphics",
+    "description": "Grafiche e sequenze per creare video con effetti speciali.",
     "features": [
       "Animazione di elementi grafici",
       "Loop e sequenze per schermi",
@@ -661,8 +661,8 @@ const MEMENTO_SERVICES = [
     "kind": "service",
     "chapter": "foto",
     "image": "foto-prodotti",
-    "title": "Fotografia di prodotto",
-    "description": "Fotografie che rendono leggibili forme, materiali e qualità della tua offerta.",
+    "title": "Prodotti & servizi",
+    "description": "Composizioni e ambientazioni dedicate per annunci e campagne.",
     "features": [
       "Definizione del set e delle inquadrature",
       "Sessione fotografica concordata",
@@ -687,8 +687,8 @@ const MEMENTO_SERVICES = [
     "kind": "service",
     "chapter": "foto",
     "image": "foto-spazi",
-    "title": "Fotografia di spazi",
-    "description": "Interni ed esterni che raccontano atmosfera, dettagli e accoglienza.",
+    "title": "Spazi & ambienti",
+    "description": "Interni ed esterni per raccontare spazi, dettagli e atmosfera.",
     "features": [
       "Sopralluogo o analisi dei riferimenti",
       "Riprese degli ambienti concordati",
@@ -713,8 +713,8 @@ const MEMENTO_SERVICES = [
     "kind": "service",
     "chapter": "foto",
     "image": "foto-emozionali",
-    "title": "Fotografia pubblicitaria",
-    "description": "Immagini costruite attorno a un’idea, per dare carattere alla tua comunicazione.",
+    "title": "Foto emozionali",
+    "description": "Luce e composizioni per dare forma al carattere del tuo brand.",
     "features": [
       "Concept visivo",
       "Composizione e ambientazione",
@@ -744,7 +744,7 @@ const MEMENTO_SERVICES = [
     "chapter": "grafica",
     "image": "template-social",
     "title": "Template social",
-    "description": "Modelli coordinati per pubblicare nuovi contenuti con lo stesso stile.",
+    "description": "Modelli coordinati per post e storie, pronti da riutilizzare nei tuoi contenuti.",
     "features": [
       "Sistema di layout riutilizzabili",
       "Formati per post e storie",
@@ -768,8 +768,8 @@ const MEMENTO_SERVICES = [
     "kind": "service",
     "chapter": "grafica",
     "image": "grafiche-pubblicitarie",
-    "title": "Creatività pubblicitarie",
-    "description": "Un messaggio riconoscibile, coordinato nei formati della tua campagna.",
+    "title": "Grafiche pubblicitarie",
+    "description": "Grafiche per annunci, banner e stampati, coordinate in tutti i formati della campagna.",
     "features": [
       "Concept grafico e messaggio",
       "Adattamenti per i canali scelti",
@@ -795,7 +795,7 @@ const MEMENTO_SERVICES = [
     "chapter": "spazi",
     "image": "insegne",
     "title": "Insegne & vetrofanie",
-    "description": "Segni e informazioni che fanno riconoscere la tua attività dall’esterno.",
+    "description": "Segni, informazioni e grafiche per farti riconoscere dall’esterno.",
     "features": [
       "Studio grafico delle superfici",
       "Adattamento a misure e supporti",
@@ -824,7 +824,7 @@ const MEMENTO_SERVICES = [
     "chapter": "spazi",
     "image": "espositori",
     "title": "Espositori & fiere",
-    "description": "Una presenza coordinata per il tuo punto vendita, stand o evento.",
+    "description": "Pannelli, roll-up e fondali per negozi, fiere ed eventi.",
     "features": [
       "Grafica per pannelli e fondali",
       "Adattamento alle strutture scelte",
@@ -849,7 +849,7 @@ const MEMENTO_SERVICES = [
     "chapter": "spazi",
     "image": "grafica-spazi",
     "title": "Grafica per gli spazi",
-    "description": "Rivestimenti e indicazioni che portano l’identità del brand negli ambienti.",
+    "description": "Rivestimenti e indicazioni per dare identità agli ambienti.",
     "features": [
       "Concept applicato allo spazio",
       "Grafiche e segnaletica coordinate",
@@ -874,7 +874,7 @@ const MEMENTO_SERVICES = [
     "chapter": "brand",
     "image": "branding",
     "title": "Branding & restyling",
-    "description": "Logo, colori e caratteri per creare o rinnovare la tua identità.",
+    "description": "Logo, colori e caratteri per creare o rinnovare l’identità della tua attività.",
     "features": [
       "Direzione dell’identità visiva",
       "Marchio, palette e tipografia",
@@ -899,7 +899,7 @@ const MEMENTO_SERVICES = [
     "chapter": "brand",
     "image": "guida-brand",
     "title": "Guida del brand",
-    "description": "Regole ed esempi per usare la tua identità in modo coerente.",
+    "description": "Regole ed esempi per usare logo, colori e caratteri con coerenza, in ogni applicazione.",
     "features": [
       "Utilizzo del marchio",
       "Palette e sistema tipografico",
@@ -924,7 +924,7 @@ const MEMENTO_SERVICES = [
     "chapter": "editoria",
     "image": "presentazione",
     "title": "Presentazione aziendale",
-    "description": "Una proposta chiara da presentare, inviare e condividere.",
+    "description": "Slide coordinate per presentare attività, progetti e offerte.",
     "features": [
       "Organizzazione dei contenuti",
       "Impaginazione delle slide",
@@ -949,7 +949,7 @@ const MEMENTO_SERVICES = [
     "chapter": "editoria",
     "image": "menu-listini",
     "title": "Menù & listini",
-    "description": "La tua offerta in un’impaginazione semplice da consultare.",
+    "description": "Piatti, prodotti, servizi e prezzi in un formato facile da consultare.",
     "features": [
       "Gerarchia di piatti, servizi e prezzi",
       "Progetto grafico delle pagine",
@@ -973,8 +973,8 @@ const MEMENTO_SERVICES = [
     "kind": "service",
     "chapter": "editoria",
     "image": "brochure",
-    "title": "Cataloghi & brochure",
-    "description": "Servizi e collezioni in un racconto da sfogliare.",
+    "title": "Cataloghi & Brochure",
+    "description": "Prodotti, servizi e collezioni da sfogliare e condividere.",
     "features": [
       "Struttura editoriale",
       "Progetto grafico e impaginazione",
@@ -1003,7 +1003,7 @@ const MEMENTO_SERVICES = [
     "chapter": "stampati",
     "image": "biglietti",
     "title": "Biglietti da visita",
-    "description": "Un piccolo formato che lascia un’impressione precisa.",
+    "description": "Nome, ruolo e contatti da lasciare al cliente.",
     "features": [
       "Layout fronte e retro",
       "Adattamento dei contatti",
@@ -1028,7 +1028,7 @@ const MEMENTO_SERVICES = [
     "chapter": "stampati",
     "image": "carta",
     "title": "Carta intestata",
-    "description": "Documenti e comunicazioni con l’identità del tuo brand.",
+    "description": "Documenti e comunicazioni coordinati con la tua identità.",
     "features": [
       "Layout coordinato",
       "Organizzazione dei dati aziendali",
@@ -1053,7 +1053,7 @@ const MEMENTO_SERVICES = [
     "chapter": "stampati",
     "image": "moduli",
     "title": "Moduli & strumenti",
-    "description": "Supporti chiari e coordinati per il lavoro di ogni giorno.",
+    "description": "Moduli e materiali cartacei per organizzare il lavoro quotidiano.",
     "features": [
       "Organizzazione delle informazioni",
       "Grafica di moduli e documenti",
@@ -1078,7 +1078,7 @@ const MEMENTO_SERVICES = [
     "chapter": "coordinato",
     "image": "merchandising",
     "title": "Merchandising & kit brand",
-    "description": "Il tuo marchio su capi e accessori per il team e gli eventi.",
+    "description": "Capi e accessori coordinati per il tuo team e i tuoi eventi.",
     "features": [
       "Selezione dei supporti con il cliente",
       "Applicazione dell’identità",
@@ -1107,7 +1107,7 @@ const MEMENTO_SERVICES = [
     "chapter": "coordinato",
     "image": "tessere",
     "title": "Gift card & tessere NFC",
-    "description": "Un contatto da conservare. Un contenuto da aprire con un gesto.",
+    "description": "Buoni regalo e tessere su misura per clienti, servizi e contatti.",
     "features": [
       "Grafica di card e tessere",
       "Collegamento NFC quando previsto",
@@ -1136,7 +1136,7 @@ const MEMENTO_SERVICES = [
     "chapter": "coordinato",
     "image": "gadget",
     "title": "Gadget & regali aziendali",
-    "description": "Oggetti coordinati che accompagnano il cliente anche dopo l’incontro.",
+    "description": "Penne, taccuini, tazze e accessori per regali e kit di benvenuto.",
     "features": [
       "Selezione dei supporti",
       "Applicazione del marchio",
@@ -1161,7 +1161,7 @@ const MEMENTO_SERVICES = [
     "chapter": "packaging",
     "image": "scatole",
     "title": "Scatole & confezioni",
-    "description": "Presenta e proteggi il prodotto con un’esperienza coerente.",
+    "description": "Confezioni curate per presentare e proteggere i tuoi prodotti.",
     "features": [
       "Grafica della confezione",
       "Adattamento alla fustella",
@@ -1186,7 +1186,7 @@ const MEMENTO_SERVICES = [
     "chapter": "packaging",
     "image": "shopper",
     "title": "Shopper & sacchetti",
-    "description": "Il tuo brand accompagna acquisti, prodotti e regali.",
+    "description": "Borse e sacchetti coordinati per acquisti, prodotti e regali.",
     "features": [
       "Grafica coordinata",
       "Adattamento ai formati scelti",
@@ -1215,7 +1215,7 @@ const MEMENTO_SERVICES = [
     "chapter": "packaging",
     "image": "etichette",
     "title": "Etichette & cartellini",
-    "description": "Identità e informazioni di prodotto, curate fino al dettaglio.",
+    "description": "Marchio e informazioni di prodotto su etichette e cartellini coordinati.",
     "features": [
       "Gerarchia dei contenuti",
       "Grafica per le referenze concordate",
@@ -1241,7 +1241,7 @@ const MEMENTO_SERVICES = [
     "group": "video",
     "title": "Trailer",
     "catalogTitle": "Teaser & trailer",
-    "description": "Un’anteprima che presenta il tono, la storia e i momenti chiave del tuo progetto.",
+    "description": "Un’anteprima per creare hype e comunicare al mondo.",
     "features": [
       "Selezione e montaggio dei momenti chiave",
       "Titoli e ritmo narrativo",

@@ -1,0 +1,55 @@
+/* Fixed central marker. The dots move left as the reader moves forward. */
+.checkpoint-rail { --rail-step: 36px; position: fixed; left: 50%; right: auto; top: max(8px, env(safe-area-inset-top)); transform: translateX(-50%); width: calc(var(--rail-step) * 7); height: 44px; z-index: 150; overflow: hidden; pointer-events: auto; touch-action: manipulation; -webkit-mask-image: linear-gradient(90deg, transparent, #000 14%, #000 86%, transparent); mask-image: linear-gradient(90deg, transparent, #000 14%, #000 86%, transparent); }
+.checkpoint-list { position: absolute; left: 50%; top: 0; display: flex; flex-direction: row; width: max-content; height: 44px; will-change: transform; }
+.checkpoint-link { position: relative; display: grid; place-items: center; width: var(--rail-step); height: 44px; flex: 0 0 var(--rail-step); color: var(--ink); }
+.checkpoint-link::before { content: ''; position: absolute; left: calc(50% - 1.5px); top: calc(50% - 1.5px); width: 3px; height: 3px; border-radius: 50%; background: #f3f0ea; opacity: .48; transition: opacity .18s; }
+.checkpoint-link:hover::before, .checkpoint-link:focus-visible::before { opacity: 1; }
+.checkpoint-link:focus-visible { outline: 1px solid #ffffff70; outline-offset: -5px; border-radius: 4px; }
+.checkpoint-label { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.checkpoint-cursor { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: 20px; height: 3px; border-radius: 2px; background: var(--amber); pointer-events: none; }
+body:has(dialog[open]) .checkpoint-rail { opacity: 0; pointer-events: none; visibility: hidden; }
+
+/* Square cards follow the page padding. Short screens can read the full grid. */
+#catalogo { scroll-margin-top: 0; }
+.catalogue { --catalogue-columns: 5; --catalogue-rows: 3; --catalogue-bottom: clamp(18px, 3svh, 36px); --catalogue-header: clamp(76px, 13svh, 124px); --catalogue-gap: clamp(12px, 1.4vw, 24px); display: block; width: 100%; max-width: none; padding: 0; container-type: inline-size; }
+.catalogue-heading { position: sticky; top: 0; z-index: 12; height: var(--catalogue-header); padding-top: 34px; margin-inline: var(--gutter); display: flex; align-items: center; justify-content: space-between; gap: 20px; flex-wrap: nowrap; background: linear-gradient(180deg, #0f0f0f 70%, #0f0f0ff5 83%, #0f0f0fb3 93%, transparent); }
+.catalogue-heading h2 { font-size: clamp(34px, 4.2vw, 74px); line-height: 1; }
+.catalogue-filters { flex: 0 0 auto; width: max-content; margin: 0; }
+.catalogue-filters button { min-width: 120px; min-height: 52px; font-size: 16px; }
+#catalogue-groups { margin-top: calc(var(--catalogue-header) * -1); }
+.catalogue-group { margin: 0; }
+.catalogue-page { min-height: 100svh; height: auto; padding: calc(var(--catalogue-header) + 8px) var(--gutter) var(--catalogue-bottom); scroll-margin-top: 0; }
+.catalogue-page .service-grid { width: 100%; height: auto; display: grid; grid-template-columns: repeat(var(--catalogue-columns), minmax(0, 1fr)); grid-template-rows: none; grid-auto-rows: auto; gap: var(--catalogue-gap); align-items: start; }
+.catalogue-page .service-card { grid-column: var(--tile-col); grid-row: var(--tile-row); width: 100%; min-width: 0; height: auto; min-height: 0; aspect-ratio: 1; overflow: hidden; container-type: inline-size; --corner-cut: clamp(12px, 1.2vw, 20px); }
+.catalogue-page .service-visual { position: absolute; inset: 0; width: 100%; max-width: none; height: 100%; object-fit: cover; object-position: center; aspect-ratio: 1; --tile-mask: linear-gradient(180deg, #000 40%, #000000fa 50%, #000000d9 62%, #00000099 73%, #0000004d 84%, #00000014 94%, transparent); -webkit-mask-image: var(--tile-mask); mask-image: var(--tile-mask); }
+.catalogue-page .service-card::after { background: linear-gradient(180deg, transparent 55%, #0f0f0f28 80%, var(--bg)); }
+.catalogue-page .service-copy { position: absolute; inset: auto clamp(12px, 1.35vw, 24px) clamp(16px, 1.6vw, 28px); padding: 0; }
+.catalogue-page .service-title { font-size: clamp(15px, 9cqw, 30px); font-weight: 400; line-height: 1.12; overflow-wrap: normal; hyphens: auto; }
+.catalogue-page .service-action { top: 16px; right: 14px; }
+.catalogue-page .service-action .chevron { width: clamp(16px, 1.5vw, 26px); height: clamp(16px, 1.5vw, 26px); }
+.bundle-copy h3 a { color: inherit; text-decoration: none; }
+.bundle-copy h3 a:focus-visible { outline-offset: 7px; }
+.bundle-mini .slide-kicker { position: absolute; z-index: 2; left: 16px; top: 16px; font-size: 10px; letter-spacing: .1em; color: #e6e0d6; opacity: var(--slide-focus); }
+
+@media (max-width: 767px) {
+  .checkpoint-rail { --rail-step: 32px; }
+  .checkpoint-cursor { width: 18px; }
+  .catalogue { --catalogue-columns: 3; --catalogue-rows: 5; --catalogue-bottom: 20px; --catalogue-header: clamp(98px, 15svh, 124px); --catalogue-gap: 8px; }
+  .catalogue-heading { gap: 10px; }
+  .catalogue-heading h2 { font-size: clamp(24px, 5.6vw, 38px); }
+  .catalogue-filters button { min-width: 0; min-height: 42px; padding: 7px; gap: 4px; font-size: 11px; }
+  .catalogue-filters svg { width: 15px; height: 15px; }
+  .catalogue-page .service-card { --corner-cut: 9px; }
+  .catalogue-page .service-copy { inset: auto 8px 10px; }
+  .catalogue-page .service-title { font-size: clamp(11.5px, 11cqw, 18px); line-height: 1.13; }
+  .catalogue-page .service-action { top: 10px; right: 9px; }
+  .catalogue-page .service-action .chevron { width: 14px; height: 14px; }
+  .bundle-mini .slide-kicker { top: 14px; left: 14px; font-size: 9px; }
+}
+@media (max-height: 500px) and (orientation: landscape) {
+  .catalogue { --catalogue-header: 84px; }
+  .catalogue-page { min-height: max(100svh, 440px); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .checkpoint-link::before, .checkpoint-label { transition: none; }
+}

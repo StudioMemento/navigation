@@ -84,7 +84,7 @@
   font-size: clamp(30px, calc(var(--slide-width) * .048), 68px);
   font-weight: 380;
   line-height: 1.06;
-  letter-spacing: -.055em;
+  letter-spacing: .015em;
   text-wrap: pretty;
   overflow-wrap: break-word;
 }
@@ -108,7 +108,7 @@
 
 @media (max-width: 767px) {
   .category-section {
-    --slide-width: calc(100cqw - var(--gutter) * 2);
+    --slide-width: 70cqw;
     --card-inset: clamp(22px, 5.6vw, 40px);
     padding-top: 72px;
   }

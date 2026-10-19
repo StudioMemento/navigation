@@ -1,0 +1,60 @@
+/* The title and central board share one width. Letters descend into the void. */
+.category-section {
+  --slide-width: min(76cqw, 128svh, 1360px);
+  --heading-size: min(calc(var(--slide-width) * .18), 20svh, 210px);
+  padding-block: max(68px, env(safe-area-inset-top)) 30px;
+  justify-content: center;
+}
+.category-heading { width: var(--slide-width); margin: 0 auto 18px; transform: none; }
+.category-heading h2.spread-title, #bundles-heading.spread-title {
+  display: flex; justify-content: space-between; align-items: baseline;
+  font-size: var(--heading-size); font-weight: 350;
+  line-height: .94; letter-spacing: 0; white-space: nowrap;
+}
+/* Short category names stay together at the centre of the board. */
+.category-heading :is(#heading-web, #heading-3d).spread-title {
+  justify-content: center;
+  gap: .035em;
+}
+.spread-title > span {
+  display: block;
+  background: linear-gradient(180deg, #f3f0ea 0%, #f3f0ea 38%, #d0cdc7 56%, #605e5b 77%, #111 100%);
+  background-clip: text; -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent; color: transparent;
+}
+#bundles-heading > span { background-image: linear-gradient(180deg, #f3f0ea 0%, #f3f0ea 38%, #d0cdc7 56%, #605e5b 77%, #000 100%); }
+.category-section .service-carousel .carousel-stage { height: min(calc(var(--slide-width) / 2), calc(100svh - var(--heading-size) * .94 - 160px)); }
+.category-section .carousel-controls { margin-top: 14px; }
+.category-section .slide-title { font-size: clamp(32px, 3.5vw, 68px); }
+.category-section .slide-description { font-size: clamp(14px, 1.05vw, 21px); }
+.category-section .showcase-card::before { --edge-ink: rgba(243, 240, 234, calc(.12 + var(--slide-focus) * .40)); }
+#bundles .showcase-card::before { --edge-ink: rgba(243, 240, 234, calc(.12 + var(--slide-focus) * .40)); }
+/* Keep the fixed chapter cue at the top, independent from each card selector. */
+.checkpoint-rail { top: max(6px, env(safe-area-inset-top)); }
+.checkpoint-cursor { width: 3px; height: 14px; box-shadow: 0 0 12px #f2a10a20; }
+/* Bundle details use the service player, with scrollable content on every viewport. */
+.bundle-sheet .scene-process .service-scene-copy { width: 65%; }
+.bundle-sheet .delivery-list { gap: 12px; }
+.bundle-sheet .delivery-list li { padding: 0; font-size: clamp(15px, 1.25vw, 21px); }
+.bundle-components-body .component-row { min-height: 76px; }
+.bundle-components-body .component-row:hover .component-copy strong { color: #fff; }
+.bundle-components-body .component-row:hover .chevron { transform: translateX(3px); }
+@media (max-width: 767px) {
+  .category-section { --slide-width: 70cqw; --heading-size: calc(var(--slide-width) * .18); padding-block: 76px 38px; }
+  .category-heading { margin-bottom: 18px; }
+  .category-section .service-carousel .carousel-stage { height: min(calc(var(--slide-width) / .72), calc(100svh - var(--heading-size) - 180px)); min-height: 280px; }
+  .category-section .slide-title { font-size: clamp(25px, 6.8vw, 44px); }
+  .category-section .slide-description { font-size: clamp(12px, 3.2vw, 17px); line-height: 1.45; }
+  .category-section .slide-visual { top: 15%; height: 72%; }
+  .category-section .carousel-controls { margin-top: 18px; }
+  .bundle-sheet .scene-process .service-scene-copy { width: 100%; }
+  .bundle-sheet .delivery-list li { font-size: 16px; }
+}
+@media (min-width: 768px) and (max-height: 640px) {
+  .category-section { --slide-width: min(70cqw, 116svh); --heading-size: 64px; min-height: 500px; }
+  .category-section .slide-title { font-size: 32px; }
+  .category-section .slide-description { font-size: 13px; }
+}
+@media (forced-colors: active) {
+  .spread-title > span { background: none; -webkit-text-fill-color: CanvasText; color: CanvasText; }
+}

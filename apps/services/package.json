@@ -1,13 +1,9 @@
 {
-  "name": "memento-servizi-slideshow",
-  "version": "13.0.0",
+  "name": "memento-servizi",
+  "version": "22.0.0",
   "private": true,
-  "description": "Export Vercel della versione pubblicata del catalogo servizi Memento",
-  "type": "module",
+  "description": "Catalogo servizi Memento Design Studio",
   "scripts": {
     "build": "node scripts/build.mjs"
-  },
-  "engines": {
-    "node": ">=22"
   }
 }
