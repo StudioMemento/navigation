@@ -1,0 +1,45 @@
+{
+  "sourceBytes": 10933352,
+  "optimizedBytes": 3775036,
+  "triangles": 19204,
+  "vertices": 14954,
+  "maps": [
+    {
+      "map": "emissive",
+      "size": [
+        2048,
+        2048
+      ],
+      "bytes": 104060,
+      "lossless": false
+    },
+    {
+      "map": "normal",
+      "size": [
+        1024,
+        1024
+      ],
+      "bytes": 1241338,
+      "lossless": true
+    },
+    {
+      "map": "basecolor",
+      "size": [
+        2048,
+        2048
+      ],
+      "bytes": 1174924,
+      "lossless": false
+    },
+    {
+      "map": "metallic-roughness",
+      "size": [
+        1024,
+        1024
+      ],
+      "bytes": 658662,
+      "lossless": true
+    }
+  ],
+  "geometryPreserved": true
+}
