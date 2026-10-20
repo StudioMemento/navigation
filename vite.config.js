@@ -1,2 +1,2 @@
 import {defineConfig} from 'vite';
-export default defineConfig({build:{outDir:'dist',chunkSizeWarningLimit:900}});
+export default defineConfig({server:{host:'0.0.0.0',allowedHosts:['terminal.local']},build:{outDir:'dist',chunkSizeWarningLimit:900}});

@@ -1,5 +1,5 @@
 // Input state is independent of the renderer: touch, mouse and fallback share it.
-export const SECTIONS=['Home','Studio','Servizi','Progetti','Level Up','Contatti'];
+export {SECTIONS} from './destinations.js';
 export class Navigation {
  constructor(count=6){this.count=count;this.position=0;this.target=0;this.drag=null;}
  wrap(n){return ((n%this.count)+this.count)%this.count;}
