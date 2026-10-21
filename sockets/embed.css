@@ -1,0 +1,128 @@
+/* Scoped integration, loaded after each original module's own styles. */
+:root{--section-accent:#ff7950;--amber:var(--section-accent);--accent:var(--section-accent);--bg:transparent;--line:color-mix(in srgb,var(--section-accent) 17%,#ffffff10)}
+html,body{background:transparent!important;color-scheme:dark}body{overscroll-behavior-y:contain}html{scrollbar-width:none}::-webkit-scrollbar{display:none}
+[data-socket=servizi] .macro-hero{height:100svh;min-height:0;max-height:none}
+[data-socket=servizi] .macro-carousel,[data-socket=servizi] .macro-carousel .carousel-stage{height:calc(100svh - 65px);min-height:0;overflow:visible;perspective:1800px;transform-style:preserve-3d}
+[data-socket=servizi] .hero-card{width:min(66vw,calc((100svh - 65px)*2.15));height:100%;background:#111;clip-path:polygon(20px 0,100% 0,100% calc(100% - 20px),calc(100% - 20px) 100%,0 100%,0 20px);opacity:1;--hero-image-alpha:1;--hero-text-alpha:1;--hero-text-offset:0px}
+[data-socket=servizi] .hero-visual{width:100%;opacity:1;filter:brightness(.82)}
+[data-socket=servizi] .hero-shade{background:linear-gradient(0deg,#070707d9,transparent 80%)}
+[data-socket=servizi] .hero-copy{width:100%;padding:0 6% 7%;align-items:flex-start;justify-content:flex-end;opacity:1;transform:none}
+[data-socket=servizi] .hero-title,[data-socket=servizi] .hero-long .hero-title{font-size:min(9vw,16svh);line-height:.9;letter-spacing:.015em;margin:0;color:#eee;background:linear-gradient(#fff,#aaa);background-clip:text}
+[data-socket=servizi] .hero-card[data-slide="3"] .hero-title{font-size:min(5.4vw,10svh)}
+[data-socket=servizi] .hero-action{position:absolute;right:6%;bottom:7%;width:30px;height:30px;margin:0}
+[data-socket=servizi] .hero-controls{bottom:0;left:0;right:0;transform:none;max-width:100%;height:60px;min-height:44px;justify-content:center}
+[data-socket=servizi] #hero-controls .carousel-dots{gap:20px}
+[data-socket=servizi] #hero-controls .carousel-dot{width:auto;min-width:44px;gap:7px;display:flex;flex-direction:column;font-size:10px;white-space:nowrap;letter-spacing:.03em}
+[data-socket=servizi] #hero-controls .carousel-dot span{width:4px;height:4px}
+[data-socket=servizi] #hero-controls .carousel-dot::after{content:attr(aria-label)}
+[data-socket=servizi] #hero-controls .carousel-dot[aria-pressed=true]{color:var(--section-accent)}
+[data-socket=servizi] .section-rail{display:none}
+[data-socket=servizi] .category-section{--scene-height:100svh;min-height:100svh}
+[data-socket=portfolio] .catalogue{padding-top:0;width:91%;max-width:none}
+[data-socket=portfolio] .catalogue-heading{margin-bottom:14px;min-height:40px;align-items:center}
+[data-socket=portfolio] .catalogue-heading h1{font-size:12px;line-height:1;letter-spacing:.1em;text-transform:uppercase;color:var(--section-accent);font-weight:400}
+[data-socket=portfolio] .catalogue-actions .icon-button{width:34px;height:34px}
+[data-socket=portfolio] .catalogue-actions svg{width:18px;height:18px}
+[data-socket=portfolio] #viewport{background:transparent}
+[data-socket=portfolio] .project-title{background-image:linear-gradient(180deg,#fff,color-mix(in srgb,var(--section-accent) 20%,#bcbcbc),#444)}
+[data-socket=level-up] .showcase{padding:0 0 5px;grid-template-rows:minmax(0,1fr) 48px;gap:8px;background:transparent}
+[data-socket=level-up] .intro{display:none}
+[data-socket=level-up] .contact-rail{width:90%;padding:0}
+[data-socket=level-up] .contact-invite{padding:8px 22px;--chamfer:polygon(12px 0,100% 0,100% calc(100% - 12px),calc(100% - 12px) 100%,0 100%,0 12px)}
+[data-socket=level-up] .invite-question{font-size:16px}
+[data-socket=level-up] .invite-question br{display:none}
+[data-socket=level-up] .invite-action{font-size:11px;gap:15px}
+[data-socket=level-up] .amber-type{background-image:linear-gradient(#e5f1ff,var(--section-accent));color:var(--section-accent)}
+[data-socket=level-up] .dot[aria-current=true]::before{background:var(--section-accent)}
+[data-socket=start] #memento-contact{--accent:var(--section-accent);--bg:transparent;background:transparent;padding:0 4.5vw 24px}
+[data-socket=start] #memento-contact .mm-title{display:none}
+[data-socket=start] #memento-contact .mm-stage{height:calc(100svh - 146px);min-height:170px}
+[data-socket=start] #memento-contact .mm-intro{padding:25px 4%}
+[data-socket=start] #memento-contact .mm-headline{font-size:clamp(30px,4vw,62px)}
+[data-socket=start] #memento-contact .mm-subtitle{font-size:13px;margin-top:14px}
+[data-socket=start] #memento-contact .mm-channels{gap:14px;padding:0 20px 20px}
+[data-socket=start] #memento-contact .mm-channel{min-height:103px;padding:16px 20px}
+[data-socket=start] #memento-contact .mm-channel-name{font-size:18px}
+[data-socket=start] #memento-contact .mm-channel-copy{font-size:10px}
+[data-socket=start] #memento-contact .mm-channel .mm-icon{width:20px;height:20px}
+@media(max-width:700px){
+ [data-socket=servizi] .hero-card{width:76vw;--gutter:0}
+ [data-socket=servizi] .hero-copy{padding:0 7% 10%;height:100%}
+ [data-socket=servizi] .hero-title,[data-socket=servizi] .hero-long .hero-title{font-size:15vw}
+ [data-socket=servizi] .hero-card[data-slide="3"] .hero-title{font-size:9vw;max-width:90%;white-space:normal}
+ [data-socket=servizi] #hero-controls .carousel-dots{gap:7px}
+ [data-socket=servizi] #hero-controls .carousel-dot{font-size:8px}
+ [data-socket=servizi] .hero-action{width:20px;height:20px}
+ [data-socket=portfolio] .catalogue{width:88%}
+ [data-socket=portfolio] .catalogue-heading{margin-bottom:8px}
+ [data-socket=level-up] .showcase{grid-template-rows:minmax(0,1fr) 48px}
+ [data-socket=level-up] .contact-rail{width:88%}
+ [data-socket=level-up] .invite-question{font-size:13px}
+ [data-socket=level-up] .contact-invite{padding:8px 16px}
+ [data-socket=start] #memento-contact{padding:0 6vw 20px}
+ [data-socket=start] #memento-contact .mm-stage{height:190px;min-height:190px}
+ [data-socket=start] #memento-contact .mm-intro{padding:22px 20px}
+ [data-socket=start] #memento-contact .mm-headline{font-size:28px}
+ [data-socket=start] #memento-contact .mm-subtitle{font-size:11px;margin-top:10px}
+ [data-socket=start] #memento-contact .mm-scene{width:80%;right:-18%;height:210px;bottom:-10px;background-position:58% center;opacity:.8}
+ [data-socket=start] #memento-contact .mm-channels{gap:8px;padding:0 12px 12px}
+ [data-socket=start] #memento-contact .mm-channel{min-height:90px;padding:14px}
+ [data-socket=start] #memento-contact .mm-channel-name{font-size:15px}
+ [data-socket=start] #memento-contact .mm-channel-copy{font-size:9px}
+ [data-socket=start] #memento-contact .mm-channel .mm-icon{width:17px;height:17px}
+}
+[data-socket=servizi] .hero-controls{width:100%}
+[data-socket=servizi] .checkpoint-rail{display:none}
+@media(max-width:700px){
+ [data-socket=start] #memento-contact .mm-stage{height:140px;min-height:140px}
+ [data-socket=start] #memento-contact .mm-scene{height:175px;bottom:-15px}
+ [data-socket=start] #memento-contact .mm-channel{min-height:80px;padding:12px}
+ [data-socket=start] #memento-contact .mm-channel>.mm-icon{margin-bottom:7px}
+}
+
+/* V3: the module lives in the same space as its diorama. */
+[data-socket] body::before,[data-socket] body::after{pointer-events:none}
+[data-socket=studio] .frame{inset:0;background:transparent}
+[data-socket=studio] .header,[data-socket=studio] .intro,[data-socket=studio] .context-row,[data-socket=studio] .next-button{display:none}
+[data-socket=studio] .footer{bottom:12px;left:6vw;right:6vw}
+[data-socket=studio] .navigation{gap:24px}
+[data-socket=studio] .nav-item{padding:12px 0 0;gap:6px}
+[data-socket=studio] .number{display:none}
+[data-socket=studio] .nav-label{font-size:14px}
+[data-socket=studio] .shade{background:linear-gradient(0deg,#07090be6,transparent 28%),linear-gradient(180deg,#07090b55,transparent 20%)}
+[data-socket=studio] #scene{mask-image:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent)}
+[data-socket=portfolio] .catalogue-heading h1{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}
+[data-socket=portfolio] .catalogue-heading{justify-content:flex-start;min-height:34px;margin-bottom:12px}
+[data-socket=portfolio] .project-grid{gap:28px 20px}
+[data-socket=portfolio] .footer>span{display:none}
+[data-socket=servizi] .hero-card{clip-path:none;background:#0a0c0e;border:1px solid #ffffff12}
+[data-socket=servizi] .hero-card .hero-copy p,[data-socket=servizi] .hero-card .hero-eyebrow{display:none}
+[data-socket=servizi] .hero-controls{background:transparent}
+[data-socket=level-up] .invite-question{display:none}
+[data-socket=level-up] .contact-invite{justify-content:center;clip-path:none;border:0;background:transparent}
+[data-socket=level-up] .contact-rail{justify-content:center}
+[data-socket=level-up] .gallery{background:transparent}
+[data-socket=start] #memento-contact .mm-stage{display:none}
+[data-socket=start] #memento-contact .mm-shell{border:0;background:transparent;box-shadow:none}
+[data-socket=start] #memento-contact .mm-channels{padding:14px 0 0;gap:16px}
+[data-socket=start] #memento-contact .mm-channel{min-height:180px;padding:30px;background:#0b0e10a8;border-color:#ffffff20}
+[data-socket=start] #memento-contact .mm-channel-copy{display:none}
+[data-socket=start] #memento-contact .mm-channel-name{font-size:22px}
+[data-socket=start] #memento-contact .mm-channel .mm-icon{width:28px;height:28px}
+[data-socket=start] #memento-contact .mm-title{display:none!important}
+@media(max-width:700px){
+ [data-socket=studio] .nav-label{font-size:11px}
+ [data-socket=studio] .navigation{gap:15px}
+ [data-socket=portfolio] .project-grid{gap:22px 12px}
+ [data-socket=start] #memento-contact .mm-channels{gap:10px;padding:8px 0}
+ [data-socket=start] #memento-contact .mm-channel{min-height:132px;padding:22px}
+ [data-socket=start] #memento-contact .mm-channel-name{font-size:18px}
+ [data-socket=start] #memento-contact .mm-channel .mm-icon{width:24px;height:24px}
+}
+[data-socket=servizi] .hero-card[aria-hidden=true] .hero-copy{opacity:0!important;visibility:hidden}
+[data-socket=servizi] .hero-card[aria-hidden=false] .hero-copy{visibility:visible}
+[data-socket=portfolio] .tile-name{position:relative;display:block;inset:auto;opacity:1;transform:none;font-size:11px;line-height:1.4;letter-spacing:.01em;padding:10px 0 0;color:#d3d3d0}
+[data-socket=portfolio] .project-tile{margin-bottom:10px}
+[data-socket=servizi] .showcase-card[aria-hidden=true] .slide-title,[data-socket=servizi] .showcase-card[aria-hidden=true] .slide-description{visibility:hidden}
+[data-socket=servizi] .slide-description{display:none}
+[data-socket=start] .mm-footer,[data-socket=start] .mm-form-intro .mm-eyebrow,[data-socket=start] .mm-form-intro .mm-subtitle,[data-socket=start] .mm-form-scene{display:none!important}

@@ -1,0 +1,1408 @@
+[
+  {
+    "id": "auren",
+    "title": "Auren",
+    "categories": [
+      "web",
+      "design"
+    ],
+    "kind": "Studio concept",
+    "tags": [
+      "Esperienza web"
+    ],
+    "summary": "Dentro l’aura.",
+    "cover": "assets/covers-landscape/auren.webp",
+    "hero": "assets/auren-01.webp",
+    "portrait": "assets/auren-01.webp",
+    "gallery": [
+      {
+        "src": "assets/auren-01.webp",
+        "thumb": "assets/auren-01-thumb.webp",
+        "label": "Il flacone"
+      },
+      {
+        "src": "assets/auren-02.webp",
+        "thumb": "assets/auren-02-thumb.webp",
+        "label": "Iris"
+      },
+      {
+        "src": "assets/auren-03.webp",
+        "thumb": "assets/auren-03-thumb.webp",
+        "label": "L’aura"
+      }
+    ],
+    "galleryTitle": "Dentro il progetto.",
+    "experience": {
+      "type": "web",
+      "url": "https://memento-auren.mementoxdesign.chatgpt.site",
+      "mode": "external"
+    },
+    "heroFit": "cover",
+    "thumbnail": "assets/covers-landscape/auren-thumb.webp",
+    "layout": "wide"
+  },
+  {
+    "id": "hyperknife",
+    "title": "HyperKnife",
+    "categories": [
+      "3d",
+      "film",
+      "design"
+    ],
+    "kind": "Studio concept",
+    "tags": [
+      "CGI",
+      "Motion"
+    ],
+    "summary": "Un progetto, quattro mondi.",
+    "cover": "assets/covers-landscape/hyperknife.webp",
+    "hero": "assets/hyperknife/hyperknife-lvl1-epic-profile__1600w.webp",
+    "variants": [
+      {
+        "id": "lvl1-epic",
+        "label": "Epic",
+        "hero": "assets/hyperknife/hyperknife-lvl1-epic-profile__1600w.webp",
+        "portrait": "assets/hyperknife/hyperknife-lvl1-epic-sculpture__1600w.webp",
+        "images": [
+          {
+            "src": "assets/hyperknife/hyperknife-lvl1-epic-sculpture__1600w.webp",
+            "thumb": "assets/hyperknife/hyperknife-lvl1-epic-sculpture__960w.webp",
+            "label": "La forma"
+          },
+          {
+            "src": "assets/hyperknife/hyperknife-lvl1-epic-profile__1600w.webp",
+            "thumb": "assets/hyperknife/hyperknife-lvl1-epic-profile__960w.webp",
+            "label": "Il profilo"
+          },
+          {
+            "src": "assets/hyperknife/hyperknife-lvl1-epic-diagonal__1600w.webp",
+            "thumb": "assets/hyperknife/hyperknife-lvl1-epic-diagonal__960w.webp",
+            "label": "La prospettiva"
+          },
+          {
+            "src": "assets/hyperknife/hyperknife-lvl1-epic-exploded__1600w.webp",
+            "thumb": "assets/hyperknife/hyperknife-lvl1-epic-exploded__960w.webp",
+            "label": "Ogni componente"
+          }
+        ]
+      },
+      {
+        "id": "lvl1-sleek",
+        "label": "Sleek",
+        "hero": "assets/hyperknife/hyperknife-lvl1-sleek-profile__1600w.webp",
+        "portrait": "assets/hyperknife/hyperknife-lvl1-sleek-sculpture__1600w.webp",
+        "images": [
+          {
+            "src": "assets/hyperknife/hyperknife-lvl1-sleek-sculpture__1600w.webp",
+            "thumb": "assets/hyperknife/hyperknife-lvl1-sleek-sculpture__960w.webp",
+            "label": "La forma"
+          },
+          {
+            "src": "assets/hyperknife/hyperknife-lvl1-sleek-profile__1600w.webp",
+            "thumb": "assets/hyperknife/hyperknife-lvl1-sleek-profile__960w.webp",
+            "label": "Il profilo"
+          },
+          {
+            "src": "assets/hyperknife/hyperknife-lvl1-sleek-diagonal__1600w.webp",
+            "thumb": "assets/hyperknife/hyperknife-lvl1-sleek-diagonal__960w.webp",
+            "label": "La prospettiva"
+          },
+          {
+            "src": "assets/hyperknife/hyperknife-lvl1-sleek-exploded__1600w.webp",
+            "thumb": "assets/hyperknife/hyperknife-lvl1-sleek-exploded__960w.webp",
+            "label": "Ogni componente"
+          }
+        ]
+      },
+      {
+        "id": "lvl2-arctic",
+        "label": "Arctic",
+        "hero": "assets/hyperknife/hyperknife-lvl2-arctic-profile__1600w.webp",
+        "portrait": "assets/hyperknife/hyperknife-lvl2-arctic-sculpture__1600w.webp",
+        "images": [
+          {
+            "src": "assets/hyperknife/hyperknife-lvl2-arctic-sculpture__1600w.webp",
+            "thumb": "assets/hyperknife/hyperknife-lvl2-arctic-sculpture__960w.webp",
+            "label": "La forma"
+          },
+          {
+            "src": "assets/hyperknife/hyperknife-lvl2-arctic-profile__1600w.webp",
+            "thumb": "assets/hyperknife/hyperknife-lvl2-arctic-profile__960w.webp",
+            "label": "Il profilo"
+          },
+          {
+            "src": "assets/hyperknife/hyperknife-lvl2-arctic-macro__1600w.webp",
+            "thumb": "assets/hyperknife/hyperknife-lvl2-arctic-macro__960w.webp",
+            "label": "La materia"
+          },
+          {
+            "src": "assets/hyperknife/hyperknife-lvl2-arctic-exploded__1600w.webp",
+            "thumb": "assets/hyperknife/hyperknife-lvl2-arctic-exploded__960w.webp",
+            "label": "Ogni componente"
+          }
+        ]
+      },
+      {
+        "id": "lvl3-chaos",
+        "label": "Chaos",
+        "hero": "assets/hyperknife/hyperknife-lvl3-chaos-profile__1600w.webp",
+        "portrait": "assets/hyperknife/hyperknife-lvl3-chaos-profile__1600w.webp",
+        "images": [
+          {
+            "src": "assets/hyperknife/hyperknife-lvl3-chaos-profile__1600w.webp",
+            "thumb": "assets/hyperknife/hyperknife-lvl3-chaos-profile__960w.webp",
+            "label": "Il profilo"
+          },
+          {
+            "src": "assets/hyperknife/hyperknife-lvl3-chaos-diagonal__1600w.webp",
+            "thumb": "assets/hyperknife/hyperknife-lvl3-chaos-diagonal__960w.webp",
+            "label": "La prospettiva"
+          },
+          {
+            "src": "assets/hyperknife/hyperknife-lvl3-chaos-environment__1600w.webp",
+            "thumb": "assets/hyperknife/hyperknife-lvl3-chaos-environment__960w.webp",
+            "label": "La scena"
+          },
+          {
+            "src": "assets/hyperknife/hyperknife-lvl3-chaos-exploded__1600w.webp",
+            "thumb": "assets/hyperknife/hyperknife-lvl3-chaos-exploded__960w.webp",
+            "label": "Ogni componente"
+          }
+        ]
+      },
+      {
+        "id": "hyperknife-concept",
+        "label": "Concept",
+        "hero": "assets/hyperknife/hyperknife-lvl1-epic-profile__1600w.webp",
+        "images": [
+          {
+            "src": "assets/hyperknife-concept/01-1600.webp",
+            "thumb": "assets/hyperknife-concept/01-640.webp",
+            "label": "HyperKnife Concept — tavola 1"
+          },
+          {
+            "src": "assets/hyperknife-concept/02-1600.webp",
+            "thumb": "assets/hyperknife-concept/02-640.webp",
+            "label": "HyperKnife Concept — tavola 2"
+          },
+          {
+            "src": "assets/hyperknife-concept/03-1600.webp",
+            "thumb": "assets/hyperknife-concept/03-640.webp",
+            "label": "HyperKnife Concept — tavola 3"
+          },
+          {
+            "src": "assets/hyperknife-concept/04-1600.webp",
+            "thumb": "assets/hyperknife-concept/04-640.webp",
+            "label": "HyperKnife Concept — tavola 4"
+          },
+          {
+            "src": "assets/hyperknife-concept/05-1600.webp",
+            "thumb": "assets/hyperknife-concept/05-640.webp",
+            "label": "HyperKnife Concept — tavola 5"
+          },
+          {
+            "src": "assets/hyperknife-concept/06-1600.webp",
+            "thumb": "assets/hyperknife-concept/06-640.webp",
+            "label": "HyperKnife Concept — tavola 6"
+          },
+          {
+            "src": "assets/hyperknife-concept/07-1600.webp",
+            "thumb": "assets/hyperknife-concept/07-640.webp",
+            "label": "HyperKnife Concept — tavola 7"
+          },
+          {
+            "src": "assets/hyperknife-concept/08-1600.webp",
+            "thumb": "assets/hyperknife-concept/08-640.webp",
+            "label": "HyperKnife Concept — tavola 8"
+          },
+          {
+            "src": "assets/hyperknife-concept/09-1600.webp",
+            "thumb": "assets/hyperknife-concept/09-640.webp",
+            "label": "HyperKnife Concept — tavola 9"
+          },
+          {
+            "src": "assets/hyperknife-concept/10-1600.webp",
+            "thumb": "assets/hyperknife-concept/10-640.webp",
+            "label": "HyperKnife Concept — tavola 10"
+          }
+        ]
+      },
+      {
+        "id": "hyperknife-modeling",
+        "label": "Modello",
+        "hero": "assets/hyperknife/hyperknife-lvl1-epic-profile__1600w.webp",
+        "images": [
+          {
+            "src": "assets/hyperknife-modeling/01-1600.webp",
+            "thumb": "assets/hyperknife-modeling/01-640.webp",
+            "label": "HyperKnife Modello — tavola 1"
+          },
+          {
+            "src": "assets/hyperknife-modeling/02-1600.webp",
+            "thumb": "assets/hyperknife-modeling/02-640.webp",
+            "label": "HyperKnife Modello — tavola 2"
+          },
+          {
+            "src": "assets/hyperknife-modeling/03-1600.webp",
+            "thumb": "assets/hyperknife-modeling/03-640.webp",
+            "label": "HyperKnife Modello — tavola 3"
+          },
+          {
+            "src": "assets/hyperknife-modeling/04-1600.webp",
+            "thumb": "assets/hyperknife-modeling/04-640.webp",
+            "label": "HyperKnife Modello — tavola 4"
+          },
+          {
+            "src": "assets/hyperknife-modeling/05-1600.webp",
+            "thumb": "assets/hyperknife-modeling/05-640.webp",
+            "label": "HyperKnife Modello — tavola 5"
+          },
+          {
+            "src": "assets/hyperknife-modeling/06-1600.webp",
+            "thumb": "assets/hyperknife-modeling/06-640.webp",
+            "label": "HyperKnife Modello — tavola 6"
+          },
+          {
+            "src": "assets/hyperknife-modeling/07-1600.webp",
+            "thumb": "assets/hyperknife-modeling/07-640.webp",
+            "label": "HyperKnife Modello — tavola 7"
+          }
+        ]
+      }
+    ],
+    "galleryTitle": "La stessa forma. Altri mondi.",
+    "portraitScale": 1.35,
+    "thumbnail": "assets/covers-landscape/hyperknife-thumb.webp",
+    "layout": "tall"
+  },
+  {
+    "id": "food",
+    "title": "Food",
+    "categories": [
+      "web",
+      "design"
+    ],
+    "kind": "Studio concept",
+    "tags": [
+      "Esperienza web"
+    ],
+    "summary": "Il menù prende vita.",
+    "cover": "assets/covers-landscape/food.webp",
+    "hero": "assets/food-01.webp",
+    "portrait": "assets/food-01.webp",
+    "gallery": [
+      {
+        "src": "assets/food-01.webp",
+        "thumb": "assets/food-01-thumb.webp",
+        "label": "Affumicato"
+      },
+      {
+        "src": "assets/food-02.webp",
+        "thumb": "assets/food-02-thumb.webp",
+        "label": "Gli ingredienti"
+      },
+      {
+        "src": "assets/food-03.webp",
+        "thumb": "assets/food-03-thumb.webp",
+        "label": "La cucina"
+      }
+    ],
+    "galleryTitle": "Dentro il progetto.",
+    "experience": {
+      "type": "web",
+      "url": "https://mementofood.vercel.app/",
+      "mode": "embed"
+    },
+    "heroFit": "contain",
+    "thumbnail": "assets/covers-landscape/food-thumb.webp",
+    "layout": "square"
+  },
+  {
+    "id": "elite",
+    "title": "Elite",
+    "categories": [
+      "web",
+      "design"
+    ],
+    "kind": "Studio concept",
+    "tags": [
+      "Esperienza web"
+    ],
+    "summary": "Il tempo del gusto.",
+    "cover": "assets/covers-landscape/elite.webp",
+    "hero": "assets/elite-01.webp",
+    "portrait": "assets/elite-01.webp",
+    "gallery": [
+      {
+        "src": "assets/elite-01.webp",
+        "thumb": "assets/elite-01-thumb.webp",
+        "label": "Il luogo"
+      },
+      {
+        "src": "assets/elite-02.webp",
+        "thumb": "assets/elite-02-thumb.webp",
+        "label": "La cucina"
+      },
+      {
+        "src": "assets/elite-03.webp",
+        "thumb": "assets/elite-03-thumb.webp",
+        "label": "La tavola"
+      }
+    ],
+    "galleryTitle": "Dentro il progetto.",
+    "experience": {
+      "type": "web",
+      "url": "https://memento-elite.memento-studio.chatgpt.site",
+      "mode": "external"
+    },
+    "heroFit": "cover",
+    "thumbnail": "assets/covers-landscape/elite-thumb.webp",
+    "layout": "square"
+  },
+  {
+    "id": "coricama",
+    "title": "Coricama",
+    "categories": [
+      "3d",
+      "film"
+    ],
+    "kind": "Film di prodotto",
+    "tags": [
+      "CGI"
+    ],
+    "summary": "La precisione, sotto un’altra luce.",
+    "cover": "assets/covers-landscape/coricama.webp",
+    "hero": "assets/coricama/coricama-dark-profile__1600w.webp",
+    "variants": [
+      {
+        "id": "dark",
+        "label": "Dark",
+        "hero": "assets/coricama/coricama-dark-profile__1600w.webp",
+        "portrait": "assets/coricama/coricama-dark-upright__1600w.webp",
+        "images": [
+          {
+            "src": "assets/coricama/coricama-dark-profile__1600w.webp",
+            "thumb": "assets/coricama/coricama-dark-profile__960w.webp",
+            "label": "Lo strumento"
+          },
+          {
+            "src": "assets/coricama/coricama-dark-macro__1600w.webp",
+            "thumb": "assets/coricama/coricama-dark-macro__960w.webp",
+            "label": "La precisione"
+          },
+          {
+            "src": "assets/coricama/coricama-dark-branding__1600w.webp",
+            "thumb": "assets/coricama/coricama-dark-branding__960w.webp",
+            "label": "Il dettaglio"
+          },
+          {
+            "src": "assets/coricama/coricama-dark-upright__1600w.webp",
+            "thumb": "assets/coricama/coricama-dark-upright__960w.webp",
+            "label": "La forma"
+          }
+        ]
+      },
+      {
+        "id": "light",
+        "label": "Light",
+        "hero": "assets/coricama/coricama-light-profile__1600w.webp",
+        "portrait": "assets/coricama/coricama-light-upright__1600w.webp",
+        "images": [
+          {
+            "src": "assets/coricama/coricama-light-profile__1600w.webp",
+            "thumb": "assets/coricama/coricama-light-profile__960w.webp",
+            "label": "Lo strumento"
+          },
+          {
+            "src": "assets/coricama/coricama-light-macro__1600w.webp",
+            "thumb": "assets/coricama/coricama-light-macro__960w.webp",
+            "label": "La precisione"
+          },
+          {
+            "src": "assets/coricama/coricama-light-branding__1600w.webp",
+            "thumb": "assets/coricama/coricama-light-branding__960w.webp",
+            "label": "Il dettaglio"
+          },
+          {
+            "src": "assets/coricama/coricama-light-upright__1600w.webp",
+            "thumb": "assets/coricama/coricama-light-upright__960w.webp",
+            "label": "La forma"
+          }
+        ]
+      }
+    ],
+    "galleryTitle": "Due atmosfere.",
+    "portraitFit": "cover",
+    "thumbnail": "assets/covers-landscape/coricama-thumb.webp",
+    "layout": "square"
+  },
+  {
+    "id": "footwear-hyper",
+    "title": "HYPER",
+    "categories": [
+      "3d",
+      "design"
+    ],
+    "kind": "Footwear",
+    "tags": [
+      "CGI"
+    ],
+    "summary": "Forma, materiali e dettagli della collezione.",
+    "cover": "assets/covers-landscape/footwear-hyper.webp",
+    "hero": "assets/footwear-hyper/footwear-hyper-wide__1672w.webp",
+    "portrait": "assets/footwear-hyper/footwear-hyper-portrait__941w.webp",
+    "gallery": [
+      {
+        "src": "assets/footwear-hyper/hyper-archive-01__1600w.webp",
+        "thumb": "assets/footwear-hyper/hyper-archive-01__960w.webp",
+        "label": "HYPER — tavola 1"
+      },
+      {
+        "src": "assets/footwear-hyper/hyper-archive-02__1600w.webp",
+        "thumb": "assets/footwear-hyper/hyper-archive-02__960w.webp",
+        "label": "HYPER — tavola 2"
+      },
+      {
+        "src": "assets/footwear-hyper/hyper-archive-03__1600w.webp",
+        "thumb": "assets/footwear-hyper/hyper-archive-03__960w.webp",
+        "label": "HYPER — tavola 3"
+      },
+      {
+        "src": "assets/footwear-hyper/hyper-archive-04__1600w.webp",
+        "thumb": "assets/footwear-hyper/hyper-archive-04__960w.webp",
+        "label": "HYPER — tavola 4"
+      },
+      {
+        "src": "assets/footwear-hyper/hyper-archive-05__1600w.webp",
+        "thumb": "assets/footwear-hyper/hyper-archive-05__960w.webp",
+        "label": "HYPER — tavola 5"
+      },
+      {
+        "src": "assets/footwear-hyper/hyper-archive-06__1600w.webp",
+        "thumb": "assets/footwear-hyper/hyper-archive-06__960w.webp",
+        "label": "HYPER — tavola 6"
+      },
+      {
+        "src": "assets/footwear-hyper/hyper-archive-07__1600w.webp",
+        "thumb": "assets/footwear-hyper/hyper-archive-07__960w.webp",
+        "label": "HYPER — tavola 7"
+      }
+    ],
+    "galleryTitle": "Forma e struttura.",
+    "thumbnail": "assets/covers-landscape/footwear-hyper-thumb.webp",
+    "layout": "square"
+  },
+  {
+    "id": "ice-cream",
+    "title": "Ice Cream",
+    "categories": [
+      "web",
+      "3d"
+    ],
+    "kind": "Tech demo",
+    "tags": [
+      "Esperienza web"
+    ],
+    "summary": "Un gusto. Un mondo.",
+    "cover": "assets/covers-landscape/ice-cream.webp",
+    "hero": "assets/ice-cream-01.webp",
+    "portrait": "assets/ice-cream-01.webp",
+    "gallery": [
+      {
+        "src": "assets/ice-cream-01.webp",
+        "thumb": "assets/ice-cream-01-thumb.webp",
+        "label": "Chocofragoloso"
+      },
+      {
+        "src": "assets/ice-cream-02.webp",
+        "thumb": "assets/ice-cream-02-thumb.webp",
+        "label": "Charameloso"
+      }
+    ],
+    "galleryTitle": "Dentro il progetto.",
+    "experience": {
+      "type": "web",
+      "url": "https://mementoicecream.vercel.app/",
+      "mode": "embed"
+    },
+    "heroFit": "contain",
+    "thumbnail": "assets/covers-landscape/ice-cream-thumb.webp",
+    "layout": "square"
+  },
+  {
+    "id": "hypercity",
+    "title": "HyperCity",
+    "categories": [
+      "3d",
+      "film"
+    ],
+    "kind": "Environment",
+    "tags": [
+      "CGI"
+    ],
+    "summary": "Architetture, luce e movimento.",
+    "cover": "assets/covers-landscape/hypercity.webp",
+    "hero": "assets/hypercity/hypercity-wide__1672w.webp",
+    "portrait": "assets/hypercity/hypercity-portrait__941w.webp",
+    "heroFit": "cover",
+    "gallery": [
+      {
+        "src": "assets/hypercity/hypercity-original-1600.webp",
+        "thumb": "assets/hypercity/hypercity-original-640.webp",
+        "label": "HyperCity — tavola originale"
+      },
+      {
+        "src": "assets/hypercity/hypercity-wide__1672w.webp",
+        "label": "Panorama — visual di presentazione"
+      },
+      {
+        "src": "assets/hypercity/hypercity-square__1254w.webp",
+        "label": "La piazza — visual di presentazione"
+      },
+      {
+        "src": "assets/hypercity/hypercity-portrait__941w.webp",
+        "label": "La prospettiva — visual di presentazione"
+      }
+    ],
+    "experience": {
+      "type": "video",
+      "url": "https://www.youtube.com/watch?v=KESFumDZFjY",
+      "embed": "https://www.youtube-nocookie.com/embed/KESFumDZFjY?rel=0"
+    },
+    "galleryTitle": "Dentro la città.",
+    "thumbnail": "assets/covers-landscape/hypercity-thumb.webp",
+    "layout": "wide"
+  },
+  {
+    "id": "mementosl",
+    "title": "MementoSL",
+    "categories": [
+      "web",
+      "3d"
+    ],
+    "kind": "Tech demo",
+    "tags": [
+      "Esperienza web"
+    ],
+    "summary": "La collezione prende forma.",
+    "cover": "assets/covers-landscape/mementosl.webp",
+    "hero": "assets/mementosl-01.webp",
+    "portrait": "assets/mementosl-01.webp",
+    "gallery": [
+      {
+        "src": "assets/mementosl-01.webp",
+        "thumb": "assets/mementosl-01-thumb.webp",
+        "label": "Clothwear"
+      },
+      {
+        "src": "assets/mementosl-02.webp",
+        "thumb": "assets/mementosl-02-thumb.webp",
+        "label": "Footwear"
+      },
+      {
+        "src": "assets/mementosl-03.webp",
+        "thumb": "assets/mementosl-03-thumb.webp",
+        "label": "Lo showroom"
+      }
+    ],
+    "galleryTitle": "Dentro il progetto.",
+    "experience": {
+      "type": "web",
+      "url": "https://mementosl.vercel.app/",
+      "mode": "embed"
+    },
+    "heroFit": "contain",
+    "thumbnail": "assets/covers-landscape/mementosl-thumb.webp",
+    "layout": "tall"
+  },
+  {
+    "id": "knives",
+    "title": "Knives",
+    "categories": [
+      "web",
+      "3d"
+    ],
+    "kind": "Tech demo",
+    "tags": [
+      "Esperienza web"
+    ],
+    "summary": "Materia, da esplorare.",
+    "cover": "assets/covers-landscape/knives.webp",
+    "hero": "assets/knives-01.webp",
+    "portrait": "assets/knives-01.webp",
+    "gallery": [
+      {
+        "src": "assets/knives-01.webp",
+        "thumb": "assets/knives-01-thumb.webp",
+        "label": "Lo showroom"
+      },
+      {
+        "src": "assets/knives-02.webp",
+        "thumb": "assets/knives-02-thumb.webp",
+        "label": "La collezione"
+      }
+    ],
+    "galleryTitle": "Dentro il progetto.",
+    "experience": {
+      "type": "web",
+      "url": "https://knives.vercel.app/",
+      "mode": "embed"
+    },
+    "heroFit": "contain",
+    "thumbnail": "assets/covers-landscape/knives-thumb.webp",
+    "layout": "square"
+  },
+  {
+    "id": "eurobeer",
+    "title": "New Eurobeer",
+    "categories": [
+      "web",
+      "design"
+    ],
+    "kind": "Progetto web",
+    "tags": [
+      "Esperienza web"
+    ],
+    "summary": "Un menù da esplorare.",
+    "cover": "assets/covers-landscape/eurobeer.webp",
+    "hero": "assets/eurobeer-01.webp",
+    "portrait": "assets/eurobeer-01.webp",
+    "gallery": [
+      {
+        "src": "assets/eurobeer-01.webp",
+        "thumb": "assets/eurobeer-01-thumb.webp",
+        "label": "New Euro Burger"
+      },
+      {
+        "src": "assets/eurobeer-02.webp",
+        "thumb": "assets/eurobeer-02-thumb.webp",
+        "label": "Dentro il burger"
+      },
+      {
+        "src": "assets/eurobeer-03.webp",
+        "thumb": "assets/eurobeer-03-thumb.webp",
+        "label": "L’atmosfera"
+      }
+    ],
+    "galleryTitle": "Dentro il progetto.",
+    "experience": {
+      "type": "web",
+      "url": "https://new-eurobeer-menu.mementoxdesign.chatgpt.site",
+      "mode": "external"
+    },
+    "heroFit": "contain",
+    "thumbnail": "assets/covers-landscape/eurobeer-thumb.webp",
+    "layout": "wide"
+  },
+  {
+    "id": "via-roma",
+    "title": "Via Roma",
+    "categories": [
+      "web",
+      "design"
+    ],
+    "kind": "Progetto web",
+    "tags": [
+      "Esperienza web"
+    ],
+    "summary": "Il locale, in ogni dettaglio.",
+    "cover": "assets/covers-landscape/via-roma.webp",
+    "hero": "assets/via-roma-01.webp",
+    "portrait": "assets/via-roma-01.webp",
+    "gallery": [
+      {
+        "src": "assets/via-roma-01.webp",
+        "thumb": "assets/via-roma-01-thumb.webp",
+        "label": "Via Roma"
+      },
+      {
+        "src": "assets/via-roma-02.webp",
+        "thumb": "assets/via-roma-02-thumb.webp",
+        "label": "La sala"
+      },
+      {
+        "src": "assets/via-roma-03.webp",
+        "thumb": "assets/via-roma-03-thumb.webp",
+        "label": "L’ingresso"
+      }
+    ],
+    "galleryTitle": "Dentro il progetto.",
+    "experience": {
+      "type": "web",
+      "url": "https://pizzeriaviaroma.vercel.app/",
+      "mode": "embed"
+    },
+    "heroFit": "contain",
+    "thumbnail": "assets/covers-landscape/via-roma-thumb.webp",
+    "layout": "square"
+  },
+  {
+    "id": "techref",
+    "title": "TechRef",
+    "categories": [
+      "web"
+    ],
+    "kind": "Tech demo",
+    "tags": [
+      "Esperienza web"
+    ],
+    "summary": "La tecnologia, in prospettiva.",
+    "cover": "assets/covers-landscape/techref.webp",
+    "hero": "assets/techref-01.webp",
+    "portrait": "assets/techref-01.webp",
+    "gallery": [
+      {
+        "src": "assets/techref-01.webp",
+        "thumb": "assets/techref-01-thumb.webp",
+        "label": "GPU"
+      },
+      {
+        "src": "assets/techref-02.webp",
+        "thumb": "assets/techref-02-thumb.webp",
+        "label": "Smartphone"
+      },
+      {
+        "src": "assets/techref-03.webp",
+        "thumb": "assets/techref-03-thumb.webp",
+        "label": "Console"
+      }
+    ],
+    "galleryTitle": "Dentro il progetto.",
+    "experience": {
+      "type": "web",
+      "url": "https://techref.vercel.app/",
+      "mode": "embed"
+    },
+    "heroFit": "contain",
+    "thumbnail": "assets/covers-landscape/techref-thumb.webp",
+    "layout": "square"
+  },
+  {
+    "id": "productvis",
+    "title": "ProductVis",
+    "categories": [
+      "web",
+      "3d"
+    ],
+    "kind": "Tech demo",
+    "tags": [
+      "Esperienza web"
+    ],
+    "summary": "Luce. Materia. Libertà.",
+    "cover": "assets/covers-landscape/productvis.webp",
+    "hero": "assets/productvis-01.webp",
+    "portrait": "assets/productvis-01.webp",
+    "gallery": [
+      {
+        "src": "assets/productvis-01.webp",
+        "thumb": "assets/productvis-01-thumb.webp",
+        "label": "Lo studio"
+      },
+      {
+        "src": "assets/productvis-02.webp",
+        "thumb": "assets/productvis-02-thumb.webp",
+        "label": "La scena"
+      }
+    ],
+    "galleryTitle": "Dentro il progetto.",
+    "experience": {
+      "type": "web",
+      "url": "https://productvis.vercel.app/",
+      "mode": "embed"
+    },
+    "heroFit": "contain",
+    "thumbnail": "assets/covers-landscape/productvis-thumb.webp",
+    "layout": "square"
+  },
+  {
+    "id": "visualref",
+    "title": "VisualRef",
+    "categories": [
+      "web",
+      "3d"
+    ],
+    "kind": "Tech demo",
+    "tags": [
+      "Esperienza web"
+    ],
+    "summary": "Dall’inquadratura al movimento.",
+    "cover": "assets/covers-landscape/visualref.webp",
+    "hero": "assets/visualref-01.webp",
+    "portrait": "assets/visualref-01.webp",
+    "gallery": [
+      {
+        "src": "assets/visualref-01.webp",
+        "thumb": "assets/visualref-01-thumb.webp",
+        "label": "L’inquadratura"
+      },
+      {
+        "src": "assets/visualref-02.webp",
+        "thumb": "assets/visualref-02-thumb.webp",
+        "label": "La sequenza"
+      }
+    ],
+    "galleryTitle": "Dentro il progetto.",
+    "experience": {
+      "type": "web",
+      "url": "https://visualref.vercel.app/",
+      "mode": "embed"
+    },
+    "heroFit": "contain",
+    "thumbnail": "assets/covers-landscape/visualref-thumb.webp",
+    "layout": "wide"
+  },
+  {
+    "id": "footwear-hyqos",
+    "title": "HYQOS",
+    "categories": [
+      "3d",
+      "design"
+    ],
+    "kind": "Footwear",
+    "tags": [
+      "CGI"
+    ],
+    "summary": "Materiali, render e costruzione del modello.",
+    "cover": "assets/covers-landscape/footwear-hyqos.webp",
+    "hero": "assets/footwear-hyqos/08-1600.webp",
+    "gallery": [
+      {
+        "src": "assets/footwear-hyqos/01-1600.webp",
+        "thumb": "assets/footwear-hyqos/01-640.webp",
+        "label": "HYQOS — tavola 1"
+      },
+      {
+        "src": "assets/footwear-hyqos/02-1600.webp",
+        "thumb": "assets/footwear-hyqos/02-640.webp",
+        "label": "HYQOS — tavola 2"
+      },
+      {
+        "src": "assets/footwear-hyqos/03-1600.webp",
+        "thumb": "assets/footwear-hyqos/03-640.webp",
+        "label": "HYQOS — tavola 3"
+      },
+      {
+        "src": "assets/footwear-hyqos/04-1600.webp",
+        "thumb": "assets/footwear-hyqos/04-640.webp",
+        "label": "HYQOS — tavola 4"
+      },
+      {
+        "src": "assets/footwear-hyqos/05-1600.webp",
+        "thumb": "assets/footwear-hyqos/05-640.webp",
+        "label": "HYQOS — tavola 5"
+      },
+      {
+        "src": "assets/footwear-hyqos/06-1600.webp",
+        "thumb": "assets/footwear-hyqos/06-640.webp",
+        "label": "HYQOS — tavola 6"
+      },
+      {
+        "src": "assets/footwear-hyqos/07-1600.webp",
+        "thumb": "assets/footwear-hyqos/07-640.webp",
+        "label": "HYQOS — tavola 7"
+      },
+      {
+        "src": "assets/footwear-hyqos/08-1600.webp",
+        "thumb": "assets/footwear-hyqos/08-640.webp",
+        "label": "HYQOS — tavola 8"
+      }
+    ],
+    "galleryTitle": "Forma e struttura.",
+    "thumbnail": "assets/covers-landscape/footwear-hyqos-thumb.webp",
+    "layout": "tall"
+  },
+  {
+    "id": "footwear-neo",
+    "title": "NEO",
+    "categories": [
+      "3d",
+      "design"
+    ],
+    "kind": "Footwear",
+    "tags": [
+      "CGI"
+    ],
+    "summary": "Materiali, render e costruzione del modello.",
+    "cover": "assets/covers-landscape/footwear-neo.webp",
+    "hero": "assets/footwear-neo/08-1600.webp",
+    "gallery": [
+      {
+        "src": "assets/footwear-neo/01-1600.webp",
+        "thumb": "assets/footwear-neo/01-640.webp",
+        "label": "NEO — tavola 1"
+      },
+      {
+        "src": "assets/footwear-neo/02-1600.webp",
+        "thumb": "assets/footwear-neo/02-640.webp",
+        "label": "NEO — tavola 2"
+      },
+      {
+        "src": "assets/footwear-neo/03-1600.webp",
+        "thumb": "assets/footwear-neo/03-640.webp",
+        "label": "NEO — tavola 3"
+      },
+      {
+        "src": "assets/footwear-neo/04-1600.webp",
+        "thumb": "assets/footwear-neo/04-640.webp",
+        "label": "NEO — tavola 4"
+      },
+      {
+        "src": "assets/footwear-neo/05-1600.webp",
+        "thumb": "assets/footwear-neo/05-640.webp",
+        "label": "NEO — tavola 5"
+      },
+      {
+        "src": "assets/footwear-neo/06-1600.webp",
+        "thumb": "assets/footwear-neo/06-640.webp",
+        "label": "NEO — tavola 6"
+      },
+      {
+        "src": "assets/footwear-neo/07-1600.webp",
+        "thumb": "assets/footwear-neo/07-640.webp",
+        "label": "NEO — tavola 7"
+      },
+      {
+        "src": "assets/footwear-neo/08-1600.webp",
+        "thumb": "assets/footwear-neo/08-640.webp",
+        "label": "NEO — tavola 8"
+      }
+    ],
+    "galleryTitle": "Forma e struttura.",
+    "thumbnail": "assets/covers-landscape/footwear-neo-thumb.webp",
+    "layout": "square"
+  },
+  {
+    "id": "footwear-phonk",
+    "title": "PHONK",
+    "categories": [
+      "3d",
+      "design"
+    ],
+    "kind": "Footwear",
+    "tags": [
+      "CGI"
+    ],
+    "summary": "Materiali, render e costruzione del modello.",
+    "cover": "assets/covers-landscape/footwear-phonk.webp",
+    "hero": "assets/footwear-phonk/02-1600.webp",
+    "gallery": [
+      {
+        "src": "assets/footwear-phonk/01-1600.webp",
+        "thumb": "assets/footwear-phonk/01-640.webp",
+        "label": "PHONK — tavola 1"
+      },
+      {
+        "src": "assets/footwear-phonk/02-1600.webp",
+        "thumb": "assets/footwear-phonk/02-640.webp",
+        "label": "PHONK — tavola 2"
+      },
+      {
+        "src": "assets/footwear-phonk/03-1600.webp",
+        "thumb": "assets/footwear-phonk/03-640.webp",
+        "label": "PHONK — tavola 3"
+      },
+      {
+        "src": "assets/footwear-phonk/04-1600.webp",
+        "thumb": "assets/footwear-phonk/04-640.webp",
+        "label": "PHONK — tavola 4"
+      },
+      {
+        "src": "assets/footwear-phonk/05-1600.webp",
+        "thumb": "assets/footwear-phonk/05-640.webp",
+        "label": "PHONK — tavola 5"
+      },
+      {
+        "src": "assets/footwear-phonk/06-1600.webp",
+        "thumb": "assets/footwear-phonk/06-640.webp",
+        "label": "PHONK — tavola 6"
+      },
+      {
+        "src": "assets/footwear-phonk/07-1600.webp",
+        "thumb": "assets/footwear-phonk/07-640.webp",
+        "label": "PHONK — tavola 7"
+      },
+      {
+        "src": "assets/footwear-phonk/08-1600.webp",
+        "thumb": "assets/footwear-phonk/08-640.webp",
+        "label": "PHONK — tavola 8"
+      }
+    ],
+    "galleryTitle": "Forma e struttura.",
+    "thumbnail": "assets/covers-landscape/footwear-phonk-thumb.webp",
+    "layout": "square"
+  },
+  {
+    "id": "footwear-x3reme",
+    "title": "X3REME",
+    "categories": [
+      "3d",
+      "design"
+    ],
+    "kind": "Footwear",
+    "tags": [
+      "CGI"
+    ],
+    "summary": "Materiali, render e costruzione del modello.",
+    "cover": "assets/covers-landscape/footwear-x3reme.webp",
+    "hero": "assets/footwear-x3reme/02-1600.webp",
+    "gallery": [
+      {
+        "src": "assets/footwear-x3reme/01-1600.webp",
+        "thumb": "assets/footwear-x3reme/01-640.webp",
+        "label": "X3REME — tavola 1"
+      },
+      {
+        "src": "assets/footwear-x3reme/02-1600.webp",
+        "thumb": "assets/footwear-x3reme/02-640.webp",
+        "label": "X3REME — tavola 2"
+      },
+      {
+        "src": "assets/footwear-x3reme/03-1600.webp",
+        "thumb": "assets/footwear-x3reme/03-640.webp",
+        "label": "X3REME — tavola 3"
+      },
+      {
+        "src": "assets/footwear-x3reme/04-1600.webp",
+        "thumb": "assets/footwear-x3reme/04-640.webp",
+        "label": "X3REME — tavola 4"
+      },
+      {
+        "src": "assets/footwear-x3reme/05-1600.webp",
+        "thumb": "assets/footwear-x3reme/05-640.webp",
+        "label": "X3REME — tavola 5"
+      },
+      {
+        "src": "assets/footwear-x3reme/06-1600.webp",
+        "thumb": "assets/footwear-x3reme/06-640.webp",
+        "label": "X3REME — tavola 6"
+      },
+      {
+        "src": "assets/footwear-x3reme/07-1600.webp",
+        "thumb": "assets/footwear-x3reme/07-640.webp",
+        "label": "X3REME — tavola 7"
+      },
+      {
+        "src": "assets/footwear-x3reme/08-1600.webp",
+        "thumb": "assets/footwear-x3reme/08-640.webp",
+        "label": "X3REME — tavola 8"
+      }
+    ],
+    "galleryTitle": "Forma e struttura.",
+    "thumbnail": "assets/covers-landscape/footwear-x3reme-thumb.webp",
+    "layout": "square"
+  },
+  {
+    "id": "hyperknife-print",
+    "title": "HyperKnife Print",
+    "categories": [
+      "design"
+    ],
+    "kind": "Print",
+    "tags": [],
+    "summary": "Il progetto, sulla carta.",
+    "cover": "assets/covers-landscape/hyperknife-print.webp",
+    "hero": "assets/hyperknife-print/02-1600.webp",
+    "gallery": [
+      {
+        "src": "assets/hyperknife-print/01-1600.webp",
+        "thumb": "assets/hyperknife-print/01-640.webp",
+        "label": "HyperKnife Print — tavola 1"
+      },
+      {
+        "src": "assets/hyperknife-print/02-1600.webp",
+        "thumb": "assets/hyperknife-print/02-640.webp",
+        "label": "HyperKnife Print — tavola 2"
+      },
+      {
+        "src": "assets/hyperknife-print/03-1600.webp",
+        "thumb": "assets/hyperknife-print/03-640.webp",
+        "label": "HyperKnife Print — tavola 3"
+      },
+      {
+        "src": "assets/hyperknife-print/04-1600.webp",
+        "thumb": "assets/hyperknife-print/04-640.webp",
+        "label": "HyperKnife Print — tavola 4"
+      },
+      {
+        "src": "assets/hyperknife-print/05-1600.webp",
+        "thumb": "assets/hyperknife-print/05-640.webp",
+        "label": "HyperKnife Print — tavola 5"
+      },
+      {
+        "src": "assets/hyperknife-print/06-1600.webp",
+        "thumb": "assets/hyperknife-print/06-640.webp",
+        "label": "HyperKnife Print — tavola 6"
+      },
+      {
+        "src": "assets/hyperknife-print/07-1600.webp",
+        "thumb": "assets/hyperknife-print/07-640.webp",
+        "label": "HyperKnife Print — tavola 7"
+      },
+      {
+        "src": "assets/hyperknife-print/08-1600.webp",
+        "thumb": "assets/hyperknife-print/08-640.webp",
+        "label": "HyperKnife Print — tavola 8"
+      },
+      {
+        "src": "assets/hyperknife-print/09-1600.webp",
+        "thumb": "assets/hyperknife-print/09-640.webp",
+        "label": "HyperKnife Print — tavola 9"
+      }
+    ],
+    "galleryTitle": "Il progetto.",
+    "thumbnail": "assets/covers-landscape/hyperknife-print-thumb.webp",
+    "layout": "wide"
+  },
+  {
+    "id": "desk",
+    "title": "Desk",
+    "categories": [
+      "3d",
+      "design"
+    ],
+    "kind": "Product design",
+    "tags": [],
+    "summary": "Lo spazio di lavoro, dalla forma al dettaglio.",
+    "cover": "assets/covers-landscape/desk.webp",
+    "hero": "assets/desk/02-1600.webp",
+    "gallery": [
+      {
+        "src": "assets/desk/01-1600.webp",
+        "thumb": "assets/desk/01-640.webp",
+        "label": "Desk — tavola 1"
+      },
+      {
+        "src": "assets/desk/02-1600.webp",
+        "thumb": "assets/desk/02-640.webp",
+        "label": "Desk — tavola 2"
+      },
+      {
+        "src": "assets/desk/03-1600.webp",
+        "thumb": "assets/desk/03-640.webp",
+        "label": "Desk — tavola 3"
+      },
+      {
+        "src": "assets/desk/04-1600.webp",
+        "thumb": "assets/desk/04-640.webp",
+        "label": "Desk — tavola 4"
+      },
+      {
+        "src": "assets/desk/05-1600.webp",
+        "thumb": "assets/desk/05-640.webp",
+        "label": "Desk — tavola 5"
+      },
+      {
+        "src": "assets/desk/06-1600.webp",
+        "thumb": "assets/desk/06-640.webp",
+        "label": "Desk — tavola 6"
+      },
+      {
+        "src": "assets/desk/07-1600.webp",
+        "thumb": "assets/desk/07-640.webp",
+        "label": "Desk — tavola 7"
+      },
+      {
+        "src": "assets/desk/08-1600.webp",
+        "thumb": "assets/desk/08-640.webp",
+        "label": "Desk — tavola 8"
+      },
+      {
+        "src": "assets/desk/09-1600.webp",
+        "thumb": "assets/desk/09-640.webp",
+        "label": "Desk — tavola 9"
+      },
+      {
+        "src": "assets/desk/10-1600.webp",
+        "thumb": "assets/desk/10-640.webp",
+        "label": "Desk — tavola 10"
+      },
+      {
+        "src": "assets/desk/11-1600.webp",
+        "thumb": "assets/desk/11-640.webp",
+        "label": "Desk — tavola 11"
+      },
+      {
+        "src": "assets/desk/12-1600.webp",
+        "thumb": "assets/desk/12-640.webp",
+        "label": "Desk — tavola 12"
+      },
+      {
+        "src": "assets/desk/13-1600.webp",
+        "thumb": "assets/desk/13-640.webp",
+        "label": "Desk — tavola 13"
+      },
+      {
+        "src": "assets/desk/14-1600.webp",
+        "thumb": "assets/desk/14-640.webp",
+        "label": "Desk — tavola 14"
+      },
+      {
+        "src": "assets/desk/15-1600.webp",
+        "thumb": "assets/desk/15-640.webp",
+        "label": "Desk — tavola 15"
+      },
+      {
+        "src": "assets/desk/16-1600.webp",
+        "thumb": "assets/desk/16-640.webp",
+        "label": "Desk — tavola 16"
+      },
+      {
+        "src": "assets/desk/17-1600.webp",
+        "thumb": "assets/desk/17-640.webp",
+        "label": "Desk — tavola 17"
+      },
+      {
+        "src": "assets/desk/18-1600.webp",
+        "thumb": "assets/desk/18-640.webp",
+        "label": "Desk — tavola 18"
+      },
+      {
+        "src": "assets/desk/19-1600.webp",
+        "thumb": "assets/desk/19-640.webp",
+        "label": "Desk — tavola 19"
+      },
+      {
+        "src": "assets/desk/20-1600.webp",
+        "thumb": "assets/desk/20-640.webp",
+        "label": "Desk — tavola 20"
+      }
+    ],
+    "galleryTitle": "Il progetto.",
+    "thumbnail": "assets/covers-landscape/desk-thumb.webp",
+    "layout": "square"
+  },
+  {
+    "id": "studio",
+    "title": "Memento Studio",
+    "categories": [
+      "foto"
+    ],
+    "kind": "Fotografia",
+    "tags": [],
+    "summary": "Il nostro spazio di lavoro.",
+    "cover": "assets/covers-landscape/studio.webp",
+    "hero": "assets/studio/16-1600.webp",
+    "gallery": [
+      {
+        "src": "assets/studio/01-1600.webp",
+        "thumb": "assets/studio/01-640.webp",
+        "label": "Memento Studio — tavola 1"
+      },
+      {
+        "src": "assets/studio/02-1600.webp",
+        "thumb": "assets/studio/02-640.webp",
+        "label": "Memento Studio — tavola 2"
+      },
+      {
+        "src": "assets/studio/03-1600.webp",
+        "thumb": "assets/studio/03-640.webp",
+        "label": "Memento Studio — tavola 3"
+      },
+      {
+        "src": "assets/studio/04-1600.webp",
+        "thumb": "assets/studio/04-640.webp",
+        "label": "Memento Studio — tavola 4"
+      },
+      {
+        "src": "assets/studio/05-1600.webp",
+        "thumb": "assets/studio/05-640.webp",
+        "label": "Memento Studio — tavola 5"
+      },
+      {
+        "src": "assets/studio/06-1600.webp",
+        "thumb": "assets/studio/06-640.webp",
+        "label": "Memento Studio — tavola 6"
+      },
+      {
+        "src": "assets/studio/07-1600.webp",
+        "thumb": "assets/studio/07-640.webp",
+        "label": "Memento Studio — tavola 7"
+      },
+      {
+        "src": "assets/studio/08-1600.webp",
+        "thumb": "assets/studio/08-640.webp",
+        "label": "Memento Studio — tavola 8"
+      },
+      {
+        "src": "assets/studio/09-1600.webp",
+        "thumb": "assets/studio/09-640.webp",
+        "label": "Memento Studio — tavola 9"
+      },
+      {
+        "src": "assets/studio/10-1600.webp",
+        "thumb": "assets/studio/10-640.webp",
+        "label": "Memento Studio — tavola 10"
+      },
+      {
+        "src": "assets/studio/11-1600.webp",
+        "thumb": "assets/studio/11-640.webp",
+        "label": "Memento Studio — tavola 11"
+      },
+      {
+        "src": "assets/studio/12-1600.webp",
+        "thumb": "assets/studio/12-640.webp",
+        "label": "Memento Studio — tavola 12"
+      },
+      {
+        "src": "assets/studio/13-1600.webp",
+        "thumb": "assets/studio/13-640.webp",
+        "label": "Memento Studio — tavola 13"
+      },
+      {
+        "src": "assets/studio/14-1600.webp",
+        "thumb": "assets/studio/14-640.webp",
+        "label": "Memento Studio — tavola 14"
+      },
+      {
+        "src": "assets/studio/15-1600.webp",
+        "thumb": "assets/studio/15-640.webp",
+        "label": "Memento Studio — tavola 15"
+      },
+      {
+        "src": "assets/studio/16-1600.webp",
+        "thumb": "assets/studio/16-640.webp",
+        "label": "Memento Studio — tavola 16"
+      },
+      {
+        "src": "assets/studio/17-1600.webp",
+        "thumb": "assets/studio/17-640.webp",
+        "label": "Memento Studio — tavola 17"
+      },
+      {
+        "src": "assets/studio/18-1600.webp",
+        "thumb": "assets/studio/18-640.webp",
+        "label": "Memento Studio — tavola 18"
+      },
+      {
+        "src": "assets/studio/19-1600.webp",
+        "thumb": "assets/studio/19-640.webp",
+        "label": "Memento Studio — tavola 19"
+      }
+    ],
+    "galleryTitle": "Il progetto.",
+    "thumbnail": "assets/covers-landscape/studio-thumb.webp",
+    "layout": "wide"
+  },
+  {
+    "id": "graphite",
+    "title": "Graphite",
+    "categories": [
+      "3d"
+    ],
+    "kind": "Visual di prodotto",
+    "tags": [],
+    "summary": "",
+    "cover": "assets/covers-landscape/graphite.webp",
+    "hero": "assets/graphite/01-1600.webp",
+    "gallery": [
+      {
+        "src": "assets/graphite/01-1600.webp",
+        "thumb": "assets/graphite/01-640.webp",
+        "label": "Graphite — tavola 1"
+      }
+    ],
+    "galleryTitle": "Il prodotto.",
+    "thumbnail": "assets/covers-landscape/graphite-thumb.webp",
+    "layout": "square"
+  }
+]

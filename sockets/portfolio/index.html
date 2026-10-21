@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="it" data-socket="portfolio">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0c0c0c">
+  <meta name="description" content="Il portfolio Memento. Immagini, materia ed esperienze digitali.">
+  <title>Portfolio — Memento</title>
+  <link rel="preload" href="assets/fonts/InterVariable.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="styles.css">
+  <script type="module" src="app.js"></script>
+<link rel="stylesheet" href="../embed.css"><script src="../bridge.js" defer></script></head>
+<body>
+  <a class="skip-link" href="#catalogo">Vai ai progetti</a>
+  <main id="viewport" tabindex="-1">
+    <section id="catalogue" class="catalogue" aria-labelledby="catalogue-title">
+      <div class="catalogue-heading"><h1 id="catalogue-title">Progetti</h1><div class="catalogue-actions">
+        <button class="icon-button" data-action="filter-toggle" aria-label="Filtra i progetti" aria-expanded="false" aria-controls="catalogue-tools"></button>
+        <button class="icon-button" data-action="search-toggle" aria-label="Cerca un progetto" aria-expanded="false" aria-controls="catalogue-tools"></button>
+      </div></div>
+      <div id="catalogue-tools" class="catalogue-tools" hidden>
+        <nav id="filters" class="filters" aria-label="Filtra i progetti"></nav>
+        <div class="search" hidden><input id="search" type="search" aria-label="Cerca un progetto" placeholder="Cerca un progetto" autocomplete="off"><button class="icon-button" data-action="clear-search" aria-label="Chiudi la ricerca"></button></div>
+      </div>
+      <div id="project-grid" class="project-grid"></div>
+      <p id="empty-state" class="empty-state" hidden>Nessun progetto trovato. <button data-action="reset-filters">Mostra tutti</button></p>
+      <footer class="footer"><span>Memento Design Studio</span><a href="mailto:info@mementostudio.it">Da dove partiamo? <span aria-hidden="true">↗</span></a></footer>
+    </section>
+    <section id="project-view" hidden aria-label="Esplora il portfolio"></section>
+  </main>
+  <nav id="project-nav" class="project-nav" aria-label="Navigazione del progetto" hidden>
+    <a href="#catalogo" class="catalogue-back" data-action="close-project" aria-label="Tutti i progetti — torna al catalogo"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m14 5-7 7 7 7"/></svg><span>Tutti i progetti</span></a>
+  </nav>
+  <div id="scroll-cue" class="scroll-cue" hidden>
+    <button class="cue-button" data-action="loop-start" aria-label="Torna al selettore dei progetti"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 15 6-6 6 6"/></svg></button>
+    <input id="project-progress" type="range" min="0" max="1000" value="0" step="1" aria-label="Scorri il progetto" aria-orientation="vertical">
+    <button class="cue-button" data-action="loop-forward" aria-label="Continua il percorso"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button>
+  </div>
+  <dialog id="media-dialog" class="media-dialog" aria-labelledby="media-title">
+    <div class="media-toolbar"><span id="media-title"></span><a id="media-external" target="_blank" rel="noopener noreferrer" hidden>Apri in una nuova scheda ↗</a><button class="icon-button" data-action="close-media" aria-label="Chiudi media"></button></div>
+    <div id="media-content"></div><div id="media-navigation" class="media-navigation"></div>
+  </dialog>
+  <div class="sr-only" id="announcement" aria-live="polite"></div>
+  <noscript><p>Attiva JavaScript per esplorare il portfolio. <a href="mailto:info@mementostudio.it">info@mementostudio.it</a></p></noscript>
+</body>
+</html>

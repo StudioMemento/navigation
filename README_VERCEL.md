@@ -1,88 +1,38 @@
-# Memento — Noir Hub V07
+# Memento — V3 per Vercel
 
-Homepage di navigazione basata su Memento_Noir_V06_Vercel. Il modello GLB,
-le texture, gli shader, le particelle, il fondale e i profili di qualità
-originali sono conservati. Le sei scene riusano ancora il modello V06.
+Esportazione della versione 3 pubblicata, completa di sei diorami GLB, asset, font, librerie e cinque moduli integrati: Studio, Servizi, Portfolio, Level Up e Start.
 
-## Percorso
+## Pubblicazione
 
-- Swipe/trascinamento orizzontale, frecce oppure indicatori: seleziona un mondo.
-- Tap sul diorama centrale, sul titolo o su Entra: apre la pagina verso il basso.
-- Scroll verticale verso il basso o swipe verso l'alto sulla home: entra nella sezione.
-- Home è l'introduzione: Esplora apre l'indice delle destinazioni.
-- Home nella barra delle pagine: risale al carosello sulla selezione precedente.
-- Indice: accesso diretto a tutte le destinazioni, anche dall'interno delle pagine.
-- Tastiera: frecce sinistra/destra cambiano mondo, freccia giù entra,
-  Escape ritorna alla home quando il focus è nella cornice della pagina.
-- Pausa e ispezione ravvicinata restano disponibili quando il 3D è attivo.
+1. Estrai lo ZIP. `index.html` e `vercel.json` devono rimanere nella stessa cartella, alla radice del progetto.
+2. Carica il contenuto estratto in un repository Git e importalo in Vercel, oppure usa Vercel CLI dalla cartella estratta.
+3. Impostazioni: **Framework Preset: Other**; **Root Directory: cartella contenente index.html**; **Build Command: vuoto**; **Install Command: vuoto**; **Output Directory: .**.
 
-## Destinazioni
+`vercel.json` include già le impostazioni. Non occorrono dipendenze npm, build o variabili ambiente.
 
-| Pagina | Collegamento | Stato |
-|---|---|---|
-| Servizi | `#/servizi` | Embed live di https://mementoservizi.vercel.app/ |
-| Portfolio | `#/portfolio` | Embed live di https://mementoportfolio.vercel.app/ |
-| Studio | `#/studio` | Segnaposto, tour da sviluppare |
-| Level Up | `#/level-up` | Segnaposto, percorso campagne da sviluppare |
-| Start | `#/start` | Segnaposto, contatti/modulo da sviluppare |
-
-`#/home/servizi` mostra la home con Servizi selezionato; `#/servizi` apre
-subito la pagina. Le vecchie selezioni `#progetti` e `#contatti` funzionano
-come alias di Portfolio e Start. Per le campagne usare, ad esempio,
-`/?utm_source=instagram&utm_campaign=launch#/level-up`: i parametri della
-query vengono conservati. Non sono stati aggiunti tracker né raccolta lead.
-
-Configurazione centrale: `src/destinations.js`. Per collegare una pagina
-futura, sostituire `kind: 'draft'` con `kind: 'embed'` e assegnare il suo `url`.
-
-## Prestazioni e limiti dell'integrazione
-
-Si monta soltanto l'iframe attivo. Il rendering della home si ferma mentre
-una pagina è aperta; tornando alla home l'iframe viene rimosso. Un accesso
-diretto a una pagina rimanda il download del 3D al primo ritorno alla home.
-Il fallback statico mantiene attivi menu e collegamenti.
-
-Servizi e Portfolio sono siti esterni, caricati nei loro iframe. I loro
-contenuti, scroll, modali e player rimangono quelli delle versioni pubblicate.
-La barra superiore appartiene alla home e resta sempre disponibile. I CTA
-interni dei siti esterni non sono intercettati: per collegarli a Start/Level Up
-della home servirà aggiornare quei siti o introdurre un bridge concordato.
-La cornice non può misurare lo scroll di un iframe cross-origin: per risalire
-si usa Home, senza intercettare lo scroll interno.
-
-Ogni embed ha caricamento, recupero dopo attesa e link esterno sempre
-accessibile. L'evento iframe load non certifica il contenuto di una pagina
-cross-origin: il link esterno resta disponibile anche in caso di blocchi
-successivi del provider. La pagina host non forza autoplay audio.
-
-## Pubblicazione su Vercel
-
-Il progetto conserva Vite, npm e la configurazione Vercel originale.
-Root Directory: cartella con `package.json`. Install: `npm ci`.
-Build: `npm run build`. Output: `dist`.
-Non servono variabili d'ambiente, database o chiavi API per questa versione.
+Per la CLI, dalla cartella estratta:
 
 ```sh
-npm ci
-npm run build
-npm run preview
+npx vercel
 ```
 
-Aprire tramite un server HTTP/HTTPS, non direttamente come file locale.
-Per il solo preview gestito è autorizzato l'host `terminal.local`.
+Per una pubblicazione in produzione dopo aver verificato l'anteprima:
 
-## Verifica
+```sh
+npx vercel --prod
+```
 
-Build di produzione riuscita. Verificate le rotte pagina/home, i vecchi
-alias, gli URL non validi, lo swipe ciclico/cancellato nel modello di
-navigazione e la conservazione della query delle campagne.
+## Note
 
-La verifica visiva usa un browser senza WebGPU/WebGL2: è quindi controllabile
-il fallback, non il rendering GPU né il frame rate dei dispositivi reali.
-La geometria e il codice degli shader restano quelli della V06.
+- La navigazione usa hash URL. Non aggiungere una riscrittura globale verso index.html: i moduli e le loro risorse devono essere serviti dai rispettivi percorsi.
+- I cinque moduli sono copie locali della versione integrata: successive modifiche sui siti Vercel originali non si sincronizzano automaticamente.
+- Alcune demo esterne di Level Up rimangono collegate ai rispettivi host.
+- Il modulo email prepara una bozza tramite il client di posta; non è presente un backend di invio.
+- Per l'anteprima locale usa un server HTTP, ad esempio `python3 -m http.server 8000`, e apri http://localhost:8000. Il doppio clic su index.html non supporta correttamente moduli JavaScript e caricamento GLB.
 
-Verifica browser completata sul fallback desktop e su viewport 390 × 844:
-entrambi gli embed caricati, apertura/ritorno, cambio sezione, indice, pagine
-provvisorie, navigazione da tastiera e tasto Indietro del browser. Le transizioni
-bloccano gli input finché sono realmente concluse. Il test a viewport ridotto
-non sostituisce una prova touch e GPU su telefono reale.
+## Provenienza
+
+Versione sorgente: `1b264ea6f18a402bb22beb19e7160832a8593041`.
+I file di produzione sono inclusi senza modifiche; sono aggiunti soltanto configurazione Vercel e questo documento.
+
+Documentazione Vercel: https://vercel.com/docs/builds/configure-a-build e https://vercel.com/docs/project-configuration/vercel-json.

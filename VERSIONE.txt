@@ -1,5 +1,0 @@
-Memento — Noir | V07 Navigation Hub
-Base: Memento_Noir_V06_Vercel, fonte 9a6f4f13ce3e77b52cce9089d68fe3b21a7251ea.
-Aggiornamento: collegamenti pagine, embed, ritorno alla home, indice e rotte dirette.
-Modelli, shader, texture, fondale e particelle V06 conservati.
-20 ottobre 2026.
