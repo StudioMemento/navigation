@@ -1,64 +1,61 @@
-# Memento Portfolio V03 — Vercel
+# Memento Portfolio — pacchetto Vercel
 
-Pacchetto sorgente della versione pubblicata su Sites il 19 ottobre 2026, con gli allineamenti delle ultime tavole. Commit di origine: d28eb317030dfe84088045ec0e6f7ab79999cc2d.
+Ultima versione polish del 21 ottobre 2026. Include 23 progetti, copertine landscape 16:9, catalogo responsive e slideshow in loop.
 
-## Importazione con GitHub Desktop e Vercel
+## Pubblicazione
 
-1. Estrai lo ZIP. `package.json`, `vercel.json`, `src` e `public` devono stare nella cartella principale del repository: non dentro una sottocartella aggiuntiva.
-2. Copia i file nella cartella del repository dedicato al portfolio e fai commit e push. Se aggiorni un repository esistente, conserva la cartella `.git` e gli eventuali file tuoi non relativi al sito.
-3. In Vercel importa quel repository, oppure usa il progetto già collegato a quel repository.
-4. Usa Root Directory `.` (la cartella che contiene `package.json`). Le impostazioni seguenti sono già dichiarate nel pacchetto.
+1. Estrai lo ZIP in una cartella.
+2. La cartella principale deve contenere `vercel.json` e `dist/`.
+3. Carica il contenuto in un repository Git e importalo in Vercel, oppure usa la CLI dalla cartella estratta.
+
+La configurazione è già inclusa:
 
 | Impostazione | Valore |
 | --- | --- |
-| Framework Preset | Vite |
-| Install Command | `npm ci` |
-| Build Command | `npm run build` |
-| Output Directory | `dist` |
-| Node.js | `24.x` |
-| Environment Variables | Nessuna richiesta |
+| Root Directory | Cartella che contiene `vercel.json` |
+| Framework Preset | Other |
+| Build Command | Vuoto |
+| Install Command | Vuoto |
+| Output Directory | dist |
 
-Lo ZIP contiene i sorgenti: viene estratto nel repository, non caricato come singolo archivio nel repository. Vercel ricostruisce il sito dal codice.
+Non sono richieste variabili ambiente, dipendenze npm o compilazione.
 
-## Routing e risorse
+### CLI
 
-`vercel.json` gestisce l'apertura diretta e il refresh di `/progetti/auren` e delle altre schede. Il file `/experience.html` e gli asset restano file statici indipendenti. Se aggiungi nuove famiglie di route, aggiorna le regole di rewrite.
-
-Immagini, font Inter, video demo e codice del viewer 3D sono inclusi. Non servono API key o servizi esterni per i media dimostrativi. I collegamenti email e Memento Servizi rimangono quelli della versione Sites. Le immagini e le informazioni sono placeholder; il film è una demo senza audio e il modello 3D è dimostrativo.
-
-## Avvio locale
-
-Con Node.js 24:
+Con Node.js e npm disponibili, apri un terminale nella cartella estratta:
 
 ```sh
-npm ci
-npm run dev
+npx vercel
 ```
 
-Build:
+Per aggiornare il portfolio esistente, collega il progetto Vercel corrispondente durante la configurazione. Il comando crea un'anteprima; dopo averla verificata, pubblica in produzione con:
 
 ```sh
-npm run build
-npm run preview
+npx vercel --prod
 ```
 
-## Verifica del pacchetto
+### Anteprima locale
 
-Installazione pulita `npm ci` e `npm run build` completate con Node.js 24.19.0. I bundle CSS/JS e la pagina generata coincidono con quelli della versione Sites verificata. Il warning di dimensione riguarda il viewer Three.js caricato su richiesta.
+Con Python 3 disponibile, dalla cartella estratta:
 
-## Verifica dopo il deploy
+```sh
+python3 -m http.server 8000 --directory dist
+```
 
-- Apri la home, filtra il catalogo e apri Auren.
-- Apri direttamente `/progetti/auren` e ricarica la pagina.
-- Prova frecce e swipe, espansione delle tavole, chiusura e ritorno al catalogo.
-- Controlla play/pausa/seek/fullscreen, esperienza incorporata e viewer 3D sui dispositivi reali.
+Apri http://localhost:8000. Il doppio clic su `index.html` non è sufficiente: il catalogo carica i dati con `fetch` e richiede HTTP.
 
-Il meta `noindex,nofollow` è mantenuto per questa fase di prova. Al lancio definitivo, rimuoverlo da `index.html` se il sito deve essere indicizzato.
+## Contenuto
 
-La versione sorgente è stata verificata in browser su desktop e viewport da 390 e 320 px. Il pacchetto Vercel ha una build statica dedicata; non include dipendenze installate, build generate, credenziali, metadati Sites o tavole di confronto. Nessun deploy Vercel è stato eseguito durante la preparazione dello ZIP.
+- `dist/`: sito completo con HTML, CSS, JavaScript, dati, immagini e font locali.
+- `vercel.json`: configurazione per il deploy statico.
+- `README.md`: architettura, navigazione e verifiche della versione.
+- `docs/`: provenienza degli asset e prompt delle copertine.
 
-## Documentazione di riferimento
+Gli indirizzi del catalogo e dei progetti usano il frammento URL (`/#catalogo`, `/#slideshow/auren`): non richiedono regole di riscrittura. Le demo esterne restano accessibili tramite i loro URL; questo pacchetto include il portfolio e i suoi asset locali.
 
-- https://vercel.com/docs/frameworks/frontend/vite
+Sorgente: commit `cd5d900f50d8bc84c47fa39b26397468b5de7622`.
+
+Riferimenti Vercel:
 - https://vercel.com/docs/project-configuration/vercel-json
-- https://vercel.com/docs/functions/runtimes/node-js/node-js-versions
+- https://vercel.com/docs/builds/configure-a-build
+- https://vercel.com/docs/cli/deploy
