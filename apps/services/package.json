@@ -1,8 +1,8 @@
 {
   "name": "memento-servizi",
-  "version": "22.0.0",
+  "version": "23.0.0",
   "private": true,
-  "description": "Catalogo servizi Memento Design Studio",
+  "description": "Catalogo servizi Memento — scroll libero, fisico/digitale, bundle e domini",
   "scripts": {
     "build": "node scripts/build.mjs"
   }

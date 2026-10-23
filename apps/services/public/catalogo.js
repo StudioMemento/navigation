@@ -1,17 +1,16 @@
-/* Memento V21: one bundle fan, full-card details and edge-to-edge category titles. */
+/* Memento V23: continuous catalogue → bundles → domains → Start. Native page scroll. */
 (() => {
   'use strict';
   const $ = selector => document.querySelector(selector);
   const $$ = selector => [...document.querySelectorAll(selector)];
   const esc = value => String(value ?? '').replace(/[&<>"']/g, char => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'}[char]));
   const icon = (name = 'caret-right', className = 'chevron') => `<img class="${className}" src="assets/icons/${name}.svg" alt="" aria-hidden="true">`;
-  const carouselByScene = new Map();
-  let pacing, serviceDeck;
+  let serviceDeck;
   const reduced = matchMedia('(prefers-reduced-motion: reduce)');
   const services = [...MEMENTO_SERVICES, MEMENTO_APP_SERVICE];
   const byId = new Map([...services, ...MEMENTO_BUNDLES].map(item => [item.id, item]));
   const sections = MEMENTO_SECTIONS;
-  const titleUnits = {'WEB': 2.32, '3D': 1.4, 'VIDEO': 3.10, 'VISUAL': 3.57, 'BRANDING': 5.30, 'GRAFICA': 4.42};
+  const titleUnits = {'WEB': 2.32, '3D': 1.4, 'VIDEO': 3.10, 'VISUAL': 3.57, 'BRANDING': 5.30, 'DESIGN': 4.1};
   const orderedServices = sections.flatMap(section => (section.catalogueIds || section.ids).map(id => byId.get(id)));
   const bundles = ['b-online', 'b-lancio', 'b-identita', 'b-apertura', 'b-campagna', 'b-social'].map(id => byId.get(id));
   const title = item => item.title;
@@ -62,18 +61,21 @@
       controls.querySelectorAll('[data-dot]').forEach((button, i) => button.setAttribute('aria-pressed', String(i === index)));
       if (announce) $('#catalog-status').textContent = hero ? items[index].label : title(items[index]);
     };
-    const carousel = new MementoCarousel(element, {externalGestures: true, onSettle: update, onOpen: index => {
+    const carousel = new MementoCarousel(element, {externalGestures: false, autoplay: false, onSettle: update, onOpen: index => {
       index %= items.length;
-      if (hero) { pacing.goTo(document.getElementById(items[index].id)); history.replaceState(null, '', '#' + items[index].id); }
+      if (hero) { document.getElementById(items[index].id).scrollIntoView({behavior: 'auto', block: 'start'}); history.replaceState(null, '', '#' + items[index].id); }
       else openDetail(items[index], {fromBundle: items[index].kind === 'bundle' ? null : bundle});
     }});
-    carouselByScene.set(element, carousel);
-    if (!bundle) carouselByScene.set(element.closest('[data-scene]'), carousel);
     wireCarouselControls(element, controls, carousel, items.length);
     return carousel;
   }
   function wireCarouselControls(element, controls, carousel, count) {
     controls.dataset.carouselFor = element.id;
+    if (!element.classList.contains('macro-carousel')) {
+      controls.insertAdjacentHTML('afterbegin', `<button class="carousel-arrow" data-step="-1" aria-label="Precedente">${icon('caret-left')}</button>`);
+      controls.insertAdjacentHTML('beforeend', `<button class="carousel-arrow" data-step="1" aria-label="Successivo">${icon()}</button>`);
+      controls.querySelectorAll('[data-step]').forEach(button => button.addEventListener('click', () => carousel.step(Number(button.dataset.step))));
+    }
     controls.addEventListener('pointerenter', event => {
       if (event.pointerType === 'mouse') { carousel.hovered = true; carousel.refreshAutoplay(); }
     });
@@ -90,7 +92,7 @@
     };
     controls.querySelectorAll('[data-dot]').forEach(button => button.addEventListener('click', () => selectDot(Number(button.dataset.dot))));
     controls.addEventListener('keydown', event => {
-      if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return;
+      if (!event.target.closest('[data-dot]') || !['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return;
       event.preventDefault();
       carousel.keyboardFocus = true;
       const current = Number(event.target.closest('[data-dot]')?.dataset.dot || 0);
@@ -110,7 +112,7 @@
     'b-campagna': 'Un’idea. Tutti i contenuti per raccontarla.',
     'b-social': 'Contenuti che cambiano. Uno stile che resta.'
   };
-  $('#bundles-heading').innerHTML = spreadTitle('BUNDLE');
+  $('#bundles-heading').innerHTML = spreadTitle('BUNDLES');
   $('#bundle-boards').innerHTML = '<div class="carousel-stage">' + bundles.map((item, index) => `<a id="percorso-${item.id}" href="#bundle/${item.id}" draggable="false" class="carousel-card showcase-card bundle-board" data-slide="${index}" data-bundle="${item.id}" aria-label="Scopri il bundle ${esc(item.title)}" tabindex="${index === 0 ? 0 : -1}"><img class="bundle-visual" src="${imageFor(item)}" alt="" draggable="false" loading="lazy" width="1120" height="1120"><span class="bundle-shade" aria-hidden="true"></span><div class="bundle-layout"><p class="bundle-intro">${esc(bundlePreviews[item.id])}</p><h3 class="bundle-title" id="title-${item.id}">${splitTitle(item.title)}</h3><span class="bundle-open" aria-hidden="true">${icon()}</span></div></a>`).join('') + '</div>';
   const bundleControls = $('#bundle-controls');
   bundleControls.setAttribute('role', 'group');
@@ -120,46 +122,27 @@
     bundleControls.querySelectorAll('[data-dot]').forEach((button, i) => button.setAttribute('aria-pressed', String(i === index)));
     if (announce) $('#catalog-status').textContent = bundles[index].title;
   };
-  const bundleCarousel = new MementoCarousel($('#bundle-boards'), {externalGestures: true, autoplay: false, onSettle: updateBundle, onOpen: index => openDetail(bundles[index])});
+  const bundleCarousel = new MementoCarousel($('#bundle-boards'), {externalGestures: false, autoplay: false, onSettle: updateBundle, onOpen: index => openDetail(bundles[index])});
   wireCarouselControls($('#bundle-boards'), bundleControls, bundleCarousel, bundles.length);
-  carouselByScene.set($('#bundles'), bundleCarousel);
-  carouselByScene.set($('#bundle-boards'), bundleCarousel);
   updateBundle(0, {announce: false});
-  pacing = new MementoPacing($('#memento-catalogo'), carouselByScene);
 
 
-  const catalogueMobile = matchMedia('(max-width: 767px)');
+
   function renderCatalogue() {
     const matching = orderedServices.filter(item => medium(item) === activeMedium);
     const label = activeMedium === 'digital' ? 'Digitale' : 'Fisico';
-    const pages = mementoCatalogueLayout(matching, catalogueMobile.matches ? 3 : 5, catalogueMobile.matches ? 5 : 3);
-    $('#catalogue-groups').innerHTML = `<section class="catalogue-group" data-group="${activeMedium}" aria-labelledby="group-${activeMedium}"><h3 id="group-${activeMedium}" class="sr-only">${label}</h3>${pages.map((page, index) => `<div class="catalogue-page" id="catalogo-${activeMedium}-${index + 1}" data-catalogue-page data-medium="${activeMedium}" role="group" aria-label="${label}, tavola ${index + 1}"><div class="service-grid">${page.map(({item, col, row, width, height}) => `<a href="#servizio/${item.id}" class="service-card" data-service="${item.id}" data-shape="${width}x${height}" style="--tile-col:${col};--tile-row:${row};--tile-width:${width};--tile-height:${height}" aria-label="Scopri ${esc(title(item))}"><img class="service-visual" src="${imageFor(item)}" alt="" loading="lazy" width="1120" height="1120"><span class="service-copy"><span class="service-title">${esc(title(item))}</span></span><span class="service-action" aria-hidden="true">${icon()}</span></a>`).join('')}</div></div>`).join('')}</section>`;
+    $('#catalogue-groups').innerHTML = `<section class="catalogue-group" data-group="${activeMedium}" aria-labelledby="group-${activeMedium}"><h3 id="group-${activeMedium}" class="sr-only">${label}</h3><div class="catalogue-page"><div class="service-grid">${matching.map(item => `<a href="#servizio/${item.id}" class="service-card" data-service="${item.id}" data-shape="1x1" aria-label="Scopri ${esc(title(item))}"><img class="service-visual" src="${imageFor(item)}" alt="" loading="lazy" width="1120" height="1120"><span class="service-copy"><span class="service-title">${esc(title(item))}</span></span><span class="service-action" aria-hidden="true">${icon()}</span></a>`).join('')}</div></div></section>`;
     $('.catalogue-filters').dataset.selected = activeMedium;
     $$('.catalogue-filters button').forEach(button => button.setAttribute('aria-pressed', String(button.dataset.medium === activeMedium)));
-    $('#catalog-status').textContent = `${matching.length} servizi nel catalogo`;
-    document.dispatchEvent(new Event('memento:catalogue-change'));
+    $('#catalog-status').textContent = `${label}: ${matching.length} servizi`;
   }
   renderCatalogue();
-  $('#home-link').href = MEMENTO_CONFIG.homeUrl;
+  $('#start-link').href = MEMENTO_CONFIG.startUrl;
   $$('.catalogue-filters button').forEach(button => button.addEventListener('click', () => {
     if (button.dataset.medium === activeMedium) return;
-    const rect = $('#catalogo').getBoundingClientRect();
-    const inCatalogue = rect.top < innerHeight && rect.bottom > 0;
-    activeMedium = button.dataset.medium; renderCatalogue();
-    if (inCatalogue) { pacing.goTo($('[data-catalogue-page]')); setHash('#catalogo'); }
-  }));
-  catalogueMobile.addEventListener('change', () => {
-    const originId = focusReturn?.dataset.service;
-    const currentPage = $$('[data-catalogue-page]').find(page => { const rect = page.getBoundingClientRect(); return rect.top <= innerHeight / 2 && rect.bottom > innerHeight / 2; });
-    const visibleId = currentPage?.querySelector('[data-service]')?.dataset.service;
+    activeMedium = button.dataset.medium;
     renderCatalogue();
-    if (originId) focusReturn = $(`[data-service="${originId}"]`) || focusReturn;
-    if (detail.open && originId && focusReturn?.isConnected) returnScroll = focusReturn.closest('[data-catalogue-page]').getBoundingClientRect().top + scrollY;
-    else if (visibleId && !detail.open) {
-      const page = $(`[data-service="${visibleId}"]`).closest('[data-catalogue-page]');
-      window.scrollTo(0, page.getBoundingClientRect().top + scrollY);
-    }
-  });
+  }));
   function lockBody() {
     document.body.style.overflow = detail.open || lead.open ? 'hidden' : '';
     document.dispatchEvent(new Event('memento:overlay-change'));
@@ -171,7 +154,7 @@
       focusReturn = document.activeElement;
       returnScroll = window.scrollY;
       const [prefix, id] = location.hash.slice(1).split('/');
-      const legacySection = {stampa: 'grafica', fotografia: 'visual', rd: 'grafica'}[prefix] || prefix;
+      const legacySection = {stampa: 'design', grafica: 'design', fotografia: 'visual', rd: 'design'}[prefix] || prefix;
       returnHash = /^#(servizio|bundle|levelup)(\/|$)/.test(location.hash) ? '#inizio' : byId.has(id) || id === 'levelup' ? '#' + legacySection : location.hash || '#inizio';
     }
   }
@@ -301,17 +284,17 @@
   });
   function route() {
     const [prefix, id] = location.hash.slice(1).split('/');
-    if ((prefix === 'servizio' || prefix === 'bundle' || sections.some(section => section.id === prefix) || ['stampa', 'fotografia'].includes(prefix)) && byId.has(id)) { openDetail(byId.get(id)); return; }
+    if ((prefix === 'servizio' || prefix === 'bundle' || sections.some(section => section.id === prefix) || ['stampa', 'grafica', 'fotografia'].includes(prefix)) && byId.has(id)) { openDetail(byId.get(id)); return; }
     if (prefix === 'levelup' || id === 'levelup') { openLead(); return; }
     if (detail.open) closeDetail(false, false);
     if (lead.open) closeLead(false);
     const bundleIndex = bundles.findIndex(item => prefix === 'percorso-' + item.id);
     if (bundleIndex >= 0) {
       bundleCarousel.select(bundleIndex); bundleCarousel.finish();
-      pacing.goTo($('#bundles'));
+      $('#bundles').scrollIntoView({behavior: 'auto', block: 'start'});
       return;
     }
-    const alias = {stampa: 'grafica', fotografia: 'visual', rd: 'grafica'}[prefix];
+    const alias = {stampa: 'design', grafica: 'design', fotografia: 'visual', rd: 'design'}[prefix];
     if (alias) { setHash('#' + alias); $('#' + alias).scrollIntoView({behavior: 'instant'}); }
   }
   window.addEventListener('hashchange', route);

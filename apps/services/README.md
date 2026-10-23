@@ -1,25 +1,36 @@
-# Memento — Servizi V22
+# Memento Servizi — V23 per Vercel
 
-Catalogo completo per Vercel, aggiornato il 19 ottobre 2026.
-WEB e 3D sono compatti e centrati; gli altri titoli rimangono edge to edge.
-Include bundle e popup aggiornati e catalogo con immagini square.
+Versione del 23 ottobre 2026. Stesso contenuto della versione Sites aggiornata.
 
-## Pubblicazione su Vercel
+## Deploy
 
-1. Estrai lo ZIP nella root del repository: `package.json`, `vercel.json`, `public/` e `scripts/` devono stare allo stesso livello. Per aggiornare un repository esistente, sostituisci i file corrispondenti conservando la cartella `.git`.
-2. Esegui commit e push sul repository collegato a Vercel, oppure importa un nuovo repository su Vercel.
-3. Framework Preset: **Other**. Root Directory: la cartella che contiene `package.json`. La configurazione inclusa imposta Build Command `npm run build` e Output Directory `dist`.
+1. Estrai lo ZIP.
+2. Usa come Root Directory la cartella che contiene `package.json` e `vercel.json`.
+3. Framework Preset: **Other**.
+4. Build Command: **npm run build**.
+5. Output Directory: **dist**.
 
-Il build copia `public/` in `dist/`. Non richiede dipendenze, variabili ambiente o servizi backend. Font, icone e immagini sono inclusi. I collegamenti ai dettagli usano hash e non richiedono regole di riscrittura.
+La configurazione è già presente in `vercel.json`. Se stai aggiornando un progetto esistente, verifica che la Root Directory punti alla cartella del pacchetto e non a `public` o `dist`.
 
-## Verifica locale
+Per verificare il pacchetto localmente:
 
 ```sh
 npm ci
 npm run build
-python3 -m http.server 8080 --directory dist
 ```
 
-Apri `http://localhost:8080`.
-Per modificare il sito, intervieni nei file di `public/` e ripeti il build.
-Il modulo LevelUp prepara una bozza nella propria app email; l'invio rimane manuale.
+Il progetto è statico, senza dipendenze o variabili d'ambiente obbligatorie. `public/` contiene i file sorgente serviti; la build li copia in `dist/`.
+
+## Contenuti
+
+Hero → catalogo Digitale / Fisico → 6 bundle → Web, 3D, Video, Visual, Design, Branding → Ready to start? >.
+
+44 servizi (30 digitali e 14 fisici). Scroll verticale libero, senza snap forzati. Griglia square a 5 colonne desktop e 3 mobile. Immagini, font e icone inclusi localmente.
+
+La CTA finale apre https://mementostart.vercel.app/. Il modulo già presente nei dettagli prepara una bozza email: l'invio avviene nella propria app email.
+
+## Verifica dell'esportazione
+
+Build locale e integrità dello ZIP controllate; asset identici alla versione Sites. Questo archivio non esegue un deploy automatico.
+
+Sorgente: 1edd70dd1aa5071fc03dc8566d91babffb7a1722

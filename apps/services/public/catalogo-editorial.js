@@ -63,7 +63,7 @@ const MEMENTO_SECTIONS = [
   {id: '3d', label: '3D', subtitle: 'Il prodotto, oltre l’immagine.', hero: 'hero-3d', ids: ['esperienza-digitale', 'configuratore', 'render-animazione', 'showroom', 'realta-aumentata', 'modello-3d']},
   {id: 'video', label: 'VIDEO', subtitle: 'Storie che prendono movimento.', hero: 'hero-video', ids: ['video-lancio', 'video-aziendali', 'video-esplicativi', 'motion', 'logo-animato', 'video-social', 'teaser', 'trailer']},
   {id: 'visual', label: 'VISUAL', subtitle: 'Fotografia. Luce. Carattere.', hero: 'hero-fotografia', ids: ['foto-prodotti', 'foto-spazi', 'foto-food', 'foto-emozionali']},
-  {id: 'grafica', label: 'GRAFICA', subtitle: 'Idee che trovano forma.', hero: 'hero-stampa', ids: ['grafiche-pubblicitarie', 'template-social', 'presentazione', 'brochure', 'menu-listini', 'espositori'], catalogueIds: ['grafiche-pubblicitarie', 'template-social', 'presentazione', 'brochure', 'menu-listini', 'espositori', 'moduli']},
+  {id: 'design', label: 'DESIGN', subtitle: 'Idee che trovano forma.', hero: 'hero-stampa', ids: ['grafiche-pubblicitarie', 'template-social', 'presentazione', 'brochure', 'menu-listini', 'espositori'], catalogueIds: ['grafiche-pubblicitarie', 'template-social', 'presentazione', 'brochure', 'menu-listini', 'espositori', 'moduli']},
   {id: 'branding', label: 'BRANDING', subtitle: 'Un’identità. Ogni dettaglio.', hero: 'hero-branding', ids: ['branding', 'guida-brand', 'scatole', 'merchandising', 'insegne', 'grafica-spazi'], catalogueIds: ['branding', 'guida-brand', 'scatole', 'merchandising', 'insegne', 'grafica-spazi', 'biglietti', 'carta', 'tessere', 'gadget', 'shopper', 'etichette']}
 ];
 
