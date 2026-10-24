@@ -1,0 +1,36 @@
+{
+  "authoring": "Blender via Higgsfield 3D Jutsu MCP",
+  "project_url": "https://higgsfield.ai/3d-jutsu/b3bbc367-3831-41f0-a59e-5fefee089995",
+  "revision": 7,
+  "blender_version": "5.2.0 LTS",
+  "units": "metres",
+  "triangles": 38556,
+  "bytes": 9554000,
+  "navigation_cameras": 1,
+  "stations": [
+    "MEMENTO",
+    "SERVICES",
+    "PROJECTS",
+    "LEVELUP",
+    "START"
+  ],
+  "runtime_notes": "Cycles-baked mineral maps; standard Three PBR shaders; stock distance fog and soft fog sprites; environment reflections and bloom. One persistent website camera.",
+  "pbr_maps": {
+    "resolution": 1024,
+    "channels": [
+      "baseColor",
+      "normal",
+      "roughness"
+    ],
+    "embedded_images": 5
+  },
+  "environment": {
+    "mountain_ranges": 3,
+    "rock_outcrops": 12,
+    "panorama": [
+      2048,
+      1024
+    ],
+    "web_fog_banks": 38
+  }
+}
