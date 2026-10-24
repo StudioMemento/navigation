@@ -14,11 +14,22 @@
   const fallback = document.getElementById('load-fallback');
   const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
   const compact = matchMedia('(max-width: 640px)');
+  const portrait = matchMedia('(orientation: portrait) and (max-width: 1024px)');
   const curve = 'cubic-bezier(.2,.8,.2,1)';
   const chevron = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m10 5 7 7-7 7"/></svg>';
   let index = 0, cardWidth = 840, cardHeight = 396;
-  let gesture = null, ignoreClickUntil = 0, loadTimer = 0;
+  let gesture = null, ignoreClickUntil = 0, loadTimer = 0, dragFrame = 0;
   let restoreFocus = null, closing = false;
+  const images = [], connectedOrigins = new Set();
+
+  function connectDemo(board) {
+    const origin = new URL(board.url).origin;
+    if (connectedOrigins.has(origin)) return;
+    connectedOrigins.add(origin);
+    const hint = document.createElement('link');
+    hint.rel = 'preconnect'; hint.href = origin;
+    document.head.append(hint);
+  }
 
   const cards = boards.map((board, i) => {
     const card = document.createElement('button');
@@ -33,9 +44,10 @@
     art.setAttribute('aria-hidden','true');
     {
       const img = document.createElement('img');
-      img.src = board.image; img.alt = ''; img.draggable = false; img.decoding = 'async';
-      if (i === 0) img.fetchPriority = 'high';
-      else img.loading = 'lazy';
+      img.alt = ''; img.draggable = false; img.decoding = 'async';
+      img.width = board.width; img.height = board.height;
+      img.fetchPriority = i === 0 ? 'high' : 'low';
+      images.push(img);
       art.append(img);
     }
     const copy = document.createElement('span');
@@ -53,6 +65,10 @@
     copy.append(title, explore);
     face.append(art,copy);
     card.append(face);
+    card.addEventListener('pointerenter', event => {
+      if (event.pointerType === 'mouse') connectDemo(board);
+    });
+    card.addEventListener('focus', () => connectDemo(board));
     card.addEventListener('click', () => {
       if (performance.now() < ignoreClickUntil || player.open || contact.open) return;
       go(i);
@@ -80,7 +96,7 @@
     cards.forEach((card, i) => {
       const offset = distance(i), level = Math.abs(offset), side = Math.sign(offset);
       const active = level === 0;
-      const near = level <= 2;
+      const near = level <= 1;
       card.classList.toggle('is-current',active);
       card.classList.toggle('is-near',level <= 1);
       card.style.setProperty('--shift', side * cardWidth * (level === 1 ? .61 : .9 + (level - 2) * .1) + 'px');
@@ -94,6 +110,16 @@
       card.tabIndex = active ? 0 : -1;
       card.setAttribute('aria-hidden', String(!active));
       dots[i].setAttribute('aria-current', String(active));
+      if (near) {
+        const img = images[i];
+        // Layout size, not screen width, selects the right WebP for this composition.
+        img.sizes = Math.ceil(img.clientWidth || cardWidth) + 'px';
+        img.fetchPriority = active ? 'high' : 'low';
+        if (!img.hasAttribute('src')) {
+          img.srcset = boards[i].srcset;
+          img.src = boards[i].image;
+        }
+      }
     });
   }
   function go(next) {
@@ -105,8 +131,10 @@
     announcement.textContent = boards[index].title + ', esperienza ' + (index + 1) + ' di ' + boards.length;
   }
   function resize() {
-    const ratio = compact.matches ? .96 : 2.12;
-    cardWidth = Math.floor(Math.min(stage.clientWidth * (compact.matches ? .88 : .74),1120,stage.clientHeight * .94 * ratio));
+    cancelGesture();
+    const tall = portrait.matches;
+    const ratio = tall ? (compact.matches ? (app.clientHeight < 700 ? .96 : .84) : 1.08) : (app.clientHeight < 480 ? 2.5 : 2.12);
+    cardWidth = Math.max(180,Math.floor(Math.min(stage.clientWidth * (tall ? .88 : .74),1120,stage.clientHeight * .96 * ratio)));
     cardHeight = Math.round(cardWidth / ratio);
     app.style.setProperty('--card-width',cardWidth + 'px');
     app.style.setProperty('--card-height',cardHeight + 'px');
@@ -122,35 +150,71 @@
     if (event.key === 'Home') {event.preventDefault(); go(0);}
     if (event.key === 'End') {event.preventDefault(); go(boards.length - 1);}
   });
-  // Swiping is optional; arrows and direct navigation work without scrolling.
-  stage.addEventListener('pointerdown', event => {
-    if (event.button !== 0 || player.open || contact.open) return;
-    gesture = {x:event.clientX,y:event.clientY,id:event.pointerId,dragging:false};
+  // One pointer model covers finger, pen and mouse. Two fingers remain native pinch-zoom.
+  function cancelGesture() {
+    const previous = gesture;
+    gesture = null;
+    if (previous?.dragging) ignoreClickUntil = performance.now() + 350;
+    if (previous && app.hasPointerCapture(previous.id)) app.releasePointerCapture(previous.id);
+    cancelAnimationFrame(dragFrame); dragFrame = 0;
+    app.classList.remove('is-dragging');
+    slides.style.removeProperty('--drag-x');
+    slides.style.removeProperty('--drag-y');
+  }
+  function renderDrag() {
+    dragFrame = 0;
+    if (!gesture?.dragging || reducedMotion.matches) return;
+    const cap = cardWidth * .3;
+    const movement = Math.max(-cap,Math.min(cap,gesture.travel * .42));
+    slides.style.setProperty('--drag-x', (gesture.axis === 'x' ? movement : 0) + 'px');
+    slides.style.setProperty('--drag-y', (gesture.axis === 'y' ? movement * .55 : 0) + 'px');
+  }
+  app.addEventListener('pointerdown', event => {
+    if (!event.isPrimary) {cancelGesture();return;}
+    if (event.button !== 0 || player.open || contact.open || closing) return;
+    if (event.target.closest('.gallery-nav,.contact-invite,a,input,textarea')) return;
+    gesture = {x:event.clientX,y:event.clientY,id:event.pointerId,axis:null,travel:0,velocity:0,lastTime:performance.now(),dragging:false};
   });
-  stage.addEventListener('pointermove', event => {
+  app.addEventListener('pointermove', event => {
     if (!gesture || gesture.id !== event.pointerId) return;
     const dx = event.clientX - gesture.x, dy = event.clientY - gesture.y;
-    if (Math.abs(dx) > 12 && Math.abs(dx) > Math.abs(dy) * 1.2) {
+    if (!gesture.axis && Math.max(Math.abs(dx),Math.abs(dy)) > 10) {
+      gesture.axis = Math.abs(dx) >= Math.abs(dy) ? 'x' : 'y';
       gesture.dragging = true;
-      stage.setPointerCapture(event.pointerId);
+      app.setPointerCapture(event.pointerId);
+      app.classList.add('is-dragging');
     }
+    if (!gesture.dragging) return;
+    const now = performance.now(), travel = gesture.axis === 'x' ? dx : dy;
+    const dt = now - gesture.lastTime;
+    if (dt > 0) gesture.velocity = (travel - gesture.travel) / dt;
+    gesture.travel = travel; gesture.lastTime = now;
+    if (!dragFrame) dragFrame = requestAnimationFrame(renderDrag);
   });
   window.addEventListener('pointerup', event => {
     if (!gesture || gesture.id !== event.pointerId) return;
-    const dx = event.clientX - gesture.x, dy = event.clientY - gesture.y;
-    if (gesture.dragging) {
-      ignoreClickUntil = performance.now() + 450;
-      if (Math.abs(dx) > 42 && Math.abs(dx) > Math.abs(dy) * 1.2) go(index + (dx < 0 ? 1 : -1));
-    }
-    gesture = null;
+    const current = gesture;
+    const travel = current.axis === 'x' ? event.clientX - current.x : event.clientY - current.y;
+    const threshold = Math.max(32,Math.min(80,cardWidth * .13));
+    const flick = Math.abs(travel) > 18 && Math.abs(current.velocity) > .45 && performance.now() - current.lastTime < 100;
+    const advance = current.dragging && (Math.abs(travel) >= threshold || flick);
+    cancelGesture();
+    if (advance) go(index + (travel < 0 ? 1 : -1));
   });
-  stage.addEventListener('pointercancel', () => {gesture = null;});
+  app.addEventListener('pointercancel',cancelGesture);
+  app.addEventListener('lostpointercapture', () => {if (gesture) cancelGesture();});
+  app.addEventListener('click', event => {
+    if (performance.now() < ignoreClickUntil) {event.preventDefault();event.stopPropagation();}
+  },true);
+  window.addEventListener('blur',cancelGesture);
+  document.addEventListener('visibilitychange', () => {if (document.hidden) cancelGesture();});
 
   function animate(element, frames, options) {
     if (reducedMotion.matches) return Promise.resolve();
     return element.animate(frames,options).finished.catch(() => {});
   }
   function enterModal(modal, trigger) {
+    cancelGesture();
     restoreFocus = trigger;
     const from = trigger?.getBoundingClientRect();
     modal.showModal();
@@ -160,13 +224,14 @@
     animate(surface,[{opacity:0,transform:start},{opacity:1,transform:'translate(0,0) scale(1)'}],{duration:600,easing:curve});
   }
   function openExperience(board, trigger) {
+    connectDemo(board);
     document.getElementById('experience-title').textContent = board.title;
     fallback.href = board.url;
     fallback.hidden = true; loading.hidden = false;
     mount.classList.remove('is-loaded');
     mount.setAttribute('aria-busy','true');
     const image = document.createElement('img');
-    image.src = board.image;
+    image.src = images[boards.indexOf(board)].currentSrc || board.image;
     image.alt = '';
     poster.replaceChildren(image); poster.style.opacity = '.3';
     enterModal(player,trigger);
