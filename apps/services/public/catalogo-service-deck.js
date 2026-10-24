@@ -14,9 +14,11 @@ class MementoServiceDeck {
     element.addEventListener('click', event => {
       const dot = event.target.closest('[data-scene-dot]');
       if (dot) this.show(Number(dot.dataset.sceneDot));
+      const step = event.target.closest('[data-scene-step]');
+      if (step) this.carousel.step(Number(step.dataset.sceneStep));
     }, options);
     element.addEventListener('keydown', event => {
-      if (event.defaultPrevented || !['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return;
+      if (event.defaultPrevented || event.target.closest('input, textarea, select, [contenteditable="true"]') || !['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return;
       event.preventDefault();
       const next = event.key === 'Home' ? 0 : event.key === 'End' ? this.scenes.length - 1 : this.active + (event.key === 'ArrowRight' ? 1 : -1);
       this.show(next, true);

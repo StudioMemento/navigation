@@ -1,6 +1,6 @@
 /* MEMENTO — landing → categoria → servizio. Immagini originali dal catalogo. */
 const MEMENTO_CONFIG = {
-  "version": "2026-10-23.23",
+  "version": "2026-10-24.24",
   "startUrl": "https://mementostart.vercel.app/",
   "homeUrl": "https://mementostudio.it/",
   "email": "info@mementostudio.it",

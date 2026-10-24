@@ -1,8 +1,8 @@
 {
   "name": "memento-servizi",
-  "version": "23.0.0",
+  "version": "24.0.0",
   "private": true,
-  "description": "Catalogo servizi Memento — scroll libero, fisico/digitale, bundle e domini",
+  "description": "Memento servizi — responsive, touch e immagini WebP adattive",
   "scripts": {
     "build": "node scripts/build.mjs"
   }

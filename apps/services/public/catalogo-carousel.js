@@ -1,4 +1,4 @@
-/* Pointer-driven carousel. Slow autoplay, continuous drag and damped release share one position. */
+/* Horizontal intent owns the gesture; vertical scrolling and pinch zoom stay native. */
 class MementoCarousel {
   constructor(element, {initial = 0, onSettle = () => {}, onOpen = () => {}, externalGestures = false, interactiveContents = false, autoplay = true} = {}) {
     this.element = element;
@@ -21,11 +21,14 @@ class MementoCarousel {
     this.pointer = this.motion = null;
     this.autoEnabled = autoplay;
     this.inView = !('IntersectionObserver' in window);
+    this.nearViewport = this.inView;
     this.hovered = this.keyboardFocus = this.suppressClick = false;
     this.autoDelay = this.hero ? 8000 : 9000;
     this.resumeAt = 0;
     this.measure = () => {
-      this.width = this.cards[0]?.offsetWidth || 1;
+      const width = this.cards[0]?.offsetWidth || 1;
+      if (this.width && this.width !== width && this.pointer) this.up({pointerId: this.pointer.id}, true);
+      this.width = width;
       this.height = this.cards[0]?.offsetHeight || 1;
       this.stride = this.flat ? Math.min(360, this.width * .68) : this.width * (this.fan ? (this.compact.matches ? .78 : .64) : (this.compact.matches ? .94 : .69));
       this.render();
@@ -35,17 +38,19 @@ class MementoCarousel {
     this.measure();
     if ('IntersectionObserver' in window) {
       this.visibilityObserver = new IntersectionObserver(entries => {
+        this.nearViewport = entries[0].isIntersecting;
         this.inView = entries[0].isIntersecting && entries[0].intersectionRatio >= .3;
+        this.render();
         this.refreshAutoplay();
-      }, {threshold: [0, .3, .6]});
+      }, {rootMargin: '240px 0px', threshold: [0, .3, .6]});
       this.visibilityObserver.observe(element);
     }
     this.listen(element, 'dragstart', event => event.preventDefault());
     if (!externalGestures) {
     this.listen(element, 'pointerdown', event => this.down(event));
     this.listen(element, 'pointermove', event => this.move(event), {passive: false});
-    this.listen(element, 'pointerup', event => this.up(event));
-    this.listen(element, 'pointercancel', event => this.up(event, true));
+    this.listen(window, 'pointerup', event => this.up(event));
+    this.listen(window, 'pointercancel', event => this.up(event, true));
     }
     this.listen(element, 'lostpointercapture', event => {
       // Implicit touch capture on a child is released when the carousel takes ownership.
@@ -77,7 +82,7 @@ class MementoCarousel {
       else this.onOpen(index);
     });
     this.listen(element, 'keydown', event => {
-      if (event.defaultPrevented || event.target.closest('.carousel') !== element) return;
+      if (event.defaultPrevented || event.target.closest('.carousel') !== element || event.target.closest('input, textarea, select, [contenteditable="true"]')) return;
       if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return;
       event.preventDefault();
       this.keyboardFocus = this.focusAfterSettle = true;
@@ -105,6 +110,13 @@ class MementoCarousel {
     this.cards.forEach((card, index) => {
       const distance = this.delta(index - this.current);
       const amount = Math.abs(distance);
+      card.dataset.nearby = String(amount < 1.3);
+      if (this.nearViewport && amount < (navigator.connection?.saveData ? .6 : 1.3)) {
+        card.querySelectorAll('img[data-src]').forEach(img => {
+          if (img.dataset.srcset) { img.srcset = img.dataset.srcset; delete img.dataset.srcset; }
+          img.src = img.dataset.src; delete img.dataset.src;
+        });
+      }
       // Neighbours tuck behind at rest, then open apart around the layer handoff.
       const bow = amount < 1 ? Math.sin(Math.PI * amount) * this.width * (compact ? .08 : .2) : 0;
       const x = distance * this.stride + Math.sign(distance) * bow;
@@ -124,6 +136,7 @@ class MementoCarousel {
         card.style.setProperty('--hero-text-offset', (Math.min(1, amount) * 10).toFixed(2) + 'px');
       }
       card.style.opacity = flat ? (amount < 1 ? '1' : '0') : Math.max(0, Math.min(1, (edge - amount) / .6)).toFixed(4);
+      card.style.visibility = amount >= (flat ? 1 : edge) ? 'hidden' : 'visible';
       card.style.zIndex = String(flat ? index + 1 : 100 - Math.round(amount * 20));
       const isActive = index === active;
       card.dataset.active = String(isActive);
@@ -139,6 +152,7 @@ class MementoCarousel {
   }
   requestFrame() {
     if (this.raf) return;
+    this.element.classList.add('is-moving');
     this.previous = performance.now();
     this.raf = requestAnimationFrame(now => this.frame(now));
   }
@@ -156,7 +170,7 @@ class MementoCarousel {
       if (t === 1) { this.finish(); return; }
     } else if (this.motion.kind === 'drag') {
       this.current += (this.target - this.current) * (1 - Math.exp(-dt / 32));
-      if (Math.abs(this.current - this.target) < .0001) { this.current = this.target; this.render(); return; }
+      if (Math.abs(this.current - this.target) < .0001) { this.current = this.target; this.render(); this.element.classList.remove('is-moving'); return; }
     } else {
       // Critical damping preserves position and velocity without snapping or bouncing.
       const omega = 1 / 145;
@@ -177,6 +191,7 @@ class MementoCarousel {
     this.velocity = 0;
     this.render();
     this.motion = null;
+    this.element.classList.remove('is-moving');
     if (this.focusAfterSettle) {
       this.cards[this.active].focus({preventScroll: true});
       this.focusAfterSettle = false;
@@ -207,7 +222,7 @@ class MementoCarousel {
   down(event) {
     if (event.isPrimary === false && this.pointer) { this.up({pointerId: this.pointer.id}, true); return; }
     if (this.interactiveContents && !this.externalGestures && !event.target.closest('[data-slide]')) return;
-    if (this.pointer || event.isPrimary === false || (event.pointerType === 'mouse' && event.button !== 0)) return;
+    if (this.pointer || event.isPrimary === false || event.button !== 0 || event.target.closest('input, textarea, select, [contenteditable="true"], [data-no-swipe]')) return;
     this.interact();
     cancelAnimationFrame(this.raf);
     this.raf = 0;
@@ -256,6 +271,9 @@ class MementoCarousel {
     this.suppressClick = true;
     clearTimeout(this.clickTimer);
     this.clickTimer = setTimeout(() => { this.suppressClick = false; }, 450);
+    if (cancelled) { this.target = Math.round(pointer.start); this.settle(); return; }
+    // Include the final coalesced movement, even if no last move was dispatched.
+    this.target = pointer.start - dx / this.stride;
     const velocity = cancelled || performance.now() - pointer.lastT > 100 ? 0 : Math.max(-.004, Math.min(.004, pointer.velocity));
     const progress = this.target - pointer.start;
     const projection = Math.max(-.7, Math.min(.7, velocity * 220));
@@ -300,6 +318,7 @@ class MementoCarousel {
     this.visibilityObserver?.disconnect();
     this.raf = this.autoTimer = 0;
     this.motion = this.pointer = null;
+    this.element.classList.remove('is-dragging', 'is-moving');
   }
   setAutoplay(enabled) {
     this.autoEnabled = enabled;
