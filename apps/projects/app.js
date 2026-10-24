@@ -1,4 +1,5 @@
 import { domains, aliases, projectName, filterProjects, wrapIndex, modulesFor, sliderItems, validateProjects } from './catalogue.js';
+import { installSwipe, installDragScroll } from './gestures.js';
 
 const $ = (selector, root = document) => root.querySelector(selector);
 const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
@@ -12,7 +13,21 @@ const paths = {
   design:'m4 17 13-13 4 4L8 21H4Zm10-10 4 4', branding:'M4 4h16v16H4ZM8 16V8l4 5 4-5v8',
 };
 const icon = name => `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="${paths[name]}"/></svg>`;
-const photo = (src, alt = '', eager = false) => `<img src="${escapeHTML(src)}" alt="${escapeHTML(alt)}" loading="${eager ? 'eager' : 'lazy'}" decoding="async" draggable="false">`;
+let imageManifest = {images:{},aliases:{}};
+const imageSizes = {
+  tile:'(max-width:767px) calc(50vw - 27px), (max-width:1100px) 31vw, (min-width:2100px) 470px, 23vw',
+  wide:'(max-width:767px) calc(50vw - 27px), (max-width:1100px) 62vw, (min-width:2100px) 950px, 46vw',
+  flow:'(max-width:767px) min(68vw, 36svh), min(43vw, 54svh, 840px)',
+  thumb:'(max-width:767px) 70px, (min-width:1667px) 150px, 9vw',
+  stage:'(min-width:2500px) 2200px, (min-width:2160px) 1900px, 88vw', dialog:'80vw'
+};
+function photo(src,alt='',eager=false,role='stage') {
+  const canonical=imageManifest.aliases[src] || src, data=imageManifest.images[canonical];
+  const variants=data?.variants || [], fallback=variants.find(item=>item.width>=480)?.src || canonical;
+  const sizes=imageSizes[role] || imageSizes.stage;
+  const set=variants.map(item=>`${item.src} ${item.width}w`).join(', ');
+  return `<img ${eager?'src':'data-src'}="${escapeHTML(fallback)}" ${set?`${eager?'srcset':'data-srcset'}="${escapeHTML(set)}" sizes="${sizes}"`:''} ${data?`width="${data.width}" height="${data.height}"`:''} alt="${escapeHTML(alt)}" loading="${eager?'eager':'lazy'}" fetchpriority="${eager&&role==='stage'?'high':'auto'}" decoding="async" draggable="false">`;
+}
 const viewport = $('#viewport');
 const view = $('#project-view');
 const dialog = $('#media-dialog');
@@ -22,7 +37,19 @@ const state = { projects:[], deck:[], active:null, domain:'all', view:'catalogo'
 const byId = id => state.projects.find(project => project.id === (aliases[id] || id));
 const current = () => byId(state.active);
 const announce = message => { $('#announcement').textContent = message; };
-let scrollFrame = 0, observer, modelViewerPromise;
+let scrollFrame = 0, observer, modelViewerPromise, progressStops=[];
+const saveData = navigator.connection?.saveData || matchMedia('(prefers-reduced-data: reduce)').matches;
+const imageObserver = 'IntersectionObserver' in window ? new IntersectionObserver(entries=>{
+  entries.forEach(entry=>{if(entry.isIntersecting){hydrateImage(entry.target);imageObserver.unobserve(entry.target);}});
+},{root:viewport,rootMargin:saveData?'100px':'400px'}) : null;
+function hydrateImage(image) {
+  if(image.dataset.srcset){image.srcset=image.dataset.srcset;delete image.dataset.srcset;}
+  if(image.dataset.src){image.src=image.dataset.src;delete image.dataset.src;}
+}
+function observeImages(root) {
+  $$('img[data-src]',root).forEach(image=>imageObserver?imageObserver.observe(image):hydrateImage(image));
+}
+function unobserveImages(root) {$$('img[data-src]',root).forEach(image=>imageObserver?.unobserve(image));}
 history.scrollRestoration = 'manual';
 
 function renderFilters() {
@@ -30,17 +57,19 @@ function renderFilters() {
 }
 function renderCatalogue() {
   const projects = filterProjects(state.projects,state.domain);
+  unobserveImages($('#project-grid'));
   $('#project-grid').innerHTML = projects.map((project,index) => `<a class="project-tile ${project.layout || 'square'}" href="#slideshow/${project.id}" data-action="open-project" data-id="${project.id}" aria-label="Apri progetto ${escapeHTML(projectName(project))}" id="tile-${project.id}">
-    <span class="tile-frame"><span class="tile-visual">${photo(project.thumbnail || project.cover,'',index < 6)}</span></span>
+    <span class="tile-frame"><span class="tile-visual">${photo(project.cover,'',index < 4&&!location.hash.startsWith('#slideshow/'),project.layout==='wide'?'wide':'tile')}</span></span>
     <span class="tile-domains">${project.domains.map(domain => `<span>${domains[domain]}</span>`).join('')}</span>
     <span class="tile-name">${escapeHTML(project.title)}${project.variant ? `<span class="tile-variant">${escapeHTML(project.variant)}</span>` : ''}</span><span class="tile-arrow">${icon('arrow')}</span></a>`).join('');
   $('#empty-state').hidden = !!projects.length;
+  observeImages($('#project-grid'));
   $$('#filters button').forEach(button => button.setAttribute('aria-pressed',String(button.dataset.domain === state.domain)));
   announce(`${projects.length} ${projects.length===1?'progetto':'progetti'}${state.domain === 'all' ? '' : ` · ${domains[state.domain]}`}`);
 }
 function coverflowMarkup() {
   return `<div class="selector-band"><div class="coverflow" tabindex="0" role="region" aria-roledescription="carosello" aria-label="Seleziona progetto">
-    ${state.deck.map(project => `<button class="flow-card" data-action="select-project" data-id="${project.id}" aria-label="Seleziona ${escapeHTML(projectName(project))}"><span class="flow-face"><span class="flow-image">${photo(project.thumbnail || project.cover)}</span></span><span class="reflection" aria-hidden="true">${photo(project.thumbnail || project.cover)}</span></button>`).join('')}
+    ${state.deck.map(project => `<button class="flow-card" data-action="select-project" data-id="${project.id}" aria-label="Seleziona ${escapeHTML(projectName(project))}"><span class="flow-face"><span class="flow-image"></span></span><span class="reflection" aria-hidden="true"></span></button>`).join('')}
     </div><div class="flow-controls"><button class="icon-button" data-action="previous-project" aria-label="Progetto precedente">${icon('left')}</button><div class="pagination" role="group" aria-label="Progetti"></div><button class="icon-button" data-action="next-project" aria-label="Progetto successivo">${icon('right')}</button></div></div>`;
 }
 function updateCoverflow() {
@@ -51,7 +80,10 @@ function updateCoverflow() {
     card.style.setProperty('--offset',offset); card.style.setProperty('--abs',Math.abs(offset));
     card.dataset.visible = String(visible); card.dataset.active = String(offset===0);
     card.setAttribute('aria-hidden',String(!visible)); card.setAttribute('aria-pressed',String(offset===0)); card.tabIndex = visible ? 0 : -1;
-    if(visible) $$('img',card).forEach(image => { image.loading='eager'; });
+    if(visible&&!$('img',card)){
+      const markup=photo(state.deck[index].cover,'',true,'flow');
+      $('.flow-image',card).innerHTML=markup;$('.reflection',card).innerHTML=markup;
+    }
   });
   $('.pagination',view).innerHTML = state.deck.map((project,index) => {
     const offset=offsetFor(index);
@@ -72,19 +104,20 @@ function sliderMarkup(project,id,overview=false) {
   return `<div class="slider ${overview?'overview-slider':''}" data-slider="${id}" role="region" aria-roledescription="carosello" aria-label="${overview?'Anteprime':escapeHTML(modulesFor(project).find(module=>module.id===id)?.title)}" tabindex="0">
     <div class="slider-stage">${stageMarkup(project,id)}</div>
     <div class="slider-footer"><button class="icon-button" data-action="slide-previous" data-slider-id="${id}" aria-label="Media precedente" ${items.length<2?'disabled':''}>${icon('left')}</button>
-    <div class="slide-thumbs" role="group" aria-label="Scegli media">${items.map((item,i)=>`<button class="slide-thumb" data-action="select-slide" data-slider-id="${id}" data-index="${i}" aria-label="${escapeHTML(item.alt || `Media ${i+1}`)}" aria-pressed="${i===index}">${photo(item.thumb || item.poster || item.src)}</button>`).join('')}</div>
+    <div class="slide-thumbs" role="group" aria-label="Scegli media">${items.map((item,i)=>`<button class="slide-thumb" data-action="select-slide" data-slider-id="${id}" data-index="${i}" aria-label="${escapeHTML(item.alt || `Media ${i+1}`)}" aria-pressed="${i===index}">${photo(item.thumb || item.poster || item.src,'',false,'thumb')}</button>`).join('')}</div>
     <span class="slide-count" aria-live="polite">${String(index+1).padStart(2,'0')} <span>/ ${String(items.length).padStart(2,'0')}</span></span>
     <button class="icon-button" data-action="slide-next" data-slider-id="${id}" aria-label="Media successivo" ${items.length<2?'disabled':''}>${icon('right')}</button></div></div>`;
 }
 function projectContent() {
   const project=current(), modules=modulesFor(project);
+  unobserveImages($('#project-overview'));unobserveImages($('#project-chapters'));
   $('#selected-heading').innerHTML=`<h1 class="project-title" id="selected-title" tabindex="-1">${escapeHTML(project.title)}</h1>${project.variant?`<div class="project-variant">${escapeHTML(project.variant)}</div>`:''}`;
   $('#project-overview').innerHTML=sliderMarkup(project,'overview',true);
   $('#project-chapters').innerHTML=`<nav class="chapter-bar" aria-label="Contenuti del progetto"><button class="chapter-project" data-action="checkpoint-start" aria-label="Torna all’inizio di ${escapeHTML(projectName(project))}">${escapeHTML(projectName(project))}</button><div class="chapter-links">${modules.map(module=>`<button class="chapter-link" data-action="jump" data-target="chapter-${module.id}">${escapeHTML(module.title)}</button>`).join('')}</div>${project.experience?`<button class="experience-link" data-action="open-experience">Apri esperienza ${icon('arrow')}</button>`:''}</nav>
     <div class="chapters">${modules.map((module,index)=>`<section class="media-module content-width" id="chapter-${module.id}" aria-labelledby="title-${module.id}"><h2 class="module-title" id="title-${module.id}">${escapeHTML(module.title)}</h2>${sliderMarkup(project,module.id)}</section>`).join('')}</div>
     <div class="project-finish" id="project-finish"><button class="next-checkpoint" data-action="checkpoint-start" aria-label="Torna al selettore dei progetti"><svg viewBox="0 0 200 110" aria-hidden="true"><path d="m10 10 90 85 90-85"/></svg></button></div>`;
   $('#cue-stops').innerHTML=[{id:'project-overview',title:'Anteprime'},...modules.map(module=>({id:`chapter-${module.id}`,title:module.title}))].map(stop=>`<button class="cue-stop" data-action="jump" data-target="${stop.id}" aria-label="Vai a ${escapeHTML(stop.title)}" title="${escapeHTML(stop.title)}"></button>`).join('');
-  fitTitle(); updateCoverflow(); scheduleProgress();
+  fitTitle(); updateCoverflow(); observeImages(view); measureProgress(); scheduleProgress();
   document.title=`${projectName(project)} — Memento Portfolio`;
 }
 function fitTitle() {
@@ -100,9 +133,10 @@ function renderProject(id) {
   if(!state.deck.some(item=>item.id===project.id))state.deck=[...state.projects];
   $('#catalogue').hidden=true; view.hidden=false; $('#project-nav').hidden=false; $('#scroll-cue').hidden=false;
   document.body.dataset.view='slideshow';
+  unobserveImages(view);
   view.innerHTML=`<header class="project-station" id="project-station">${coverflowMarkup()}<div class="project-title-band" id="selected-heading"></div><button class="peek-cue" data-action="jump" data-target="project-overview" aria-label="Scorri e scopri il progetto">${icon('down')}${icon('down')}</button></header><div class="project-overview content-width" id="project-overview"></div><div id="project-chapters"></div>`;
   projectContent(); viewport.scrollTo({top:0,behavior:'instant'}); viewport.focus({preventScroll:true});
-  observer?.disconnect(); observer=new ResizeObserver(()=>{fitTitle();scheduleProgress();});observer.observe(viewport);observer.observe(view);
+  observer?.disconnect(); observer=new ResizeObserver(()=>{fitTitle();measureProgress();scheduleProgress();});observer.observe(viewport);observer.observe(view);
   announce(projectName(project));
 }
 function selectProject(id) {
@@ -123,9 +157,11 @@ function openProject(id) {
 }
 function showCatalogue() {
   closeMedia(false); observer?.disconnect(); state.view='catalogo';
+  unobserveImages(view);view.replaceChildren();progressStops=[];
   view.hidden=true; $('#catalogue').hidden=false; $('#project-nav').hidden=true; $('#scroll-cue').hidden=true;
   document.body.dataset.view='catalogo'; document.title='Portfolio — Memento';
   viewport.scrollTo({top:state.catalogScroll,behavior:'instant'});
+  observeImages($('#project-grid'));
   if(state.catalogFocus)$(`#tile-${state.catalogFocus}`)?.focus({preventScroll:true});
 }
 function closeProject() {
@@ -139,7 +175,7 @@ function route() {
   }else showCatalogue();
 }
 function positionFor(element) {
-  const sticky=$('.chapter-bar'), offset=element.classList.contains('media-module')?(sticky?.offsetHeight || 0)+84:20;
+  const sticky=$('.chapter-bar'), offset=element.classList.contains('media-module')?(sticky?.offsetHeight || 0)+$('#project-nav').offsetHeight+24:20;
   return Math.max(0,element.getBoundingClientRect().top-viewport.getBoundingClientRect().top+viewport.scrollTop-offset);
 }
 function goTo(id) {
@@ -154,6 +190,9 @@ function nextCheckpoint() {
   if(next)goTo(next.id);else goStart();
 }
 function scheduleProgress(){if(scrollFrame)return;scrollFrame=requestAnimationFrame(()=>{scrollFrame=0;updateProgress();});}
+function measureProgress() {
+  progressStops=$$('.cue-stop').map(button=>({button,id:button.dataset.target,element:document.getElementById(button.dataset.target)})).filter(stop=>stop.element).map(stop=>({...stop,position:positionFor(stop.element)}));
+}
 function updateProgress() {
   if(state.view!=='slideshow')return;
   const max=Math.max(1,viewport.scrollHeight-viewport.clientHeight), progress=Math.min(1,viewport.scrollTop/max);
@@ -161,24 +200,26 @@ function updateProgress() {
   $('#scroll-cue').style.setProperty('--progress',progress);
   $('#project-nav').classList.toggle('is-scrolled',viewport.scrollTop>120);
   $('.peek-cue').classList.toggle('is-hidden',viewport.scrollTop>40);
-  const threshold=viewport.scrollTop+($('.chapter-bar')?.offsetHeight || 0)+100;
+  const threshold=viewport.scrollTop+8;
   let active='project-overview';
-  $$('.media-module').forEach(module=>{if(positionFor(module)<=threshold)active=module.id;});
+  progressStops.forEach(stop=>{if(stop.position<=threshold)active=stop.id;});
   $$('.chapter-link').forEach(button=>{if(button.dataset.target===active)button.setAttribute('aria-current','location');else button.removeAttribute('aria-current');});
-  $$('.cue-stop').forEach(button=>{
-    button.style.setProperty('--stop',Math.min(.97,positionFor(document.getElementById(button.dataset.target))/max));
-    button.setAttribute('aria-current',String(button.dataset.target===active));
+  progressStops.forEach(({button,id,position})=>{
+    button.style.setProperty('--stop',Math.min(.97,position/max));
+    button.setAttribute('aria-current',String(id===active));
   });
 }
 function changeSlide(id,index) {
   const project=current(),items=sliderItems(project,id); if(!items.length)return;
   const selected=wrapIndex(index,items.length);state.slides.set(`${project.id}/${id}`,selected);
   const slider=$(`[data-slider="${id}"]`,view);if(!slider)return;
+  unobserveImages($('.slider-stage',slider));
   $('.slider-stage',slider).innerHTML=stageMarkup(project,id);
+  $$('img[data-src]',$('.slider-stage',slider)).forEach(hydrateImage);
   $('.slide-count',slider).innerHTML=`${String(selected+1).padStart(2,'0')} <span>/ ${String(items.length).padStart(2,'0')}</span>`;
   $$('.slide-thumb',slider).forEach((button,i)=>button.setAttribute('aria-pressed',String(i===selected)));
   const active=$('.slide-thumb[aria-pressed="true"]',slider),strip=$('.slide-thumbs',slider);
-  strip.scrollTo({left:active.offsetLeft-strip.offsetLeft-(strip.clientWidth-active.offsetWidth)/2,behavior:scrollBehavior()});
+  strip.scrollTo({left:active.offsetLeft-(strip.clientWidth-active.offsetWidth)/2,behavior:scrollBehavior()});
   if(state.media?.slider===id)renderDialogSlide();
 }
 function stepSlide(id,direction){changeSlide(id,slideIndex(current(),id)+direction);}
@@ -197,7 +238,7 @@ function renderDialogSlide() {
   const project=current(),id=state.media.slider,items=sliderItems(project,id),index=slideIndex(project,id),item=items[index];
   dialog.classList.toggle('is-experience',item.type!=='image');
   externalLink(item.url);
-  if(item.type==='image')$('#media-content').innerHTML=photo(item.src,item.alt || projectName(project),true);
+  if(item.type==='image')$('#media-content').innerHTML=photo(item.src,item.alt || projectName(project),true,'dialog');
   else mountMedia($('#media-content'),item);
   $('#media-navigation').innerHTML=items.length>1?`<button class="icon-button" data-action="dialog-previous" aria-label="Media precedente">${icon('left')}</button><span>${String(index+1).padStart(2,'0')} / ${String(items.length).padStart(2,'0')}</span><button class="icon-button" data-action="dialog-next" aria-label="Media successivo">${icon('right')}</button>`:'';
   $('#media-navigation').hidden=items.length<2;
@@ -244,33 +285,6 @@ function closeMedia(restore=true) {
   if(dialog.open)dialog.close();
   $('#media-content').replaceChildren();$('#media-navigation').replaceChildren();state.media=null;document.body.classList.remove('modal-open');
   if(restore){viewport.scrollTo({top:state.dialogScroll || 0,behavior:'instant'});if(state.dialogFocus?.isConnected)state.dialogFocus.focus({preventScroll:true});}
-}
-
-/** Pointer gestures never intercept vertical page scrolling or interactive media. */
-function installGestures(root) {
-  let gesture=null,suppressUntil=0;
-  root.addEventListener('pointerdown',event=>{
-    if(event.button!==0 || event.target.closest('video,iframe,model-viewer,input'))return;
-    const surface=event.target.closest('.coverflow,.slider-stage,#media-content');if(!surface)return;
-    gesture={surface,x:event.clientX,y:event.clientY,time:performance.now(),horizontal:false};
-  });
-  root.addEventListener('pointermove',event=>{
-    if(!gesture)return;const dx=event.clientX-gesture.x,dy=event.clientY-gesture.y;
-    if(!gesture.horizontal){if(Math.abs(dy)>10&&Math.abs(dy)>Math.abs(dx)){gesture=null;return;}if(Math.abs(dx)<10||Math.abs(dx)<Math.abs(dy)*1.2)return;gesture.horizontal=true;gesture.surface.setPointerCapture(event.pointerId);gesture.surface.classList.add('dragging');}
-    if(gesture.surface.classList.contains('coverflow'))gesture.surface.style.setProperty('--drag',`${Math.max(-220,Math.min(220,dx*.55))}px`);
-  });
-  function finish(event,cancel=false){
-    if(!gesture)return;const g=gesture;gesture=null;g.surface.classList.remove('dragging');g.surface.style.removeProperty('--drag');if(!g.horizontal)return;
-    if(g.surface.hasPointerCapture?.(event.pointerId))g.surface.releasePointerCapture(event.pointerId);
-    suppressUntil=performance.now()+300;const dx=event.clientX-g.x,speed=Math.abs(dx)/Math.max(1,performance.now()-g.time);
-    if(cancel || !(Math.abs(dx)>45 || Math.abs(dx)>20&&speed>.35))return;
-    const direction=dx<0?1:-1;
-    if(g.surface.classList.contains('coverflow'))stepProject(direction);
-    else if(g.surface.id==='media-content'){if(state.media?.slider)stepSlide(state.media.slider,direction);}
-    else stepSlide(g.surface.closest('[data-slider]').dataset.slider,direction);
-  }
-  root.addEventListener('pointerup',event=>finish(event));root.addEventListener('pointercancel',event=>finish(event,true));
-  root.addEventListener('click',event=>{if(performance.now()<suppressUntil){event.preventDefault();event.stopPropagation();}},true);
 }
 
 document.addEventListener('click',event=>{
@@ -320,13 +334,34 @@ dialog.addEventListener('cancel',event=>{event.preventDefault();closeMedia();});
 $('#project-progress').addEventListener('input',event=>viewport.scrollTo({top:(viewport.scrollHeight-viewport.clientHeight)*Number(event.target.value)/1000,behavior:'instant'}));
 viewport.addEventListener('scroll',scheduleProgress,{passive:true});
 window.addEventListener('hashchange',route);
-installGestures(view);installGestures(dialog);
+const gestures={
+  canSwipe:surface=>{
+    if(surface.classList.contains('coverflow'))return state.deck.length>1;
+    const id=surface.id==='media-content'?state.media?.slider:surface.closest('[data-slider]')?.dataset.slider;
+    return !!id&&sliderItems(current(),id).length>1&&!surface.querySelector('iframe,video,model-viewer');
+  },
+  onSwipe:(surface,direction)=>{
+    if(surface.classList.contains('coverflow'))stepProject(direction);
+    else stepSlide(surface.id==='media-content'?state.media.slider:surface.closest('[data-slider]').dataset.slider,direction);
+  }
+};
+installSwipe(view,gestures);installSwipe(dialog,gestures);installDragScroll(view);
+const narrowScreen=matchMedia('(max-width:767px)');
+function syncProgressOrientation(){ $('#project-progress').setAttribute('aria-orientation',narrowScreen.matches?'horizontal':'vertical'); }
+narrowScreen.addEventListener('change',syncProgressOrientation);syncProgressOrientation();
+document.addEventListener('visibilitychange',()=>{if(document.hidden)$$('video').forEach(video=>video.pause());});
 
 async function init(){
   try{
-    const response=await fetch('projects.json');if(!response.ok)throw new Error('Portfolio unavailable');
+    const [response,images]=await Promise.all([
+      fetch('projects.json'),
+      fetch('images.json').then(response=>response.ok?response.json():null).catch(()=>null)
+    ]);
+    if(!response.ok)throw new Error('Portfolio unavailable');
+    if(images)imageManifest=images;
     state.projects=validateProjects(await response.json());state.deck=[...state.projects];
-    renderFilters();renderCatalogue();route();document.fonts.ready.then(fitTitle);
+    renderFilters();renderCatalogue();route();
+    document.fonts.ready.then(()=>{fitTitle();measureProgress();scheduleProgress();});
   }catch(error){$('#project-grid').innerHTML='<div class="empty-state">Portfolio non disponibile. <button data-action="reload">Riprova</button></div>';console.error(error);}
 }
 init();
