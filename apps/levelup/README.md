@@ -1,36 +1,32 @@
-# Memento Level Up — V03 / Vercel
+# Memento Level Up — V04 / Vercel
 
-Pacchetto dell’ultima versione pubblicata: slideshow di nove esperienze, card 3D, player embedded adattivo e contatto sempre accessibile.
+Pacchetto aggiornato della landing: nove esperienze, slideshow 3D, player embedded e contatto dalla CTA.
 
-## Deploy
+## Aggiornamento su Vercel
 
-1. Estrai lo ZIP in una cartella.
-2. Importa il contenuto in un repository Git e collegalo a Vercel, selezionando come Root Directory la cartella che contiene `vercel.json`.
-3. La configurazione inclusa usa Framework Preset **Other**, nessun comando di installazione o build, Output Directory **dist**.
+1. Estrai lo ZIP e sostituisci i file del progetto con quelli inclusi, conservando le impostazioni del tuo progetto Vercel.
+2. La Root Directory deve contenere `vercel.json`.
+3. Configurazione: Framework Preset **Other**, nessun comando di installazione o build, Output Directory **dist**.
 
-In alternativa, con Node.js disponibile, apri il terminale nella cartella estratta ed esegui:
+Il pacchetto è statico e pronto da pubblicare: non richiede dipendenze, database o variabili d’ambiente. Le demo vengono caricate dai loro URL esterni.
 
-```sh
-npx vercel --prod
-```
+## Novità V04
 
-Segui le richieste della CLI per accedere e scegliere il progetto.
+- Logo Memento rimosso dalla landing, per il successivo overlay separato.
+- `L'hai visto, ora provalo!` su una riga, allineato a sinistra con la card centrale.
+- Nuove copertine cinematiche per Knives, ProductVis e VisualRef; blending con il fondo della card.
+- “Esplora” in basso a sinistra, con uguale distanza dal bordo sinistro e inferiore.
+- `ready to start?` grande, su una riga, con chevron destro.
+- Player con margine del **10% della larghezza a destra e sinistra** e del **10% dell’altezza sopra e sotto**: frame centrale pari all’80% del viewport.
+- Tagli in alto a sinistra e in basso a destra, sola X esterna, senza barre della landing.
+- Chiusura con X, Escape o click ovunque fuori dal frame, compresi gli angoli tagliati.
 
-## Contenuto
+## File da modificare
 
-- `dist/`: HTML, CSS, JavaScript, immagini e font locali, pronti da servire.
-- `vercel.json`: configurazione di pubblicazione.
-- `PROGETTO.md`: struttura, demo collegate e note sul funzionamento.
+- `dist/experiences.js`: titoli, copertine e URL delle demo.
+- `dist/index.html`: copy e modulo contatto.
+- `dist/style.css`: layout, caratteri, gradienti e responsive.
+- `dist/app.js`: slideshow, player e interazioni.
+- `PROGETTO.md`: note tecniche e destinazioni.
 
-Non servono variabili d’ambiente, database o dipendenze del progetto. Le demo sono incorporate dai rispettivi URL esterni. Il modulo contatto prepara un’email nell’app di posta del visitatore.
-
-## Modifiche
-
-- Copertine, titoli e URL delle demo: `dist/experiences.js`.
-- Copy della pagina e modulo: `dist/index.html`.
-- Layout e stile: `dist/style.css`.
-- Slideshow, player e interazioni: `dist/app.js`.
-
-Sorgente esportata: commit `b29db291c6f98cb3ea19373e470f77c47686493e`.
-
-Configurazione verificata sulla [documentazione ufficiale Vercel](https://vercel.com/docs/project-configuration/vercel-json). Questo pacchetto è pronto per il deploy; non è stato eseguito un deploy Vercel in questa consegna.
+Il modulo contatto prepara un’email nell’app di posta del visitatore. Non è stato eseguito un deploy Vercel in questa consegna.

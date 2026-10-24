@@ -10,15 +10,13 @@
   <link rel="preload" href="assets/InterVariable.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="assets/previews/icecream.webp" as="image" fetchpriority="high">
   <link rel="stylesheet" href="style.css">
-  <script src="panel-geometries.js" defer></script>
   <script src="experiences.js" defer></script>
   <script src="app.js" defer></script>
 </head>
 <body>
   <main class="showcase" id="showcase">
     <header class="intro rail">
-      <span class="wordmark" aria-label="Memento">MEMENTO</span>
-      <h1 class="amber-type">L’hai visto.<br>Ora provalo.</h1>
+      <h1 class="amber-type">L'hai visto, ora provalo!</h1>
     </header>
     <section class="gallery" aria-label="Le esperienze Memento" aria-roledescription="Carosello">
       <div class="stage" id="stage"><div class="slides" id="slides"></div></div>
@@ -30,21 +28,16 @@
       <p class="sr-only" id="slide-announcement" role="status" aria-live="polite" aria-atomic="true"></p>
     </section>
     <footer class="contact-rail rail">
-      <button class="contact-invite" id="contact-cta" aria-label="Pronto a fare il level up? Parliamone">
-        <span class="invite-question amber-type">Pronto a fare<br>il level up?</span>
-        <span class="invite-action">Parliamone <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m10 5 7 7-7 7"/></svg></span>
+      <button class="contact-invite" id="contact-cta" aria-label="Ready to start? Contattaci">
+        <span class="invite-question amber-type">ready to start?</span>
+        <span class="invite-action" aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m10 5 7 7-7 7"/></svg></span>
       </button>
     </footer>
   </main>
   <dialog class="player" id="experience-dialog" aria-labelledby="experience-title">
+    <h2 class="sr-only" id="experience-title">Esperienza</h2>
+    <button class="icon-button player-close" id="close-player" aria-label="Chiudi esperienza" autofocus><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 5 14 14M5 19 19 5"/></svg></button>
     <div class="player-frame" id="player-frame">
-      <header class="player-toolbar">
-        <h2 id="experience-title">Esperienza</h2>
-        <div class="player-controls">
-          <a class="icon-button" id="external-experience" href="#" target="_blank" rel="noopener noreferrer" aria-label="Apri esperienza in una nuova scheda"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17 17 7M7 7h10v10"/></svg></a>
-          <button class="icon-button" id="close-player" aria-label="Chiudi esperienza" autofocus><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M6 18 18 6"/></svg></button>
-        </div>
-      </header>
       <div class="player-content">
         <div class="player-poster" id="player-poster" aria-hidden="true"></div>
         <div class="frame-mount" id="frame-mount"></div>
@@ -52,10 +45,6 @@
         <a class="load-fallback" id="load-fallback" target="_blank" rel="noopener noreferrer" hidden>Apri l’esperienza ↗</a>
       </div>
     </div>
-    <button class="player-invite" id="player-contact">
-      <span class="amber-type">Pronto a fare <span class="nowrap">il level up?</span></span>
-      <span>Parliamone <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m10 5 7 7-7 7"/></svg></span>
-    </button>
   </dialog>
   <dialog class="contact-dialog" id="contact-dialog" aria-labelledby="form-title">
     <button class="icon-button contact-close" id="close-contact" aria-label="Chiudi contatto" autofocus><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M6 18 18 6"/></svg></button>

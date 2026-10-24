@@ -1,20 +1,24 @@
-# Memento — Level Up / Slideshow
+# Memento — Level Up / V04
 
-Landing statica senza build o dipendenze JavaScript esterne. Servire `dist/` via HTTP. Font e immagini sono locali.
+Landing statica senza build o dipendenze JavaScript esterne. Servire `dist/` via HTTP. Font Inter e copertine sono locali.
 
-## Navigazione
+## Navigazione e layout
 
-Una sola schermata, senza scorrimento della landing. Il layout si adatta al viewport: copy in alto allineato a destra, slideshow centrale, call to action sempre visibile sotto. Il rapporto delle card passa da 2.12:1 su desktop a una composizione quasi quadrata su mobile. La larghezza è calcolata anche sull’altezza disponibile, per mantenere navigazione e contatto nei viewport più bassi.
+Una schermata, senza scorrimento della landing: headline allineata a sinistra con la card centrale, slideshow e CTA sempre presenti. `L'hai visto, ora provalo!` resta su una riga. `ready to start?` resta su una riga e termina con un grande chevron destro. Il logo della landing è stato rimosso per l’overlay gestito separatamente.
 
-Nove anteprime, con passaggi CSS 3D e card adiacenti in prospettiva. Nessun autoplay. Chevron, dot, swipe orizzontale, frecce destra/sinistra e Home/End consentono di selezionare un’esperienza. Ogni card visibile apre la propria demo al primo click. La posizione selezionata viene mantenuta alla chiusura. `prefers-reduced-motion` disattiva le transizioni; il focus segue la card quando si naviga da tastiera o si trascina una card focalizzata.
+Nove anteprime con transizioni CSS 3D e card adiacenti in prospettiva. Nessun autoplay. Chevron, dot, swipe orizzontale, frecce destra/sinistra e Home/End selezionano l’esperienza. La card apre la demo al primo click. La selezione viene mantenuta dopo la chiusura. `prefers-reduced-motion` disattiva le transizioni. Il rapporto delle card passa da 2.12:1 su desktop a una composizione quasi quadrata su mobile; la larghezza tiene conto anche dell’altezza disponibile.
 
-Ordine: IceCream → Auren → Elite → Fashion → GAMMA → Food → Knives → ProductVis → VisualRef. I titoli delle card riprendono le tavole della campagna; IceCream usa la nuova tavola “Entra nel gusto.”. Inter è servito localmente. Il gradiente del testo tende all’ambra in basso a destra.
+Il gradiente del testo tende all’ambra in basso a destra. Il pulsante “Esplora” è ancorato in basso a sinistra con padding simmetrico.
 
-## Player e contatto
+## Player
 
-L’iframe viene creato soltanto all’apertura della demo. Il player usa lo spazio disponibile nel viewport, con una toolbar di 44 px per chiusura e apertura esterna e una CTA separata sotto. I controlli della landing non coprono l’interfaccia della demo. Chiudere il player rimuove l’iframe e ripristina il focus. Escape e click sullo sfondo chiudono i dialog.
+Il dialog trasparente copre il viewport e intercetta i click esterni. La superficie dell’embed ha `inset: 10%`: margini orizzontali pari al 10% della larghezza e verticali pari al 10% dell’altezza, frame pari all’80% × 80%. Il layout usa unità dinamiche del viewport. I tagli sono in alto a sinistra e in basso a destra.
 
-“Pronto a fare il level up?” apre il modulo dalla landing o dal player. Nome, email e messaggio sono obbligatori, telefono facoltativo. Il modulo prepara un `mailto:` a info@mementostudio.it nell’app di posta del visitatore; non invia e non conserva dati sul server.
+L’iframe nasce solo quando si apre una demo. Non ci sono toolbar o CTA della landing all’interno del player. La sola X esterna chiude il popup; lo stesso fanno Escape e ogni click fuori dal perimetro visibile, compresi gli angoli tagliati. Un click nell’embed non chiude il popup. La chiusura rimuove l’iframe e restituisce il focus alla card.
+
+## Contatto
+
+`ready to start?` apre il modulo: nome, email e messaggio obbligatori, telefono facoltativo. Il modulo prepara un `mailto:` a info@mementostudio.it nell’app di posta del visitatore; non invia e non conserva dati sul server.
 
 ## Destinazioni
 
@@ -30,22 +34,18 @@ L’iframe viene creato soltanto all’apertura della demo. Il player usa lo spa
 | ProductVis | https://productvis.vercel.app/ |
 | VisualRef | https://visualref.vercel.app/ |
 
-Le demo esterne mantengono il proprio comportamento e le proprie politiche di incorporamento. La cover ProductVis conserva i telefoni della campagna; la demo esterna attuale presenta un modello automotive. Non sono state modificate le applicazioni esterne.
+Le demo esterne mantengono le loro interfacce e politiche di incorporamento. La cover ProductVis conserva i telefoni della campagna; la demo esterna presenta un modello automotive. Le applicazioni esterne non sono state modificate.
 
 ## Asset
 
-- IceCream: tavola originale fornita dall’utente, convertita in WebP. Il prodotto viene inquadrato con CSS e il titolo è HTML; il bordo della tavola non viene duplicato.
-- Auren: `https://mementoauren.vercel.app/assets/hero-clean.avif`, transcodificato in WebP.
-- Elite: `https://mementoelite.vercel.app/assets/hero.webp`.
-- Fashion: `https://mementofashion.vercel.app/video/jj-city-wide-poster.jpg`.
-- GAMMA: `https://mementosl.vercel.app/assets/landing/clothwear-hero-v8.webp`.
-- Food: `https://mementofood.vercel.app/assets/menu/velvet-a.webp`.
-- Knives, ProductVis e VisualRef: pannelli originali della campagna, rettificati attraverso omografie CSS. Le geometrie rimangono in `panel-geometries.js`.
+- IceCream: tavola originale, inquadrata tramite CSS per isolare il prodotto dal testo; titolo in HTML.
+- Auren, Elite, Fashion, GAMMA e Food: immagini delle rispettive demo, conservate dalla V03.
+- Knives, ProductVis e VisualRef: nuove immagini generate dalle tavole originali, con luce ambra e fondo scuro, senza testo o interfaccia incorporati; ottimizzate in WebP.
 
-Il fondale cinematografico della versione precedente è stato rimosso dalla nuova composizione.
+## Verifica V04
 
-## Verifica
+Controlli nel browser a 1363 × 936, 390 × 844, 375 × 667 e 2560 × 1080: headline su una riga, allineamento alla card, CTA su una riga, nessun overflow della landing e padding simmetrico di “Esplora”. Caricate tutte le nove copertine. Verificate le nuove copertine su desktop e mobile e la selezione tramite dot.
 
-Sintassi JavaScript e riferimenti locali controllati. Layout senza overflow verticale verificato nel browser a 1363 × 936, 390 × 844 e 375 × 667. Verificati selezione tramite dot, navigazione circolare, swipe orizzontale, apertura reale di Auren e IceCream, cambio gusto all’interno dell’embed, passaggio player → contatto, validazione dei campi obbligatori, rimozione dell’iframe e ritorno del focus alla card. Il link al gusto pistacchio è stato verificato navigando la demo.
+Apertura reale di Auren nel frame, misurato all’80% × 80% con margini del 10% su desktop e mobile. Verificati assenza di barre, X esterna, mantenimento del popup al click interno, chiusura cliccando nell’angolo tagliato, chiusura con X, rimozione dell’iframe e ripristino del focus. Verificati apertura della CTA contatto e chiusura con Escape; nessuna email inviata.
 
-Non si tratta di test su hardware mobile fisico. Il rendering WebGL delle demo esterne dipende dal browser e dal dispositivo; la landing usa CSS 3D e non richiede WebGL.
+Sintassi JavaScript, riferimenti locali e integrità dello ZIP controllati. La verifica mobile usa viewport del browser, non hardware fisico. Il rendering delle demo esterne dipende dal dispositivo e dal browser.
