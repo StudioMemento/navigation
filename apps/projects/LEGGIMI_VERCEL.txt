@@ -1,0 +1,25 @@
+MEMENTO — PORTFOLIO PER VERCEL
+Esportazione: 24 ottobre 2026
+Versione sorgente: b8d0941414c612e051032a2d633793a60a2f2f55
+
+Lo ZIP contiene il portfolio aggiornato: 27 schede, sei domini, varianti
+separate, player modulare e popup delle esperienze.
+
+ESTRAZIONE E PUBBLICAZIONE
+1. Estrai lo ZIP. index.html e vercel.json sono già nella radice del sito.
+2. Usa il contenuto estratto nel repository o nella cartella del progetto
+   Vercel. Mantieni assets/ e vendor/ insieme agli altri file.
+3. La Root Directory del progetto deve essere la cartella che contiene
+   index.html e vercel.json.
+4. Il file vercel.json incluso imposta Framework Other, nessun comando
+   di build o installazione e cartella di output . (radice).
+
+I file sono HTML, CSS e JavaScript statici. Non servono npm install o build.
+Per una prova locale, usa un server HTTP nella cartella estratta.
+
+Le esperienze esterne e il video YouTube mantengono gli indirizzi originali.
+Lo ZIP non include i siti esterni e non li rende autonomi dalla rete.
+
+Documentazione Vercel:
+https://vercel.com/docs/builds/configure-a-build
+https://vercel.com/docs/project-configuration/vercel-json
