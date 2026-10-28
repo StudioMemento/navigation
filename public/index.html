@@ -2,32 +2,34 @@
 <html lang="it">
 <head>
   <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-  <meta name="description" content="Memento: Services, Projects, Studio, Level Up e Start. Esplora il lago e scegli il tuo percorso."><meta name="theme-color" content="#050607"><title>Memento — Tide</title>
+  <meta name="description" content="Studio di design & esperienze digitali. Esplora Memento, Services, Projects, Levelup e Start.">
+  <meta name="theme-color" content="#080a0b"><title>Memento — Tide</title>
   <link rel="icon" href="data:,"><link rel="stylesheet" href="/style.css">
-  <script>
-    window.__TIDE_BOOT_ERRORS__=[];
-    const tideBootFailure=error=>{const message=String(error?.message||error||'Caricamento non riuscito');window.__TIDE_BOOT_ERRORS__.push(message);const show=()=>{const box=document.getElementById('fallback'),text=document.getElementById('fallback-message');if(box&&text){text.textContent='La scena non è disponibile. Puoi aprire le sezioni qui sotto.';box.hidden=false;box.dataset.error=message;}};if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',show,{once:true});else show();};
-    window.addEventListener('error',event=>{if(event.target?.tagName==='SCRIPT')tideBootFailure('Script non caricato: '+event.target.src);else if(event.message)tideBootFailure(event.message);},true);
-    window.addEventListener('unhandledrejection',event=>tideBootFailure(event.reason));
-    window.tideBootFailure=tideBootFailure;
-  </script>
   <script type="importmap">{"imports":{"three":"/vendor/three.module.js"}}</script>
 </head>
 <body data-state="BOOT">
-  <canvas id="tide" aria-label="Lago TIDE, navigazione Memento"></canvas>
-  <div id="stage-targets" aria-label="Sezioni Memento"></div>
-  <p id="loading" role="status">Caricamento del lago…</p>
-  <h1 id="stage-title" aria-hidden="true">MEMENTO</h1>
-  <div id="focus-controls" hidden><a id="open-section" href="#">Esplora</a><button id="back-lake" type="button">Torna al lago</button></div>
-  <main id="journey" hidden>
-    <div id="entry-band" aria-hidden="true"></div>
-    <section id="content-shell" aria-label="Services" inert><iframe id="services-frame" title="Servizi e percorsi Memento" scrolling="no" tabindex="-1"></iframe></section>
-    <div id="exit-band" aria-hidden="true"></div>
+  <section id="scene-layer" aria-label="Navigazione 3D Memento">
+    <canvas id="tide" aria-label="Trascina a destra o sinistra per scegliere una sezione" tabindex="0"></canvas>
+    <div id="stage-targets"></div>
+    <header id="brand"><span>MEMENTO</span><span class="edition">TIDE / 010</span></header>
+    <p id="loading" role="status">Caricamento del lago<span>…</span></p>
+    <div id="scene-ui" hidden>
+      <button class="arrow previous" id="previous" type="button" aria-label="Sezione precedente"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 4-8 8 8 8"/></svg></button>
+      <button class="arrow next" id="next" type="button" aria-label="Sezione successiva"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 4 8 8-8 8"/></svg></button>
+      <div id="caption"><span id="stage-count">01 / 05</span><h1 id="stage-title">MEMENTO</h1><a id="open-section" href="https://mementostudio.vercel.app/">Esplora <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 9 7 7 7-7"/></svg></a></div>
+      <nav id="section-nav" aria-label="Scegli una sezione"></nav>
+      <p id="gesture-hint">Trascina per esplorare <span>·</span> Scroll per cambiare sezione</p>
+    </div>
+  </section>
+  <main id="page-layer" hidden inert aria-label="Pagina selezionata">
+    <header id="page-toolbar"><button id="back-scene" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 15 7-7 7 7"/></svg><span>Torna al lago</span></button><span id="page-label">Memento</span><a id="direct-link" href="https://mementostudio.vercel.app/" target="_blank" rel="noopener">Apri pagina ↗</a></header>
+    <div id="frame-host"></div>
+    <div id="page-loading" role="status">Apertura della pagina…</div>
+    <aside id="embed-notice" hidden>La pagina sta impiegando più tempo del previsto. <a id="retry-direct" href="https://mementostudio.vercel.app/" target="_blank" rel="noopener">Aprila direttamente ↗</a></aside>
   </main>
-  <div id="transition-fog" aria-hidden="true"></div>
-  <div id="status" class="sr-only" aria-live="polite" aria-atomic="true"></div>
-  <aside id="fallback" hidden><p id="fallback-message">La scena non è disponibile.</p><nav aria-label="Collegamenti diretti"><a href="https://mementoservizi.vercel.app/" target="_blank" rel="noopener">Services</a><a href="https://mementoportfolio.vercel.app/" target="_blank" rel="noopener">Projects</a><a href="https://mementostudio.vercel.app/" target="_blank" rel="noopener">Studio</a><a href="https://mementolevelup.vercel.app/" target="_blank" rel="noopener">Level Up</a><a href="https://mementostart.vercel.app/" target="_blank" rel="noopener">Start</a></nav><button type="button" id="dismiss-error">Chiudi</button></aside>
-  <noscript><nav class="noscript" aria-label="Sezioni Memento"><a href="https://mementoservizi.vercel.app/" target="_blank" rel="noopener">Services</a><a href="https://mementoportfolio.vercel.app/" target="_blank" rel="noopener">Projects</a><a href="https://mementostudio.vercel.app/" target="_blank" rel="noopener">Studio</a><a href="https://mementolevelup.vercel.app/" target="_blank" rel="noopener">Level Up</a><a href="https://mementostart.vercel.app/" target="_blank" rel="noopener">Start</a></nav></noscript>
-  <script type="module">import('/src/app.js').catch(window.tideBootFailure);</script>
+  <p id="status" class="sr-only" aria-live="polite" aria-atomic="true"></p>
+  <aside id="fallback" hidden><p>La scena 3D non è disponibile. Puoi continuare da qui.</p><nav aria-label="Collegamenti diretti"><a href="https://mementostudio.vercel.app/">Memento</a><a href="https://mementoservizi.vercel.app/">Services</a><a href="https://mementoportfolio.vercel.app/">Projects</a><a href="https://mementolevelup.vercel.app/">Levelup</a><a href="https://mementostart.vercel.app/">Start</a></nav><button type="button" onclick="location.reload()">Riprova</button></aside>
+  <noscript><nav class="noscript"><a href="https://mementostudio.vercel.app/">Memento</a><a href="https://mementoservizi.vercel.app/">Services</a><a href="https://mementoportfolio.vercel.app/">Projects</a><a href="https://mementolevelup.vercel.app/">Levelup</a><a href="https://mementostart.vercel.app/">Start</a></nav></noscript>
+  <script type="module">import('/src/app.js').catch(error=>{console.error(error);document.querySelector('#loading').hidden=true;document.querySelector('#fallback').hidden=false;});</script>
 </body>
 </html>

@@ -19,17 +19,3 @@ export class RipplePool {
   active(time) { let count=0; for(let i=0;i<this.capacity;i++) if(time-this.data[i*4+2]>=0 && time-this.data[i*4+2]<2.4) count++; return count; }
 }
 
-export function validEnvelope(event, origin, source, sessionId, allowed) {
-  const d=event.data;
-  return event.origin===origin && event.source===source && d && typeof d==='object' &&
-    d.channel==='memento:tide' && d.version===1 && d.sessionId===sessionId &&
-    d.stageId==='s01_services' && allowed.includes(d.type) && d.payload && typeof d.payload==='object';
-}
-
-export function journeyPhase(scroll, entry, contentHeight, exit) {
-  if(scroll<=0) return {state:'FOCUSED',entry:0,exit:0};
-  if(scroll<entry) return {state:'ENTERING',entry:clamp(scroll/entry),exit:0};
-  const exitStart=entry+contentHeight;
-  if(scroll<exitStart) return {state:'CONTENT',entry:1,exit:0};
-  return {state:'EXITING',entry:1,exit:clamp((scroll-exitStart)/exit)};
-}

@@ -1,90 +1,97 @@
-// Run the actual landing controller in a small DOM/history host. This checks
-// navigation decisions and route continuity; it does not simulate WebGL/UI.
-import fs from 'node:fs/promises';
-import path from 'node:path';
-import {fileURLToPath} from 'node:url';
-import vm from 'node:vm';
+import test from 'node:test';
 import assert from 'node:assert/strict';
-import {webcrypto,randomUUID,createHash} from 'node:crypto';
-const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
-const pub=path.join(root,'public');
-const app=await fs.readFile(path.join(pub,'src/app.js'),'utf8');
-const importText=async p=>import('data:text/javascript;base64,'+Buffer.from(await fs.readFile(path.join(pub,p),'utf8')).toString('base64'));
-const core=await importText('src/core.js'),assets=await importText('src/assets.js'),routes=await importText('src/world-routes.js');
-const input=Object.fromEntries(await Promise.all(['navigation','cameras_family_v007','scene_contract_world_v008','world-routes'].map(async name=>[name,JSON.parse(await fs.readFile(path.join(pub,'data',name+'.json'),'utf8'))])));
-const code=app.replace(/^import .*;\r?\n/gm,'').replace('setup().catch(error=>reportError(error,true));raf=requestAnimationFrame(animate);','');
-class Vec{
-  constructor(x=0,y=0,z=0){this.set(x,y,z);}set(x,y,z){this.x=x;this.y=y;this.z=z;return this;}
-  copy(v){return this.set(v.x,v.y,v.z);}fromArray(a){return this.set(...a);}toArray(){return [this.x,this.y,this.z];}
-}
+import {readFile} from 'node:fs/promises';
+import vm from 'node:vm';
+import {randomUUID} from 'node:crypto';
+import * as THREE from '../public/vendor/three.module.js';
+import * as math from '../public/src/navigation.js';
+const fixture=Object.fromEntries(await Promise.all(['navigation','cameras_family_v007','scene_contract_world_v008'].map(async name=>[name,JSON.parse(await readFile(new URL('../public/data/'+name+'.json',import.meta.url)))])));
+const source=(await readFile(new URL('../public/src/app.js',import.meta.url),'utf8')).replace(/^import .*;\n/gm,'').replace('setup().catch(reportError);raf=requestAnimationFrame(animate);','');
 function host(){
-  const listeners=new Map(),nodes=new Map(),historyCalls=[];
-  const eventHost=name=>({addEventListener(type,fn){listeners.set(name+':'+type,fn);}});
-  const element=name=>{
-    if(nodes.has(name))return nodes.get(name);
-    const attrs=new Map(),classes=new Set(),node={...eventHost(name),hidden:false,inert:false,tabIndex:0,style:{setProperty(){}},dataset:{},width:1920,height:1080,
-      classList:{add:v=>classes.add(v),remove:v=>classes.delete(v),toggle(v,on){if(on)classes.add(v);else classes.delete(v);}},
-      setAttribute:(k,v)=>attrs.set(k,v),removeAttribute:k=>attrs.delete(k),getAttribute:k=>attrs.get(k),
-      getBoundingClientRect:()=>({width:1920,height:1080}),append(){},focus(){},contains(){return false;},contentWindow:{postMessage(){}}};
-    nodes.set(name,node);return node;
-  };
-  const location={origin:'http://localhost',pathname:'/',search:'',hash:''};
-  const window={...eventHost('window'),scrollY:0,scrollTo({top}){this.scrollY=top;}};
-  const history={scrollRestoration:'auto',state:{tide:'overview'},pushState(state,unused,url){this.state=state;location.hash=new URL(url,location.origin).hash;historyCalls.push({type:'push',state,url});},replaceState(state,unused,url){this.state=state;location.hash=new URL(url,location.origin).hash;historyCalls.push({type:'replace',state,url});}};
-  const document={...eventHost('document'),body:element('body'),documentElement:element('html'),hidden:false,querySelector:element,createElement:element,querySelectorAll:()=>[]};
-  const THREE={Vector3:Vec,Vector2:Vec,Plane:class{},Raycaster:class{},MathUtils:{lerp:(a,b,t)=>a+(b-a)*t,damp:(a,b,k,t)=>a+(b-a)*(1-Math.exp(-k*t)),degToRad:v=>v*Math.PI/180}};
-  const context=vm.createContext({...core,...assets,THREE,window,document,location,history,innerWidth:1920,innerHeight:1080,devicePixelRatio:1,URLSearchParams,AbortController,crypto:{subtle:webcrypto.subtle,randomUUID},
-    matchMedia:()=>({...eventHost('media'),matches:false}),setTimeout:()=>1,clearTimeout(){},requestAnimationFrame:()=>1,cancelAnimationFrame(){},console,
-    fixture:input,sampler:routes.createWorldRouteSampler(input['world-routes'])});
-  vm.runInContext(code,context);
-  vm.runInContext("navigation=fixture.navigation;cameraData=fixture.cameras_family_v007;contract=fixture.scene_contract_world_v008;worldRoutes=sampler;renderer={getPixelRatio:()=>1};ready=true;setState('OVERVIEW');",context);
-  return {context,location,window,historyCalls,nodes,read:s=>vm.runInContext(s,context),pop(hash,restoredScroll=null){location.hash=hash;listeners.get('window:popstate')({});if(restoredScroll!==null&&history.scrollRestoration==='auto')window.scrollY=restoredScroll;},finish(){vm.runInContext('clock+=10;stepMotion();',context);}};
+  let nodeId=0,time=0;const nodes=new Map(),historyCalls=[],events=new Map();
+  function element(id){
+    if(nodes.has(id))return nodes.get(id);
+    const listeners=new Map(),attrs=new Map();
+    const node={id,hidden:false,style:{},dataset:{},inert:false,tabIndex:0,isConnected:true,children:[],contentWindow:{postMessage(){}},
+      addEventListener(type,fn){const handlers=listeners.get(type)||[];handlers.push(fn);listeners.set(type,handlers);},emit(type,event={}){for(const fn of listeners.get(type)||[])fn(event);},
+      setAttribute(k,v){attrs.set(k,v);},getAttribute(k){return attrs.get(k);},focus(){document.activeElement=this;},append(child){this.children.push(child);},replaceChildren(...children){this.children=children;},contains(other){return other===this||this.children.includes(other);},closest(){return null;},setPointerCapture(){},hasPointerCapture(){return false;},releasePointerCapture(){}};
+    nodes.set(id,node);return node;
+  }
+  const document={body:element('body'),hidden:false,activeElement:null,querySelector:element,querySelectorAll(selector){return selector==='iframe'?element('#frame-host').children:[];},createElement:tag=>element(tag+'-'+nodeId++),addEventListener(){}};
+  const location={hash:'',search:'',pathname:'/',origin:'https://tide.local'};
+  const history={scrollRestoration:'auto',pushState(state,unused,url){this.state=state;location.hash=new URL(url,location.origin).hash;historyCalls.push('push');},replaceState(state,unused,url){this.state=state;location.hash=new URL(url,location.origin).hash;historyCalls.push('replace');}};
+  const window={addEventListener(type,fn){events.set(type,fn);}};
+  const context=vm.createContext({...math,THREE,document,window,history,location,fixture,innerWidth:1440,innerHeight:900,devicePixelRatio:1,URLSearchParams,URL,AbortController,crypto:{randomUUID},performance:{now:()=>time},requestAnimationFrame:()=>1,cancelAnimationFrame(){},setTimeout:()=>1,clearTimeout(){},console,
+    matchMedia:()=>({matches:false,addEventListener(){}}),assetConfiguration:()=>({}),assetEntryPoints:()=>({})});
+  const run=code=>vm.runInContext(code,context);
+  run(source);
+  run(`navigation=fixture.navigation;contract=fixture.scene_contract_world_v008;cameraData=fixture.cameras_family_v007;scene=new THREE.Scene();camera=new THREE.PerspectiveCamera(38,1.6,.1,550);renderer={getPixelRatio:()=>1,info:{reset(){},render:{calls:0,triangles:0},memory:{textures:0}},render(){}};water={update(){}};updatePoses();ready=true;setState('SCENE');updateLabels();`);
+  return{run,nodes,events,location,historyCalls,tick(n=80){for(let i=0;i<n;i++){time+=50;context.now=time;run('animate(now)');}},pop(hash){location.hash=hash;events.get('popstate')();}};
 }
-const results=[];
-function test(name,run){try{run();results.push({name,pass:true});}catch(e){results.push({name,pass:false,error:e.message});}}
-test('Focus traversal Back and Forward do not append history entries',()=>{
-  const h=host();h.read("selectStage('s02_projects')");h.finish();h.read("selectStage('s03_studio')");h.finish();
-  assert.equal(h.historyCalls.filter(x=>x.type==='push').length,2);
-  h.pop('#projects');h.finish();assert.equal(h.read('selectedId'),'s02_projects');
-  h.pop('#studio');h.finish();assert.equal(h.read('selectedId'),'s03_studio');
-  assert.equal(h.historyCalls.filter(x=>x.type==='push').length,2);
+test('Loop and flick selection behave in both directions, including cancelled and stale drags',()=>{
+  assert.equal(math.nearestStop(0,4,5),5);assert.equal(math.nearestStop(4,0,5),-1);
+  assert.equal(math.releaseStop({start:0,position:.22,velocity:2,moved:true}),1);
+  assert.equal(math.releaseStop({start:0,position:-.22,velocity:-2,moved:true}),-1);
+  assert.equal(math.releaseStop({start:0,position:.22,velocity:0,moved:true}),0);
+  assert.equal(math.releaseStop({start:0,position:.22,velocity:3,moved:true,cancelled:true}),0);
 });
-test('Services content Back and Forward restores document without duplicate entries',()=>{
-  const h=host();h.read("contentReady=true;selectStage('s01_services')");h.finish();h.read('enterContent();scrollComposition();');
-  assert.equal(h.read('state'),'CONTENT');assert.equal(h.historyCalls.filter(x=>x.type==='push').length,2);
-  h.pop('#services');assert.equal(h.read('state'),'FOCUSED');assert.equal(h.window.scrollY,0);
-  h.pop('#services-content');assert.equal(h.read('state'),'CONTENT');assert(h.window.scrollY>0);
-  assert.equal(h.historyCalls.filter(x=>x.type==='push').length,2);
+test('The circular camera stays continuous across all seams and descent looks downward',()=>{
+  const poses=fixture.navigation.stages.map(s=>{const c=fixture.cameras_family_v007.cameras.find(c=>c.name==='CAM_FOCUS_'+s.id);return{position:c.positionWeb,target:c.targetWeb,fov:c.verticalFovDegrees};});
+  for(let i=-5;i<10;i++){
+    const left=math.sampleCarousel(poses,i-1e-6),right=math.sampleCarousel(poses,i+1e-6);
+    assert(Math.hypot(...left.position.map((x,j)=>x-right.position[j]))<.001);
+    const start=math.sampleCarousel(poses,i);let lastPitch=1;
+    for(let t=0;t<=1;t+=.05){const p=math.sampleDescent(start,t);const pitch=Math.atan2(p.target[1]-p.position[1],Math.hypot(p.target[0]-p.position[0],p.target[2]-p.position[2]));assert(pitch<=lastPitch+1e-8);lastPitch=pitch;assert(p.position[1]>1);}
+    assert(lastPitch< -1.2);
+  }
+  assert.equal(math.panelProgress(0),0);assert.equal(math.panelProgress(1),1);
 });
-test('Native post-popstate scroll restoration cannot reopen Services after Back',()=>{
-  const h=host();assert.equal(h.read('history.scrollRestoration'),'manual');
-  h.read("contentReady=true;selectStage('s01_services')");h.finish();h.read('enterContent();scrollComposition();');
-  const oldScroll=h.window.scrollY;assert(oldScroll>0);
-  h.pop('#services',oldScroll);h.read('scrollComposition()');
-  assert.equal(h.window.scrollY,0);assert.equal(h.read('state'),'FOCUSED');assert.equal(h.location.hash,'#services');
-  assert.equal(h.historyCalls.filter(x=>x.type==='push').length,2);
-  h.pop('#services-content',oldScroll);h.read('scrollComposition()');assert.equal(h.read('state'),'CONTENT');
-  assert.equal(h.historyCalls.filter(x=>x.type==='push').length,2);
+test('All five pages open from their real URL, return reversibly, and retain only one iframe',()=>{
+  const h=host();
+  for(let index=0;index<5;index++){
+    h.run(`selectIndex(${index});movePage(1)`);h.tick(130);
+    assert.equal(h.run('state'),'CONTENT');assert.equal(h.run('frame.src'),fixture.navigation.stages[index].href);
+    assert.equal(h.run('pageLayer.inert'),false);assert.equal(h.nodes.get('#frame-host').children.length,1);
+    h.run('movePage(0)');h.tick();assert.equal(h.run('state'),'SCENE');assert.equal(h.run('progress'),0);assert.equal(h.run('sceneLayer.inert'),false);
+  }
 });
-test('Forward directly from overview to Services content waits for focus then opens',()=>{
-  const h=host();h.read('contentReady=true');h.pop('#services-content');assert.equal(h.read('state'),'FOCUSING');h.finish();
-  assert.equal(h.read('state'),'CONTENT');assert.equal(h.read('selectedId'),'s01_services');assert.equal(h.historyCalls.filter(x=>x.type==='push').length,0);
+test('Back/Forward restores selected section and content without new history entries',()=>{
+  const h=host();h.run('selectIndex(1)');h.tick();h.run('movePage(1)');h.tick();
+  const pushes=h.historyCalls.filter(x=>x==='push').length;
+  h.pop('#services');h.tick();assert.equal(h.run('state'),'SCENE');
+  h.pop('#services-content');h.tick();assert.equal(h.run('state'),'CONTENT');
+  h.pop('#start');h.tick(160);assert.equal(h.run('selectedIndex'),4);assert.equal(h.run('state'),'SCENE');
+  assert.equal(h.historyCalls.filter(x=>x==='push').length,pushes);
 });
-test('Delayed Services READY never bypasses the held camera pose even at footer scroll',()=>{
-  const h=host();h.read("selectStage('s01_services')");h.finish();
-  h.read('window.scrollY=50000;scrollComposition()');
-  assert.equal(h.read('state'),'ENTERING');assert.equal(h.read('qa.route.u'),.45);assert.equal(h.read('shell.style.opacity'),'0');assert.equal(h.read('shell.inert'),true);
-  assert.equal(h.read('historyEntered'),false);
+test('Escape reverses a partial entry without a jump or stuck inert state',()=>{
+  const h=host();h.run('movePage(1)');h.tick(10);const before=h.run('progress');assert(before>0&&before<1);
+  h.run('movePage(0)');assert.equal(h.run('progress'),before);h.tick();assert.equal(h.run('state'),'SCENE');assert.equal(h.run('pageLayer.hidden'),true);
 });
-test('Escape during partial entry follows entry back before returning to overview',()=>{
-  const h=host();h.read("contentReady=true;selectStage('s01_services')");h.finish();h.read('window.scrollY=entryHeight*.6;scrollComposition();returnOverview()');
-  assert.equal(h.read('activeMotion.kind'),'entry');assert.equal(h.read('activeMotion.uStart'),.6);assert.equal(h.read('activeMotion.uEnd'),0);
-  h.finish();assert.equal(h.read('activeMotion.kind'),'overview');h.finish();assert.equal(h.read('state'),'OVERVIEW');assert.equal(h.window.scrollY,0);
+test('Late iframe load events cannot mark a different destination loaded',()=>{
+  const h=host();h.run('preloadSection()');const old=h.run('frame');h.run('selectIndex(1)');h.tick();h.run('preloadSection()');
+  old.emit('load');assert.equal(h.run('contentLoaded'),false);h.run('frame').emit('load');assert.equal(h.run('contentLoaded'),true);
 });
-test('Natural Services footer loop returns to overview once',()=>{
-  const h=host();h.read("contentReady=true;selectStage('s01_services')");h.finish();h.read('enterContent();scrollComposition();window.scrollY=100000;scrollComposition();');
-  assert.equal(h.read('state'),'OVERVIEW');assert.equal(h.read('qa.loops'),1);assert.equal(h.window.scrollY,0);assert.equal(h.read('selectedId'),null);
+test('A pointer swipe cancels its click and pointer cancellation settles cleanly',()=>{
+  const h=host();h.run(`pointerDown({isPrimary:true,button:0,pointerId:2,clientX:900,clientY:300,timeStamp:100});pointerMove({pointerId:2,clientX:450,clientY:305,timeStamp:450,preventDefault(){}});pointerEnd({pointerId:2,timeStamp:470});`);h.tick();
+  assert.equal(h.run('selectedIndex'),1);assert.equal(h.run('state'),'SCENE');assert(h.run('suppressClickUntil')>0);assert.equal(h.run('frame'),null);
+  h.run(`pointerDown({isPrimary:true,button:0,pointerId:3,clientX:500,clientY:300,timeStamp:800});pointerMove({pointerId:3,clientX:470,clientY:300,timeStamp:830,preventDefault(){}});pointerEnd({pointerId:3,timeStamp:840},true);`);h.tick();assert.equal(h.run('gesture'),null);assert.equal(h.run('state'),'SCENE');
 });
-const report={passed:results.every(r=>r.pass),method:'Unmodified app.js controller evaluated in Node vm with DOM/history host and actual exported core, assets and v008 route sampler. Setup/WebGL renderer not run.',appSha256:createHash('sha256').update(app).digest('hex'),results,limitations:['Browser visual, timing, accessibility, scrolling, GPU behavior and actual History API are separately verified in browser.','No target-device or performance conclusion.']};
-await fs.writeFile(path.join(root,'reports/navigation_state_regression.json'),JSON.stringify(report,null,2)+'\n');
-console.log(JSON.stringify(report));if(!report.passed)process.exitCode=1;
+test('Cross-origin bridge rejects wrong source, origin, stage, and session',()=>{
+  const frame={contentWindow:{}},stage=fixture.navigation.stages[1],data={channel:'memento:tide',version:1,stageId:stage.id,sessionId:'test',type:'END'};
+  const good={origin:new URL(stage.href).origin,source:frame.contentWindow,data};assert(math.validBridge(good,frame,stage,'test'));
+  for(const bad of [{...good,origin:'https://wrong.example'},{...good,source:{}},{...good,data:{...data,stageId:'wrong'}},{...good,data:{...data,sessionId:'wrong'}}])assert.equal(math.validBridge(bad,frame,stage,'test'),false);
+});
+
+test('A stationary tap on the selected sculpture can immediately open the page',()=>{
+  const h=host();h.run("pointerDown({isPrimary:true,button:0,pointerId:1,clientX:500,clientY:300,timeStamp:100});pointerEnd({pointerId:1,timeStamp:120});");
+  assert.equal(h.run('travel'),null);h.run('movePage(1)');h.tick();assert.equal(h.run('state'),'CONTENT');
+});
+
+test('Rapid next clicks retain the queued destination instead of resetting the animation',()=>{
+  const h=host();h.run('stepSection(1)');h.tick(2);h.run("pointerDown({isPrimary:true,button:0,pointerId:1,clientX:1200,clientY:450,timeStamp:200});pointerEnd({pointerId:1,timeStamp:220});stepSection(1);");h.tick();assert.equal(h.run('selectedIndex'),2);assert.equal(h.run('position'),2);
+});
+test('Motion duration uses wall time at a low frame rate and Escape cancels queued entry',()=>{
+  const h=host();h.run('movePage(1);animate(100);animate(2100)');assert.equal(h.run('state'),'CONTENT');
+  h.run('movePage(0);animate(4000)');assert.equal(h.run('state'),'SCENE');
+  h.run('selectIndex(2);movePage(1)');h.events.get('keydown')({key:'Escape',target:{},preventDefault(){}});h.tick();assert.equal(h.run('state'),'SCENE');assert.equal(h.run('pendingRoute'),null);
+});

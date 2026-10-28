@@ -1,0 +1,43 @@
+{
+  "version": "v010",
+  "date": "2026-10-28",
+  "automated_tests": {
+    "passed": 13,
+    "failed": 0,
+    "source_sha256": "b8ebae92f4eff653c69b31e73a90e782239081bdacf6833f2e051f8a68b7a26a"
+  },
+  "build": {
+    "checks": 57,
+    "errors": 0
+  },
+  "external_pages": {
+    "status": 200,
+    "x_frame_options": null,
+    "content_security_policy": null,
+    "urls": [
+      "https://mementostudio.vercel.app/",
+      "https://mementoservizi.vercel.app/",
+      "https://mementoportfolio.vercel.app/",
+      "https://mementolevelup.vercel.app/",
+      "https://mementostart.vercel.app/"
+    ]
+  },
+  "browser": {
+    "method": "Temporary UI harness, real controller with simulated renderer; isolated from production output",
+    "observed": [
+      "Desktop mouse drag selected Services without opening the iframe",
+      "External Services page loaded visibly in iframe",
+      "Return from Services restored selected scene",
+      "External Projects page loaded visibly during page entry"
+    ],
+    "not_verified": [
+      "GPU scene rendering",
+      "Final visual composition and fog",
+      "Real-device mobile swipe",
+      "Performance/FPS",
+      "Latest pointer/clock refinements in live browser (covered by final controller tests)"
+    ],
+    "webgl_blocker": "GL_RENDERER = Disabled / Error creating WebGL context"
+  },
+  "deployed": false
+}

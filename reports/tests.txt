@@ -1,0 +1,26 @@
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> memento-tide-vercel@0.10.0 test
+> node --test scripts/*.test.mjs
+
+✔ Loop and flick selection behave in both directions, including cancelled and stale drags (1.407223ms)
+✔ The circular camera stays continuous across all seams and descent looks downward (1.690743ms)
+✔ All five pages open from their real URL, return reversibly, and retain only one iframe (26.334618ms)
+✔ Back/Forward restores selected section and content without new history entries (8.226306ms)
+✔ Escape reverses a partial entry without a jump or stuck inert state (2.467933ms)
+✔ Late iframe load events cannot mark a different destination loaded (2.03389ms)
+✔ A pointer swipe cancels its click and pointer cancellation settles cleanly (2.903989ms)
+✔ Cross-origin bridge rejects wrong source, origin, stage, and session (0.388114ms)
+✔ A stationary tap on the selected sculpture can immediately open the page (2.215349ms)
+✔ Rapid next clicks retain the queued destination instead of resetting the animation (3.395276ms)
+✔ Motion duration uses wall time at a low frame rate and Escape cancels queued entry (6.901984ms)
+✔ The static preview confines all paths to public (1.14821ms)
+✔ Static preview matches Services, asset, redirect and missing-file behavior (39.689183ms)
+ℹ tests 13
+ℹ suites 0
+ℹ pass 13
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 227.005483

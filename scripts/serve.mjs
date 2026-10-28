@@ -34,6 +34,8 @@ export function createPreviewServer(){return http.createServer(async(req,res)=>{
   }catch(error){res.writeHead(error.code==='ENOENT'?404:500);res.end(error.code==='ENOENT'?'Not found':'Request failed');}
 });}
 if(process.argv[1]&&path.resolve(process.argv[1])===fileURLToPath(import.meta.url)){
-  const port=Number(process.env.TIDE_PORT||8770);
-  createPreviewServer().listen(port,'127.0.0.1',()=>console.log('MEMENTO TIDE Vercel package: http://127.0.0.1:'+port));
+  const option=name=>{const i=process.argv.indexOf(name);return i<0?null:process.argv[i+1];};
+  const port=Number(option('--port')||process.env.PORT||process.env.TIDE_PORT||8770);
+  const host=option('--host')||'127.0.0.1';
+  createPreviewServer().listen(port,host,()=>console.log('MEMENTO TIDE v010: http://'+host+':'+port));
 }

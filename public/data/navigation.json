@@ -1,47 +1,40 @@
 {
-  "version": "v009",
+  "version": "v010",
   "stages": [
     {
       "id": "s00_memento",
       "label": "Memento",
       "slug": "memento",
-      "href": null,
-      "mode": "overview"
+      "href": "https://mementostudio.vercel.app/",
+      "mode": "embed"
     },
     {
       "id": "s01_services",
       "label": "Services",
       "slug": "services",
       "href": "https://mementoservizi.vercel.app/",
-      "mode": "services-embedded"
+      "mode": "embed"
     },
     {
       "id": "s02_projects",
       "label": "Projects",
       "slug": "projects",
       "href": "https://mementoportfolio.vercel.app/",
-      "mode": "external"
-    },
-    {
-      "id": "s03_studio",
-      "label": "Studio",
-      "slug": "studio",
-      "href": "https://mementostudio.vercel.app/",
-      "mode": "external"
+      "mode": "embed"
     },
     {
       "id": "s04_levelup",
-      "label": "Level Up",
+      "label": "Levelup",
       "slug": "levelup",
       "href": "https://mementolevelup.vercel.app/",
-      "mode": "external"
+      "mode": "embed"
     },
     {
       "id": "s05_start",
       "label": "Start",
       "slug": "start",
       "href": "https://mementostart.vercel.app/",
-      "mode": "external"
+      "mode": "embed"
     }
   ]
 }

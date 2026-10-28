@@ -13,11 +13,11 @@ test('Static preview matches Services, asset, redirect and missing-file behavior
   async function request(route,method='GET'){return new Promise((resolve,reject)=>{const req=http.request({hostname:'127.0.0.1',port,path:route,method},res=>{const chunks=[];res.on('data',chunk=>chunks.push(chunk));res.on('end',()=>resolve({status:res.statusCode,headers:res.headers,body:Buffer.concat(chunks)}));});req.on('error',reject);req.end();});}
   try{
     const home=await request('/');assert.equal(home.status,200);assert.match(home.body.toString(),/Memento|MEMENTO/);
-    const services=await request('/services/?sessionId=test');assert.equal(services.status,200);assert.match(services.body.toString(),/\/services\/bridge.js/);assert.match(services.body.toString(),/\/services\/assets\//);assert.doesNotMatch(services.body.toString(),/https:\/\/mementoservizi\.vercel\.app\/assets/);
-    const font=await request('/services/assets/fonts/InterVariable.woff2','HEAD');assert.equal(font.status,200);assert.equal(font.headers['content-type'],'font/woff2');assert.equal(font.body.length,0);
+    const services=await request('/services/');assert.equal(services.status,307);assert.equal(services.headers.location,'https://mementoservizi.vercel.app/');
+    const font=await request('/fonts/InterVariable.woff2','HEAD');assert.equal(font.status,200);assert.equal(font.headers['content-type'],'font/woff2');assert.equal(font.body.length,0);
     const glb=await request('/world_v008/optimized/environment.glb');assert.equal(glb.status,200);assert.equal(glb.headers['content-type'],'model/gltf-binary');assert.equal(glb.body.readUInt32LE(0),0x46546c67);
     const studio=await request('/studio');assert.equal(studio.status,307);assert.equal(studio.headers.location,'https://mementostudio.vercel.app/');
-    assert.equal((await request('/services')).status,308);
+    assert.equal((await request('/services')).status,307);
     assert.equal((await request('/does-not-exist.js')).status,404);
     assert.equal((await request('/%2e%2e/package.json')).status,403);
     assert.equal((await request('/','POST')).status,405);

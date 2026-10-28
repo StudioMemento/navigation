@@ -1,327 +1,325 @@
 import * as THREE from 'three';
-import {loadWorldRoutes} from './world-routes.js';
 import {GLTFLoader} from '../vendor/loaders/GLTFLoader.js';
 import {HDRLoader} from '../vendor/loaders/HDRLoader.js';
 import {MeshoptDecoder} from '../vendor/meshopt_decoder.mjs';
 import {createWater} from './water.js';
-import {clamp,smooth,remap,validEnvelope,journeyPhase} from './core.js';
 import {assetConfiguration,assetEntryPoints,fetchDataWithFallback,poolAssetResources} from './assets.js';
+import {clamp,smooth,wrap,mix,nearestStop,releaseStop,sampleCarousel,sampleDescent,panelProgress,resolveHash,validBridge} from './navigation.js';
 
-// The camera controller owns scroll restoration for its focused/content states.
-if('scrollRestoration' in history)history.scrollRestoration='manual';
-const $=selector=>document.querySelector(selector);
-const canvas=$('#tide'),targets=$('#stage-targets'),journey=$('#journey'),shell=$('#content-shell'),frame=$('#services-frame'),fog=$('#transition-fog');
-const params=new URLSearchParams(location.search),assetConfig=assetConfiguration(location.search,innerWidth/innerHeight<.8),assetTier=assetConfig.tier;
-const reduced=matchMedia('(prefers-reduced-motion: reduce)'),still=params.get('still')==='1';
-const abort=new AbortController();
-const qa={version:'v009-vercel',worldRevision:'v008',three:THREE.REVISION,assetTier,assetRevision:assetConfig.revision,textureQuality:assetConfig.quality,state:'BOOT',errors:[],warnings:[],events:[],frames:0,reflectionFrames:0,loops:0,canvasCount:1,rafLoops:1,bridge:{ready:false,resizes:0,rejected:0},assets:[],viewport:{},quality:{toneMapping:'AgX',exposure:1,environmentIntensity:.5,backgroundIntensity:.025,skyYawOffsetDegrees:135,normalScalesMeters:[3.2,.28],rippleSpeed:1.1,rippleLifetime:2.4,waterF0:.02,waterRoughnessApproximation:'five tap planar filter',bloom:false,dof:false},render:{},timings:[]};
-Object.defineProperty(window,'__TIDE_QA__',{value:{snapshot:()=>JSON.parse(JSON.stringify({...qa,scroll:window.scrollY,contentHeight,entryHeight,exitLength,contentReady,frameCount:document.querySelectorAll('iframe').length,camera:camera?{position:camera.position.toArray(),target:base.target.toArray(),fov:camera.fov}:null}))},writable:false});
-const qaElement=params.get('qa')==='1'?document.createElement('pre'):null;
-if(qaElement){qaElement.id='qa-snapshot';qaElement.hidden=true;qaElement.textContent=JSON.stringify({state:'BOOT'});document.body.append(qaElement);}
-function publishQa(){if(qaElement)qaElement.textContent=JSON.stringify(window.__TIDE_QA__.snapshot());}
-const listen=(obj,event,fn,options={})=>obj.addEventListener(event,fn,{...options,signal:abort.signal});
-let renderer,scene,camera,water,pmrem,environmentTexture,environmentTarget,servicesPivot,servicesModel;
-let navigation,worldRoutes,atmosphere,selectedId=null,routeYaws={},pendingOverview=false,pendingContentRestore=false;
-const stageModels=new Map();
+const $=s=>document.querySelector(s);
+const canvas=$('#tide'),sceneLayer=$('#scene-layer'),pageLayer=$('#page-layer');
+const reduced=matchMedia('(prefers-reduced-motion: reduce)');
+const params=new URLSearchParams(location.search),still=params.get('still')==='1';
+const config=assetConfiguration(location.search,innerWidth/innerHeight<.8);
+const abort=new AbortController(),on=(node,type,fn,options={})=>node.addEventListener(type,fn,{...options,signal:abort.signal});
+const qa={version:'v010',state:'BOOT',errors:[],warnings:[],assets:[],events:[],frames:0,reflectionFrames:0,gestureCount:0,bridge:{ready:false,rejected:0},quality:{fog:true,forcedFade:false}};
+let renderer,scene,camera,water,environmentTarget,contract,cameraData,navigation,ready=false;
+let state='BOOT',selectedIndex=0,position=0,goal=0,travel=null,gesture=null,suppressClickUntil=0;
+let progress=0,transition=null,pendingRoute=null,frame=null,frameStage=null,frameToken=0,frameTimer,contentLoaded=false;
+let clock=0,lastTime=0,raf=0,lastRender=0,resizeTimer,wheelTotal=0,wheelStamp=0,wheelLock=0;
+const newSession=()=>crypto.randomUUID?.()||'tide-'+Date.now().toString(36)+'-'+Math.random().toString(36).slice(2);
+let poses=[],sessionId=newSession(),previousFocus=null;
+const models=new Map(),fogCards=[],hitTargets=[];
+const look=new THREE.Vector2(),lookSmooth=new THREE.Vector2(),raycaster=new THREE.Raycaster(),pointer=new THREE.Vector2();
+const waterPlane=new THREE.Plane(new THREE.Vector3(0,1,0),0),waterPoint=new THREE.Vector3(),projectPoint=new THREE.Vector3(),right=new THREE.Vector3();
 const initialHash=location.hash;
-let contract,cameraData,state='BOOT',clock=0,lastTime=0,lastRender=0,raf=0,ready=false;
-let poses={},activeMotion=null,returnTransition=null,lastVisible=false,lastFocusSent=false,historyEntered=false;
-let contentReady=false,preloaded=false,contentHeight=800,entryHeight=innerHeight*.95,exitLength=innerHeight*.75,bridgeTimer;
-let sessionId=crypto.randomUUID(),resizeTimer,entryArmed=false,exitingRebased=false;
-let fogCards=[],emissiveMaterials=[],hitTargets=[],lastPointerDown=null;
-let targetGesture=null,fogTarget=0,fogOpacity=0;
-function setFog(value){fogTarget=Number(value);}
-const base={position:new THREE.Vector3(),target:new THREE.Vector3(),fov:42};
-const velocity=new THREE.Vector3(),oldBase=new THREE.Vector3(),pointer=new THREE.Vector2(),raycaster=new THREE.Raycaster(),waterPlane=new THREE.Plane(new THREE.Vector3(0,1,0),0),waterPoint=new THREE.Vector3();
-const currentLook=new THREE.Vector3(),projectPoint=new THREE.Vector3(),cameraRight=new THREE.Vector3();
-
-function log(type,detail={}){qa.events.push({time:clock,type,...detail});if(qa.events.length>120)qa.events.shift();}
-function setState(next){
-  if(state===next)return;state=next;qa.state=next;qa.selectedStage=selectedId;
-  document.body.dataset.state=next;log('state',{state:next});
-  $('#loading').hidden=next!=='BOOT';
-  const item=navigation?.stages.find(s=>s.id===selectedId);
-  $('#stage-title').textContent=(item?.label||'Memento').toUpperCase();
-  $('#focus-controls').hidden=next!=='FOCUSED';
-  const link=$('#open-section');link.textContent=item?.mode==='overview'?'Esplora il lago':item?.mode==='services-embedded'?'Esplora Services':'Apri '+(item?.label||'')+' ↗';
-  link.href=item?.mode==='services-embedded'?'#services-content':item?.href||'#';
-  if(item?.mode==='external'){link.target='_blank';link.rel='noopener';link.setAttribute('aria-label','Apri '+item.label+' in una nuova scheda');}
-  else{link.removeAttribute('target');link.removeAttribute('rel');link.removeAttribute('aria-label');}
-  $('#status').textContent=next==='FOCUSED'?item?.label||'Memento':next==='OVERVIEW'?'Memento':next==='CONTENT'?'Servizi e percorsi Memento':'';publishQa();
+if('scrollRestoration' in history)history.scrollRestoration='manual';
+const qaNode=params.has('qa')?Object.assign(document.createElement('pre'),{id:'qa-snapshot',hidden:true}):null;
+if(qaNode)document.body.append(qaNode);
+Object.defineProperty(window,'__TIDE_QA__',{value:{snapshot:()=>JSON.parse(JSON.stringify({...qa,state,selectedStage:navigation?.stages[selectedIndex]?.id,position,goal,progress,frameSrc:frame?.src||null,frameCount:document.querySelectorAll('iframe').length,contentLoaded,camera:camera?{position:camera.position.toArray(),direction:camera.getWorldDirection(new THREE.Vector3()).toArray(),fov:camera.fov}:null}))}});
+function publishQa(){if(qaNode)qaNode.textContent=JSON.stringify(window.__TIDE_QA__.snapshot());}
+function log(type,detail={}){qa.events.push({time:clock,type,...detail});if(qa.events.length>60)qa.events.shift();}
+function setState(next){if(state===next)return;state=next;qa.state=next;document.body.dataset.state=next;log('state',{state:next});publishQa();}
+const stage=()=>navigation.stages[selectedIndex];
+const inScene=()=>ready&&['SCENE','SLIDING','DRAGGING'].includes(state);
+function reportError(error){qa.errors.push(String(error?.message||error));console.error(error);$('#loading').hidden=true;$('#fallback').hidden=false;setState('FALLBACK');}
+function updateLabels(){
+  const item=stage();$('#stage-title').textContent=item.label.toUpperCase();$('#stage-count').textContent=String(selectedIndex+1).padStart(2,'0')+' / 05';
+  $('#open-section').href=item.href;$('#open-section').setAttribute('aria-label','Esplora '+item.label);
+  document.querySelectorAll('#section-nav button').forEach((button,i)=>button.setAttribute('aria-current',String(i===selectedIndex)));
+  $('#status').textContent=item.label;qa.selectedStage=item.id;
 }
-function reportError(error,fatal=false){const message=String(error?.message||error);qa.errors.push(message);console.error(error);$('#fallback-message').textContent=fatal?'La scena non è disponibile. Puoi aprire le sezioni qui sotto.':'Services non è disponibile. Puoi aprire la pagina dal collegamento diretto.';$('#fallback').hidden=false;if(fatal)setState('FALLBACK');}
-function poseRecord(name){const row=cameraData.cameras.find(item=>item.name===name);if(!row)throw new Error('Missing camera '+name);return{position:new THREE.Vector3(...row.positionWeb),target:new THREE.Vector3(...row.targetWeb),fov:row.verticalFovDegrees};}
-function getAspect(){return innerWidth/innerHeight<.8?'portrait':innerWidth/innerHeight>2.1?'ultrawide':'desktop';}
-function updatePoses(){const format=getAspect(),suffix=format==='desktop'?'':'_'+format.toUpperCase();poses={overview:poseRecord('CAM_OVERVIEW'+suffix),focus:poseRecord('CAM_FOCUS_'+(selectedId||'s01_services')+suffix),descent:poseRecord('CAM_DESCENT_'+(selectedId&&selectedId!=='s00_memento'?selectedId:'s01_services')+suffix)};qa.viewport={width:innerWidth,height:innerHeight,aspect:format,dpr:renderer.getPixelRatio(),devicePixelRatio,canvasWidth:canvas.width,canvasHeight:canvas.height,canvasRect:{width:canvas.getBoundingClientRect().width,height:canvas.getBoundingClientRect().height}};}
-function copyPose(pose){base.position.copy(pose.position);base.target.copy(pose.target);base.fov=pose.fov;}
-function applyRoute(kind,from,to,u){
-  const sample=worldRoutes.sample(kind,from,to,getAspect(),clamp(u));
-  base.position.fromArray(sample.position);base.target.fromArray(sample.target);base.fov=sample.fov;routeYaws=sample.yaws;
-  qa.route={id:sample.routeId,u:clamp(u),maskFog:sample.maskFog};
-  return sample;
+function writeHistory(content,replace=false){
+  const hash='#'+stage().slug+(content?'-content':'');
+  if(location.hash===hash)return;
+  history[replace?'replaceState':'pushState']({tide:true,index:selectedIndex,content},'',location.pathname+location.search+hash);
 }
-function motionRoute(kind,from,to,onComplete,uStart=0,uEnd=1){
-  const duration=worldRoutes.duration(kind,from,to,getAspect())*Math.abs(uEnd-uStart);
-  activeMotion={start:clock,duration:reduced.matches?.22:Math.max(.05,duration),kind,from,to,uStart,uEnd,onComplete};
+function settleTo(target,{historyChange=true,duration=.95}={}){
+  goal=target;selectedIndex=wrap(Math.round(target),navigation.stages.length);updateLabels();
+  const distance=Math.abs(goal-position);
+  travel={from:position,to:goal,start:clock,duration:reduced.matches?.01:Math.max(.25,duration*Math.min(1.5,Math.max(.5,distance)))};
+  if(historyChange)writeHistory(false);
+  setState('SLIDING');look.set(0,0);log('select',{id:stage().id});
 }
-function stepMotion(){
-  if(!activeMotion)return false;
-  const m=activeMotion,t=clamp((clock-m.start)/m.duration),u=THREE.MathUtils.lerp(m.uStart,m.uEnd,t);
-  const sample=applyRoute(m.kind,m.from,m.to,u);
-  if(m.kind==='exit'||m.kind==='entry'){
-    setFog(sample.maskFog);shell.style.opacity=m.kind==='exit'?String(1-smooth(remap(t,0,.32))):'0';
-  }
-  if(t===1){activeMotion=null;velocity.set(0,0,0);m.onComplete?.();}
-  return true;
+function selectIndex(index,historyChange=true){
+  if(!inScene())return;
+  settleTo(nearestStop(index,position,navigation.stages.length),{historyChange});
 }
-function bridgeSend(type,payload={}){if(!preloaded)return;frame.contentWindow?.postMessage({channel:'memento:tide',version:1,sessionId,stageId:'s01_services',type,payload},location.origin);}
-function sendViewport(){const relativeTop=journey.hidden?innerHeight:entryHeight-window.scrollY;bridgeSend('VIEWPORT',{width:innerWidth,height:innerHeight,relativeTop,visible:state==='CONTENT'});}
-function setContentVisible(visible){
-  shell.inert=!visible;frame.tabIndex=visible?0:-1;shell.classList.toggle('active',visible);
-  if(visible!==lastVisible){bridgeSend('VISIBILITY',{active:visible,focus:visible&&!lastFocusSent});lastVisible=visible;if(visible)lastFocusSent=true;}
+function stepSection(direction){if(inScene())settleTo(Math.round(travel?goal:position)+direction);}
+function preloadSection(){
+  const item=stage();if(frameStage?.id===item.id&&frame)return;
+  clearTimeout(frameTimer);const token=++frameToken;contentLoaded=false;qa.bridge.ready=false;sessionId=newSession();frameStage=item;
+  // Replace the element, so a late load from a previous URL cannot mark a new page ready.
+  const next=document.createElement('iframe');next.id='section-frame';next.title=item.label+' — Memento';next.src=item.href;
+  next.referrerPolicy='strict-origin-when-cross-origin';next.allow='fullscreen';next.setAttribute('allowfullscreen','');next.tabIndex=-1;
+  next.addEventListener('load',()=>{
+    if(token!==frameToken)return;contentLoaded=true;clearTimeout(frameTimer);$('#page-loading').hidden=true;$('#embed-notice').hidden=true;
+    // onload is a browser load event, not a claim that a cross-origin document was inspected.
+    qa.frameLoadEvent=true;log('frame_load',{href:item.href});sendBridge('INIT',{embedded:true});publishQa();
+  },{once:true});
+  next.addEventListener('error',()=>{if(token===frameToken){$('#page-loading').hidden=true;$('#embed-notice').hidden=false;}},{once:true});
+  frame=next;$('#frame-host').replaceChildren(next);$('#page-loading').hidden=false;$('#embed-notice').hidden=true;
+  $('#page-label').textContent=item.label;pageLayer.setAttribute('aria-label',item.label);
+  $('#direct-link').href=item.href;$('#retry-direct').href=item.href;
+  frameTimer=setTimeout(()=>{if(token===frameToken&&!contentLoaded){$('#page-loading').hidden=true;$('#embed-notice').hidden=false;}},15000);
 }
-function preloadServices(){
-  if(preloaded)return;preloaded=true;qa.bridge.preloadTime=clock;
-  frame.src='/services/?sessionId='+encodeURIComponent(sessionId)+'&viewportHeight='+innerHeight;
-  frame.addEventListener('load',()=>{bridgeSend('INIT',{embedded:true,theme:'tide',height:innerHeight,width:innerWidth,relativeTop:innerHeight});bridgeSend('VISIBILITY',{active:false});},{once:true});
-  bridgeTimer=setTimeout(()=>{if(!contentReady)reportError(new Error('Services READY timeout (8 seconds)'));},8000);
+function sendBridge(type,payload={}){
+  if(!frame||!frameStage)return;
+  frame.contentWindow?.postMessage({channel:'memento:tide',version:1,sessionId,stageId:frameStage.id,type,payload},new URL(frameStage.href).origin);
 }
-function selectServices(){selectStage('s01_services');}
-function restoreServicesHistory(showContent){
-  historyEntered=showContent;journey.hidden=false;journey.classList.remove('preloading');entryArmed=true;
-  window.scrollTo({top:showContent?Math.ceil(entryHeight)+1:0,behavior:'instant'});scrollComposition();
-}
-function selectStage(id,pushHistory=true){
-  if(!ready||activeMotion||!['OVERVIEW','FOCUSED'].includes(state))return;
-  const item=navigation.stages.find(s=>s.id===id);if(!item)return;
-  if(state==='FOCUSED'&&selectedId===id){if(item.mode==='services-embedded')enterContent();else if(item.mode==='overview')returnOverview();return;}
-  const from=state==='FOCUSED'?selectedId:null;selectedId=id;updatePoses();entryArmed=false;
-  journey.hidden=true;setContentVisible(false);shell.style.opacity='0';window.scrollTo({top:0,behavior:'instant'});
-  if(item.mode==='services-embedded'){journey.hidden=false;journey.classList.add('preloading');preloadServices();}
-  setState('FOCUSING');returnTransition=null;historyEntered=false;
-  if(pushHistory)history.pushState({tide:id},'',location.pathname+location.search+'#'+item.slug);
-  motionRoute('focus',from,id,()=>{
-    setState('FOCUSED');
-    if(item.mode==='services-embedded'){journey.classList.remove('preloading');journey.hidden=false;entryArmed=true;lastFocusSent=false;}
-    if(pendingOverview){pendingOverview=false;returnOverview();}else if(pendingContentRestore&&id==='s01_services'){pendingContentRestore=false;restoreServicesHistory(true);}
-  });
-}
-function enterContent(){if(state==='FOCUSED'&&selectedId==='s01_services'){preloadServices();journey.hidden=false;window.scrollTo({top:Math.ceil(entryHeight)+1,behavior:reduced.matches?'instant':'smooth'});}}
-function resetOverview(completedLoop=false){
-  const hadContent=historyEntered,previous=selectedId;
-  journey.hidden=true;journey.classList.remove('preloading');entryArmed=false;setContentVisible(false);shell.style.opacity='0';
-  if(previous)applyRoute('overview',previous,null,1);else copyPose(poses.overview);
-  activeMotion=null;velocity.set(0,0,0);window.scrollTo({top:0,behavior:'instant'});historyEntered=false;lastFocusSent=false;exitingRebased=false;pendingOverview=false;
-  qa.returns=(qa.returns||0)+1;if(completedLoop&&hadContent)qa.loops++;selectedId=null;setState('OVERVIEW');setFog(0);
-  history.replaceState({tide:'overview'},'',location.pathname+location.search);$('#stage-'+(previous||'s00_memento'))?.focus({preventScroll:true});
-}
-function returnOverview(){
-  if(!ready||state==='OVERVIEW')return;
-  pendingContentRestore=false;
-  if(activeMotion){pendingOverview=true;return;}
-  entryArmed=false;setContentVisible(false);
-  if(state==='FOCUSED'){
-    journey.hidden=true;setState('EXITING');motionRoute('overview',selectedId,null,()=>resetOverview());return;
-  }
-  if(state==='ENTERING'){
-    const u=qa.route?.u||0;setState('EXITING');motionRoute('entry',selectedId,selectedId,()=>{journey.hidden=true;setState('FOCUSED');returnOverview();},u,0);return;
-  }
-  const u=state==='EXITING'?qa.route?.u||0:0;
-  setState('EXITING');motionRoute('exit',selectedId,selectedId,()=>resetOverview(),u,1);
-}
-function scrollComposition(){
-  if(!entryArmed||activeMotion||journey.hidden||selectedId!=='s01_services')return;
-  const phase=journeyPhase(window.scrollY,entryHeight,Math.max(1,contentHeight-innerHeight*.6),exitLength);
-  if(!contentReady&&phase.state!=='FOCUSED'){
-    const u=Math.min(.45,window.scrollY/entryHeight),sample=applyRoute('entry',selectedId,selectedId,u);
-    setState('ENTERING');setFog(sample.maskFog);shell.style.opacity='0';setContentVisible(false);return;
-  }
-  setState(phase.state);
-  if(phase.state==='FOCUSED'){applyRoute('entry',selectedId,selectedId,0);setFog(0);shell.style.opacity='0';setContentVisible(false);return;}
-  if(phase.state==='ENTERING'){
-    const u=contentReady?phase.entry:Math.min(.45,phase.entry),sample=applyRoute('entry',selectedId,selectedId,u);
-    setFog(sample.maskFog);shell.style.opacity=String(contentReady?smooth(remap(u,.55,.94)):0);setContentVisible(contentReady&&u>.94);
-  }else if(phase.state==='CONTENT'){
-    applyRoute('entry',selectedId,selectedId,1);setFog(0);shell.style.opacity=contentReady?'1':'0';setContentVisible(contentReady);
-    if(!historyEntered){historyEntered=true;history.pushState({tide:'content'},'',location.pathname+location.search+'#services-content');}
+function movePage(to,{historyChange=true}={}){
+  if(!ready)return;
+  if(to===1){
+    if(!inScene()&&state!=='EXITING')return;
+    // Open the selected stop, after the camera has reached it.
+    if(travel||Math.abs(position-goal)>.002){pendingRoute={index:selectedIndex,content:true,historyChange};return;}
+    previousFocus=document.activeElement;preloadSection();pageLayer.hidden=false;
+    if(historyChange)writeHistory(true);
+    setState('ENTERING');
   }else{
-    const u=phase.exit,sample=applyRoute('exit',selectedId,selectedId,u);setFog(sample.maskFog);shell.style.opacity=String(1-smooth(remap(u,.08,.48)));setContentVisible(false);
-    if(u>=.995)resetOverview(true);
+    if(!['CONTENT','ENTERING','EXITING'].includes(state))return;
+    if(historyChange)writeHistory(false,true);
+    setState('EXITING');sendBridge('VISIBILITY',{active:false});
+  }
+  pageLayer.inert=true;sceneLayer.inert=true;if(frame)frame.tabIndex=-1;
+  transition={from:progress,to,start:clock,duration:reduced.matches?.01:Math.max(.3,1.55*Math.abs(to-progress))};
+  gesture=null;document.body.dataset.dragging='false';look.set(0,0);
+}
+function renderTransition(){
+  const p=panelProgress(progress),offset=innerHeight*p;
+  sceneLayer.style.transform=`translate3d(0,${-offset}px,0)`;
+  pageLayer.style.transform=`translate3d(0,${innerHeight-offset}px,0)`;
+}
+function finishTransition(to){
+  progress=to;transition=null;renderTransition();
+  if(to===1){
+    setState('CONTENT');pageLayer.inert=false;sceneLayer.inert=true;frame.tabIndex=0;$('#back-scene').focus({preventScroll:true});sendBridge('VISIBILITY',{active:true});
+  }else{
+    setState('SCENE');pageLayer.inert=true;pageLayer.hidden=true;sceneLayer.inert=false;
+    if(previousFocus?.isConnected&&sceneLayer.contains(previousFocus))previousFocus.focus({preventScroll:true});else $('#open-section').focus({preventScroll:true});
+    if(pendingRoute)applyPendingRoute();
+  }
+  publishQa();
+}
+function applyPendingRoute(){
+  if(!pendingRoute||transition||travel)return;
+  const next=pendingRoute;pendingRoute=null;
+  if(next.index!==selectedIndex){pendingRoute=next;selectIndex(next.index,false);}
+  else if(next.content)movePage(1,{historyChange:next.historyChange??false});
+}
+function restoreLocation(){
+  if(!ready)return;
+  const wanted=resolveHash(location.hash,navigation.stages);pendingRoute={...wanted,historyChange:false};
+  if(progress>0||transition){
+    if(wanted.index===selectedIndex&&wanted.content){pendingRoute=null;if(state==='EXITING')movePage(1,{historyChange:false});}
+    else movePage(0,{historyChange:false});
+  }else if(travel){/* The latest history request is applied once this move settles. */}
+  else applyPendingRoute();
+}
+
+function updatePoses(){
+  const format=innerWidth/innerHeight<.8?'portrait':innerWidth/innerHeight>2.1?'ultrawide':'desktop';
+  const suffix=format==='desktop'?'':'_'+format.toUpperCase();
+  poses=navigation.stages.map(item=>{
+    const row=cameraData.cameras.find(c=>c.name==='CAM_FOCUS_'+item.id+suffix);
+    return{position:[...row.positionWeb],target:[...row.targetWeb],fov:row.verticalFovDegrees};
+  });
+  qa.viewport={width:innerWidth,height:innerHeight,format,dpr:renderer.getPixelRatio()};
+}
+function resize(){
+  if(!renderer)return;renderer.setPixelRatio(Math.min(devicePixelRatio,innerWidth/innerHeight<.8?1.25:1.5));renderer.setSize(innerWidth,innerHeight);
+  camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();water?.resize(innerWidth/innerHeight<.8);updatePoses();renderTransition();
+}
+const glyphs=[
+  '<path d="M16 4C1 4 3 19 20 26c14 6 17-2 10-12C20-2 7 6 17 19c10 13 22 2 14-8C22 0 10 14 17 25"/>',
+  '<path d="M20 3c-9 0-12 18 0 21s20-8 10-15C17 1 7 7 7 18s17 15 21 3C32 10 21 0 16 10s3 20 14 12"/>',
+  '<path d="M10 8 29 3q8-2 8 6v13q0 8-8 6L10 23Q-1 16 10 8Z"/><path d="m14 10 16-4v18l-16-4Z"/>',
+  '<path d="M29 3v8M30 4C5 7 4 13 22 16s17 11-13 12M13 6C3 11 8 18 27 21M10 27l15-10"/>',
+  '<path d="M17 3C3 8 3 23 17 27ZM24 3c14 5 14 20 0 24Z"/><path d="M20.5 5v23M16 29h9"/>'
+];
+function buildNavigation(){
+  navigation.stages.forEach((item,index)=>{
+    const button=document.createElement('button');button.type='button';button.setAttribute('aria-label',item.label);button.innerHTML=`<svg viewBox="0 0 42 32" aria-hidden="true">${glyphs[index]}</svg><span>${item.label}</span>`;
+    on(button,'click',()=>selectIndex(index));$('#section-nav').append(button);
+    const objectButton=document.createElement('button');objectButton.type='button';objectButton.className='stage-target';objectButton.setAttribute('aria-label','Esplora '+item.label);objectButton.tabIndex=-1;
+    on(objectButton,'click',()=>{if(index===selectedIndex&&!travel)movePage(1);else selectIndex(index);});
+    $('#stage-targets').append(objectButton);hitTargets.push({element:objectButton,stage:contract.stages.find(s=>s.id===item.id),index});
+  });
+  updateLabels();
+}
+function updateTargets(){
+  right.setFromMatrixColumn(camera.matrixWorld,0);
+  for(const {element,stage:item,index} of hitTargets){
+    if(state!=='SCENE'||gesture?.moved||index!==selectedIndex){element.hidden=true;continue;}
+    projectPoint.set(item.position[0],2.26,item.position[2]).project(camera);
+    const x=(projectPoint.x*.5+.5)*innerWidth,y=(-projectPoint.y*.5+.5)*innerHeight;
+    const edge=new THREE.Vector3(item.position[0],2.26,item.position[2]).addScaledVector(right,1.8).project(camera);
+    const size=clamp(Math.abs(edge.x-projectPoint.x)*innerWidth,40,innerHeight*.55);
+    element.hidden=projectPoint.z>1||projectPoint.z< -1||x<40||x>innerWidth-40||y<60||y>innerHeight-220;
+    element.style.cssText=`left:${x-size/2}px;top:${y-size/2}px;width:${size}px;height:${size}px`;
+    element.setAttribute('aria-label',(index===selectedIndex?'Esplora ':'Seleziona ')+navigation.stages[index].label);
   }
 }
 function addFog(){
-  const cards=atmosphere.fogCards.filter(c=>getAspect()!=='portrait'||c.mobile_enabled);
-  for(let i=0;i<cards.length;i++){
-    const spec=cards[i],geometry=new THREE.PlaneGeometry(spec.width_m,spec.height_m);
-    const material=new THREE.ShaderMaterial({transparent:true,depthWrite:false,side:THREE.DoubleSide,uniforms:{time:{value:0},seed:{value:spec.seed%97},peakAlpha:{value:spec.peak_alpha}},vertexShader:'varying vec2 vUv;void main(){vUv=uv;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0);}',fragmentShader:'uniform float time;uniform float seed;uniform float peakAlpha;varying vec2 vUv;float n(vec2 p){return sin(p.x*2.1+sin(p.y*3.7))*sin(p.y*1.4+sin(p.x*1.3));}void main(){vec2 uv=vUv;float shape=smoothstep(0.0,.2,uv.x)*(1.0-smoothstep(.8,1.0,uv.x))*smoothstep(0.0,.35,uv.y)*(1.0-smoothstep(.45,1.0,uv.y));float cloud=.5+.5*n(uv*vec2(6.0,2.0)+vec2(time*.02+seed,seed));gl_FragColor=vec4(.14,.17,.19,shape*cloud*peakAlpha);}',toneMapped:true});
-    const card=new THREE.Mesh(geometry,material);card.position.set(...spec.base_position_web);card.userData.fogSpec=spec;card.layers.set(1);card.name='FOG_RUNTIME_'+i;scene.add(card);fogCards.push(card);
+  // Low, soft world-space banks. No fullscreen transition veil.
+  const count=innerWidth/innerHeight<.8?12:18;
+  for(let i=0;i<count;i++){
+    const angle=i/count*Math.PI*2,radius=34+(i%3)*11;
+    const material=new THREE.ShaderMaterial({transparent:true,depthWrite:false,side:THREE.DoubleSide,toneMapped:true,uniforms:{time:{value:0},seed:{value:i*3.17},alpha:{value:i%3===0?.16:.11}},
+      vertexShader:'varying vec2 vUv;void main(){vUv=uv;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}',
+      fragmentShader:`uniform float time;uniform float seed;uniform float alpha;varying vec2 vUv;
+        float hash(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}
+        float noise(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);return mix(mix(hash(i),hash(i+vec2(1,0)),f.x),mix(hash(i+vec2(0,1)),hash(i+1.),f.x),f.y);}
+        void main(){vec2 uv=vUv;float shape=smoothstep(0.,.25,uv.x)*(1.-smoothstep(.65,1.,uv.x))*smoothstep(0.,.23,uv.y)*(1.-smoothstep(.25,1.,uv.y));vec2 p=uv*vec2(7.,3.)+vec2(time*.025+seed,seed);float n=.6*noise(p)+.28*noise(p*2.1)+.12*noise(p*4.3);gl_FragColor=vec4(.25,.26,.25,shape*n*alpha);}`});
+    const mesh=new THREE.Mesh(new THREE.PlaneGeometry(35+(i%3)*12,5+(i%4)),material);mesh.position.set(Math.sin(angle)*radius,1.4,Math.cos(angle)*radius);mesh.userData.baseX=mesh.position.x;mesh.layers.set(1);scene.add(mesh);fogCards.push(mesh);
   }
-  qa.quality.fogCards=fogCards.length;qa.quality.fogDistance=[45,480];
+  qa.quality.fogCards=count;qa.quality.fogDistance=[24,175];
 }
-function stageTargets(){
-  for(const stage of contract.stages){
-    const item=navigation.stages.find(s=>s.id===stage.id);
-    const el=document.createElement('a');el.id='stage-'+stage.id;el.className='stage-target';el.setAttribute('aria-label',stage.label);el.innerHTML='<span>'+stage.label+'</span>';
-    el.href=item.href||'#'+item.slug;if(item.mode==='external'){el.target='_blank';el.rel='noopener';}
-    listen(el,'click',event=>{
-      if(event.ctrlKey||event.metaKey||event.shiftKey||event.altKey)return;
-      if(state==='FOCUSED'&&selectedId===stage.id&&item.mode==='external')return;
-      event.preventDefault();selectStage(stage.id);
-    });
-    listen(el,'pointerenter',()=>{if(stage.id==='s01_services')qa.hover=true;});listen(el,'pointerleave',()=>{qa.hover=false;});
-    targets.append(el);hitTargets.push({el,stage});
-  }
-  qa.navigation=navigation.stages.map(({id,href,mode})=>({id,href,mode}));
-}
-function updateTargets(){
-  const isOverview=state==='OVERVIEW';
-  cameraRight.setFromMatrixColumn(camera.matrixWorld,0);
-  for(const {el,stage} of hitTargets){
-    const enabled=isOverview||(stage.id===selectedId&&state==='FOCUSED');
-    if(!enabled){el.hidden=true;continue;}
-    projectPoint.set(stage.position[0],2.26,stage.position[2]).project(camera);
-    if(projectPoint.z>1||projectPoint.z< -1){el.hidden=true;continue;}
-    const centerX=(projectPoint.x*.5+.5)*innerWidth,centerY=(-projectPoint.y*.5+.5)*innerHeight;
-    const point=new THREE.Vector3(stage.position[0],2.26,stage.position[2]).addScaledVector(cameraRight,2).project(camera);
-    const size=clamp(Math.abs(point.x-projectPoint.x)*innerWidth,44,state==='FOCUSED'?innerHeight*.56:135);
-    el.hidden=false;el.style.left=centerX-size/2+'px';el.style.top=centerY-size/2+'px';el.style.width=size+'px';el.style.height=size+'px';
-  }
-}
-async function loadGLB(path,required=true){
-  try{const loader=new GLTFLoader();loader.setMeshoptDecoder(MeshoptDecoder);const result=await loader.loadAsync(path);qa.assets.push({path,loaded:true});return result;}
-  catch(error){qa.assets.push({path,loaded:false});if(required)throw error;qa.warnings.push(path+' unavailable');return null;}
-}
-function captureLoadingDiagnostics(){
-  const resources=performance.getEntriesByType('resource').filter(entry=>{try{return new URL(entry.name).origin===location.origin;}catch{return false;}}).map(entry=>({path:new URL(entry.name).pathname,transferBytes:entry.transferSize,encodedBodyBytes:entry.encodedBodySize,decodedBodyBytes:entry.decodedBodySize,durationMs:entry.duration,initiator:entry.initiatorType}));
-  const navigation=performance.getEntriesByType('navigation')[0];
-  if(navigation)resources.push({path:location.pathname,transferBytes:navigation.transferSize,encodedBodyBytes:navigation.encodedBodySize,decodedBodyBytes:navigation.decodedBodySize,durationMs:navigation.responseEnd,initiator:'navigation'});
-  const category=path=>path.endsWith('.glb')?'glb':path.endsWith('.hdr')?'hdr':path.endsWith('.js')||path.endsWith('.mjs')?'modules':path.startsWith('/data/')?'data':'other';
-  const totals={};for(const row of resources){const key=category(row.path);totals[key]??={requests:0,transferBytes:0,encodedBodyBytes:0};totals[key].requests++;totals[key].transferBytes+=row.transferBytes;totals[key].encodedBodyBytes+=row.encodedBodyBytes;}
-  const encodedBodyBytes=resources.reduce((sum,row)=>sum+row.encodedBodyBytes,0),transferBytes=resources.reduce((sum,row)=>sum+row.transferBytes,0),budgetMiB=assetConfig.quality==='mobile'?6:10;
-  qa.initialPayload={source:'Browser Resource Timing at first scene readiness, before Services preload',resources,totals,encodedBodyBytes,encodedBodyMiB:encodedBodyBytes/1048576,transferBytes,transferMiB:transferBytes/1048576,masterBudgetMiB:budgetMiB,withinEncodedBodyBudget:encodedBodyBytes<=budgetMiB*1048576,containsZeroTransferEntries:resources.some(row=>row.transferBytes===0),note:'Measured transfer includes cache behavior and response overhead. Zero transfer may mean cache; encoded bodies describe payload. Page content is excluded. No throughput/FPS claim.'};
-  const gl=renderer.getContext(),target=water.mesh.getRenderTarget();
-  qa.gpu={source:'Observed WebGL resource dimensions/capabilities; resident bytes are not queryable',maxTextureSize:gl.getParameter(gl.MAX_TEXTURE_SIZE),maxSamples:gl.getParameter(gl.MAX_SAMPLES),defaultFramebufferSamples:gl.getParameter(gl.SAMPLES),contextAntialias:gl.getContextAttributes().antialias,pmrem:environmentTarget?{width:environmentTarget.width,height:environmentTarget.height,format:'RGBA16F',sharedByBackgroundAndEnvironment:true}:null,reflection:{width:target.width,height:target.height,format:'RGBA16F',samples:target.samples,depthBuffer:target.depthBuffer},materialTextureMiBEstimate:qa.resourceSharing.estimatedMaterialTextureMiB,pmremMiBEstimate:qa.environment?.estimatedResidentPmremMiB||0,waterNormalMiBEstimate:128*128*4*4/3/1048576,reflectionColorMiBEstimate:target.width*target.height*8/1048576};
-  qa.gpu.estimatedTextureColorMiB=qa.gpu.materialTextureMiBEstimate+qa.gpu.pmremMiBEstimate+qa.gpu.waterNormalMiBEstimate+qa.gpu.reflectionColorMiBEstimate;
-  qa.gpu.estimateExcludes='Main framebuffer/MSAA/depth, reflection depth, geometry, transient decode/conversion peaks, driver overhead. renderer.info counts are observed separately; these MiB are calculated estimates.';
-}
+async function loadGLB(path){const loader=new GLTFLoader();loader.setMeshoptDecoder(MeshoptDecoder);const result=await loader.loadAsync(path);qa.assets.push({path,loaded:true});return result;}
 async function setup(){
-  const entryPoints=assetEntryPoints(assetConfig);
-  const [sceneData,cameras,links,routes,atmo]=await Promise.all([fetchDataWithFallback(entryPoints.contract),fetchDataWithFallback(entryPoints.cameras),fetch('/data/navigation.json').then(r=>{if(!r.ok)throw new Error('Navigation unavailable');return r.json();}),loadWorldRoutes(),fetch('/data/world-atmosphere.json').then(r=>{if(!r.ok)throw new Error('Atmosphere unavailable');return r.json();})]);
-  navigation=links;worldRoutes=routes;atmosphere=atmo;
-  contract=sceneData.value;cameraData=cameras.value;qa.dataSources={contract:sceneData.path,cameras:cameras.path};
-  if(sceneData.unavailable.length)qa.warnings.push('Using scene contract fallback: '+sceneData.path);
-  if(cameras.unavailable.length)qa.warnings.push('Using camera fallback: '+cameras.path);
+  const points=assetEntryPoints(config);
+  const [sceneData,cameras,links]=await Promise.all([fetchDataWithFallback(points.contract),fetchDataWithFallback(points.cameras),fetch('/data/navigation.json').then(r=>{if(!r.ok)throw Error('Navigation unavailable');return r.json();})]);
+  contract=sceneData.value;cameraData=cameras.value;navigation=links;
   renderer=new THREE.WebGLRenderer({canvas,antialias:true,alpha:false,powerPreference:'high-performance'});
-  renderer.setPixelRatio(Math.min(devicePixelRatio,getAspect()==='portrait'?1.25:1.5));renderer.setSize(innerWidth,innerHeight);renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.AgXToneMapping;renderer.toneMappingExposure=1;renderer.info.autoReset=false;
-  scene=new THREE.Scene();scene.background=new THREE.Color('#10161b');scene.fog=new THREE.Fog('#343B40',45,480);scene.environmentIntensity=.5;scene.backgroundIntensity=.025;
-  camera=new THREE.PerspectiveCamera(42,innerWidth/innerHeight,.1,550);camera.layers.enable(1);updatePoses();copyPose(poses.overview);
-  const key=new THREE.DirectionalLight('#eceff2',2.2);key.position.set(-16,20,30);scene.add(key);
-  const fill=new THREE.DirectionalLight('#b6c2ce',.7);fill.position.set(22,12,-24);scene.add(fill);
-  const ambient=new THREE.HemisphereLight('#a1aab3','#0b0e10',.18);scene.add(ambient);
-  water=createWater({mobile:getAspect()==='portrait',qa});scene.add(water.mesh);addFog();
-  const prefix=assetConfig.prefix;
-  const loaded=await Promise.all([loadGLB(prefix+'icon_services_lod0.glb'),loadGLB(prefix+'platform.glb'),loadGLB('/world_v008/optimized/environment.glb'),loadGLB(prefix+entryPoints.neighbors,entryPoints.neighborsRequired)]);
-  qa.resourceSharing=await poolAssetResources(loaded);
-  const [icon,platform,env,neighbours]=loaded.map(result=>result?.scene||null);
-  const stage=contract.stages.find(s=>s.id==='s01_services');servicesPivot=new THREE.Group();servicesPivot.name='ICON_ANCHOR_s01_services';servicesPivot.position.set(stage.position[0],2.26,stage.position[2]);servicesPivot.rotation.y=THREE.MathUtils.degToRad(stage.overviewYawDegrees);servicesPivot.add(icon);servicesModel=icon;scene.add(servicesPivot);
-  platform.position.set(...stage.position);scene.add(platform);scene.add(env);if(neighbours)scene.add(neighbours);
-  stageModels.set(stage.id,servicesPivot);neighbours?.traverse(obj=>{if(obj.userData.role==='icon'&&obj.userData.stage_id)stageModels.set(obj.userData.stage_id,obj);});
-  routeYaws=Object.fromEntries(contract.stages.map(s=>[s.id,s.overviewYawDegrees]));
-  icon.traverse(obj=>{if(obj.isMesh){const list=Array.isArray(obj.material)?obj.material:[obj.material];for(const material of list)if(material.emissive?.getHex()>0&&!emissiveMaterials.some(item=>item.material===material))emissiveMaterials.push({material,intensity:material.emissiveIntensity});}});
-  pmrem=new THREE.PMREMGenerator(renderer);pmrem.compileEquirectangularShader();
+  renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.AgXToneMapping;renderer.toneMappingExposure=.95;renderer.info.autoReset=false;
+  scene=new THREE.Scene();scene.background=new THREE.Color('#141719');scene.fog=new THREE.Fog('#141719',24,175);scene.environmentIntensity=.45;scene.backgroundIntensity=.018;
+  camera=new THREE.PerspectiveCamera(38,innerWidth/innerHeight,.1,550);camera.layers.enable(1);
+  const key=new THREE.DirectionalLight('#ece6de',2);key.position.set(-16,20,30);scene.add(key);
+  const fill=new THREE.DirectionalLight('#aab8c1',.6);fill.position.set(22,12,-24);scene.add(fill);scene.add(new THREE.HemisphereLight('#a1aab3','#0b0e10',.22));
+  water=createWater({mobile:innerWidth/innerHeight<.8,qa});scene.add(water.mesh);addFog();
+  const loaded=await Promise.all([loadGLB(config.prefix+'icon_services_lod0.glb'),loadGLB(config.prefix+'platform.glb'),loadGLB('/world_v008/optimized/environment.glb'),loadGLB(config.prefix+points.neighbors)]);
+  qa.resourceSharing=crypto.subtle?await poolAssetResources(loaded):{enabled:false,reason:'Texture pooling requires a secure origin; resources remain independent.'};
+  const [icon,platform,world,neighbors]=loaded.map(r=>r.scene),services=contract.stages.find(s=>s.id==='s01_services');
+  const pivot=new THREE.Group();pivot.position.set(services.position[0],2.26,services.position[2]);pivot.add(icon);scene.add(pivot);models.set(services.id,pivot);platform.position.fromArray(services.position);scene.add(platform,world,neighbors);
+  neighbors.traverse(object=>{
+    // The concept has five stops: Memento already opens the Studio URL.
+    if(object.userData.stage_id==='s03_studio')object.visible=false;
+    if(object.userData.role==='icon'&&object.userData.stage_id!=='s03_studio')models.set(object.userData.stage_id,object);
+  });
+  for(const [id,model]of models){model.rotation.y=THREE.MathUtils.degToRad(contract.stages.find(s=>s.id===id).focusIconYawDegrees);}
+  const pmrem=new THREE.PMREMGenerator(renderer);let hdr;
   try{
-    environmentTexture=await new HDRLoader().loadAsync('/environment/belfast_sunset_puresky_2k.hdr');environmentTexture.mapping=THREE.EquirectangularReflectionMapping;
-    environmentTarget=pmrem.fromEquirectangular(environmentTexture);
-    scene.environment=environmentTarget.texture;scene.background=environmentTarget.texture;
-    environmentTexture.dispose();environmentTexture=null;pmrem.dispose();pmrem=null;
-    qa.environment={path:'/environment/belfast_sunset_puresky_2k.hdr',loaded:true,pmremBuilds:1,sharedBackgroundEnvironment:true,inputHdrReleased:true,generatorScratchReleased:true,residentPmremSize:[environmentTarget.width,environmentTarget.height],estimatedResidentPmremMiB:environmentTarget.width*environmentTarget.height*8/1048576};
-  }catch(error){environmentTexture?.dispose();environmentTexture=null;pmrem?.dispose();pmrem=null;qa.warnings.push('HDR environment unavailable: neutral fallback');qa.environment={loaded:false};}
-  stageTargets();ready=true;setState('OVERVIEW');history.replaceState({tide:'overview'},'',location.pathname+location.search);log('ready');
-  qa.geometry={servicesBounds:new THREE.Box3().setFromObject(icon).getSize(new THREE.Vector3()).toArray(),placements:'Services local once; neighbour world transforms retained'};
-  resize();
-  captureLoadingDiagnostics();publishQa();
-  const initial=navigation.stages.find(s=>initialHash==='#'+s.slug||initialHash==='#'+s.slug+'-content');if(initial){history.replaceState({tide:initial.id},'',location.pathname+location.search+initialHash);pendingContentRestore=initialHash==='#services-content';selectStage(initial.id,false);}
-}
-function resize(){
-  if(!renderer)return;
-  const oldEntry=entryHeight,scrollProgress=oldEntry?window.scrollY/oldEntry:0;
-  renderer.setPixelRatio(Math.min(devicePixelRatio,getAspect()==='portrait'?1.25:1.5));renderer.setSize(innerWidth,innerHeight);camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();water.resize(getAspect()==='portrait');updatePoses();
-  entryHeight=innerHeight*(reduced.matches?.28:.95);exitLength=innerHeight*(reduced.matches?.3:.75);document.documentElement.style.setProperty('--entry-height',entryHeight+'px');document.documentElement.style.setProperty('--exit-height',innerHeight*1.4+'px');
-  if(state==='OVERVIEW')copyPose(poses.overview);else if(state==='FOCUSED')copyPose(poses.focus);
-  if(entryArmed&&scrollProgress>0&&scrollProgress<1)window.scrollTo({top:entryHeight*scrollProgress,behavior:'instant'});
-  sendViewport();scrollComposition();
+    hdr=await new HDRLoader().loadAsync('/environment/belfast_sunset_puresky_2k.hdr');hdr.mapping=THREE.EquirectangularReflectionMapping;
+    environmentTarget=pmrem.fromEquirectangular(hdr);scene.environment=environmentTarget.texture;scene.background=environmentTarget.texture;scene.backgroundBlurriness=.25;
+  }catch(error){qa.warnings.push('HDR unavailable; neutral lighting retained.');}
+  finally{hdr?.dispose();pmrem.dispose();}
+  const initial=resolveHash(initialHash,navigation.stages);selectedIndex=initial.index;position=goal=selectedIndex;
+  buildNavigation();resize();ready=true;setState('SCENE');$('#loading').hidden=true;$('#scene-ui').hidden=false;
+  history.replaceState({tide:true,index:selectedIndex,content:initial.content},'',location.pathname+location.search+(initialHash||'#memento'));
+  if(initial.content)movePage(1,{historyChange:false});
+  log('ready');publishQa();
 }
 function pointerRipple(event,force=false){
-  if(!water||!['OVERVIEW','FOCUSED'].includes(state)||document.hidden)return;
-  if(event.target!==canvas)return;
-  pointer.set(event.clientX/innerWidth*2-1,-event.clientY/innerHeight*2+1);raycaster.setFromCamera(pointer,camera);
-  if(raycaster.ray.intersectPlane(waterPlane,waterPoint)&&Math.abs(waterPoint.x)<480&&Math.abs(waterPoint.z)<480)water.pool.inject(waterPoint.x,waterPoint.z,clock,{force});
+  if(!water||!inScene()||event.target!==canvas||gesture?.moved)return;
+  pointer.set(event.clientX/innerWidth*2-1,1-event.clientY/innerHeight*2);raycaster.setFromCamera(pointer,camera);
+  if(raycaster.ray.intersectPlane(waterPlane,waterPoint)&&Math.abs(waterPoint.x)<300&&Math.abs(waterPoint.z)<300)water.pool.inject(waterPoint.x,waterPoint.z,clock,{force});
+}
+function pointerDown(event){
+  if(!inScene()||!event.isPrimary||event.button!==0)return;
+  gesture={id:event.pointerId,x:event.clientX,y:event.clientY,start:position,last:position,time:event.timeStamp,velocity:0,moved:false};look.set(0,0);
+}
+function pointerMove(event){
+  if(gesture&&event.pointerId===gesture.id){
+    const dx=event.clientX-gesture.x,dy=event.clientY-gesture.y;
+    if(!gesture.moved&&Math.abs(dx)>7&&Math.abs(dx)>Math.abs(dy)*.7){gesture.moved=true;gesture.start=position;gesture.last=position;travel=null;goal=position;sceneLayer.setPointerCapture(event.pointerId);document.body.dataset.dragging='true';setState('DRAGGING');}
+    if(gesture.moved){
+      const next=gesture.start-dx/Math.min(680,Math.max(220,innerWidth*.62));
+      const elapsed=Math.max(1,event.timeStamp-gesture.time)/1000;gesture.velocity=mix(gesture.velocity,(next-gesture.last)/elapsed,.55);gesture.last=next;gesture.time=event.timeStamp;
+      position=goal=next;const nearest=wrap(Math.round(next),navigation.stages.length);if(nearest!==selectedIndex){selectedIndex=nearest;updateLabels();}
+      event.preventDefault();return;
+    }
+  }
+  if(inScene()&&!gesture&&event.pointerType==='mouse'){look.set((event.clientX/innerWidth-.5)*.12,(.5-event.clientY/innerHeight)*.065);pointerRipple(event);}
+}
+function pointerEnd(event,cancelled=false){
+  if(!gesture||event.pointerId!==gesture.id)return;
+  const g=gesture;gesture=null;document.body.dataset.dragging='false';
+  if(sceneLayer.hasPointerCapture(event.pointerId))sceneLayer.releasePointerCapture(event.pointerId);
+  if(g.moved){
+    suppressClickUntil=performance.now()+500;qa.gestureCount++;
+    const velocity=event.timeStamp-g.time>110?0:g.velocity;
+    settleTo(releaseStop({start:g.start,position,velocity,moved:true,cancelled}),{duration:.65});
+  }else{
+    pointerRipple(event,true);
+  }
 }
 function animate(now){
-  raf=requestAnimationFrame(animate);if(document.hidden){lastTime=now;return;}
-  const dt=lastTime?Math.min((now-lastTime)/1000,.05):0;lastTime=now;clock+=dt;
-  if(!renderer||!ready)return;
-  oldBase.copy(base.position);const moving=stepMotion();
-  if(!moving&&entryArmed)scrollComposition();
-  if(dt>0)velocity.copy(base.position).sub(oldBase).divideScalar(dt);
-  fogOpacity=THREE.MathUtils.damp(fogOpacity,fogTarget,18,dt);if(Math.abs(fogOpacity-fogTarget)<.001)fogOpacity=fogTarget;fog.style.opacity=String(fogOpacity);
-  camera.position.copy(base.position);currentLook.copy(base.target);camera.fov=base.fov;
-  const frozen=reduced.matches||still,animationTime=frozen?0:clock;
-  if(!frozen&&state==='FOCUSED'){camera.position.x+=Math.sin(clock*Math.PI*2/14)*.035;camera.position.y+=Math.sin(clock*Math.PI*2/16)*.018;}
-  camera.lookAt(currentLook);camera.updateProjectionMatrix();camera.updateMatrixWorld();
-  for(const [id,model]of stageModels){model.rotation.y=THREE.MathUtils.degToRad(routeYaws[id]??contract.stages.find(s=>s.id===id).overviewYawDegrees);model.position.y=2.26+(frozen?0:Math.sin(animationTime*2*Math.PI/9)*.035);}
-  const active=['FOCUSED','ENTERING','CONTENT'].includes(state);for(const {material,intensity}of emissiveMaterials)material.emissiveIntensity=intensity*(active?1.35:qa.hover?1.25:1)*(1+(frozen?0:Math.sin(animationTime*.75)*.08));
-  const skyYaw=THREE.MathUtils.degToRad(135)+animationTime*THREE.MathUtils.degToRad(.04);scene.backgroundRotation.y=skyYaw;scene.environmentRotation.y=skyYaw;
-  for(let i=0;i<fogCards.length;i++){const card=fogCards[i];card.material.uniforms.time.value=animationTime;const spec=card.userData.fogSpec;card.position.x=spec.base_position_web[0]+spec.motion_amplitude_m*Math.sin(animationTime*spec.peak_speed_m_per_s/spec.motion_amplitude_m+spec.phase_radians);card.rotation.y=Math.atan2(camera.position.x-card.position.x,camera.position.z-card.position.z);}
-  water.update(animationTime,moving||state==='ENTERING'||state==='EXITING');updateTargets();
-  fog.style.setProperty('--fog-x',Math.sin(animationTime*.06)*35+'px');
-  if(state==='CONTENT'&&now-lastRender<1000/15)return;
-  lastRender=now;renderer.info.reset();const start=performance.now();renderer.render(scene,camera);const elapsed=performance.now()-start;
-  qa.frames++;qa.render={calls:renderer.info.render.calls,triangles:renderer.info.render.triangles,geometries:renderer.info.memory.geometries,textures:renderer.info.memory.textures,programs:renderer.info.programs.length,cpuRenderMilliseconds:elapsed};
-  if(qa.frames%30===0){qa.viewport.actualWebGLViewport=renderer.getCurrentViewport(new THREE.Vector4()).toArray();qa.viewport.drawingBuffer=renderer.getDrawingBufferSize(new THREE.Vector2()).toArray();publishQa();}
-  if(qa.frames%60===0){qa.timings.push({time:clock,...qa.render});if(qa.timings.length>100)qa.timings.shift();}
+  raf=requestAnimationFrame(animate);
+  const elapsed=lastTime?Math.max(0,(now-lastTime)/1000):0,dt=Math.min(elapsed,.05);lastTime=now;
+  if(document.hidden||!ready)return;clock+=elapsed;
+  if(travel){
+    const t=clamp((clock-travel.start)/travel.duration);position=mix(travel.from,travel.to,smooth(t));
+    if(t===1){position=goal=wrap(travel.to,navigation.stages.length);travel=null;setState('SCENE');applyPendingRoute();}
+  }
+  if(transition){
+    const t=clamp((clock-transition.start)/transition.duration);progress=mix(transition.from,transition.to,t);renderTransition();if(t===1)finishTransition(transition.to);
+  }
+  const pose=sampleDescent(sampleCarousel(poses,position),progress),frozen=still||reduced.matches;
+  camera.position.fromArray(pose.position);camera.fov=pose.fov;const target=new THREE.Vector3(...pose.target);
+  lookSmooth.lerp(look,1-Math.exp(-4*dt));
+  if(!frozen&&inScene()&&!gesture&&!travel){
+    camera.position.y+=Math.sin(clock*.4)*.018;const direction=target.clone().sub(camera.position).normalize();right.crossVectors(direction,camera.up).normalize();target.addScaledVector(right,lookSmooth.x);target.y+=lookSmooth.y;
+  }
+  camera.lookAt(target);camera.updateProjectionMatrix();camera.updateMatrixWorld();
+  for(const model of models.values())model.position.y=2.26+(frozen?0:Math.sin(clock*.7)*.025);
+  scene.backgroundRotation.y=THREE.MathUtils.degToRad(135);scene.environmentRotation.y=scene.backgroundRotation.y;
+  for(const [i,card]of fogCards.entries()){card.material.uniforms.time.value=frozen?0:clock;card.position.x=card.userData.baseX+(frozen?0:Math.sin(clock*.035+i)*1.5);card.rotation.y=Math.atan2(camera.position.x-card.position.x,camera.position.z-card.position.z);}
+  updateTargets();
+  // The scene is offscreen while reading the native external document.
+  if(state==='CONTENT'){if(qa.frames%30===0)publishQa();return;}
+  if(now-lastRender<1000/60)return;lastRender=now;
+  water.update(frozen?0:clock,!!travel||!!transition||!!gesture);renderer.info.reset();renderer.render(scene,camera);qa.frames++;
+  if(qa.frames%30===0){qa.render={calls:renderer.info.render.calls,triangles:renderer.info.render.triangles,textures:renderer.info.memory.textures};publishQa();}
 }
 
-listen(window,'message',event=>{
-  if(!validEnvelope(event,location.origin,frame.contentWindow,sessionId,['READY','RESIZE','CONTENT_ERROR','SCROLL_REQUEST','ESCAPE'])){if(event.data?.channel==='memento:tide')qa.bridge.rejected++;return;}
-  const d=event.data;
-  if(d.type==='READY'){contentReady=true;qa.bridge.ready=true;qa.bridge.readyTime=clock;qa.bridge.heroImageReady=d.payload.heroImageReady;qa.bridge.catalogueCards=d.payload.catalogueCards;clearTimeout(bridgeTimer);$('#fallback').hidden=true;log('content_ready');sendViewport();}
-  if((d.type==='RESIZE'||d.type==='READY')&&Number.isFinite(d.payload.height)&&d.payload.height>200&&d.payload.height<100000){contentHeight=Math.ceil(d.payload.height);frame.style.height=contentHeight+'px';shell.style.minHeight=contentHeight+'px';qa.bridge.resizes++;}
-  if(d.type==='CONTENT_ERROR'){qa.warnings.push('Services: '+d.payload.message);}
-  if(d.type==='SCROLL_REQUEST'&&Number.isFinite(d.payload.offset))window.scrollTo({top:entryHeight+clamp(d.payload.offset,0,contentHeight),behavior:reduced.matches?'instant':'smooth'});
-  if(d.type==='ESCAPE')returnOverview();
-});
-listen(window,'scroll',()=>{sendViewport();},{passive:true});
-listen(window,'resize',()=>{clearTimeout(resizeTimer);resizeTimer=setTimeout(resize,100);},{passive:true});
-listen(window,'wheel',event=>{if(state==='OVERVIEW'&&event.deltaY>18)selectServices();},{passive:true});
-listen(canvas,'pointermove',event=>pointerRipple(event),{passive:true});
-listen(canvas,'pointerdown',event=>{lastPointerDown={x:event.clientX,y:event.clientY};},{passive:true});
-listen(canvas,'pointerup',event=>{if(lastPointerDown&&Math.hypot(event.clientX-lastPointerDown.x,event.clientY-lastPointerDown.y)<8)pointerRipple(event,true);lastPointerDown=null;},{passive:true});
-listen(targets,'pointerdown',event=>{targetGesture={x:event.clientX,y:event.clientY,moved:false};},{capture:true,passive:true});
-listen(targets,'pointermove',event=>{if(targetGesture&&Math.hypot(event.clientX-targetGesture.x,event.clientY-targetGesture.y)>8)targetGesture.moved=true;},{capture:true,passive:true});
-listen(targets,'click',event=>{if(targetGesture?.moved){event.preventDefault();event.stopPropagation();}targetGesture=null;},{capture:true});
-listen(window,'keydown',event=>{
+on(sceneLayer,'pointerdown',pointerDown);on(window,'pointermove',pointerMove,{passive:false});
+on(window,'pointerup',event=>pointerEnd(event));on(window,'pointercancel',event=>pointerEnd(event,true));
+on(window,'blur',()=>{if(gesture)pointerEnd({pointerId:gesture.id,timeStamp:performance.now()},true);});
+on(sceneLayer,'lostpointercapture',event=>{if(gesture?.id===event.pointerId)pointerEnd(event,true);});
+on(sceneLayer,'click',event=>{if(performance.now()<suppressClickUntil){event.preventDefault();event.stopImmediatePropagation();}},{capture:true});
+on(sceneLayer,'dragstart',event=>event.preventDefault());on(sceneLayer,'pointerleave',()=>look.set(0,0));
+on(sceneLayer,'wheel',event=>{
+  if(!inScene()||event.ctrlKey)return;event.preventDefault();
+  const stamp=performance.now();if(stamp-wheelStamp>180)wheelTotal=0;wheelStamp=stamp;
+  if(stamp<wheelLock||gesture)return;
+  const delta=Math.abs(event.deltaX)>Math.abs(event.deltaY)?event.deltaX:event.deltaY;
+  wheelTotal+=delta*(event.deltaMode===1?16:event.deltaMode===2?innerHeight:1);
+  if(Math.abs(wheelTotal)>=42){stepSection(Math.sign(wheelTotal));wheelTotal=0;wheelLock=stamp+900;}
+},{passive:false});
+on($('#previous'),'click',()=>stepSection(-1));on($('#next'),'click',()=>stepSection(1));
+on($('#open-section'),'pointerenter',()=>{if(inScene())preloadSection();});
+on($('#open-section'),'click',event=>{if(event.metaKey||event.ctrlKey||event.shiftKey||event.altKey)return;event.preventDefault();movePage(1);});
+on($('#back-scene'),'click',()=>movePage(0));
+on(window,'keydown',event=>{
   if(event.target.closest?.('input,textarea,select,[contenteditable=true]'))return;
-  if(event.key==='Escape'){event.preventDefault();returnOverview();}
-  if((event.key==='ArrowDown'||event.key==='Enter')&&(event.target===document.body||event.target===canvas)){if(state==='OVERVIEW'){event.preventDefault();selectServices();}else if(state==='FOCUSED'){event.preventDefault();enterContent();}}
-  if(['ArrowLeft','ArrowRight'].includes(event.key)&&state==='FOCUSED'){const index=contract.stages.findIndex(s=>s.id===selectedId);selectStage(contract.stages[(index+(event.key==='ArrowRight'?1:5))%6].id);event.preventDefault();return;}
-  if(['ArrowLeft','ArrowRight'].includes(event.key)&&targets.contains(event.target)){const list=hitTargets.map(t=>t.el).filter(el=>!el.hidden&&el.getAttribute('aria-disabled')!=='true');const index=list.indexOf(event.target);list[(index+(event.key==='ArrowRight'?1:list.length-1))%list.length]?.focus();event.preventDefault();}
+  if(event.key==='Escape'){if(pendingRoute||progress>0||state==='ENTERING'){event.preventDefault();pendingRoute=null;if(progress>0||state==='ENTERING')movePage(0);}return;}
+  if(!inScene())return;
+  if(event.key==='ArrowRight'||event.key==='ArrowLeft'){event.preventDefault();stepSection(event.key==='ArrowRight'?1:-1);}
+  if(event.key==='ArrowDown'||((event.key==='Enter'||event.key===' ')&&(event.target===document.body||event.target===canvas))){event.preventDefault();movePage(1);}
+  if(event.key==='Home'){event.preventDefault();selectIndex(0);}
+  if(event.key==='End'){event.preventDefault();selectIndex(navigation.stages.length-1);}
 });
-listen(window,'popstate',()=>{
-  const content=location.hash==='#services-content',wanted=navigation?.stages.find(s=>location.hash==='#'+s.slug||(content&&s.id==='s01_services'));
-  if(wanted&&wanted.id===selectedId&&!activeMotion){if(selectedId==='s01_services')restoreServicesHistory(content);}
-  else if(wanted&&['OVERVIEW','FOCUSED'].includes(state)){pendingContentRestore=content;selectStage(wanted.id,false);}
-  else returnOverview();
+on(window,'popstate',restoreLocation);on(window,'hashchange',()=>{if(!history.state?.tide)restoreLocation();});
+on(window,'resize',()=>{clearTimeout(resizeTimer);resizeTimer=setTimeout(resize,90);},{passive:true});
+on(window,'message',event=>{
+  if(!frameStage||!frame)return;
+  if(!validBridge(event,frame,frameStage,sessionId)){if(event.data?.channel==='memento:tide')qa.bridge.rejected++;return;}
+  if(event.data.type==='READY'){qa.bridge.ready=true;sendBridge('VISIBILITY',{active:state==='CONTENT'});}
+  if(event.data.type==='ESCAPE'||event.data.type==='END')movePage(0);
 });
-listen($('#open-section'),'click',event=>{const item=navigation?.stages.find(s=>s.id===selectedId);if(item?.mode==='external')return;event.preventDefault();if(item?.mode==='services-embedded')enterContent();else returnOverview();});
-listen($('#back-lake'),'click',returnOverview);
-listen(reduced,'change',resize);
-listen(document,'visibilitychange',()=>{lastTime=0;bridgeSend('VISIBILITY',{active:!document.hidden&&state==='CONTENT'});});
-listen(canvas,'webglcontextlost',event=>{event.preventDefault();reportError(new Error('WebGL context lost'),true);});
-listen(canvas,'webglcontextrestored',()=>{location.reload();});
-listen($('#dismiss-error'),'click',()=>{$('#fallback').hidden=true;});
-listen(window,'error',event=>{qa.errors.push(String(event.message));});
-listen(window,'unhandledrejection',event=>{qa.errors.push(String(event.reason?.message||event.reason));});
-listen(window,'pageshow',event=>{if(event.persisted){lastTime=0;raf=requestAnimationFrame(animate);qa.rafLoops=1;}});
-listen(window,'pagehide',event=>{if(event.persisted){cancelAnimationFrame(raf);qa.rafLoops=0;return;}cancelAnimationFrame(raf);clearTimeout(bridgeTimer);clearTimeout(resizeTimer);abort.abort();water?.dispose();environmentTarget?.dispose();environmentTexture?.dispose();pmrem?.dispose();renderer?.dispose();qa.rafLoops=0;});
-setup().catch(error=>reportError(error,true));raf=requestAnimationFrame(animate);
+on(reduced,'change',()=>{look.set(0,0);if(travel){position=goal;travel=null;setState('SCENE');applyPendingRoute();}if(transition)finishTransition(transition.to);});
+on(document,'visibilitychange',()=>{lastTime=0;sendBridge('VISIBILITY',{active:!document.hidden&&state==='CONTENT'});});
+on(canvas,'webglcontextlost',event=>{event.preventDefault();reportError(new Error('WebGL context lost'));});on(canvas,'webglcontextrestored',()=>location.reload());
+on(window,'pageshow',event=>{if(event.persisted){lastTime=0;raf=requestAnimationFrame(animate);}});
+on(window,'pagehide',event=>{cancelAnimationFrame(raf);if(event.persisted)return;clearTimeout(frameTimer);clearTimeout(resizeTimer);abort.abort();water?.dispose();environmentTarget?.dispose();renderer?.dispose();});
+setup().catch(reportError);raf=requestAnimationFrame(animate);
