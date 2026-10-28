@@ -1,0 +1,21 @@
+MEMENTO — CATALOGO SERVIZI V28
+44 servizi, 44 copertine e 176 tavole commerciali. 6 bundle conservati.
+
+PACCHETTO PER VERCEL
+Estrarre questo ZIP. index.html e assets/ sono nella root del sito.
+Il contenuto è un sito statico già pronto: non richiede compilazione,
+installazione di dipendenze, database o variabili d’ambiente.
+La directory da pubblicare è quella che contiene index.html.
+Le route utilizzano hash, per esempio #servizio/menu-digitale.
+Questo archivio non esegue un deploy su Vercel.
+
+CONTENUTO E CONTATTI
+Copy e grafica in HTML/CSS; immagini WebP responsive, font locali.
+Ogni servizio ha quattro tavole: servizio, consegna, processo e contatto.
+La CTA con chevron apre https://mementostudio.it/start fuori dall’embed.
+Il modulo email preesistente dei bundle prepara una bozza nell’app
+email dell’utente, senza invio automatico.
+
+I PNG puliti, i prompt e la guida di replica sono nell’archivio
+ORIGINALI_E_PROMPT separato. Le immagini sono illustrazioni di servizio,
+non testimonianze o screenshot di progetti consegnati a clienti.

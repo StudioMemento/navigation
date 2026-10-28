@@ -1,0 +1,80 @@
+/* V23 — a readable document flow. Only deliberate carousel gestures move cards. */
+html { scroll-behavior: auto; scroll-snap-type: none; }
+body { overflow-x: clip; }
+section[id] { scroll-margin-top: 24px; }
+.macro-hero { height: min(64svh, 640px); min-height: 340px; }
+.hero-copy { padding-block: 36px 70px; }
+.hero-title { font-size: min(15cqw, 24svh, calc(min(1720px, 100cqw - var(--gutter) * 2) / var(--hero-units))); margin-bottom: 0; }
+.hero-controls { bottom: 12px; }
+
+/* The two catalogue modes remain legible while browsing a continuous grid. */
+#catalogo { scroll-margin-top: 0; }
+.catalogue { --catalogue-gap: clamp(10px, 1.2vw, 22px); padding-block: 32px 96px; }
+.catalogue-heading { height: auto; min-height: 96px; padding-block: 20px 24px; margin-inline: var(--gutter); background: #0f0f0ff5; backdrop-filter: blur(14px); }
+.catalogue-heading h2 { font-size: clamp(32px, 4vw, 64px); font-weight: 380; letter-spacing: -.035em; }
+.catalogue-filters { display: flex; gap: 8px; border: 0; border-radius: 0; padding: 0; background: none; }
+.catalogue-filters button { min-width: 132px; min-height: 48px; padding: 10px 16px; gap: 10px; border-radius: 0; color: #99958f; font-size: 17px; background: transparent; }
+.catalogue-filters button[aria-pressed="true"] { color: #f0be74; background: #bd874915; }
+.catalogue-filters button:hover { color: var(--ink); }
+.catalogue-filters svg { width: 20px; height: 20px; flex: none; }
+#catalogue-groups { margin-top: 12px; }
+.catalogue-intro { margin: 0 var(--gutter) 24px; max-width: 55ch; font-size: clamp(15px, 1.35vw, 19px); line-height: 1.5; color: #b9b4ad; }
+.catalogue-page { min-height: 0; padding: 0 var(--gutter); }
+.catalogue-page .service-grid { grid-template-columns: repeat(5, minmax(0, 1fr)); gap: var(--catalogue-gap); }
+.catalogue-page .service-card { grid-column: auto; grid-row: auto; aspect-ratio: 1; }
+.catalogue-page .service-copy { inset: auto 14px 16px; opacity: 1; transform: none; visibility: visible; }
+.catalogue-page .service-title { font-size: clamp(14px, 7.7cqw, 25px); line-height: 1.18; letter-spacing: -.015em; hyphens: none; }
+.catalogue-page .service-visual { --tile-mask: linear-gradient(180deg, #000 40%, #000000e8 58%, #00000090 74%, #00000028 90%, transparent); }
+.catalogue-page .service-action { opacity: 0; transition: opacity .18s; }
+.catalogue-page .service-card:is(:hover, :focus-visible) .service-action { opacity: 1; }
+
+/* The bundle chapter separates the catalogue from the six areas. */
+#bundles { min-height: 0; padding-block: clamp(64px, 7vw, 112px); --bundle-board-height: calc(var(--slide-width) / 2); }
+#bundles-heading { margin-bottom: 46px; }
+.category-section { min-height: 0; padding-block: clamp(64px, 6vw, 110px); }
+.category-section .service-carousel .carousel-stage { height: calc(var(--slide-width) / 2); }
+.carousel-controls { align-items: center; }
+.carousel-arrow { display: grid; place-items: center; flex: none; width: 44px; height: 44px; border-radius: 50%; color: var(--ink); opacity: .65; }
+.carousel-arrow .chevron { width: 20px; height: 20px; }
+.carousel-arrow:hover { opacity: 1; background: #ffffff08; }
+.carousel-arrow:focus-visible { opacity: 1; outline: 1px solid var(--amber); outline-offset: 2px; }
+.carousel-controls .carousel-dots { gap: 0; }
+
+/* One destination, with the entire typographic CTA clickable. */
+.start-section { padding-block: clamp(90px, 12vw, 180px); }
+.start-action { display: flex; align-items: center; justify-content: space-between; gap: 8vw; width: min(100%, 1280px); margin-inline: auto; }
+.start-action h2 { font-size: clamp(64px, 10vw, 180px); font-weight: 380; line-height: .98; letter-spacing: -.055em; }
+.start-action > .chevron { width: clamp(48px, 11vw, 180px); height: clamp(68px, 13vw, 220px); flex: none; transition: transform .2s, opacity .2s; }
+.start-action:hover > .chevron { transform: translateX(6px); opacity: .75; }
+
+@media (max-width: 767px) {
+  .macro-hero { height: 44svh; min-height: 280px; max-height: 420px; }
+  .hero-copy { padding-bottom: 60px; }
+  .hero-title { font-size: min(27cqw, calc((100cqw - var(--gutter) * 2) / var(--hero-units))); }
+  .hero-visual { height: 100%; }
+  .hero-controls { bottom: 6px; }
+  .catalogue { --catalogue-gap: 8px; padding-block: 16px 64px; }
+  .catalogue-heading { flex-wrap: wrap; align-items: flex-start; gap: 12px; padding-block: 14px 16px; }
+  .catalogue-heading h2 { width: 100%; font-size: clamp(32px, 8vw, 42px); }
+  .catalogue-filters { width: 100%; gap: 8px; }
+  .catalogue-filters button { flex: 1; justify-content: center; min-width: 0; min-height: 48px; font-size: 16px; gap: 8px; padding: 10px; }
+  .catalogue-filters svg { width: 19px; height: 19px; }
+  #catalogue-groups { margin-top: 8px; }
+  .catalogue-page .service-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .catalogue-page .service-copy { inset: auto 7px 9px; }
+  .catalogue-page .service-title { font-size: clamp(11px, 11cqw, 16px); line-height: 1.15; }
+  .catalogue-page .service-action { display: none; }
+  #bundles { --bundle-board-height: calc(var(--slide-width) / .72); padding-block: 62px; }
+  #bundles-heading { margin-bottom: 30px; }
+  .category-section { padding-block: 54px; }
+  .category-section .service-carousel .carousel-stage { height: calc(var(--slide-width) / .72); min-height: 0; }
+  .carousel-arrow { width: 36px; height: 44px; }
+  .carousel-controls .carousel-dot, #bundle-controls .carousel-dot { width: clamp(24px, 6.5vw, 32px); }
+  .start-section { padding-block: 90px 110px; }
+  .start-action { gap: 12px; }
+  .start-action h2 { font-size: clamp(60px, 14vw, 104px); }
+  .start-action > .chevron { width: 13vw; height: 18vw; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .start-action > .chevron, .catalogue-page .service-action { transition: none; }
+}
