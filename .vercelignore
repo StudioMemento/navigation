@@ -1,0 +1,7 @@
+reports/
+scripts/localize-services.py
+scripts/package.py
+*.zip
+node_modules/
+.git/
+*.log

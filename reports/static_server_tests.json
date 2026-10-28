@@ -1,0 +1,18 @@
+{
+  "date": "2026-10-28",
+  "command": "node --test scripts/serve.test.mjs",
+  "passed": true,
+  "tests": 2,
+  "failures": 0,
+  "checks": [
+    "static path confinement and encoded traversal rejection",
+    "Services materialized local media and iframe bridge",
+    "font HEAD and MIME",
+    "world v008 GLB header and MIME",
+    "exact user Studio redirect",
+    "Services trailing slash",
+    "missing assets return 404 rather than HTML",
+    "unsupported methods return 405"
+  ],
+  "scope": "Node local preview; Vercel production deployment non verificato"
+}

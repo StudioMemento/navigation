@@ -1,0 +1,11 @@
+{
+  "source": "C:\\Users\\MEMENTO\\Documents\\ChatGPT\\_MCP___BLENDER\\MEMENTO_TIDE\\data\\paths_world_v008.json",
+  "sourceSha256": "e6a8ea05165030585478283b5c9008efc4d39e784e21685cc1d3f5db0a6bb8c8",
+  "runtimePayload": "C:\\Users\\MEMENTO\\Documents\\ChatGPT\\_MCP___BLENDER\\MEMENTO_TIDE\\deploy\\vercel_v009\\public\\data\\world-routes.json",
+  "runtimeSha256": "acd71a6598bebb55077fddd9dd7c2c5197df939b5fd6fc54f860d43b69f9da0f",
+  "runtimeBytes": 79561,
+  "publicRoutes": 171,
+  "internalRoutes": 30,
+  "pythonReferenceSamples": 3417,
+  "method": "Exact control points, poses and yaw arrays. Runtime recomputes original 512 samples per Bezier segment to recover arc lookup."
+}

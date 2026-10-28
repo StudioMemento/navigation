@@ -1,0 +1,7 @@
+:root { --tide-vh: 8px; --tide-visible-top: 0px; --tide-viewport-height: 800px; --bg: #050607 !important; }
+html, body { min-height: 0 !important; height: auto !important; background: transparent !important; overscroll-behavior: auto; }
+body { overflow-x: clip; }
+#memento-catalogo { background: #050607; }
+.checkpoint-rail, .home-action { display: none !important; }
+dialog[open] { top: var(--tide-visible-top) !important; bottom: auto !important; height: var(--tide-viewport-height) !important; max-height: var(--tide-viewport-height) !important; margin-top: 0 !important; }
+#lead-dialog[open] { height: auto !important; margin-top: 12px !important; max-height: calc(var(--tide-viewport-height) - 24px) !important; }

@@ -1,0 +1,1041 @@
+{
+  "date": "2026-10-28",
+  "checks": [
+    {
+      "name": "GLB family_v007/mobile/optimized/family_neighbors.glb",
+      "pass": true,
+      "detail": {
+        "bytes": 1763036
+      }
+    },
+    {
+      "name": "GLB family_v007/mobile/optimized/icon_services_lod0.glb",
+      "pass": true,
+      "detail": {
+        "bytes": 1017048
+      }
+    },
+    {
+      "name": "GLB family_v007/mobile/optimized/platform.glb",
+      "pass": true,
+      "detail": {
+        "bytes": 430520
+      }
+    },
+    {
+      "name": "GLB family_v007/optimized/family_neighbors.glb",
+      "pass": true,
+      "detail": {
+        "bytes": 2494384
+      }
+    },
+    {
+      "name": "GLB family_v007/optimized/icon_services_lod0.glb",
+      "pass": true,
+      "detail": {
+        "bytes": 1523432
+      }
+    },
+    {
+      "name": "GLB family_v007/optimized/platform.glb",
+      "pass": true,
+      "detail": {
+        "bytes": 655488
+      }
+    },
+    {
+      "name": "GLB world_v008/optimized/environment.glb",
+      "pass": true,
+      "detail": {
+        "bytes": 1761216
+      }
+    },
+    {
+      "name": "Vendored vendor/LICENSE-MESHOPT.md",
+      "pass": true
+    },
+    {
+      "name": "Vendored vendor/LICENSE-THREE.txt",
+      "pass": true
+    },
+    {
+      "name": "Vendored vendor/meshopt_decoder.mjs",
+      "pass": true
+    },
+    {
+      "name": "Vendored vendor/three.core.js",
+      "pass": true
+    },
+    {
+      "name": "Vendored vendor/three.module.js",
+      "pass": true
+    },
+    {
+      "name": "Vendored vendor/loaders/GLTFLoader.js",
+      "pass": true
+    },
+    {
+      "name": "Vendored vendor/loaders/HDRLoader.js",
+      "pass": true
+    },
+    {
+      "name": "Vendored vendor/loaders/RGBELoader.js",
+      "pass": true
+    },
+    {
+      "name": "Vendored vendor/objects/Reflector.js",
+      "pass": true
+    },
+    {
+      "name": "Vendored vendor/utils/BufferGeometryUtils.js",
+      "pass": true
+    },
+    {
+      "name": "Services media /services/assets/app-dedicata.webp",
+      "pass": true
+    },
+    {
+      "name": "Services media /services/assets/b-apertura.webp",
+      "pass": true
+    },
+    {
+      "name": "Services media /services/assets/b-campagna.webp",
+      "pass": true
+    },
+    {
+      "name": "Services media /services/assets/b-identita.webp",
+      "pass": true
+    },
+    {
+      "name": "Services media /services/assets/b-lancio.webp",
+      "pass": true
+    },
+    {
+      "name": "Services media /services/assets/b-online.webp",
+      "pass": true
+    },
+    {
+      "name": "Services media /services/assets/b-social.webp",
+      "pass": true
+    },
+    {
+      "name": "Services media /services/assets/biglietti.webp",
+      "pass": true
+    },
+    {
+      "name": "Services media /services/assets/branding.webp",
+      "pass": true
+    },
+    {
+      "name": "Services media /services/assets/brochure.webp",
+      "pass": true
+    },
+    {
+      "name": "Services media /services/assets/carta.webp",
+      "pass": true
+    },
+    {
+      "name": "Services media /services/assets/catalogo.webp",
+      "pass": true
+    },
+    {
+      "name": "Services media /services/assets/configuratore.webp",
+      "pass": true
+    },
+    {
+      "name": "Services media /services/assets/ecommerce.webp",
+      "pass": true
+    },
+    {
+      "name": "Services media /services/assets/esperienza-digitale.webp",
+      "pass": true
+    },
+    {
+      "name": "Services media /services/assets/espositori.webp",
+      "pass": true
+    },
+    {
+      "name": "Services media /services/assets/etichette.webp",
+      "pass": true
+    },
+    {
+      "name": "Services media /services/assets/fonts/InterVariable.woff2",
+      "pass": true
+    },
+    {
+      "name": "Services media /services/assets/foto-emozionali.webp",
+      "pass": true
+    },
+    {
+      "name": "Services media /services/assets/foto-food.webp",
+      "pass": true
+    },
+    {
+      "name": "Services media /services/assets/foto-prodotti.webp",
+      "pass": true
+    },
+    {
+      "name": "Services media /services/assets/foto-spazi.webp",
+      "pass": true
+    },
+    {
+      "name": "Services media /services/assets/gadget.webp",
+      "pass": true
+    },
+    {
+      "name": "Services media /services/assets/grafica-spazi.webp",
+      "pass": true
+    },
+    {
+      "name": "Services media /services/assets/grafiche-pubblicitarie.webp",
+      "pass": true
+    },
+    {
+      "name": "Services media /services/assets/guida-brand.webp",
+      "pass": true
+    },
+    {
+      "name": "Services media /services/assets/hero-3d.webp",
+      "pass": true
+    },
+    {
+      "name": "Services media /services/assets/hero-branding.webp",
+      "pass": true
+    },
+    {
+      "name": "Services media /services/assets/hero-fotografia.webp",
+      "pass": true
+    },
+    {
+      "name": "Services media /services/assets/hero-stampa.webp",
+      "pass": true
+    },
+    {
+      "name": "Services media /services/assets/hero-video.webp",
+      "pass": true
+    },
+    {
+      "name": "Services media /services/assets/hero-web.webp",
+      "pass": true
+    },
+    {
+      "name": "Services media /services/assets/icons/caret-left.svg",
+      "pass": true
+    },
+    {
+      "name": "Services media /services/assets/icons/caret-right.svg",
+      "pass": true
+    },
+    {
+      "name": "Services media /services/assets/icons/x.svg",
+      "pass": true
+    },
+    {
+      "name": "Services media /services/assets/insegne.webp",
+      "pass": true
+    },
+    {
+      "name": "Services media /services/assets/landing.webp",
+      "pass": true
+    },
+    {
+      "name": "Services media /services/assets/logo-animato.webp",
+      "pass": true
+    },
+    {
+      "name": "Services media /services/assets/menu-digitale.webp",
+      "pass": true
+    },
+    {
+      "name": "Services media /services/assets/menu-listini.webp",
+      "pass": true
+    },
+    {
+      "name": "Services media /services/assets/merchandising.webp",
+      "pass": true
+    },
+    {
+      "name": "Services media /services/assets/modello-3d.webp",
+      "pass": true
+    },
+    {
+      "name": "Services media /services/assets/moduli.webp",
+      "pass": true
+    },
+    {
+      "name": "Services media /services/assets/motion.webp",
+      "pass": true
+    },
+    {
+      "name": "Services media /services/assets/presentazione.webp",
+      "pass": true
+    },
+    {
+      "name": "Services media /services/assets/realta-aumentata.webp",
+      "pass": true
+    },
+    {
+      "name": "Services media /services/assets/render-animazione.webp",
+      "pass": true
+    },
+    {
+      "name": "Services media /services/assets/responsive/app-dedicata-320.webp",
+      "pass": true
+    },
+    {
+      "name": "Services media /services/assets/responsive/app-dedicata-640.webp",
+      "pass": true
+    },
+    {
+      "name": "Services media /services/assets/responsive/b-apertura-320.webp",
+      "pass": true
+    },
+    {
+      "name": "Services media /services/assets/responsive/b-apertura-640.webp",
+      "pass": true
+    },
+    {
+      "name": "Services media /services/assets/responsive/b-campagna-320.webp",
+      "pass": true
+    },
+    {
+      "name": "Services media /services/assets/responsive/b-campagna-640.webp",
+      "pass": true
+    },
+    {
+      "name": "Services media /services/assets/responsive/b-identita-320.webp",
+      "pass": true
+    },
+    {
+      "name": "Services media /services/assets/responsive/b-identita-640.webp",
+      "pass": true
+    },
+    {
+      "name": "Services media /services/assets/responsive/b-lancio-320.webp",
+      "pass": true
+    },
+    {
+      "name": "Services media /services/assets/responsive/b-lancio-640.webp",
+      "pass": true
+    },
+    {
+      "name": "Services media /services/assets/responsive/b-online-320.webp",
+      "pass": true
+    },
+    {
+      "name": "Services media /services/assets/responsive/b-online-640.webp",
+      "pass": true
+    },
+    {
+      "name": "Services media /services/assets/responsive/b-social-320.webp",
+      "pass": true
+    },
+    {
+      "name": "Services media /services/assets/responsive/b-social-640.webp",
+      "pass": true
+    },
+    {
+      "name": "Services media /services/assets/responsive/biglietti-320.webp",
+      "pass": true
+    },
+    {
+      "name": "Services media /services/assets/responsive/biglietti-640.webp",
+      "pass": true
+    },
+    {
+      "name": "Services media /services/assets/responsive/branding-320.webp",
+      "pass": true
+    },
+    {
+      "name": "Services media /services/assets/responsive/branding-640.webp",
+      "pass": true
+    },
+    {
+      "name": "Services media /services/assets/responsive/brochure-320.webp",
+      "pass": true
+    },
+    {
+      "name": "Services media /services/assets/responsive/brochure-640.webp",
+      "pass": true
+    },
+    {
+      "name": "Services media /services/assets/responsive/carta-320.webp",
+      "pass": true
+    },
+    {
+      "name": "Services media /services/assets/responsive/carta-640.webp",
+      "pass": true
+    },
+    {
+      "name": "Services media /services/assets/responsive/catalogo-320.webp",
+      "pass": true
+    },
+    {
+      "name": "Services media /services/assets/responsive/catalogo-640.webp",
+      "pass": true
+    },
+    {
+      "name": "Services media /services/assets/responsive/configuratore-320.webp",
+      "pass": true
+    },
+    {
+      "name": "Services media /services/assets/responsive/configuratore-640.webp",
+      "pass": true
+    },
+    {
+      "name": "Services media /services/assets/responsive/ecommerce-320.webp",
+      "pass": true
+    },
+    {
+      "name": "Services media /services/assets/responsive/ecommerce-640.webp",
+      "pass": true
+    },
+    {
+      "name": "Services media /services/assets/responsive/esperienza-digitale-320.webp",
+      "pass": true
+    },
+    {
+      "name": "Services media /services/assets/responsive/esperienza-digitale-640.webp",
+      "pass": true
+    },
+    {
+      "name": "Services media /services/assets/responsive/espositori-320.webp",
+      "pass": true
+    },
+    {
+      "name": "Services media /services/assets/responsive/espositori-640.webp",
+      "pass": true
+    },
+    {
+      "name": "Services media /services/assets/responsive/etichette-320.webp",
+      "pass": true
+    },
+    {
+      "name": "Services media /services/assets/responsive/etichette-640.webp",
+      "pass": true
+    },
+    {
+      "name": "Services media /services/assets/responsive/foto-emozionali-320.webp",
+      "pass": true
+    },
+    {
+      "name": "Services media /services/assets/responsive/foto-emozionali-640.webp",
+      "pass": true
+    },
+    {
+      "name": "Services media /services/assets/responsive/foto-food-320.webp",
+      "pass": true
+    },
+    {
+      "name": "Services media /services/assets/responsive/foto-food-640.webp",
+      "pass": true
+    },
+    {
+      "name": "Services media /services/assets/responsive/foto-prodotti-320.webp",
+      "pass": true
+    },
+    {
+      "name": "Services media /services/assets/responsive/foto-prodotti-640.webp",
+      "pass": true
+    },
+    {
+      "name": "Services media /services/assets/responsive/foto-spazi-320.webp",
+      "pass": true
+    },
+    {
+      "name": "Services media /services/assets/responsive/foto-spazi-640.webp",
+      "pass": true
+    },
+    {
+      "name": "Services media /services/assets/responsive/gadget-320.webp",
+      "pass": true
+    },
+    {
+      "name": "Services media /services/assets/responsive/gadget-640.webp",
+      "pass": true
+    },
+    {
+      "name": "Services media /services/assets/responsive/grafica-spazi-320.webp",
+      "pass": true
+    },
+    {
+      "name": "Services media /services/assets/responsive/grafica-spazi-640.webp",
+      "pass": true
+    },
+    {
+      "name": "Services media /services/assets/responsive/grafiche-pubblicitarie-320.webp",
+      "pass": true
+    },
+    {
+      "name": "Services media /services/assets/responsive/grafiche-pubblicitarie-640.webp",
+      "pass": true
+    },
+    {
+      "name": "Services media /services/assets/responsive/guida-brand-320.webp",
+      "pass": true
+    },
+    {
+      "name": "Services media /services/assets/responsive/guida-brand-640.webp",
+      "pass": true
+    },
+    {
+      "name": "Services media /services/assets/responsive/hero-3d-1152.webp",
+      "pass": true
+    },
+    {
+      "name": "Services media /services/assets/responsive/hero-3d-768.webp",
+      "pass": true
+    },
+    {
+      "name": "Services media /services/assets/responsive/hero-branding-1152.webp",
+      "pass": true
+    },
+    {
+      "name": "Services media /services/assets/responsive/hero-branding-768.webp",
+      "pass": true
+    },
+    {
+      "name": "Services media /services/assets/responsive/hero-fotografia-1152.webp",
+      "pass": true
+    },
+    {
+      "name": "Services media /services/assets/responsive/hero-fotografia-768.webp",
+      "pass": true
+    },
+    {
+      "name": "Services media /services/assets/responsive/hero-stampa-1152.webp",
+      "pass": true
+    },
+    {
+      "name": "Services media /services/assets/responsive/hero-stampa-768.webp",
+      "pass": true
+    },
+    {
+      "name": "Services media /services/assets/responsive/hero-video-1152.webp",
+      "pass": true
+    },
+    {
+      "name": "Services media /services/assets/responsive/hero-video-768.webp",
+      "pass": true
+    },
+    {
+      "name": "Services media /services/assets/responsive/hero-web-1152.webp",
+      "pass": true
+    },
+    {
+      "name": "Services media /services/assets/responsive/hero-web-768.webp",
+      "pass": true
+    },
+    {
+      "name": "Services media /services/assets/responsive/insegne-320.webp",
+      "pass": true
+    },
+    {
+      "name": "Services media /services/assets/responsive/insegne-640.webp",
+      "pass": true
+    },
+    {
+      "name": "Services media /services/assets/responsive/landing-320.webp",
+      "pass": true
+    },
+    {
+      "name": "Services media /services/assets/responsive/landing-640.webp",
+      "pass": true
+    },
+    {
+      "name": "Services media /services/assets/responsive/logo-animato-320.webp",
+      "pass": true
+    },
+    {
+      "name": "Services media /services/assets/responsive/logo-animato-640.webp",
+      "pass": true
+    },
+    {
+      "name": "Services media /services/assets/responsive/menu-digitale-320.webp",
+      "pass": true
+    },
+    {
+      "name": "Services media /services/assets/responsive/menu-digitale-640.webp",
+      "pass": true
+    },
+    {
+      "name": "Services media /services/assets/responsive/menu-listini-320.webp",
+      "pass": true
+    },
+    {
+      "name": "Services media /services/assets/responsive/menu-listini-640.webp",
+      "pass": true
+    },
+    {
+      "name": "Services media /services/assets/responsive/merchandising-320.webp",
+      "pass": true
+    },
+    {
+      "name": "Services media /services/assets/responsive/merchandising-640.webp",
+      "pass": true
+    },
+    {
+      "name": "Services media /services/assets/responsive/modello-3d-320.webp",
+      "pass": true
+    },
+    {
+      "name": "Services media /services/assets/responsive/modello-3d-640.webp",
+      "pass": true
+    },
+    {
+      "name": "Services media /services/assets/responsive/moduli-320.webp",
+      "pass": true
+    },
+    {
+      "name": "Services media /services/assets/responsive/moduli-640.webp",
+      "pass": true
+    },
+    {
+      "name": "Services media /services/assets/responsive/motion-320.webp",
+      "pass": true
+    },
+    {
+      "name": "Services media /services/assets/responsive/motion-640.webp",
+      "pass": true
+    },
+    {
+      "name": "Services media /services/assets/responsive/presentazione-320.webp",
+      "pass": true
+    },
+    {
+      "name": "Services media /services/assets/responsive/presentazione-640.webp",
+      "pass": true
+    },
+    {
+      "name": "Services media /services/assets/responsive/realta-aumentata-320.webp",
+      "pass": true
+    },
+    {
+      "name": "Services media /services/assets/responsive/realta-aumentata-640.webp",
+      "pass": true
+    },
+    {
+      "name": "Services media /services/assets/responsive/render-animazione-320.webp",
+      "pass": true
+    },
+    {
+      "name": "Services media /services/assets/responsive/render-animazione-640.webp",
+      "pass": true
+    },
+    {
+      "name": "Services media /services/assets/responsive/scatole-320.webp",
+      "pass": true
+    },
+    {
+      "name": "Services media /services/assets/responsive/scatole-640.webp",
+      "pass": true
+    },
+    {
+      "name": "Services media /services/assets/responsive/shopper-320.webp",
+      "pass": true
+    },
+    {
+      "name": "Services media /services/assets/responsive/shopper-640.webp",
+      "pass": true
+    },
+    {
+      "name": "Services media /services/assets/responsive/showroom-320.webp",
+      "pass": true
+    },
+    {
+      "name": "Services media /services/assets/responsive/showroom-640.webp",
+      "pass": true
+    },
+    {
+      "name": "Services media /services/assets/responsive/sito-320.webp",
+      "pass": true
+    },
+    {
+      "name": "Services media /services/assets/responsive/sito-640.webp",
+      "pass": true
+    },
+    {
+      "name": "Services media /services/assets/responsive/teaser-320.webp",
+      "pass": true
+    },
+    {
+      "name": "Services media /services/assets/responsive/teaser-640.webp",
+      "pass": true
+    },
+    {
+      "name": "Services media /services/assets/responsive/template-social-320.webp",
+      "pass": true
+    },
+    {
+      "name": "Services media /services/assets/responsive/template-social-640.webp",
+      "pass": true
+    },
+    {
+      "name": "Services media /services/assets/responsive/tessere-320.webp",
+      "pass": true
+    },
+    {
+      "name": "Services media /services/assets/responsive/tessere-640.webp",
+      "pass": true
+    },
+    {
+      "name": "Services media /services/assets/responsive/trailer-320.webp",
+      "pass": true
+    },
+    {
+      "name": "Services media /services/assets/responsive/trailer-640.webp",
+      "pass": true
+    },
+    {
+      "name": "Services media /services/assets/responsive/vetrina-320.webp",
+      "pass": true
+    },
+    {
+      "name": "Services media /services/assets/responsive/vetrina-640.webp",
+      "pass": true
+    },
+    {
+      "name": "Services media /services/assets/responsive/video-aziendali-320.webp",
+      "pass": true
+    },
+    {
+      "name": "Services media /services/assets/responsive/video-aziendali-640.webp",
+      "pass": true
+    },
+    {
+      "name": "Services media /services/assets/responsive/video-esplicativi-320.webp",
+      "pass": true
+    },
+    {
+      "name": "Services media /services/assets/responsive/video-esplicativi-640.webp",
+      "pass": true
+    },
+    {
+      "name": "Services media /services/assets/responsive/video-lancio-320.webp",
+      "pass": true
+    },
+    {
+      "name": "Services media /services/assets/responsive/video-lancio-640.webp",
+      "pass": true
+    },
+    {
+      "name": "Services media /services/assets/responsive/video-social-320.webp",
+      "pass": true
+    },
+    {
+      "name": "Services media /services/assets/responsive/video-social-640.webp",
+      "pass": true
+    },
+    {
+      "name": "Services media /services/assets/scatole.webp",
+      "pass": true
+    },
+    {
+      "name": "Services media /services/assets/shopper.webp",
+      "pass": true
+    },
+    {
+      "name": "Services media /services/assets/showroom.webp",
+      "pass": true
+    },
+    {
+      "name": "Services media /services/assets/sito.webp",
+      "pass": true
+    },
+    {
+      "name": "Services media /services/assets/teaser.webp",
+      "pass": true
+    },
+    {
+      "name": "Services media /services/assets/template-social.webp",
+      "pass": true
+    },
+    {
+      "name": "Services media /services/assets/tessere.webp",
+      "pass": true
+    },
+    {
+      "name": "Services media /services/assets/textures/dither.svg",
+      "pass": true
+    },
+    {
+      "name": "Services media /services/assets/trailer.webp",
+      "pass": true
+    },
+    {
+      "name": "Services media /services/assets/vetrina.webp",
+      "pass": true
+    },
+    {
+      "name": "Services media /services/assets/video-aziendali.webp",
+      "pass": true
+    },
+    {
+      "name": "Services media /services/assets/video-esplicativi.webp",
+      "pass": true
+    },
+    {
+      "name": "Services media /services/assets/video-lancio.webp",
+      "pass": true
+    },
+    {
+      "name": "Services media /services/assets/video-social.webp",
+      "pass": true
+    },
+    {
+      "name": "Services media download complete",
+      "pass": true,
+      "detail": {
+        "files": 173,
+        "bytes": 5086545
+      }
+    },
+    {
+      "name": "HTML reference index.html data:,",
+      "pass": true
+    },
+    {
+      "name": "HTML reference index.html /style.css",
+      "pass": true
+    },
+    {
+      "name": "HTML reference index.html #",
+      "pass": true
+    },
+    {
+      "name": "HTML reference index.html https://mementoservizi.vercel.app/",
+      "pass": true
+    },
+    {
+      "name": "HTML reference index.html https://mementoportfolio.vercel.app/",
+      "pass": true
+    },
+    {
+      "name": "HTML reference index.html https://mementostudio.vercel.app/",
+      "pass": true
+    },
+    {
+      "name": "HTML reference index.html https://mementolevelup.vercel.app/",
+      "pass": true
+    },
+    {
+      "name": "HTML reference index.html https://mementostart.vercel.app/",
+      "pass": true
+    },
+    {
+      "name": "HTML reference index.html https://mementoservizi.vercel.app/",
+      "pass": true
+    },
+    {
+      "name": "HTML reference index.html https://mementoportfolio.vercel.app/",
+      "pass": true
+    },
+    {
+      "name": "HTML reference index.html https://mementostudio.vercel.app/",
+      "pass": true
+    },
+    {
+      "name": "HTML reference index.html https://mementolevelup.vercel.app/",
+      "pass": true
+    },
+    {
+      "name": "HTML reference index.html https://mementostart.vercel.app/",
+      "pass": true
+    },
+    {
+      "name": "HTML reference services/index.html data:,",
+      "pass": true
+    },
+    {
+      "name": "HTML reference services/index.html /services/assets/fonts/InterVariable.woff2",
+      "pass": true
+    },
+    {
+      "name": "HTML reference services/index.html /services/assets/hero-web.webp",
+      "pass": true
+    },
+    {
+      "name": "HTML reference services/index.html /services/catalogo.css",
+      "pass": true
+    },
+    {
+      "name": "HTML reference services/index.html /services/catalogo-slideshow.css",
+      "pass": true
+    },
+    {
+      "name": "HTML reference services/index.html /services/catalogo-experience.css",
+      "pass": true
+    },
+    {
+      "name": "HTML reference services/index.html /services/catalogo-polish.css",
+      "pass": true
+    },
+    {
+      "name": "HTML reference services/index.html /services/catalogo-popup.css",
+      "pass": true
+    },
+    {
+      "name": "HTML reference services/index.html /services/catalogo-navigation.css",
+      "pass": true
+    },
+    {
+      "name": "HTML reference services/index.html /services/catalogo-bundles.css",
+      "pass": true
+    },
+    {
+      "name": "HTML reference services/index.html /services/catalogo-refinement.css",
+      "pass": true
+    },
+    {
+      "name": "HTML reference services/index.html /services/catalogo-structure.css",
+      "pass": true
+    },
+    {
+      "name": "HTML reference services/index.html /services/catalogo-devices.css",
+      "pass": true
+    },
+    {
+      "name": "HTML reference services/index.html /services/catalogo-images.js",
+      "pass": true
+    },
+    {
+      "name": "HTML reference services/index.html /services/catalogo-data.js",
+      "pass": true
+    },
+    {
+      "name": "HTML reference services/index.html /services/catalogo-editorial.js",
+      "pass": true
+    },
+    {
+      "name": "HTML reference services/index.html /services/catalogo-carousel.js",
+      "pass": true
+    },
+    {
+      "name": "HTML reference services/index.html /services/catalogo-service-deck.js",
+      "pass": true
+    },
+    {
+      "name": "HTML reference services/index.html /services/catalogo.js",
+      "pass": true
+    },
+    {
+      "name": "HTML reference services/index.html /services/bridge.js",
+      "pass": true
+    },
+    {
+      "name": "HTML reference services/index.html #catalogo",
+      "pass": true
+    },
+    {
+      "name": "HTML reference services/index.html https://mementostart.vercel.app/",
+      "pass": true
+    },
+    {
+      "name": "HTML reference services/index.html /services/assets/icons/caret-right.svg",
+      "pass": true
+    },
+    {
+      "name": "HTML reference services/index.html /services/assets/icons/x.svg",
+      "pass": true
+    },
+    {
+      "name": "HTML reference services/index.html /services/assets/icons/x.svg",
+      "pass": true
+    },
+    {
+      "name": "HTML reference services/index.html /services/assets/icons/caret-right.svg",
+      "pass": true
+    },
+    {
+      "name": "HTML reference services/index.html mailto:info@mementostudio.it",
+      "pass": true
+    },
+    {
+      "name": "HTML reference services/index.html /services/assets/icons/caret-right.svg",
+      "pass": true
+    },
+    {
+      "name": "HTML reference services/index.html mailto:info@mementostudio.it",
+      "pass": true
+    },
+    {
+      "name": "Module reference /src/app.js ./world-routes.js",
+      "pass": true
+    },
+    {
+      "name": "Module reference /src/app.js ../vendor/loaders/GLTFLoader.js",
+      "pass": true
+    },
+    {
+      "name": "Module reference /src/app.js ../vendor/loaders/HDRLoader.js",
+      "pass": true
+    },
+    {
+      "name": "Module reference /src/app.js ../vendor/meshopt_decoder.mjs",
+      "pass": true
+    },
+    {
+      "name": "Module reference /src/app.js ./water.js",
+      "pass": true
+    },
+    {
+      "name": "Module reference /src/app.js ./core.js",
+      "pass": true
+    },
+    {
+      "name": "Module reference /src/app.js ./assets.js",
+      "pass": true
+    },
+    {
+      "name": "Module reference /src/water.js ../vendor/objects/Reflector.js",
+      "pass": true
+    },
+    {
+      "name": "Module reference /src/water.js ./core.js",
+      "pass": true
+    },
+    {
+      "name": "Module reference /vendor/loaders/GLTFLoader.js ../utils/BufferGeometryUtils.js",
+      "pass": true
+    },
+    {
+      "name": "Module reference /vendor/loaders/RGBELoader.js ./HDRLoader.js",
+      "pass": true
+    },
+    {
+      "name": "Module reference /vendor/three.module.js ./three.core.js",
+      "pass": true
+    },
+    {
+      "name": "Module reference /vendor/three.module.js ./three.core.js",
+      "pass": true
+    },
+    {
+      "name": "Six navigation stages",
+      "pass": true
+    },
+    {
+      "name": "Redirect matches s02_projects",
+      "pass": true
+    },
+    {
+      "name": "Redirect matches s03_studio",
+      "pass": true
+    },
+    {
+      "name": "Redirect matches s04_levelup",
+      "pass": true
+    },
+    {
+      "name": "Redirect matches s05_start",
+      "pass": true
+    },
+    {
+      "name": "Static-only Vercel output",
+      "pass": true
+    }
+  ],
+  "errors": [],
+  "files": 224,
+  "bytes": 22156176
+}

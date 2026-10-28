@@ -1,0 +1,566 @@
+{
+  "version": "v008_atmosphere_reference",
+  "coordinateSystem": "WebY-up in JSON; BlenderZ-up in scene; no double export conversion",
+  "fogCards": [
+    {
+      "objectName": "FOG_CARD_v008_00",
+      "role": "fog_reference_card",
+      "card_index": 0,
+      "width_m": 32,
+      "height_m": 1.4,
+      "peak_alpha": 0.045,
+      "peak_speed_m_per_s": 0.035,
+      "motion_amplitude_m": 1.5,
+      "phase_radians": 0.2,
+      "base_position_web": [
+        0,
+        0.85,
+        30
+      ],
+      "mobile_enabled": true,
+      "seed": 523192637,
+      "runtime_depth_write": false,
+      "runtime_render_order": 10,
+      "runtime_soft_intersection_required": true,
+      "triangles": 2,
+      "uv": "UVMap",
+      "blenderPosition": [
+        0.0,
+        -30.0,
+        0.8500000238418579
+      ]
+    },
+    {
+      "objectName": "FOG_CARD_v008_01",
+      "role": "fog_reference_card",
+      "card_index": 1,
+      "width_m": 20,
+      "height_m": 1.5,
+      "peak_alpha": 0.055,
+      "peak_speed_m_per_s": 0.047,
+      "motion_amplitude_m": 1.5,
+      "phase_radians": 1.1,
+      "base_position_web": [
+        28,
+        1.05,
+        8
+      ],
+      "mobile_enabled": false,
+      "seed": 1861006622,
+      "runtime_depth_write": false,
+      "runtime_render_order": 11,
+      "runtime_soft_intersection_required": true,
+      "triangles": 2,
+      "uv": "UVMap",
+      "blenderPosition": [
+        28.0,
+        -8.0,
+        1.0499999523162842
+      ]
+    },
+    {
+      "objectName": "FOG_CARD_v008_02",
+      "role": "fog_reference_card",
+      "card_index": 2,
+      "width_m": 22,
+      "height_m": 1.6,
+      "peak_alpha": 0.05,
+      "peak_speed_m_per_s": 0.059,
+      "motion_amplitude_m": 1.5,
+      "phase_radians": 2.0,
+      "base_position_web": [
+        -26,
+        1,
+        -6
+      ],
+      "mobile_enabled": false,
+      "seed": 797557758,
+      "runtime_depth_write": false,
+      "runtime_render_order": 12,
+      "runtime_soft_intersection_required": true,
+      "triangles": 2,
+      "uv": "UVMap",
+      "blenderPosition": [
+        -26.0,
+        6.0,
+        1.0
+      ]
+    },
+    {
+      "objectName": "FOG_CARD_v008_03",
+      "role": "fog_reference_card",
+      "card_index": 3,
+      "width_m": 35,
+      "height_m": 2.2,
+      "peak_alpha": 0.07,
+      "peak_speed_m_per_s": 0.071,
+      "motion_amplitude_m": 1.5,
+      "phase_radians": 2.9,
+      "base_position_web": [
+        0,
+        1.35,
+        -34
+      ],
+      "mobile_enabled": true,
+      "seed": 1708069097,
+      "runtime_depth_write": false,
+      "runtime_render_order": 13,
+      "runtime_soft_intersection_required": true,
+      "triangles": 2,
+      "uv": "UVMap",
+      "blenderPosition": [
+        0.0,
+        34.0,
+        1.350000023841858
+      ]
+    },
+    {
+      "objectName": "FOG_CARD_v008_04",
+      "role": "fog_reference_card",
+      "card_index": 4,
+      "width_m": 24,
+      "height_m": 1.8,
+      "peak_alpha": 0.06,
+      "peak_speed_m_per_s": 0.083,
+      "motion_amplitude_m": 1.5,
+      "phase_radians": 3.8,
+      "base_position_web": [
+        -30,
+        1.15,
+        -48
+      ],
+      "mobile_enabled": false,
+      "seed": 1613483762,
+      "runtime_depth_write": false,
+      "runtime_render_order": 14,
+      "runtime_soft_intersection_required": true,
+      "triangles": 2,
+      "uv": "UVMap",
+      "blenderPosition": [
+        -30.0,
+        48.0,
+        1.149999976158142
+      ]
+    },
+    {
+      "objectName": "FOG_CARD_v008_05",
+      "role": "fog_reference_card",
+      "card_index": 5,
+      "width_m": 30,
+      "height_m": 2.5,
+      "peak_alpha": 0.065,
+      "peak_speed_m_per_s": 0.095,
+      "motion_amplitude_m": 1.5,
+      "phase_radians": 4.7,
+      "base_position_web": [
+        32,
+        1.45,
+        -65
+      ],
+      "mobile_enabled": true,
+      "seed": 1743459053,
+      "runtime_depth_write": false,
+      "runtime_render_order": 15,
+      "runtime_soft_intersection_required": true,
+      "triangles": 2,
+      "uv": "UVMap",
+      "blenderPosition": [
+        32.0,
+        65.0,
+        1.4500000476837158
+      ]
+    }
+  ],
+  "particleAnchors": [
+    {
+      "stageId": "s00_memento",
+      "objectName": "VFX_ANCHOR_s00_memento",
+      "alias": "PARTICLE_ANCHOR_s00_memento",
+      "parent": "STAGE_s00_memento",
+      "positionWeb": [
+        -8.0,
+        0.4099999964237213,
+        13.856406211853027
+      ],
+      "localPositionBlender": [
+        0.0,
+        0.0,
+        0.4099999964237213
+      ],
+      "seed": 1132577026,
+      "counts": {
+        "desktop": {
+          "active": 60,
+          "inactive": 10
+        },
+        "mobile": {
+          "active": 25,
+          "inactive": 8
+        }
+      },
+      "regionsStageLocalWeb": {
+        "gap": {
+          "min": [
+            -1.9,
+            0.18,
+            -1.4
+          ],
+          "max": [
+            1.9,
+            0.82,
+            1.4
+          ]
+        },
+        "icon": {
+          "min": [
+            -1.9,
+            0.66,
+            -1.4
+          ],
+          "max": [
+            1.9,
+            3.86,
+            1.4
+          ]
+        }
+      },
+      "runtimeOnly": "Instanced/Points motes; no Blender particle system exported."
+    },
+    {
+      "stageId": "s01_services",
+      "objectName": "VFX_ANCHOR_s01_services",
+      "alias": "PARTICLE_ANCHOR_s01_services",
+      "parent": "STAGE_s01_services",
+      "positionWeb": [
+        8.0,
+        0.4099999964237213,
+        13.856406211853027
+      ],
+      "localPositionBlender": [
+        0.0,
+        0.0,
+        0.4099999964237213
+      ],
+      "seed": 115924816,
+      "counts": {
+        "desktop": {
+          "active": 60,
+          "inactive": 10
+        },
+        "mobile": {
+          "active": 25,
+          "inactive": 8
+        }
+      },
+      "regionsStageLocalWeb": {
+        "gap": {
+          "min": [
+            -1.9,
+            0.18,
+            -1.4
+          ],
+          "max": [
+            1.9,
+            0.82,
+            1.4
+          ]
+        },
+        "icon": {
+          "min": [
+            -1.9,
+            0.66,
+            -1.4
+          ],
+          "max": [
+            1.9,
+            3.86,
+            1.4
+          ]
+        }
+      },
+      "runtimeOnly": "Instanced/Points motes; no Blender particle system exported."
+    },
+    {
+      "stageId": "s02_projects",
+      "objectName": "VFX_ANCHOR_s02_projects",
+      "alias": "PARTICLE_ANCHOR_s02_projects",
+      "parent": "STAGE_s02_projects",
+      "positionWeb": [
+        16.0,
+        0.4099999964237213,
+        -0.0
+      ],
+      "localPositionBlender": [
+        0.0,
+        0.0,
+        0.4099999964237213
+      ],
+      "seed": 1003206116,
+      "counts": {
+        "desktop": {
+          "active": 60,
+          "inactive": 10
+        },
+        "mobile": {
+          "active": 25,
+          "inactive": 8
+        }
+      },
+      "regionsStageLocalWeb": {
+        "gap": {
+          "min": [
+            -1.9,
+            0.18,
+            -1.4
+          ],
+          "max": [
+            1.9,
+            0.82,
+            1.4
+          ]
+        },
+        "icon": {
+          "min": [
+            -1.9,
+            0.66,
+            -1.4
+          ],
+          "max": [
+            1.9,
+            3.86,
+            1.4
+          ]
+        }
+      },
+      "runtimeOnly": "Instanced/Points motes; no Blender particle system exported."
+    },
+    {
+      "stageId": "s03_studio",
+      "objectName": "VFX_ANCHOR_s03_studio",
+      "alias": "PARTICLE_ANCHOR_s03_studio",
+      "parent": "STAGE_s03_studio",
+      "positionWeb": [
+        8.0,
+        0.4099999964237213,
+        -13.856406211853027
+      ],
+      "localPositionBlender": [
+        0.0,
+        0.0,
+        0.4099999964237213
+      ],
+      "seed": 880660239,
+      "counts": {
+        "desktop": {
+          "active": 60,
+          "inactive": 10
+        },
+        "mobile": {
+          "active": 25,
+          "inactive": 8
+        }
+      },
+      "regionsStageLocalWeb": {
+        "gap": {
+          "min": [
+            -1.9,
+            0.18,
+            -1.4
+          ],
+          "max": [
+            1.9,
+            0.82,
+            1.4
+          ]
+        },
+        "icon": {
+          "min": [
+            -1.9,
+            0.66,
+            -1.4
+          ],
+          "max": [
+            1.9,
+            3.86,
+            1.4
+          ]
+        }
+      },
+      "runtimeOnly": "Instanced/Points motes; no Blender particle system exported."
+    },
+    {
+      "stageId": "s04_levelup",
+      "objectName": "VFX_ANCHOR_s04_levelup",
+      "alias": "PARTICLE_ANCHOR_s04_levelup",
+      "parent": "STAGE_s04_levelup",
+      "positionWeb": [
+        -8.0,
+        0.4099999964237213,
+        -13.856406211853027
+      ],
+      "localPositionBlender": [
+        0.0,
+        0.0,
+        0.4099999964237213
+      ],
+      "seed": 581176903,
+      "counts": {
+        "desktop": {
+          "active": 60,
+          "inactive": 10
+        },
+        "mobile": {
+          "active": 25,
+          "inactive": 8
+        }
+      },
+      "regionsStageLocalWeb": {
+        "gap": {
+          "min": [
+            -1.9,
+            0.18,
+            -1.4
+          ],
+          "max": [
+            1.9,
+            0.82,
+            1.4
+          ]
+        },
+        "icon": {
+          "min": [
+            -1.9,
+            0.66,
+            -1.4
+          ],
+          "max": [
+            1.9,
+            3.86,
+            1.4
+          ]
+        }
+      },
+      "runtimeOnly": "Instanced/Points motes; no Blender particle system exported."
+    },
+    {
+      "stageId": "s05_start",
+      "objectName": "VFX_ANCHOR_s05_start",
+      "alias": "PARTICLE_ANCHOR_s05_start",
+      "parent": "STAGE_s05_start",
+      "positionWeb": [
+        -16.0,
+        0.4099999964237213,
+        -0.0
+      ],
+      "localPositionBlender": [
+        0.0,
+        0.0,
+        0.4099999964237213
+      ],
+      "seed": 148026411,
+      "counts": {
+        "desktop": {
+          "active": 60,
+          "inactive": 10
+        },
+        "mobile": {
+          "active": 25,
+          "inactive": 8
+        }
+      },
+      "regionsStageLocalWeb": {
+        "gap": {
+          "min": [
+            -1.9,
+            0.18,
+            -1.4
+          ],
+          "max": [
+            1.9,
+            0.82,
+            1.4
+          ]
+        },
+        "icon": {
+          "min": [
+            -1.9,
+            0.66,
+            -1.4
+          ],
+          "max": [
+            1.9,
+            3.86,
+            1.4
+          ]
+        }
+      },
+      "runtimeOnly": "Instanced/Points motes; no Blender particle system exported."
+    }
+  ],
+  "fogDistance": {
+    "distanceNear": 45,
+    "distanceFar": 480,
+    "colorSrgb": "#343B40",
+    "cardsDesktopMax": 8,
+    "cardsMobileMax": 4,
+    "cardSpeedMetersPerSecond": [
+      0.03,
+      0.1
+    ],
+    "cardAlpha": [
+      0.03,
+      0.1
+    ]
+  },
+  "water": {
+    "objectName": "WATER_PROXY",
+    "worldY": 0,
+    "meshUnchanged": true,
+    "implementationStatus": "runtime_required",
+    "roughnessSeed": [
+      0.1,
+      0.16
+    ],
+    "ior": 1.333,
+    "f0": 0.02,
+    "reflection": "single_planar_target",
+    "ripple": {
+      "maxDesktop": 8,
+      "maxMobile": 4,
+      "maxInputHz": 12,
+      "minSpacingMeters": 0.08,
+      "propagationMetersPerSecond": 1.1,
+      "amplitudeEquivalentMeters": [
+        0.012,
+        0.025
+      ],
+      "lifetimeSeconds": 2.4,
+      "maxRadiusMeters": 3,
+      "v1Displacement": "normal_only"
+    }
+  },
+  "cameraClearance": {
+    "minWorldY": 0.45,
+    "minDistanceToMeshMeters": 0.6
+  },
+  "transition": {
+    "controller": "TIDE_ATMOSPHERE_CONTROLLER_v008",
+    "referenceMask": "TRANSITION_FOG_MASK_REFERENCE_v008",
+    "input": "path sample maskFog in[0,1]; same shader for entry and exit",
+    "progressProperty": "transition_u",
+    "fullOcclusionAlpha": 1,
+    "rebaseAllowedOnlyAtMask": 1,
+    "landmarkVisibilityAllowedAtRebase": false,
+    "contentReference": "No fabricated HTML in Blender; actual frontend is a separate test."
+  },
+  "runtimeEffectsNotInGlb": [
+    "interactiveWater",
+    "ripple",
+    "planarReflection",
+    "animatedFog",
+    "softParticles",
+    "DOF",
+    "bloom",
+    "HTMLTransitions"
+  ]
+}

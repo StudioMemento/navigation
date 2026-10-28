@@ -1,0 +1,4990 @@
+{
+  "schemaVersion": "1.0.0",
+  "project": "MEMENTO_TIDE",
+  "date": "2026-10-27",
+  "status": "phase4_world_geometry_and_offline_direction_verified_runtime_adoption_pending",
+  "numericValues": "Original numeric fields remain nominal targets; measured fields are under stages[].actual.",
+  "canonicalMaster": "MEMENTO_TIDE_MASTER_TECNICO.md",
+  "coordinateSystem": {
+    "space": "web_gltf",
+    "up": "Y",
+    "unit": "meter",
+    "iconFront": "+Z",
+    "blenderUp": "Z",
+    "blenderIconFront": "-Y",
+    "pointConversion": "web=(blender.x,blender.z,-blender.y)",
+    "exportAxisConversion": "exporter_only"
+  },
+  "world": {
+    "waterY": 0,
+    "stageRingRadius": 16,
+    "adjacentCenterDistance": 16,
+    "adjacentDiscEdgeGap": 11.6,
+    "waterProxySize": 960,
+    "cameraNear": 0.1,
+    "cameraFar": 550,
+    "origin": [
+      0,
+      0,
+      0
+    ]
+  },
+  "platform": {
+    "diameter": 4.4,
+    "thickness": 0.2,
+    "centerY": 0.06,
+    "topY": 0.16,
+    "bottomY": -0.04,
+    "bevel": 0.035,
+    "emissiveArcDegrees": [
+      90,
+      140
+    ]
+  },
+  "sculpture": {
+    "nominalHeight": 3.2,
+    "baseY": 0.66,
+    "hoverGap": 0.5,
+    "minGap": 0.42,
+    "dimensionTolerancePercent": 2,
+    "idleAmplitudeMeters": 0.035,
+    "idlePeriodSeconds": [
+      7,
+      11
+    ],
+    "yawIdleDegrees": 1.5,
+    "pitchIdleDegrees": 0.6,
+    "rollDegrees": 0
+  },
+  "stages": [
+    {
+      "id": "s00_memento",
+      "label": "Memento",
+      "position": [
+        -8,
+        0,
+        13.856406
+      ],
+      "iconDimensionsMeters": [
+        3.2,
+        3.2,
+        0.38
+      ],
+      "iconAnchor": [
+        0,
+        2.26,
+        0
+      ],
+      "iconFrontCanonicalWeb": [
+        0,
+        0,
+        1
+      ],
+      "overviewYawDegrees": 9.83571,
+      "focusIconYawDegrees": -30.0,
+      "focusDesktopSeed": {
+        "position": [
+          -10.27761,
+          2.65,
+          22.35655
+        ],
+        "target": [
+          -8,
+          2.26,
+          13.856406
+        ],
+        "verticalFovDegrees": 38,
+        "autoFitRequired": true
+      },
+      "focusPortraitSeed": {
+        "position": [
+          -11.0023,
+          2.9,
+          25.06115
+        ],
+        "target": [
+          -8,
+          2.2,
+          13.856406
+        ],
+        "verticalFovDegrees": 48,
+        "autoFitRequired": true
+      },
+      "descentSeed": {
+        "position": [
+          -9.60468,
+          0.45,
+          19.84515
+        ],
+        "target": [
+          -8,
+          0.9,
+          13.856406
+        ],
+        "verticalFovDegrees": 42,
+        "autoFitRequired": true
+      },
+      "assetFuturePath": "web/optimized/icon_memento_lod0.glb",
+      "assetStatus": "geometry_three_lods_exported_validated_reimported",
+      "content": {
+        "kind": "overview_only",
+        "publicUrlCandidate": "https://mementostudio.it/",
+        "embedUrlCandidate": null,
+        "availabilityVerified": false,
+        "bridgeImplemented": false,
+        "readyRequired": false,
+        "recursionProhibited": true
+      },
+      "nominalAssetStatus": "to_be_produced",
+      "actual": {
+        "measurementSpace": "canonical icon anchor local; Web Y-up, meters",
+        "iconLods": {
+          "0": {
+            "minBlender": [
+              -1.3598984479904175,
+              -0.19000011682510376,
+              -1.5799998044967651
+            ],
+            "maxBlender": [
+              1.3598984479904175,
+              0.18999987840652466,
+              1.5799996852874756
+            ],
+            "minWeb": [
+              -1.3598984479904175,
+              -1.5799998044967651,
+              -0.18999987840652466
+            ],
+            "maxWeb": [
+              1.3598984479904175,
+              1.5799996852874756,
+              0.19000011682510376
+            ],
+            "dimensionsMetersWeb": [
+              2.719796895980835,
+              3.1599994897842407,
+              0.3799999952316284
+            ],
+            "boundsCenterWeb": [
+              0.0,
+              -5.960464477539063e-08,
+              1.1920928955078125e-07
+            ],
+            "node": "ICO_s00_memento_LOD0",
+            "vertices": 680,
+            "triangles": 1340,
+            "uvLayers": [
+              "UVMap"
+            ],
+            "materials": [
+              "MAT_Graphite",
+              "MAT_Amber_Channel"
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "pivotWeb": [
+              0.0,
+              2.384185791015625e-07,
+              1.1920928955078125e-07
+            ],
+            "worldBaseY": 0.6799999475479126,
+            "worldTopY": 3.8399994373321533,
+            "acceptedReferenceDimensionsMetersWeb": [
+              2.719796811062509,
+              3.2,
+              0.38
+            ],
+            "deviationFromAcceptedReferencePercent": [
+              3.1222305211645218e-06,
+              -1.250015944242483,
+              -1.2548346280189846e-06
+            ],
+            "dimensionsWithinTolerance": true
+          },
+          "1": {
+            "minBlender": [
+              -1.3598984479904175,
+              -0.19000011682510376,
+              -1.5799998044967651
+            ],
+            "maxBlender": [
+              1.3598984479904175,
+              0.18999987840652466,
+              1.5799996852874756
+            ],
+            "minWeb": [
+              -1.3598984479904175,
+              -1.5799998044967651,
+              -0.18999987840652466
+            ],
+            "maxWeb": [
+              1.3598984479904175,
+              1.5799996852874756,
+              0.19000011682510376
+            ],
+            "dimensionsMetersWeb": [
+              2.719796895980835,
+              3.1599994897842407,
+              0.3799999952316284
+            ],
+            "boundsCenterWeb": [
+              0.0,
+              -5.960464477539063e-08,
+              1.1920928955078125e-07
+            ],
+            "node": "ICO_s00_memento_LOD1",
+            "vertices": 280,
+            "triangles": 540,
+            "uvLayers": [
+              "UVMap"
+            ],
+            "materials": [
+              "MAT_Graphite",
+              "MAT_Amber_Channel"
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "pivotWeb": [
+              0.0,
+              2.384185791015625e-07,
+              1.1920928955078125e-07
+            ],
+            "worldBaseY": 0.6799999475479126,
+            "worldTopY": 3.8399994373321533,
+            "acceptedReferenceDimensionsMetersWeb": [
+              2.719796811062509,
+              3.2,
+              0.38
+            ],
+            "deviationFromAcceptedReferencePercent": [
+              3.1222305211645218e-06,
+              -1.250015944242483,
+              -1.2548346280189846e-06
+            ],
+            "dimensionsWithinTolerance": true
+          },
+          "2": {
+            "minBlender": [
+              -1.3598984479904175,
+              -0.19000011682510376,
+              -1.5717154741287231
+            ],
+            "maxBlender": [
+              1.3598984479904175,
+              0.18999987840652466,
+              1.5717134475708008
+            ],
+            "minWeb": [
+              -1.3598984479904175,
+              -1.5717154741287231,
+              -0.18999987840652466
+            ],
+            "maxWeb": [
+              1.3598984479904175,
+              1.5717134475708008,
+              0.19000011682510376
+            ],
+            "dimensionsMetersWeb": [
+              2.719796895980835,
+              3.143428921699524,
+              0.3799999952316284
+            ],
+            "boundsCenterWeb": [
+              0.0,
+              -1.0132789611816406e-06,
+              1.1920928955078125e-07
+            ],
+            "node": "ICO_s00_memento_LOD2",
+            "vertices": 148,
+            "triangles": 276,
+            "uvLayers": [
+              "UVMap"
+            ],
+            "materials": [
+              "MAT_Graphite",
+              "MAT_Amber_Channel"
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "pivotWeb": [
+              0.0,
+              2.384185791015625e-07,
+              1.1920928955078125e-07
+            ],
+            "worldBaseY": 0.6882842779159546,
+            "worldTopY": 3.8317131996154785,
+            "acceptedReferenceDimensionsMetersWeb": [
+              2.719796811062509,
+              3.2,
+              0.38
+            ],
+            "deviationFromAcceptedReferencePercent": [
+              3.1222305211645218e-06,
+              -1.7678461968898829,
+              -1.2548346280189846e-06
+            ],
+            "dimensionsWithinTolerance": true
+          }
+        },
+        "platform": {
+          "minBlender": [
+            -2.200000047683716,
+            -2.200000047683716,
+            -0.03999999910593033
+          ],
+          "maxBlender": [
+            2.200000047683716,
+            2.200000047683716,
+            0.1599999964237213
+          ],
+          "minWeb": [
+            -2.200000047683716,
+            -0.03999999910593033,
+            -2.200000047683716
+          ],
+          "maxWeb": [
+            2.200000047683716,
+            0.1599999964237213,
+            2.200000047683716
+          ],
+          "dimensionsMetersWeb": [
+            4.400000095367432,
+            0.19999999552965164,
+            4.400000095367432
+          ],
+          "boundsCenterWeb": [
+            0.0,
+            0.05999999865889549,
+            0.0
+          ],
+          "node": "PLATFORM_s00_memento_LOD0",
+          "vertices": 384,
+          "triangles": 764,
+          "uvLayers": [
+            "UVMap",
+            "UV_DETAIL",
+            "UV_ATLAS"
+          ],
+          "materials": [
+            "MAT_Platform"
+          ],
+          "scale": [
+            1.0,
+            1.0,
+            1.0
+          ],
+          "pivotWeb": [
+            0.0,
+            0.0,
+            -0.0
+          ],
+          "worldBaseY": -0.03999999910593033,
+          "worldTopY": 0.1599999964237213
+        },
+        "anchorPositionWorldWeb": [
+          -8.0,
+          2.259999990463257,
+          13.856406211853027
+        ],
+        "baseWorldY": 0.6799999475479126,
+        "hoverGapMeters": 0.5199999511241913,
+        "minimumGapIncludingIdleMeters": 0.48499995112419125,
+        "hitProxy": {
+          "node": "COLLISION_s00_memento",
+          "guide": "HIT_PROXY_s00_memento",
+          "localBlenderMin": [
+            -1.4398984909057617,
+            -0.27000001072883606,
+            -1.6600000858306885
+          ],
+          "localBlenderMax": [
+            1.4398984909057617,
+            0.27000001072883606,
+            1.6599994897842407
+          ],
+          "localWebMin": [
+            -1.4398984909057617,
+            -1.6600000858306885,
+            -0.27000001072883606
+          ],
+          "localWebMax": [
+            1.4398984909057617,
+            1.6599994897842407,
+            0.27000001072883606
+          ],
+          "paddingMeters": 0.08,
+          "triangles": 12,
+          "kind": "interaction_volume",
+          "physicsCollisionVerified": false
+        }
+      },
+      "assets": {
+        "0": {
+          "node": "ICO_s00_memento_LOD0",
+          "lod": 0,
+          "variants": {
+            "raw": {
+              "path": "web/family_v007/raw/icon_memento_lod0.glb",
+              "url": "/family_v007/raw/icon_memento_lod0.glb",
+              "existsAtMetadataGeneration": true,
+              "status": "file_present_validation_pending"
+            },
+            "optimized": {
+              "path": "web/family_v007/optimized/icon_memento_lod0.glb",
+              "url": "/family_v007/optimized/icon_memento_lod0.glb",
+              "existsAtMetadataGeneration": true,
+              "status": "file_present_validation_pending"
+            },
+            "mobileRaw": {
+              "path": "web/family_v007/mobile/raw/icon_memento_lod0.glb",
+              "url": "/family_v007/mobile/raw/icon_memento_lod0.glb",
+              "existsAtMetadataGeneration": true,
+              "status": "file_present_validation_pending"
+            },
+            "mobileOptimized": {
+              "path": "web/family_v007/mobile/optimized/icon_memento_lod0.glb",
+              "url": "/family_v007/mobile/optimized/icon_memento_lod0.glb",
+              "existsAtMetadataGeneration": true,
+              "status": "file_present_validation_pending"
+            }
+          }
+        },
+        "1": {
+          "node": "ICO_s00_memento_LOD1",
+          "lod": 1,
+          "variants": {
+            "raw": {
+              "path": "web/family_v007/raw/icon_memento_lod1.glb",
+              "url": "/family_v007/raw/icon_memento_lod1.glb",
+              "existsAtMetadataGeneration": true,
+              "status": "file_present_validation_pending"
+            },
+            "optimized": {
+              "path": "web/family_v007/optimized/icon_memento_lod1.glb",
+              "url": "/family_v007/optimized/icon_memento_lod1.glb",
+              "existsAtMetadataGeneration": true,
+              "status": "file_present_validation_pending"
+            },
+            "mobileRaw": {
+              "path": "web/family_v007/mobile/raw/icon_memento_lod1.glb",
+              "url": "/family_v007/mobile/raw/icon_memento_lod1.glb",
+              "existsAtMetadataGeneration": true,
+              "status": "file_present_validation_pending"
+            },
+            "mobileOptimized": {
+              "path": "web/family_v007/mobile/optimized/icon_memento_lod1.glb",
+              "url": "/family_v007/mobile/optimized/icon_memento_lod1.glb",
+              "existsAtMetadataGeneration": true,
+              "status": "file_present_validation_pending"
+            }
+          }
+        },
+        "2": {
+          "node": "ICO_s00_memento_LOD2",
+          "lod": 2,
+          "variants": {
+            "raw": {
+              "path": "web/family_v007/raw/icon_memento_lod2.glb",
+              "url": "/family_v007/raw/icon_memento_lod2.glb",
+              "existsAtMetadataGeneration": true,
+              "status": "file_present_validation_pending"
+            },
+            "optimized": {
+              "path": "web/family_v007/optimized/icon_memento_lod2.glb",
+              "url": "/family_v007/optimized/icon_memento_lod2.glb",
+              "existsAtMetadataGeneration": true,
+              "status": "file_present_validation_pending"
+            },
+            "mobileRaw": {
+              "path": "web/family_v007/mobile/raw/icon_memento_lod2.glb",
+              "url": "/family_v007/mobile/raw/icon_memento_lod2.glb",
+              "existsAtMetadataGeneration": true,
+              "status": "file_present_validation_pending"
+            },
+            "mobileOptimized": {
+              "path": "web/family_v007/mobile/optimized/icon_memento_lod2.glb",
+              "url": "/family_v007/mobile/optimized/icon_memento_lod2.glb",
+              "existsAtMetadataGeneration": true,
+              "status": "file_present_validation_pending"
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "s01_services",
+      "label": "Services",
+      "position": [
+        8,
+        0,
+        13.856406
+      ],
+      "iconDimensionsMeters": [
+        3.2,
+        3.2,
+        2.5
+      ],
+      "iconAnchor": [
+        0,
+        2.26,
+        0
+      ],
+      "iconFrontCanonicalWeb": [
+        0,
+        0,
+        1
+      ],
+      "overviewYawDegrees": -9.83571,
+      "focusIconYawDegrees": 30.0,
+      "focusDesktopSeed": {
+        "position": [
+          14.22254,
+          2.65,
+          20.07895
+        ],
+        "target": [
+          8,
+          2.26,
+          13.856406
+        ],
+        "verticalFovDegrees": 38,
+        "autoFitRequired": true
+      },
+      "focusPortraitSeed": {
+        "position": [
+          16.20244,
+          2.9,
+          22.05884
+        ],
+        "target": [
+          8,
+          2.2,
+          13.856406
+        ],
+        "verticalFovDegrees": 48,
+        "autoFitRequired": true
+      },
+      "descentSeed": {
+        "position": [
+          12.38406,
+          0.45,
+          18.24047
+        ],
+        "target": [
+          8,
+          0.9,
+          13.856406
+        ],
+        "verticalFovDegrees": 42,
+        "autoFitRequired": true
+      },
+      "assetFuturePath": "web/optimized/icon_services_lod0.glb",
+      "assetStatus": "geometry_three_lods_exported_validated_reimported",
+      "content": {
+        "kind": "iframe_candidate",
+        "publicUrlCandidate": "https://mementostudio.it/services",
+        "embedUrlCandidate": "https://mementoservizi.vercel.app/",
+        "availabilityVerified": false,
+        "bridgeImplemented": false,
+        "readyRequired": true,
+        "recursionProhibited": true
+      },
+      "nominalAssetStatus": "to_be_produced",
+      "actual": {
+        "measurementSpace": "canonical icon anchor local; Web Y-up, meters",
+        "iconLods": {
+          "0": {
+            "minBlender": [
+              -1.5996577739715576,
+              -1.2498687505722046,
+              -1.5996575355529785
+            ],
+            "maxBlender": [
+              1.5996577739715576,
+              1.2498685121536255,
+              1.5996580123901367
+            ],
+            "minWeb": [
+              -1.5996577739715576,
+              -1.5996575355529785,
+              -1.2498685121536255
+            ],
+            "maxWeb": [
+              1.5996577739715576,
+              1.5996580123901367,
+              1.2498687505722046
+            ],
+            "dimensionsMetersWeb": [
+              3.1993155479431152,
+              3.1993155479431152,
+              2.49973726272583
+            ],
+            "boundsCenterWeb": [
+              0.0,
+              2.384185791015625e-07,
+              1.1920928955078125e-07
+            ],
+            "node": "ICO_s01_services_LOD0",
+            "vertices": 7160,
+            "triangles": 14308,
+            "uvLayers": [
+              "UVMap"
+            ],
+            "materials": [
+              "MAT_Graphite",
+              "MAT_Amber_Channel"
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "pivotWeb": [
+              0.0,
+              2.384185791015625e-07,
+              1.1920928955078125e-07
+            ],
+            "worldBaseY": 0.6603422164916992,
+            "worldTopY": 3.8596577644348145,
+            "acceptedReferenceDimensionsMetersWeb": [
+              3.2,
+              3.2,
+              2.5
+            ],
+            "deviationFromAcceptedReferencePercent": [
+              -0.021389126777654477,
+              -0.021389126777654477,
+              -0.010509490966796875
+            ],
+            "dimensionsWithinTolerance": true
+          },
+          "1": {
+            "minBlender": [
+              -1.5997118949890137,
+              -1.2500001192092896,
+              -1.5997116565704346
+            ],
+            "maxBlender": [
+              1.5997118949890137,
+              1.2499998807907104,
+              1.5997121334075928
+            ],
+            "minWeb": [
+              -1.5997118949890137,
+              -1.5997116565704346,
+              -1.2499998807907104
+            ],
+            "maxWeb": [
+              1.5997118949890137,
+              1.5997121334075928,
+              1.2500001192092896
+            ],
+            "dimensionsMetersWeb": [
+              3.1994237899780273,
+              3.1994237899780273,
+              2.5
+            ],
+            "boundsCenterWeb": [
+              0.0,
+              2.384185791015625e-07,
+              1.1920928955078125e-07
+            ],
+            "node": "ICO_s01_services_LOD1",
+            "vertices": 3124,
+            "triangles": 6236,
+            "uvLayers": [
+              "UVMap"
+            ],
+            "materials": [
+              "MAT_Graphite",
+              "MAT_Amber_Channel"
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "pivotWeb": [
+              0.0,
+              2.384185791015625e-07,
+              1.1920928955078125e-07
+            ],
+            "worldBaseY": 0.6602880954742432,
+            "worldTopY": 3.8597118854522705,
+            "acceptedReferenceDimensionsMetersWeb": [
+              3.2,
+              3.2,
+              2.5
+            ],
+            "deviationFromAcceptedReferencePercent": [
+              -0.01800656318665106,
+              -0.01800656318665106,
+              0.0
+            ],
+            "dimensionsWithinTolerance": true
+          },
+          "2": {
+            "minBlender": [
+              -1.5979562997817993,
+              -1.2285314798355103,
+              -1.5979560613632202
+            ],
+            "maxBlender": [
+              1.5979562997817993,
+              1.2285312414169312,
+              1.5979565382003784
+            ],
+            "minWeb": [
+              -1.5979562997817993,
+              -1.5979560613632202,
+              -1.2285312414169312
+            ],
+            "maxWeb": [
+              1.5979562997817993,
+              1.5979565382003784,
+              1.2285314798355103
+            ],
+            "dimensionsMetersWeb": [
+              3.1959125995635986,
+              3.1959125995635986,
+              2.4570627212524414
+            ],
+            "boundsCenterWeb": [
+              0.0,
+              2.384185791015625e-07,
+              1.1920928955078125e-07
+            ],
+            "node": "ICO_s01_services_LOD2",
+            "vertices": 964,
+            "triangles": 1916,
+            "uvLayers": [
+              "UVMap"
+            ],
+            "materials": [
+              "MAT_Graphite",
+              "MAT_Amber_Channel"
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "pivotWeb": [
+              0.0,
+              2.384185791015625e-07,
+              1.1920928955078125e-07
+            ],
+            "worldBaseY": 0.6620436906814575,
+            "worldTopY": 3.8579564094543457,
+            "acceptedReferenceDimensionsMetersWeb": [
+              3.2,
+              3.2,
+              2.5
+            ],
+            "deviationFromAcceptedReferencePercent": [
+              -0.12773126363754828,
+              -0.12773126363754828,
+              -1.7174911499023438
+            ],
+            "dimensionsWithinTolerance": true
+          }
+        },
+        "platform": {
+          "minBlender": [
+            -2.200000047683716,
+            -2.200000047683716,
+            -0.03999999910593033
+          ],
+          "maxBlender": [
+            2.200000047683716,
+            2.200000047683716,
+            0.1599999964237213
+          ],
+          "minWeb": [
+            -2.200000047683716,
+            -0.03999999910593033,
+            -2.200000047683716
+          ],
+          "maxWeb": [
+            2.200000047683716,
+            0.1599999964237213,
+            2.200000047683716
+          ],
+          "dimensionsMetersWeb": [
+            4.400000095367432,
+            0.19999999552965164,
+            4.400000095367432
+          ],
+          "boundsCenterWeb": [
+            0.0,
+            0.05999999865889549,
+            0.0
+          ],
+          "node": "PLATFORM_TIDE_LOD0",
+          "vertices": 384,
+          "triangles": 764,
+          "uvLayers": [
+            "UVMap",
+            "UV_DETAIL",
+            "UV_ATLAS"
+          ],
+          "materials": [
+            "MAT_Platform"
+          ],
+          "scale": [
+            1.0,
+            1.0,
+            1.0
+          ],
+          "pivotWeb": [
+            0.0,
+            0.0,
+            -0.0
+          ],
+          "worldBaseY": -0.03999999910593033,
+          "worldTopY": 0.1599999964237213
+        },
+        "anchorPositionWorldWeb": [
+          8.0,
+          2.259999990463257,
+          13.856406211853027
+        ],
+        "baseWorldY": 0.6603422164916992,
+        "hoverGapMeters": 0.5003422200679779,
+        "minimumGapIncludingIdleMeters": 0.4653422200679779,
+        "hitProxy": {
+          "node": "COLLISION_s01_services",
+          "guide": "HIT_PROXY_s01_services",
+          "localBlenderMin": [
+            -1.6796578168869019,
+            -1.3298686742782593,
+            -1.6796578168869019
+          ],
+          "localBlenderMax": [
+            1.6796578168869019,
+            1.3298686742782593,
+            1.6796578168869019
+          ],
+          "localWebMin": [
+            -1.6796578168869019,
+            -1.6796578168869019,
+            -1.3298686742782593
+          ],
+          "localWebMax": [
+            1.6796578168869019,
+            1.6796578168869019,
+            1.3298686742782593
+          ],
+          "paddingMeters": 0.08,
+          "triangles": 12,
+          "kind": "interaction_volume",
+          "physicsCollisionVerified": false
+        }
+      },
+      "assets": {
+        "0": {
+          "node": "ICO_s01_services_LOD0",
+          "lod": 0,
+          "variants": {
+            "raw": {
+              "path": "web/family_v007/raw/icon_services_lod0.glb",
+              "url": "/family_v007/raw/icon_services_lod0.glb",
+              "existsAtMetadataGeneration": true,
+              "status": "file_present_validation_pending"
+            },
+            "optimized": {
+              "path": "web/family_v007/optimized/icon_services_lod0.glb",
+              "url": "/family_v007/optimized/icon_services_lod0.glb",
+              "existsAtMetadataGeneration": true,
+              "status": "file_present_validation_pending"
+            },
+            "mobileRaw": {
+              "path": "web/family_v007/mobile/raw/icon_services_lod0.glb",
+              "url": "/family_v007/mobile/raw/icon_services_lod0.glb",
+              "existsAtMetadataGeneration": true,
+              "status": "file_present_validation_pending"
+            },
+            "mobileOptimized": {
+              "path": "web/family_v007/mobile/optimized/icon_services_lod0.glb",
+              "url": "/family_v007/mobile/optimized/icon_services_lod0.glb",
+              "existsAtMetadataGeneration": true,
+              "status": "file_present_validation_pending"
+            }
+          }
+        },
+        "1": {
+          "node": "ICO_s01_services_LOD1",
+          "lod": 1,
+          "variants": {
+            "raw": {
+              "path": "web/family_v007/raw/icon_services_lod1.glb",
+              "url": "/family_v007/raw/icon_services_lod1.glb",
+              "existsAtMetadataGeneration": true,
+              "status": "file_present_validation_pending"
+            },
+            "optimized": {
+              "path": "web/family_v007/optimized/icon_services_lod1.glb",
+              "url": "/family_v007/optimized/icon_services_lod1.glb",
+              "existsAtMetadataGeneration": true,
+              "status": "file_present_validation_pending"
+            },
+            "mobileRaw": {
+              "path": "web/family_v007/mobile/raw/icon_services_lod1.glb",
+              "url": "/family_v007/mobile/raw/icon_services_lod1.glb",
+              "existsAtMetadataGeneration": true,
+              "status": "file_present_validation_pending"
+            },
+            "mobileOptimized": {
+              "path": "web/family_v007/mobile/optimized/icon_services_lod1.glb",
+              "url": "/family_v007/mobile/optimized/icon_services_lod1.glb",
+              "existsAtMetadataGeneration": true,
+              "status": "file_present_validation_pending"
+            }
+          }
+        },
+        "2": {
+          "node": "ICO_s01_services_LOD2",
+          "lod": 2,
+          "variants": {
+            "raw": {
+              "path": "web/family_v007/raw/icon_services_lod2.glb",
+              "url": "/family_v007/raw/icon_services_lod2.glb",
+              "existsAtMetadataGeneration": true,
+              "status": "file_present_validation_pending"
+            },
+            "optimized": {
+              "path": "web/family_v007/optimized/icon_services_lod2.glb",
+              "url": "/family_v007/optimized/icon_services_lod2.glb",
+              "existsAtMetadataGeneration": true,
+              "status": "file_present_validation_pending"
+            },
+            "mobileRaw": {
+              "path": "web/family_v007/mobile/raw/icon_services_lod2.glb",
+              "url": "/family_v007/mobile/raw/icon_services_lod2.glb",
+              "existsAtMetadataGeneration": true,
+              "status": "file_present_validation_pending"
+            },
+            "mobileOptimized": {
+              "path": "web/family_v007/mobile/optimized/icon_services_lod2.glb",
+              "url": "/family_v007/mobile/optimized/icon_services_lod2.glb",
+              "existsAtMetadataGeneration": true,
+              "status": "file_present_validation_pending"
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "s02_projects",
+      "label": "Projects",
+      "position": [
+        16,
+        0,
+        0
+      ],
+      "iconDimensionsMeters": [
+        3.65,
+        3.2,
+        0.58
+      ],
+      "iconAnchor": [
+        0,
+        2.26,
+        0
+      ],
+      "iconFrontCanonicalWeb": [
+        0,
+        0,
+        1
+      ],
+      "overviewYawDegrees": -14.93142,
+      "focusIconYawDegrees": 90.0,
+      "focusDesktopSeed": {
+        "position": [
+          24.50015,
+          2.65,
+          -2.27761
+        ],
+        "target": [
+          16,
+          2.26,
+          0
+        ],
+        "verticalFovDegrees": 38,
+        "autoFitRequired": true
+      },
+      "focusPortraitSeed": {
+        "position": [
+          27.20474,
+          2.9,
+          -3.0023
+        ],
+        "target": [
+          16,
+          2.2,
+          0
+        ],
+        "verticalFovDegrees": 48,
+        "autoFitRequired": true
+      },
+      "descentSeed": {
+        "position": [
+          21.98874,
+          0.45,
+          -1.60468
+        ],
+        "target": [
+          16,
+          0.9,
+          0
+        ],
+        "verticalFovDegrees": 42,
+        "autoFitRequired": true
+      },
+      "assetFuturePath": "web/optimized/icon_projects_lod0.glb",
+      "assetStatus": "geometry_three_lods_exported_validated_reimported",
+      "content": {
+        "kind": "iframe_candidate",
+        "publicUrlCandidate": "https://mementostudio.it/projects",
+        "embedUrlCandidate": "https://mementoportfolio.vercel.app/",
+        "availabilityVerified": false,
+        "bridgeImplemented": false,
+        "readyRequired": true,
+        "recursionProhibited": true
+      },
+      "nominalAssetStatus": "to_be_produced",
+      "actual": {
+        "measurementSpace": "canonical icon anchor local; Web Y-up, meters",
+        "iconLods": {
+          "0": {
+            "minBlender": [
+              -1.8250000476837158,
+              -0.28999999165534973,
+              -1.600000023841858
+            ],
+            "maxBlender": [
+              1.8250000476837158,
+              0.28999999165534973,
+              1.600000023841858
+            ],
+            "minWeb": [
+              -1.8250000476837158,
+              -1.600000023841858,
+              -0.28999999165534973
+            ],
+            "maxWeb": [
+              1.8250000476837158,
+              1.600000023841858,
+              0.28999999165534973
+            ],
+            "dimensionsMetersWeb": [
+              3.6500000953674316,
+              3.200000047683716,
+              0.5799999833106995
+            ],
+            "boundsCenterWeb": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "node": "ICO_s02_projects_LOD0",
+            "vertices": 1136,
+            "triangles": 2260,
+            "uvLayers": [
+              "UVMap"
+            ],
+            "materials": [
+              "MAT_Graphite",
+              "MAT_Amber_Channel"
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "pivotWeb": [
+              0.0,
+              0.0,
+              -0.0
+            ],
+            "worldBaseY": 0.6599999666213989,
+            "worldTopY": 3.8600001335144043,
+            "acceptedReferenceDimensionsMetersWeb": [
+              3.65,
+              3.2,
+              0.58
+            ],
+            "deviationFromAcceptedReferencePercent": [
+              2.612806348751859e-06,
+              1.4901161138336505e-06,
+              -2.8774656029554044e-06
+            ],
+            "dimensionsWithinTolerance": true
+          },
+          "1": {
+            "minBlender": [
+              -1.8250000476837158,
+              -0.28999999165534973,
+              -1.600000023841858
+            ],
+            "maxBlender": [
+              1.8250000476837158,
+              0.28999999165534973,
+              1.600000023841858
+            ],
+            "minWeb": [
+              -1.8250000476837158,
+              -1.600000023841858,
+              -0.28999999165534973
+            ],
+            "maxWeb": [
+              1.8250000476837158,
+              1.600000023841858,
+              0.28999999165534973
+            ],
+            "dimensionsMetersWeb": [
+              3.6500000953674316,
+              3.200000047683716,
+              0.5799999833106995
+            ],
+            "boundsCenterWeb": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "node": "ICO_s02_projects_LOD1",
+            "vertices": 488,
+            "triangles": 964,
+            "uvLayers": [
+              "UVMap"
+            ],
+            "materials": [
+              "MAT_Graphite",
+              "MAT_Amber_Channel"
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "pivotWeb": [
+              0.0,
+              0.0,
+              -0.0
+            ],
+            "worldBaseY": 0.6599999666213989,
+            "worldTopY": 3.8600001335144043,
+            "acceptedReferenceDimensionsMetersWeb": [
+              3.65,
+              3.2,
+              0.58
+            ],
+            "deviationFromAcceptedReferencePercent": [
+              2.612806348751859e-06,
+              1.4901161138336505e-06,
+              -2.8774656029554044e-06
+            ],
+            "dimensionsWithinTolerance": true
+          },
+          "2": {
+            "minBlender": [
+              -1.8250000476837158,
+              -0.28999999165534973,
+              -1.600000023841858
+            ],
+            "maxBlender": [
+              1.8250000476837158,
+              0.28999999165534973,
+              1.600000023841858
+            ],
+            "minWeb": [
+              -1.8250000476837158,
+              -1.600000023841858,
+              -0.28999999165534973
+            ],
+            "maxWeb": [
+              1.8250000476837158,
+              1.600000023841858,
+              0.28999999165534973
+            ],
+            "dimensionsMetersWeb": [
+              3.6500000953674316,
+              3.200000047683716,
+              0.5799999833106995
+            ],
+            "boundsCenterWeb": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "node": "ICO_s02_projects_LOD2",
+            "vertices": 216,
+            "triangles": 420,
+            "uvLayers": [
+              "UVMap"
+            ],
+            "materials": [
+              "MAT_Graphite",
+              "MAT_Amber_Channel"
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "pivotWeb": [
+              0.0,
+              0.0,
+              -0.0
+            ],
+            "worldBaseY": 0.6599999666213989,
+            "worldTopY": 3.8600001335144043,
+            "acceptedReferenceDimensionsMetersWeb": [
+              3.65,
+              3.2,
+              0.58
+            ],
+            "deviationFromAcceptedReferencePercent": [
+              2.612806348751859e-06,
+              1.4901161138336505e-06,
+              -2.8774656029554044e-06
+            ],
+            "dimensionsWithinTolerance": true
+          }
+        },
+        "platform": {
+          "minBlender": [
+            -2.200000047683716,
+            -2.200000047683716,
+            -0.03999999910593033
+          ],
+          "maxBlender": [
+            2.200000047683716,
+            2.200000047683716,
+            0.1599999964237213
+          ],
+          "minWeb": [
+            -2.200000047683716,
+            -0.03999999910593033,
+            -2.200000047683716
+          ],
+          "maxWeb": [
+            2.200000047683716,
+            0.1599999964237213,
+            2.200000047683716
+          ],
+          "dimensionsMetersWeb": [
+            4.400000095367432,
+            0.19999999552965164,
+            4.400000095367432
+          ],
+          "boundsCenterWeb": [
+            0.0,
+            0.05999999865889549,
+            0.0
+          ],
+          "node": "PLATFORM_s02_projects_LOD0",
+          "vertices": 384,
+          "triangles": 764,
+          "uvLayers": [
+            "UVMap",
+            "UV_DETAIL",
+            "UV_ATLAS"
+          ],
+          "materials": [
+            "MAT_Platform"
+          ],
+          "scale": [
+            1.0,
+            1.0,
+            1.0
+          ],
+          "pivotWeb": [
+            0.0,
+            0.0,
+            -0.0
+          ],
+          "worldBaseY": -0.03999999910593033,
+          "worldTopY": 0.1599999964237213
+        },
+        "anchorPositionWorldWeb": [
+          16.0,
+          2.259999990463257,
+          -0.0
+        ],
+        "baseWorldY": 0.6599999666213989,
+        "hoverGapMeters": 0.4999999701976776,
+        "minimumGapIncludingIdleMeters": 0.4649999701976776,
+        "hitProxy": {
+          "node": "COLLISION_s02_projects",
+          "guide": "HIT_PROXY_s02_projects",
+          "localBlenderMin": [
+            -1.90500009059906,
+            -0.3700000047683716,
+            -1.6800000667572021
+          ],
+          "localBlenderMax": [
+            1.90500009059906,
+            0.3700000047683716,
+            1.6800000667572021
+          ],
+          "localWebMin": [
+            -1.90500009059906,
+            -1.6800000667572021,
+            -0.3700000047683716
+          ],
+          "localWebMax": [
+            1.90500009059906,
+            1.6800000667572021,
+            0.3700000047683716
+          ],
+          "paddingMeters": 0.08,
+          "triangles": 12,
+          "kind": "interaction_volume",
+          "physicsCollisionVerified": false
+        }
+      },
+      "assets": {
+        "0": {
+          "node": "ICO_s02_projects_LOD0",
+          "lod": 0,
+          "variants": {
+            "raw": {
+              "path": "web/family_v007/raw/icon_projects_lod0.glb",
+              "url": "/family_v007/raw/icon_projects_lod0.glb",
+              "existsAtMetadataGeneration": true,
+              "status": "file_present_validation_pending"
+            },
+            "optimized": {
+              "path": "web/family_v007/optimized/icon_projects_lod0.glb",
+              "url": "/family_v007/optimized/icon_projects_lod0.glb",
+              "existsAtMetadataGeneration": true,
+              "status": "file_present_validation_pending"
+            },
+            "mobileRaw": {
+              "path": "web/family_v007/mobile/raw/icon_projects_lod0.glb",
+              "url": "/family_v007/mobile/raw/icon_projects_lod0.glb",
+              "existsAtMetadataGeneration": true,
+              "status": "file_present_validation_pending"
+            },
+            "mobileOptimized": {
+              "path": "web/family_v007/mobile/optimized/icon_projects_lod0.glb",
+              "url": "/family_v007/mobile/optimized/icon_projects_lod0.glb",
+              "existsAtMetadataGeneration": true,
+              "status": "file_present_validation_pending"
+            }
+          }
+        },
+        "1": {
+          "node": "ICO_s02_projects_LOD1",
+          "lod": 1,
+          "variants": {
+            "raw": {
+              "path": "web/family_v007/raw/icon_projects_lod1.glb",
+              "url": "/family_v007/raw/icon_projects_lod1.glb",
+              "existsAtMetadataGeneration": true,
+              "status": "file_present_validation_pending"
+            },
+            "optimized": {
+              "path": "web/family_v007/optimized/icon_projects_lod1.glb",
+              "url": "/family_v007/optimized/icon_projects_lod1.glb",
+              "existsAtMetadataGeneration": true,
+              "status": "file_present_validation_pending"
+            },
+            "mobileRaw": {
+              "path": "web/family_v007/mobile/raw/icon_projects_lod1.glb",
+              "url": "/family_v007/mobile/raw/icon_projects_lod1.glb",
+              "existsAtMetadataGeneration": true,
+              "status": "file_present_validation_pending"
+            },
+            "mobileOptimized": {
+              "path": "web/family_v007/mobile/optimized/icon_projects_lod1.glb",
+              "url": "/family_v007/mobile/optimized/icon_projects_lod1.glb",
+              "existsAtMetadataGeneration": true,
+              "status": "file_present_validation_pending"
+            }
+          }
+        },
+        "2": {
+          "node": "ICO_s02_projects_LOD2",
+          "lod": 2,
+          "variants": {
+            "raw": {
+              "path": "web/family_v007/raw/icon_projects_lod2.glb",
+              "url": "/family_v007/raw/icon_projects_lod2.glb",
+              "existsAtMetadataGeneration": true,
+              "status": "file_present_validation_pending"
+            },
+            "optimized": {
+              "path": "web/family_v007/optimized/icon_projects_lod2.glb",
+              "url": "/family_v007/optimized/icon_projects_lod2.glb",
+              "existsAtMetadataGeneration": true,
+              "status": "file_present_validation_pending"
+            },
+            "mobileRaw": {
+              "path": "web/family_v007/mobile/raw/icon_projects_lod2.glb",
+              "url": "/family_v007/mobile/raw/icon_projects_lod2.glb",
+              "existsAtMetadataGeneration": true,
+              "status": "file_present_validation_pending"
+            },
+            "mobileOptimized": {
+              "path": "web/family_v007/mobile/optimized/icon_projects_lod2.glb",
+              "url": "/family_v007/mobile/optimized/icon_projects_lod2.glb",
+              "existsAtMetadataGeneration": true,
+              "status": "file_present_validation_pending"
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "s03_studio",
+      "label": "Studio",
+      "position": [
+        8,
+        0,
+        -13.856406
+      ],
+      "iconDimensionsMeters": [
+        3.2,
+        3.2,
+        2.4
+      ],
+      "iconAnchor": [
+        0,
+        2.26,
+        0
+      ],
+      "iconFrontCanonicalWeb": [
+        0,
+        0,
+        1
+      ],
+      "overviewYawDegrees": -6.18208,
+      "focusIconYawDegrees": 150.0,
+      "focusDesktopSeed": {
+        "position": [
+          10.27761,
+          2.65,
+          -22.35655
+        ],
+        "target": [
+          8,
+          2.26,
+          -13.856406
+        ],
+        "verticalFovDegrees": 38,
+        "autoFitRequired": true
+      },
+      "focusPortraitSeed": {
+        "position": [
+          11.0023,
+          2.9,
+          -25.06115
+        ],
+        "target": [
+          8,
+          2.2,
+          -13.856406
+        ],
+        "verticalFovDegrees": 48,
+        "autoFitRequired": true
+      },
+      "descentSeed": {
+        "position": [
+          9.60468,
+          0.45,
+          -19.84515
+        ],
+        "target": [
+          8,
+          0.9,
+          -13.856406
+        ],
+        "verticalFovDegrees": 42,
+        "autoFitRequired": true
+      },
+      "assetFuturePath": "web/optimized/icon_studio_lod0.glb",
+      "assetStatus": "geometry_three_lods_exported_validated_reimported",
+      "content": {
+        "kind": "local_section_required",
+        "publicUrlCandidate": null,
+        "embedUrlCandidate": null,
+        "availabilityVerified": false,
+        "bridgeImplemented": false,
+        "readyRequired": true,
+        "recursionProhibited": true
+      },
+      "nominalAssetStatus": "to_be_produced",
+      "actual": {
+        "measurementSpace": "canonical icon anchor local; Web Y-up, meters",
+        "iconLods": {
+          "0": {
+            "minBlender": [
+              -1.5999997854232788,
+              -1.2000000476837158,
+              -1.600000262260437
+            ],
+            "maxBlender": [
+              1.600000262260437,
+              1.2000000476837158,
+              1.5999997854232788
+            ],
+            "minWeb": [
+              -1.5999997854232788,
+              -1.600000262260437,
+              -1.2000000476837158
+            ],
+            "maxWeb": [
+              1.600000262260437,
+              1.5999997854232788,
+              1.2000000476837158
+            ],
+            "dimensionsMetersWeb": [
+              3.200000047683716,
+              3.200000047683716,
+              2.4000000953674316
+            ],
+            "boundsCenterWeb": [
+              2.384185791015625e-07,
+              -2.384185791015625e-07,
+              0.0
+            ],
+            "node": "ICO_s03_studio_LOD0",
+            "vertices": 992,
+            "triangles": 1988,
+            "uvLayers": [
+              "UVMap"
+            ],
+            "materials": [
+              "MAT_Graphite",
+              "MAT_Amber_Channel"
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "pivotWeb": [
+              2.384185791015625e-07,
+              -2.384185791015625e-07,
+              -5.960464477539063e-08
+            ],
+            "worldBaseY": 0.6599999666213989,
+            "worldTopY": 3.8600001335144043,
+            "acceptedReferenceDimensionsMetersWeb": [
+              3.2,
+              3.2,
+              2.4
+            ],
+            "deviationFromAcceptedReferencePercent": [
+              1.4901161138336505e-06,
+              1.4901161138336505e-06,
+              3.973642988726786e-06
+            ],
+            "dimensionsWithinTolerance": true
+          },
+          "1": {
+            "minBlender": [
+              -1.5999997854232788,
+              -1.2000000476837158,
+              -1.600000262260437
+            ],
+            "maxBlender": [
+              1.600000262260437,
+              1.2000000476837158,
+              1.5999997854232788
+            ],
+            "minWeb": [
+              -1.5999997854232788,
+              -1.600000262260437,
+              -1.2000000476837158
+            ],
+            "maxWeb": [
+              1.600000262260437,
+              1.5999997854232788,
+              1.2000000476837158
+            ],
+            "dimensionsMetersWeb": [
+              3.200000047683716,
+              3.200000047683716,
+              2.4000000953674316
+            ],
+            "boundsCenterWeb": [
+              2.384185791015625e-07,
+              -2.384185791015625e-07,
+              0.0
+            ],
+            "node": "ICO_s03_studio_LOD1",
+            "vertices": 464,
+            "triangles": 932,
+            "uvLayers": [
+              "UVMap"
+            ],
+            "materials": [
+              "MAT_Graphite",
+              "MAT_Amber_Channel"
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "pivotWeb": [
+              2.384185791015625e-07,
+              -2.384185791015625e-07,
+              -5.960464477539063e-08
+            ],
+            "worldBaseY": 0.6599999666213989,
+            "worldTopY": 3.8600001335144043,
+            "acceptedReferenceDimensionsMetersWeb": [
+              3.2,
+              3.2,
+              2.4
+            ],
+            "deviationFromAcceptedReferencePercent": [
+              1.4901161138336505e-06,
+              1.4901161138336505e-06,
+              3.973642988726786e-06
+            ],
+            "dimensionsWithinTolerance": true
+          },
+          "2": {
+            "minBlender": [
+              -1.5999997854232788,
+              -1.2000000476837158,
+              -1.600000262260437
+            ],
+            "maxBlender": [
+              1.600000262260437,
+              1.2000000476837158,
+              1.5999997854232788
+            ],
+            "minWeb": [
+              -1.5999997854232788,
+              -1.600000262260437,
+              -1.2000000476837158
+            ],
+            "maxWeb": [
+              1.600000262260437,
+              1.5999997854232788,
+              1.2000000476837158
+            ],
+            "dimensionsMetersWeb": [
+              3.200000047683716,
+              3.200000047683716,
+              2.4000000953674316
+            ],
+            "boundsCenterWeb": [
+              2.384185791015625e-07,
+              -2.384185791015625e-07,
+              0.0
+            ],
+            "node": "ICO_s03_studio_LOD2",
+            "vertices": 220,
+            "triangles": 444,
+            "uvLayers": [
+              "UVMap"
+            ],
+            "materials": [
+              "MAT_Graphite",
+              "MAT_Amber_Channel"
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "pivotWeb": [
+              2.384185791015625e-07,
+              -2.384185791015625e-07,
+              -5.960464477539063e-08
+            ],
+            "worldBaseY": 0.6599999666213989,
+            "worldTopY": 3.8600001335144043,
+            "acceptedReferenceDimensionsMetersWeb": [
+              3.2,
+              3.2,
+              2.4
+            ],
+            "deviationFromAcceptedReferencePercent": [
+              1.4901161138336505e-06,
+              1.4901161138336505e-06,
+              3.973642988726786e-06
+            ],
+            "dimensionsWithinTolerance": true
+          }
+        },
+        "platform": {
+          "minBlender": [
+            -2.200000047683716,
+            -2.200000047683716,
+            -0.03999999910593033
+          ],
+          "maxBlender": [
+            2.200000047683716,
+            2.200000047683716,
+            0.1599999964237213
+          ],
+          "minWeb": [
+            -2.200000047683716,
+            -0.03999999910593033,
+            -2.200000047683716
+          ],
+          "maxWeb": [
+            2.200000047683716,
+            0.1599999964237213,
+            2.200000047683716
+          ],
+          "dimensionsMetersWeb": [
+            4.400000095367432,
+            0.19999999552965164,
+            4.400000095367432
+          ],
+          "boundsCenterWeb": [
+            0.0,
+            0.05999999865889549,
+            0.0
+          ],
+          "node": "PLATFORM_s03_studio_LOD0",
+          "vertices": 384,
+          "triangles": 764,
+          "uvLayers": [
+            "UVMap",
+            "UV_DETAIL",
+            "UV_ATLAS"
+          ],
+          "materials": [
+            "MAT_Platform"
+          ],
+          "scale": [
+            1.0,
+            1.0,
+            1.0
+          ],
+          "pivotWeb": [
+            0.0,
+            0.0,
+            -0.0
+          ],
+          "worldBaseY": -0.03999999910593033,
+          "worldTopY": 0.1599999964237213
+        },
+        "anchorPositionWorldWeb": [
+          8.0,
+          2.259999990463257,
+          -13.856406211853027
+        ],
+        "baseWorldY": 0.6599999666213989,
+        "hoverGapMeters": 0.4999999701976776,
+        "minimumGapIncludingIdleMeters": 0.4649999701976776,
+        "hitProxy": {
+          "node": "COLLISION_s03_studio",
+          "guide": "HIT_PROXY_s03_studio",
+          "localBlenderMin": [
+            -1.6800000667572021,
+            -1.28000009059906,
+            -1.6800000667572021
+          ],
+          "localBlenderMax": [
+            1.6800000667572021,
+            1.28000009059906,
+            1.6800000667572021
+          ],
+          "localWebMin": [
+            -1.6800000667572021,
+            -1.6800000667572021,
+            -1.28000009059906
+          ],
+          "localWebMax": [
+            1.6800000667572021,
+            1.6800000667572021,
+            1.28000009059906
+          ],
+          "paddingMeters": 0.08,
+          "triangles": 12,
+          "kind": "interaction_volume",
+          "physicsCollisionVerified": false
+        }
+      },
+      "assets": {
+        "0": {
+          "node": "ICO_s03_studio_LOD0",
+          "lod": 0,
+          "variants": {
+            "raw": {
+              "path": "web/family_v007/raw/icon_studio_lod0.glb",
+              "url": "/family_v007/raw/icon_studio_lod0.glb",
+              "existsAtMetadataGeneration": true,
+              "status": "file_present_validation_pending"
+            },
+            "optimized": {
+              "path": "web/family_v007/optimized/icon_studio_lod0.glb",
+              "url": "/family_v007/optimized/icon_studio_lod0.glb",
+              "existsAtMetadataGeneration": true,
+              "status": "file_present_validation_pending"
+            },
+            "mobileRaw": {
+              "path": "web/family_v007/mobile/raw/icon_studio_lod0.glb",
+              "url": "/family_v007/mobile/raw/icon_studio_lod0.glb",
+              "existsAtMetadataGeneration": true,
+              "status": "file_present_validation_pending"
+            },
+            "mobileOptimized": {
+              "path": "web/family_v007/mobile/optimized/icon_studio_lod0.glb",
+              "url": "/family_v007/mobile/optimized/icon_studio_lod0.glb",
+              "existsAtMetadataGeneration": true,
+              "status": "file_present_validation_pending"
+            }
+          }
+        },
+        "1": {
+          "node": "ICO_s03_studio_LOD1",
+          "lod": 1,
+          "variants": {
+            "raw": {
+              "path": "web/family_v007/raw/icon_studio_lod1.glb",
+              "url": "/family_v007/raw/icon_studio_lod1.glb",
+              "existsAtMetadataGeneration": true,
+              "status": "file_present_validation_pending"
+            },
+            "optimized": {
+              "path": "web/family_v007/optimized/icon_studio_lod1.glb",
+              "url": "/family_v007/optimized/icon_studio_lod1.glb",
+              "existsAtMetadataGeneration": true,
+              "status": "file_present_validation_pending"
+            },
+            "mobileRaw": {
+              "path": "web/family_v007/mobile/raw/icon_studio_lod1.glb",
+              "url": "/family_v007/mobile/raw/icon_studio_lod1.glb",
+              "existsAtMetadataGeneration": true,
+              "status": "file_present_validation_pending"
+            },
+            "mobileOptimized": {
+              "path": "web/family_v007/mobile/optimized/icon_studio_lod1.glb",
+              "url": "/family_v007/mobile/optimized/icon_studio_lod1.glb",
+              "existsAtMetadataGeneration": true,
+              "status": "file_present_validation_pending"
+            }
+          }
+        },
+        "2": {
+          "node": "ICO_s03_studio_LOD2",
+          "lod": 2,
+          "variants": {
+            "raw": {
+              "path": "web/family_v007/raw/icon_studio_lod2.glb",
+              "url": "/family_v007/raw/icon_studio_lod2.glb",
+              "existsAtMetadataGeneration": true,
+              "status": "file_present_validation_pending"
+            },
+            "optimized": {
+              "path": "web/family_v007/optimized/icon_studio_lod2.glb",
+              "url": "/family_v007/optimized/icon_studio_lod2.glb",
+              "existsAtMetadataGeneration": true,
+              "status": "file_present_validation_pending"
+            },
+            "mobileRaw": {
+              "path": "web/family_v007/mobile/raw/icon_studio_lod2.glb",
+              "url": "/family_v007/mobile/raw/icon_studio_lod2.glb",
+              "existsAtMetadataGeneration": true,
+              "status": "file_present_validation_pending"
+            },
+            "mobileOptimized": {
+              "path": "web/family_v007/mobile/optimized/icon_studio_lod2.glb",
+              "url": "/family_v007/mobile/optimized/icon_studio_lod2.glb",
+              "existsAtMetadataGeneration": true,
+              "status": "file_present_validation_pending"
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "s04_levelup",
+      "label": "Level Up",
+      "position": [
+        -8,
+        0,
+        -13.856406
+      ],
+      "iconDimensionsMeters": [
+        3.2,
+        3.2,
+        0.34
+      ],
+      "iconAnchor": [
+        0,
+        2.26,
+        0
+      ],
+      "iconFrontCanonicalWeb": [
+        0,
+        0,
+        1
+      ],
+      "overviewYawDegrees": 6.18208,
+      "focusIconYawDegrees": -150.0,
+      "focusDesktopSeed": {
+        "position": [
+          -14.22254,
+          2.65,
+          -20.07895
+        ],
+        "target": [
+          -8,
+          2.26,
+          -13.856406
+        ],
+        "verticalFovDegrees": 38,
+        "autoFitRequired": true
+      },
+      "focusPortraitSeed": {
+        "position": [
+          -16.20244,
+          2.9,
+          -22.05884
+        ],
+        "target": [
+          -8,
+          2.2,
+          -13.856406
+        ],
+        "verticalFovDegrees": 48,
+        "autoFitRequired": true
+      },
+      "descentSeed": {
+        "position": [
+          -12.38406,
+          0.45,
+          -18.24047
+        ],
+        "target": [
+          -8,
+          0.9,
+          -13.856406
+        ],
+        "verticalFovDegrees": 42,
+        "autoFitRequired": true
+      },
+      "assetFuturePath": "web/optimized/icon_levelup_lod0.glb",
+      "assetStatus": "geometry_three_lods_exported_validated_reimported",
+      "content": {
+        "kind": "iframe_candidate",
+        "publicUrlCandidate": "https://mementostudio.it/levelup",
+        "embedUrlCandidate": "https://mementolevelup.vercel.app/",
+        "availabilityVerified": false,
+        "bridgeImplemented": false,
+        "readyRequired": true,
+        "recursionProhibited": true
+      },
+      "nominalAssetStatus": "to_be_produced",
+      "actual": {
+        "measurementSpace": "canonical icon anchor local; Web Y-up, meters",
+        "iconLods": {
+          "0": {
+            "minBlender": [
+              -1.600000262260437,
+              -0.16999994218349457,
+              -1.5785365104675293
+            ],
+            "maxBlender": [
+              1.5999997854232788,
+              0.17000006139278412,
+              1.5816525220870972
+            ],
+            "minWeb": [
+              -1.600000262260437,
+              -1.5785365104675293,
+              -0.17000006139278412
+            ],
+            "maxWeb": [
+              1.5999997854232788,
+              1.5816525220870972,
+              0.16999994218349457
+            ],
+            "dimensionsMetersWeb": [
+              3.200000047683716,
+              3.1601890325546265,
+              0.3400000035762787
+            ],
+            "boundsCenterWeb": [
+              -2.384185791015625e-07,
+              0.0015580058097839355,
+              -5.960464477539063e-08
+            ],
+            "node": "ICO_s04_levelup_LOD0",
+            "vertices": 576,
+            "triangles": 1128,
+            "uvLayers": [
+              "UVMap"
+            ],
+            "materials": [
+              "MAT_Graphite",
+              "MAT_Amber_Channel"
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "pivotWeb": [
+              -2.384185791015625e-07,
+              -2.384185791015625e-07,
+              -5.960464477539063e-08
+            ],
+            "worldBaseY": 0.6814637184143066,
+            "worldTopY": 3.8416528701782227,
+            "acceptedReferenceDimensionsMetersWeb": [
+              3.2,
+              3.2,
+              0.34
+            ],
+            "deviationFromAcceptedReferencePercent": [
+              1.4901161138336505e-06,
+              -1.2440927326679285,
+              1.0518466653230973e-06
+            ],
+            "dimensionsWithinTolerance": true
+          },
+          "1": {
+            "minBlender": [
+              -1.600000262260437,
+              -0.16999994218349457,
+              -1.5785365104675293
+            ],
+            "maxBlender": [
+              1.5999997854232788,
+              0.17000006139278412,
+              1.5816525220870972
+            ],
+            "minWeb": [
+              -1.600000262260437,
+              -1.5785365104675293,
+              -0.17000006139278412
+            ],
+            "maxWeb": [
+              1.5999997854232788,
+              1.5816525220870972,
+              0.16999994218349457
+            ],
+            "dimensionsMetersWeb": [
+              3.200000047683716,
+              3.1601890325546265,
+              0.3400000035762787
+            ],
+            "boundsCenterWeb": [
+              -2.384185791015625e-07,
+              0.0015580058097839355,
+              -5.960464477539063e-08
+            ],
+            "node": "ICO_s04_levelup_LOD1",
+            "vertices": 272,
+            "triangles": 520,
+            "uvLayers": [
+              "UVMap"
+            ],
+            "materials": [
+              "MAT_Graphite",
+              "MAT_Amber_Channel"
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "pivotWeb": [
+              -2.384185791015625e-07,
+              -2.384185791015625e-07,
+              -5.960464477539063e-08
+            ],
+            "worldBaseY": 0.6814637184143066,
+            "worldTopY": 3.8416528701782227,
+            "acceptedReferenceDimensionsMetersWeb": [
+              3.2,
+              3.2,
+              0.34
+            ],
+            "deviationFromAcceptedReferencePercent": [
+              1.4901161138336505e-06,
+              -1.2440927326679285,
+              1.0518466653230973e-06
+            ],
+            "dimensionsWithinTolerance": true
+          },
+          "2": {
+            "minBlender": [
+              -1.600000262260437,
+              -0.16999994218349457,
+              -1.5687984228134155
+            ],
+            "maxBlender": [
+              1.5999997854232788,
+              0.17000006139278412,
+              1.5687979459762573
+            ],
+            "minWeb": [
+              -1.600000262260437,
+              -1.5687984228134155,
+              -0.17000006139278412
+            ],
+            "maxWeb": [
+              1.5999997854232788,
+              1.5687979459762573,
+              0.16999994218349457
+            ],
+            "dimensionsMetersWeb": [
+              3.200000047683716,
+              3.137596368789673,
+              0.3400000035762787
+            ],
+            "boundsCenterWeb": [
+              -2.384185791015625e-07,
+              -2.384185791015625e-07,
+              -5.960464477539063e-08
+            ],
+            "node": "ICO_s04_levelup_LOD2",
+            "vertices": 172,
+            "triangles": 320,
+            "uvLayers": [
+              "UVMap"
+            ],
+            "materials": [
+              "MAT_Graphite",
+              "MAT_Amber_Channel"
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "pivotWeb": [
+              -2.384185791015625e-07,
+              -2.384185791015625e-07,
+              -5.960464477539063e-08
+            ],
+            "worldBaseY": 0.6912018060684204,
+            "worldTopY": 3.828798294067383,
+            "acceptedReferenceDimensionsMetersWeb": [
+              3.2,
+              3.2,
+              0.34
+            ],
+            "deviationFromAcceptedReferencePercent": [
+              1.4901161138336505e-06,
+              -1.950113475322729,
+              1.0518466653230973e-06
+            ],
+            "dimensionsWithinTolerance": true
+          }
+        },
+        "platform": {
+          "minBlender": [
+            -2.200000047683716,
+            -2.200000047683716,
+            -0.03999999910593033
+          ],
+          "maxBlender": [
+            2.200000047683716,
+            2.200000047683716,
+            0.1599999964237213
+          ],
+          "minWeb": [
+            -2.200000047683716,
+            -0.03999999910593033,
+            -2.200000047683716
+          ],
+          "maxWeb": [
+            2.200000047683716,
+            0.1599999964237213,
+            2.200000047683716
+          ],
+          "dimensionsMetersWeb": [
+            4.400000095367432,
+            0.19999999552965164,
+            4.400000095367432
+          ],
+          "boundsCenterWeb": [
+            0.0,
+            0.05999999865889549,
+            0.0
+          ],
+          "node": "PLATFORM_s04_levelup_LOD0",
+          "vertices": 384,
+          "triangles": 764,
+          "uvLayers": [
+            "UVMap",
+            "UV_DETAIL",
+            "UV_ATLAS"
+          ],
+          "materials": [
+            "MAT_Platform"
+          ],
+          "scale": [
+            1.0,
+            1.0,
+            1.0
+          ],
+          "pivotWeb": [
+            0.0,
+            0.0,
+            -0.0
+          ],
+          "worldBaseY": -0.03999999910593033,
+          "worldTopY": 0.1599999964237213
+        },
+        "anchorPositionWorldWeb": [
+          -8.0,
+          2.259999990463257,
+          -13.856406211853027
+        ],
+        "baseWorldY": 0.6814637184143066,
+        "hoverGapMeters": 0.5214637219905853,
+        "minimumGapIncludingIdleMeters": 0.4864637219905853,
+        "hitProxy": {
+          "node": "COLLISION_s04_levelup",
+          "guide": "HIT_PROXY_s04_levelup",
+          "localBlenderMin": [
+            -1.6800000667572021,
+            -0.25,
+            -1.6585363149642944
+          ],
+          "localBlenderMax": [
+            1.6800000667572021,
+            0.25,
+            1.6616528034210205
+          ],
+          "localWebMin": [
+            -1.6800000667572021,
+            -1.6585363149642944,
+            -0.25
+          ],
+          "localWebMax": [
+            1.6800000667572021,
+            1.6616528034210205,
+            0.25
+          ],
+          "paddingMeters": 0.08,
+          "triangles": 12,
+          "kind": "interaction_volume",
+          "physicsCollisionVerified": false
+        }
+      },
+      "assets": {
+        "0": {
+          "node": "ICO_s04_levelup_LOD0",
+          "lod": 0,
+          "variants": {
+            "raw": {
+              "path": "web/family_v007/raw/icon_levelup_lod0.glb",
+              "url": "/family_v007/raw/icon_levelup_lod0.glb",
+              "existsAtMetadataGeneration": true,
+              "status": "file_present_validation_pending"
+            },
+            "optimized": {
+              "path": "web/family_v007/optimized/icon_levelup_lod0.glb",
+              "url": "/family_v007/optimized/icon_levelup_lod0.glb",
+              "existsAtMetadataGeneration": true,
+              "status": "file_present_validation_pending"
+            },
+            "mobileRaw": {
+              "path": "web/family_v007/mobile/raw/icon_levelup_lod0.glb",
+              "url": "/family_v007/mobile/raw/icon_levelup_lod0.glb",
+              "existsAtMetadataGeneration": true,
+              "status": "file_present_validation_pending"
+            },
+            "mobileOptimized": {
+              "path": "web/family_v007/mobile/optimized/icon_levelup_lod0.glb",
+              "url": "/family_v007/mobile/optimized/icon_levelup_lod0.glb",
+              "existsAtMetadataGeneration": true,
+              "status": "file_present_validation_pending"
+            }
+          }
+        },
+        "1": {
+          "node": "ICO_s04_levelup_LOD1",
+          "lod": 1,
+          "variants": {
+            "raw": {
+              "path": "web/family_v007/raw/icon_levelup_lod1.glb",
+              "url": "/family_v007/raw/icon_levelup_lod1.glb",
+              "existsAtMetadataGeneration": true,
+              "status": "file_present_validation_pending"
+            },
+            "optimized": {
+              "path": "web/family_v007/optimized/icon_levelup_lod1.glb",
+              "url": "/family_v007/optimized/icon_levelup_lod1.glb",
+              "existsAtMetadataGeneration": true,
+              "status": "file_present_validation_pending"
+            },
+            "mobileRaw": {
+              "path": "web/family_v007/mobile/raw/icon_levelup_lod1.glb",
+              "url": "/family_v007/mobile/raw/icon_levelup_lod1.glb",
+              "existsAtMetadataGeneration": true,
+              "status": "file_present_validation_pending"
+            },
+            "mobileOptimized": {
+              "path": "web/family_v007/mobile/optimized/icon_levelup_lod1.glb",
+              "url": "/family_v007/mobile/optimized/icon_levelup_lod1.glb",
+              "existsAtMetadataGeneration": true,
+              "status": "file_present_validation_pending"
+            }
+          }
+        },
+        "2": {
+          "node": "ICO_s04_levelup_LOD2",
+          "lod": 2,
+          "variants": {
+            "raw": {
+              "path": "web/family_v007/raw/icon_levelup_lod2.glb",
+              "url": "/family_v007/raw/icon_levelup_lod2.glb",
+              "existsAtMetadataGeneration": true,
+              "status": "file_present_validation_pending"
+            },
+            "optimized": {
+              "path": "web/family_v007/optimized/icon_levelup_lod2.glb",
+              "url": "/family_v007/optimized/icon_levelup_lod2.glb",
+              "existsAtMetadataGeneration": true,
+              "status": "file_present_validation_pending"
+            },
+            "mobileRaw": {
+              "path": "web/family_v007/mobile/raw/icon_levelup_lod2.glb",
+              "url": "/family_v007/mobile/raw/icon_levelup_lod2.glb",
+              "existsAtMetadataGeneration": true,
+              "status": "file_present_validation_pending"
+            },
+            "mobileOptimized": {
+              "path": "web/family_v007/mobile/optimized/icon_levelup_lod2.glb",
+              "url": "/family_v007/mobile/optimized/icon_levelup_lod2.glb",
+              "existsAtMetadataGeneration": true,
+              "status": "file_present_validation_pending"
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "s05_start",
+      "label": "Start",
+      "position": [
+        -16,
+        0,
+        0
+      ],
+      "iconDimensionsMeters": [
+        3.35,
+        3.2,
+        0.32
+      ],
+      "iconAnchor": [
+        0,
+        2.26,
+        0
+      ],
+      "iconFrontCanonicalWeb": [
+        0,
+        0,
+        1
+      ],
+      "overviewYawDegrees": 14.93142,
+      "focusIconYawDegrees": -90.0,
+      "focusDesktopSeed": {
+        "position": [
+          -24.50015,
+          2.65,
+          2.27761
+        ],
+        "target": [
+          -16,
+          2.26,
+          0
+        ],
+        "verticalFovDegrees": 38,
+        "autoFitRequired": true
+      },
+      "focusPortraitSeed": {
+        "position": [
+          -27.20474,
+          2.9,
+          3.0023
+        ],
+        "target": [
+          -16,
+          2.2,
+          0
+        ],
+        "verticalFovDegrees": 48,
+        "autoFitRequired": true
+      },
+      "descentSeed": {
+        "position": [
+          -21.98874,
+          0.45,
+          1.60468
+        ],
+        "target": [
+          -16,
+          0.9,
+          0
+        ],
+        "verticalFovDegrees": 42,
+        "autoFitRequired": true
+      },
+      "assetFuturePath": "web/optimized/icon_start_lod0.glb",
+      "assetStatus": "geometry_three_lods_exported_validated_reimported",
+      "content": {
+        "kind": "iframe_candidate",
+        "publicUrlCandidate": "https://mementostudio.it/start",
+        "embedUrlCandidate": "https://mementostart.vercel.app/",
+        "availabilityVerified": false,
+        "bridgeImplemented": false,
+        "readyRequired": true,
+        "recursionProhibited": true
+      },
+      "nominalAssetStatus": "to_be_produced",
+      "actual": {
+        "measurementSpace": "canonical icon anchor local; Web Y-up, meters",
+        "iconLods": {
+          "0": {
+            "minBlender": [
+              -1.6749999523162842,
+              -0.1599999964237213,
+              -1.600000023841858
+            ],
+            "maxBlender": [
+              1.6749999523162842,
+              0.1599999964237213,
+              1.600000023841858
+            ],
+            "minWeb": [
+              -1.6749999523162842,
+              -1.600000023841858,
+              -0.1599999964237213
+            ],
+            "maxWeb": [
+              1.6749999523162842,
+              1.600000023841858,
+              0.1599999964237213
+            ],
+            "dimensionsMetersWeb": [
+              3.3499999046325684,
+              3.200000047683716,
+              0.3199999928474426
+            ],
+            "boundsCenterWeb": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "node": "ICO_s05_start_LOD0",
+            "vertices": 3092,
+            "triangles": 6180,
+            "uvLayers": [
+              "UVMap"
+            ],
+            "materials": [
+              "MAT_Graphite",
+              "MAT_Amber_Channel"
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "pivotWeb": [
+              0.0,
+              0.0,
+              -0.0
+            ],
+            "worldBaseY": 0.6599999666213989,
+            "worldTopY": 3.8600001335144043,
+            "acceptedReferenceDimensionsMetersWeb": [
+              3.35,
+              3.2,
+              0.32
+            ],
+            "deviationFromAcceptedReferencePercent": [
+              -2.84678900684904e-06,
+              1.4901161138336505e-06,
+              -2.2351741811588166e-06
+            ],
+            "dimensionsWithinTolerance": true
+          },
+          "1": {
+            "minBlender": [
+              -1.6749999523162842,
+              -0.1599999964237213,
+              -1.600000023841858
+            ],
+            "maxBlender": [
+              1.6749999523162842,
+              0.1599999964237213,
+              1.600000023841858
+            ],
+            "minWeb": [
+              -1.6749999523162842,
+              -1.600000023841858,
+              -0.1599999964237213
+            ],
+            "maxWeb": [
+              1.6749999523162842,
+              1.600000023841858,
+              0.1599999964237213
+            ],
+            "dimensionsMetersWeb": [
+              3.3499999046325684,
+              3.200000047683716,
+              0.3199999928474426
+            ],
+            "boundsCenterWeb": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "node": "ICO_s05_start_LOD1",
+            "vertices": 1292,
+            "triangles": 2580,
+            "uvLayers": [
+              "UVMap"
+            ],
+            "materials": [
+              "MAT_Graphite",
+              "MAT_Amber_Channel"
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "pivotWeb": [
+              0.0,
+              0.0,
+              -0.0
+            ],
+            "worldBaseY": 0.6599999666213989,
+            "worldTopY": 3.8600001335144043,
+            "acceptedReferenceDimensionsMetersWeb": [
+              3.35,
+              3.2,
+              0.32
+            ],
+            "deviationFromAcceptedReferencePercent": [
+              -2.84678900684904e-06,
+              1.4901161138336505e-06,
+              -2.2351741811588166e-06
+            ],
+            "dimensionsWithinTolerance": true
+          },
+          "2": {
+            "minBlender": [
+              -1.6749999523162842,
+              -0.1599999964237213,
+              -1.600000023841858
+            ],
+            "maxBlender": [
+              1.6749999523162842,
+              0.1599999964237213,
+              1.600000023841858
+            ],
+            "minWeb": [
+              -1.6749999523162842,
+              -1.600000023841858,
+              -0.1599999964237213
+            ],
+            "maxWeb": [
+              1.6749999523162842,
+              1.600000023841858,
+              0.1599999964237213
+            ],
+            "dimensionsMetersWeb": [
+              3.3499999046325684,
+              3.200000047683716,
+              0.3199999928474426
+            ],
+            "boundsCenterWeb": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "node": "ICO_s05_start_LOD2",
+            "vertices": 488,
+            "triangles": 972,
+            "uvLayers": [
+              "UVMap"
+            ],
+            "materials": [
+              "MAT_Graphite",
+              "MAT_Amber_Channel"
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "pivotWeb": [
+              0.0,
+              0.0,
+              -0.0
+            ],
+            "worldBaseY": 0.6599999666213989,
+            "worldTopY": 3.8600001335144043,
+            "acceptedReferenceDimensionsMetersWeb": [
+              3.35,
+              3.2,
+              0.32
+            ],
+            "deviationFromAcceptedReferencePercent": [
+              -2.84678900684904e-06,
+              1.4901161138336505e-06,
+              -2.2351741811588166e-06
+            ],
+            "dimensionsWithinTolerance": true
+          }
+        },
+        "platform": {
+          "minBlender": [
+            -2.200000047683716,
+            -2.200000047683716,
+            -0.03999999910593033
+          ],
+          "maxBlender": [
+            2.200000047683716,
+            2.200000047683716,
+            0.1599999964237213
+          ],
+          "minWeb": [
+            -2.200000047683716,
+            -0.03999999910593033,
+            -2.200000047683716
+          ],
+          "maxWeb": [
+            2.200000047683716,
+            0.1599999964237213,
+            2.200000047683716
+          ],
+          "dimensionsMetersWeb": [
+            4.400000095367432,
+            0.19999999552965164,
+            4.400000095367432
+          ],
+          "boundsCenterWeb": [
+            0.0,
+            0.05999999865889549,
+            0.0
+          ],
+          "node": "PLATFORM_s05_start_LOD0",
+          "vertices": 384,
+          "triangles": 764,
+          "uvLayers": [
+            "UVMap",
+            "UV_DETAIL",
+            "UV_ATLAS"
+          ],
+          "materials": [
+            "MAT_Platform"
+          ],
+          "scale": [
+            1.0,
+            1.0,
+            1.0
+          ],
+          "pivotWeb": [
+            0.0,
+            0.0,
+            -0.0
+          ],
+          "worldBaseY": -0.03999999910593033,
+          "worldTopY": 0.1599999964237213
+        },
+        "anchorPositionWorldWeb": [
+          -16.0,
+          2.259999990463257,
+          -0.0
+        ],
+        "baseWorldY": 0.6599999666213989,
+        "hoverGapMeters": 0.4999999701976776,
+        "minimumGapIncludingIdleMeters": 0.4649999701976776,
+        "hitProxy": {
+          "node": "COLLISION_s05_start",
+          "guide": "HIT_PROXY_s05_start",
+          "localBlenderMin": [
+            -1.7549999952316284,
+            -0.23999999463558197,
+            -1.6800000667572021
+          ],
+          "localBlenderMax": [
+            1.7549999952316284,
+            0.23999999463558197,
+            1.6800000667572021
+          ],
+          "localWebMin": [
+            -1.7549999952316284,
+            -1.6800000667572021,
+            -0.23999999463558197
+          ],
+          "localWebMax": [
+            1.7549999952316284,
+            1.6800000667572021,
+            0.23999999463558197
+          ],
+          "paddingMeters": 0.08,
+          "triangles": 12,
+          "kind": "interaction_volume",
+          "physicsCollisionVerified": false
+        }
+      },
+      "assets": {
+        "0": {
+          "node": "ICO_s05_start_LOD0",
+          "lod": 0,
+          "variants": {
+            "raw": {
+              "path": "web/family_v007/raw/icon_start_lod0.glb",
+              "url": "/family_v007/raw/icon_start_lod0.glb",
+              "existsAtMetadataGeneration": true,
+              "status": "file_present_validation_pending"
+            },
+            "optimized": {
+              "path": "web/family_v007/optimized/icon_start_lod0.glb",
+              "url": "/family_v007/optimized/icon_start_lod0.glb",
+              "existsAtMetadataGeneration": true,
+              "status": "file_present_validation_pending"
+            },
+            "mobileRaw": {
+              "path": "web/family_v007/mobile/raw/icon_start_lod0.glb",
+              "url": "/family_v007/mobile/raw/icon_start_lod0.glb",
+              "existsAtMetadataGeneration": true,
+              "status": "file_present_validation_pending"
+            },
+            "mobileOptimized": {
+              "path": "web/family_v007/mobile/optimized/icon_start_lod0.glb",
+              "url": "/family_v007/mobile/optimized/icon_start_lod0.glb",
+              "existsAtMetadataGeneration": true,
+              "status": "file_present_validation_pending"
+            }
+          }
+        },
+        "1": {
+          "node": "ICO_s05_start_LOD1",
+          "lod": 1,
+          "variants": {
+            "raw": {
+              "path": "web/family_v007/raw/icon_start_lod1.glb",
+              "url": "/family_v007/raw/icon_start_lod1.glb",
+              "existsAtMetadataGeneration": true,
+              "status": "file_present_validation_pending"
+            },
+            "optimized": {
+              "path": "web/family_v007/optimized/icon_start_lod1.glb",
+              "url": "/family_v007/optimized/icon_start_lod1.glb",
+              "existsAtMetadataGeneration": true,
+              "status": "file_present_validation_pending"
+            },
+            "mobileRaw": {
+              "path": "web/family_v007/mobile/raw/icon_start_lod1.glb",
+              "url": "/family_v007/mobile/raw/icon_start_lod1.glb",
+              "existsAtMetadataGeneration": true,
+              "status": "file_present_validation_pending"
+            },
+            "mobileOptimized": {
+              "path": "web/family_v007/mobile/optimized/icon_start_lod1.glb",
+              "url": "/family_v007/mobile/optimized/icon_start_lod1.glb",
+              "existsAtMetadataGeneration": true,
+              "status": "file_present_validation_pending"
+            }
+          }
+        },
+        "2": {
+          "node": "ICO_s05_start_LOD2",
+          "lod": 2,
+          "variants": {
+            "raw": {
+              "path": "web/family_v007/raw/icon_start_lod2.glb",
+              "url": "/family_v007/raw/icon_start_lod2.glb",
+              "existsAtMetadataGeneration": true,
+              "status": "file_present_validation_pending"
+            },
+            "optimized": {
+              "path": "web/family_v007/optimized/icon_start_lod2.glb",
+              "url": "/family_v007/optimized/icon_start_lod2.glb",
+              "existsAtMetadataGeneration": true,
+              "status": "file_present_validation_pending"
+            },
+            "mobileRaw": {
+              "path": "web/family_v007/mobile/raw/icon_start_lod2.glb",
+              "url": "/family_v007/mobile/raw/icon_start_lod2.glb",
+              "existsAtMetadataGeneration": true,
+              "status": "file_present_validation_pending"
+            },
+            "mobileOptimized": {
+              "path": "web/family_v007/mobile/optimized/icon_start_lod2.glb",
+              "url": "/family_v007/mobile/optimized/icon_start_lod2.glb",
+              "existsAtMetadataGeneration": true,
+              "status": "file_present_validation_pending"
+            }
+          }
+        }
+      }
+    }
+  ],
+  "overview": {
+    "desktop": {
+      "position": [
+        0,
+        22,
+        60
+      ],
+      "target": [
+        0,
+        1.8,
+        0
+      ],
+      "verticalFovDegrees": 42
+    },
+    "portrait": {
+      "position": [
+        0,
+        40,
+        96
+      ],
+      "target": [
+        0,
+        1.8,
+        0
+      ],
+      "verticalFovDegrees": 48
+    },
+    "autoFitRequired": true,
+    "showAllSix": true,
+    "depthOfField": "off_or_minimal"
+  },
+  "mountains": [
+    {
+      "id": "near",
+      "radiusMeters": [
+        90,
+        130
+      ],
+      "heightMeters": [
+        8,
+        18
+      ],
+      "trianglesBudgetLod0": 12000
+    },
+    {
+      "id": "mid",
+      "radiusMeters": [
+        160,
+        220
+      ],
+      "heightMeters": [
+        14,
+        28
+      ],
+      "trianglesBudgetLod0": 10000
+    },
+    {
+      "id": "far",
+      "radiusMeters": [
+        280,
+        360
+      ],
+      "heightMeters": [
+        18,
+        35
+      ],
+      "trianglesBudgetLod0": 6000
+    }
+  ],
+  "material": {
+    "baseColorSrgb": "#22272B",
+    "metalness": 0.92,
+    "roughness": 0.32,
+    "roughnessVariation": 0.06,
+    "emissiveSrgb": "#FFAB58",
+    "emissiveIntensitySeed": [
+      1.5,
+      3
+    ],
+    "textureColorSpace": "baseColor/emissive=sRGB; normal/ORM=non-color"
+  },
+  "environment": {
+    "hdriStatus": "asset_to_select_and_license",
+    "yawDegreesPerSecond": 0.04,
+    "syncBackgroundAndEnvironmentRotation": true,
+    "pmremUpdate": "once_on_load_not_every_frame",
+    "terrainInHdri": false
+  },
+  "water": {
+    "implementationStatus": "runtime_required",
+    "roughnessSeed": [
+      0.1,
+      0.16
+    ],
+    "ior": 1.333,
+    "f0": 0.02,
+    "reflection": "single_planar_target",
+    "ripple": {
+      "maxDesktop": 8,
+      "maxMobile": 4,
+      "maxInputHz": 12,
+      "minSpacingMeters": 0.08,
+      "propagationMetersPerSecond": 1.1,
+      "amplitudeEquivalentMeters": [
+        0.012,
+        0.025
+      ],
+      "lifetimeSeconds": 2.4,
+      "maxRadiusMeters": 3,
+      "v1Displacement": "normal_only"
+    }
+  },
+  "fog": {
+    "distanceNear": 45,
+    "distanceFar": 480,
+    "colorSrgb": "#343B40",
+    "cardsDesktopMax": 8,
+    "cardsMobileMax": 4,
+    "cardSpeedMetersPerSecond": [
+      0.03,
+      0.1
+    ],
+    "cardAlpha": [
+      0.03,
+      0.1
+    ]
+  },
+  "navigation": {
+    "order": [
+      "s00_memento",
+      "s01_services",
+      "s02_projects",
+      "s03_studio",
+      "s04_levelup",
+      "s05_start"
+    ],
+    "states": [
+      "BOOT",
+      "OVERVIEW",
+      "FOCUSING",
+      "FOCUSED",
+      "ENTERING",
+      "CONTENT",
+      "EXITING",
+      "FALLBACK"
+    ],
+    "preloadOn": "stage_selection",
+    "entryOn": "downward_scroll_or_second_activation",
+    "endBehavior": "return_to_overview_via_same_fog_controller",
+    "entryScrollViewports": [
+      0.8,
+      1.1
+    ],
+    "exitScrollViewports": [
+      0.65,
+      0.9
+    ],
+    "navbarOwner": "Framer",
+    "recommendedScrollOwner": "TIDE_document_inside_full_viewport_Framer_embed",
+    "iframeSections": "natural_height_no_inner_scroll",
+    "selfEmbedHome": false
+  },
+  "bridge": {
+    "channel": "memento:tide",
+    "version": 1,
+    "requiredValidation": [
+      "origin",
+      "source",
+      "sessionId",
+      "payload_schema"
+    ],
+    "exactTargetOriginRequired": true,
+    "messages": [
+      "INIT",
+      "READY",
+      "RESIZE",
+      "VIEWPORT",
+      "VISIBILITY",
+      "CONTENT_ERROR",
+      "NAVIGATE_TO",
+      "ACTIVE_STAGE"
+    ],
+    "status": "to_be_implemented"
+  },
+  "qualityTargets": {
+    "desktop": {
+      "fps": 60,
+      "maxDpr": 1.5,
+      "visibleTriangles": 140000,
+      "drawCallsMain": 80,
+      "drawCallsTotal": 140,
+      "reflectionSize": 512,
+      "textureMiB": 128,
+      "estimatedTotalGpuMiB": 192,
+      "initialPayloadMiB": 10
+    },
+    "mobile": {
+      "fpsRange": [
+        45,
+        60
+      ],
+      "fallbackFps": 30,
+      "maxDpr": 1.25,
+      "visibleTriangles": 75000,
+      "drawCallsMain": 50,
+      "drawCallsTotal": 90,
+      "reflectionSize": 256,
+      "textureMiB": 64,
+      "estimatedTotalGpuMiB": 96,
+      "initialPayloadMiB": 6
+    },
+    "low": {
+      "fps": 30,
+      "maxDpr": 1,
+      "visibleTriangles": 40000,
+      "reflectionSize": 128,
+      "textureMiB": 40,
+      "estimatedTotalGpuMiB": 64
+    }
+  },
+  "validation": {
+    "requiredViewports": [
+      [
+        1920,
+        1080
+      ],
+      [
+        390,
+        844
+      ],
+      [
+        3440,
+        1440
+      ]
+    ],
+    "repeatLoopCount": 10,
+    "gltfValidatorErrorsAllowed": 0,
+    "realBrowserTestRequired": true,
+    "firstVerticalSlice": "s01_services"
+  },
+  "pending": [
+    "Blender/MCP versions and capabilities",
+    "Official Memento vector if available",
+    "Licensed sky HDRI selection",
+    "Actual exported meshes and textures",
+    "Runtime shaders and camera controller",
+    "Embed bridge installation and origin checks",
+    "Studio real content",
+    "Measured hardware performance"
+  ],
+  "nominalContractStatus": "design_contract_not_implemented",
+  "revision": "v007_family",
+  "sourceContract": {
+    "path": "TIDE_scene_contract.json",
+    "sha256": "a8c5778edea9b442a5bb1d13bdc286e1963bc1696d681a97f60ba95ed6461101"
+  },
+  "familyBuild": {
+    "report": "reports/family_v007/build.json",
+    "sha256": "1f891cd241b54145291c6595611cf59bfaa8cdd4a47b6c4950fd131595bdb4fc",
+    "servicesPreserved": true,
+    "iconCount": 6,
+    "iconLodCount": 18
+  },
+  "familyAssets": {
+    "iconLods": [
+      {
+        "stageId": "s00_memento",
+        "node": "ICO_s00_memento_LOD0",
+        "lod": 0,
+        "variants": {
+          "raw": {
+            "path": "web/family_v007/raw/icon_memento_lod0.glb",
+            "url": "/family_v007/raw/icon_memento_lod0.glb",
+            "existsAtMetadataGeneration": true,
+            "status": "file_present_validation_pending"
+          },
+          "optimized": {
+            "path": "web/family_v007/optimized/icon_memento_lod0.glb",
+            "url": "/family_v007/optimized/icon_memento_lod0.glb",
+            "existsAtMetadataGeneration": true,
+            "status": "file_present_validation_pending"
+          },
+          "mobileRaw": {
+            "path": "web/family_v007/mobile/raw/icon_memento_lod0.glb",
+            "url": "/family_v007/mobile/raw/icon_memento_lod0.glb",
+            "existsAtMetadataGeneration": true,
+            "status": "file_present_validation_pending"
+          },
+          "mobileOptimized": {
+            "path": "web/family_v007/mobile/optimized/icon_memento_lod0.glb",
+            "url": "/family_v007/mobile/optimized/icon_memento_lod0.glb",
+            "existsAtMetadataGeneration": true,
+            "status": "file_present_validation_pending"
+          }
+        }
+      },
+      {
+        "stageId": "s00_memento",
+        "node": "ICO_s00_memento_LOD1",
+        "lod": 1,
+        "variants": {
+          "raw": {
+            "path": "web/family_v007/raw/icon_memento_lod1.glb",
+            "url": "/family_v007/raw/icon_memento_lod1.glb",
+            "existsAtMetadataGeneration": true,
+            "status": "file_present_validation_pending"
+          },
+          "optimized": {
+            "path": "web/family_v007/optimized/icon_memento_lod1.glb",
+            "url": "/family_v007/optimized/icon_memento_lod1.glb",
+            "existsAtMetadataGeneration": true,
+            "status": "file_present_validation_pending"
+          },
+          "mobileRaw": {
+            "path": "web/family_v007/mobile/raw/icon_memento_lod1.glb",
+            "url": "/family_v007/mobile/raw/icon_memento_lod1.glb",
+            "existsAtMetadataGeneration": true,
+            "status": "file_present_validation_pending"
+          },
+          "mobileOptimized": {
+            "path": "web/family_v007/mobile/optimized/icon_memento_lod1.glb",
+            "url": "/family_v007/mobile/optimized/icon_memento_lod1.glb",
+            "existsAtMetadataGeneration": true,
+            "status": "file_present_validation_pending"
+          }
+        }
+      },
+      {
+        "stageId": "s00_memento",
+        "node": "ICO_s00_memento_LOD2",
+        "lod": 2,
+        "variants": {
+          "raw": {
+            "path": "web/family_v007/raw/icon_memento_lod2.glb",
+            "url": "/family_v007/raw/icon_memento_lod2.glb",
+            "existsAtMetadataGeneration": true,
+            "status": "file_present_validation_pending"
+          },
+          "optimized": {
+            "path": "web/family_v007/optimized/icon_memento_lod2.glb",
+            "url": "/family_v007/optimized/icon_memento_lod2.glb",
+            "existsAtMetadataGeneration": true,
+            "status": "file_present_validation_pending"
+          },
+          "mobileRaw": {
+            "path": "web/family_v007/mobile/raw/icon_memento_lod2.glb",
+            "url": "/family_v007/mobile/raw/icon_memento_lod2.glb",
+            "existsAtMetadataGeneration": true,
+            "status": "file_present_validation_pending"
+          },
+          "mobileOptimized": {
+            "path": "web/family_v007/mobile/optimized/icon_memento_lod2.glb",
+            "url": "/family_v007/mobile/optimized/icon_memento_lod2.glb",
+            "existsAtMetadataGeneration": true,
+            "status": "file_present_validation_pending"
+          }
+        }
+      },
+      {
+        "stageId": "s01_services",
+        "node": "ICO_s01_services_LOD0",
+        "lod": 0,
+        "variants": {
+          "raw": {
+            "path": "web/family_v007/raw/icon_services_lod0.glb",
+            "url": "/family_v007/raw/icon_services_lod0.glb",
+            "existsAtMetadataGeneration": true,
+            "status": "file_present_validation_pending"
+          },
+          "optimized": {
+            "path": "web/family_v007/optimized/icon_services_lod0.glb",
+            "url": "/family_v007/optimized/icon_services_lod0.glb",
+            "existsAtMetadataGeneration": true,
+            "status": "file_present_validation_pending"
+          },
+          "mobileRaw": {
+            "path": "web/family_v007/mobile/raw/icon_services_lod0.glb",
+            "url": "/family_v007/mobile/raw/icon_services_lod0.glb",
+            "existsAtMetadataGeneration": true,
+            "status": "file_present_validation_pending"
+          },
+          "mobileOptimized": {
+            "path": "web/family_v007/mobile/optimized/icon_services_lod0.glb",
+            "url": "/family_v007/mobile/optimized/icon_services_lod0.glb",
+            "existsAtMetadataGeneration": true,
+            "status": "file_present_validation_pending"
+          }
+        }
+      },
+      {
+        "stageId": "s01_services",
+        "node": "ICO_s01_services_LOD1",
+        "lod": 1,
+        "variants": {
+          "raw": {
+            "path": "web/family_v007/raw/icon_services_lod1.glb",
+            "url": "/family_v007/raw/icon_services_lod1.glb",
+            "existsAtMetadataGeneration": true,
+            "status": "file_present_validation_pending"
+          },
+          "optimized": {
+            "path": "web/family_v007/optimized/icon_services_lod1.glb",
+            "url": "/family_v007/optimized/icon_services_lod1.glb",
+            "existsAtMetadataGeneration": true,
+            "status": "file_present_validation_pending"
+          },
+          "mobileRaw": {
+            "path": "web/family_v007/mobile/raw/icon_services_lod1.glb",
+            "url": "/family_v007/mobile/raw/icon_services_lod1.glb",
+            "existsAtMetadataGeneration": true,
+            "status": "file_present_validation_pending"
+          },
+          "mobileOptimized": {
+            "path": "web/family_v007/mobile/optimized/icon_services_lod1.glb",
+            "url": "/family_v007/mobile/optimized/icon_services_lod1.glb",
+            "existsAtMetadataGeneration": true,
+            "status": "file_present_validation_pending"
+          }
+        }
+      },
+      {
+        "stageId": "s01_services",
+        "node": "ICO_s01_services_LOD2",
+        "lod": 2,
+        "variants": {
+          "raw": {
+            "path": "web/family_v007/raw/icon_services_lod2.glb",
+            "url": "/family_v007/raw/icon_services_lod2.glb",
+            "existsAtMetadataGeneration": true,
+            "status": "file_present_validation_pending"
+          },
+          "optimized": {
+            "path": "web/family_v007/optimized/icon_services_lod2.glb",
+            "url": "/family_v007/optimized/icon_services_lod2.glb",
+            "existsAtMetadataGeneration": true,
+            "status": "file_present_validation_pending"
+          },
+          "mobileRaw": {
+            "path": "web/family_v007/mobile/raw/icon_services_lod2.glb",
+            "url": "/family_v007/mobile/raw/icon_services_lod2.glb",
+            "existsAtMetadataGeneration": true,
+            "status": "file_present_validation_pending"
+          },
+          "mobileOptimized": {
+            "path": "web/family_v007/mobile/optimized/icon_services_lod2.glb",
+            "url": "/family_v007/mobile/optimized/icon_services_lod2.glb",
+            "existsAtMetadataGeneration": true,
+            "status": "file_present_validation_pending"
+          }
+        }
+      },
+      {
+        "stageId": "s02_projects",
+        "node": "ICO_s02_projects_LOD0",
+        "lod": 0,
+        "variants": {
+          "raw": {
+            "path": "web/family_v007/raw/icon_projects_lod0.glb",
+            "url": "/family_v007/raw/icon_projects_lod0.glb",
+            "existsAtMetadataGeneration": true,
+            "status": "file_present_validation_pending"
+          },
+          "optimized": {
+            "path": "web/family_v007/optimized/icon_projects_lod0.glb",
+            "url": "/family_v007/optimized/icon_projects_lod0.glb",
+            "existsAtMetadataGeneration": true,
+            "status": "file_present_validation_pending"
+          },
+          "mobileRaw": {
+            "path": "web/family_v007/mobile/raw/icon_projects_lod0.glb",
+            "url": "/family_v007/mobile/raw/icon_projects_lod0.glb",
+            "existsAtMetadataGeneration": true,
+            "status": "file_present_validation_pending"
+          },
+          "mobileOptimized": {
+            "path": "web/family_v007/mobile/optimized/icon_projects_lod0.glb",
+            "url": "/family_v007/mobile/optimized/icon_projects_lod0.glb",
+            "existsAtMetadataGeneration": true,
+            "status": "file_present_validation_pending"
+          }
+        }
+      },
+      {
+        "stageId": "s02_projects",
+        "node": "ICO_s02_projects_LOD1",
+        "lod": 1,
+        "variants": {
+          "raw": {
+            "path": "web/family_v007/raw/icon_projects_lod1.glb",
+            "url": "/family_v007/raw/icon_projects_lod1.glb",
+            "existsAtMetadataGeneration": true,
+            "status": "file_present_validation_pending"
+          },
+          "optimized": {
+            "path": "web/family_v007/optimized/icon_projects_lod1.glb",
+            "url": "/family_v007/optimized/icon_projects_lod1.glb",
+            "existsAtMetadataGeneration": true,
+            "status": "file_present_validation_pending"
+          },
+          "mobileRaw": {
+            "path": "web/family_v007/mobile/raw/icon_projects_lod1.glb",
+            "url": "/family_v007/mobile/raw/icon_projects_lod1.glb",
+            "existsAtMetadataGeneration": true,
+            "status": "file_present_validation_pending"
+          },
+          "mobileOptimized": {
+            "path": "web/family_v007/mobile/optimized/icon_projects_lod1.glb",
+            "url": "/family_v007/mobile/optimized/icon_projects_lod1.glb",
+            "existsAtMetadataGeneration": true,
+            "status": "file_present_validation_pending"
+          }
+        }
+      },
+      {
+        "stageId": "s02_projects",
+        "node": "ICO_s02_projects_LOD2",
+        "lod": 2,
+        "variants": {
+          "raw": {
+            "path": "web/family_v007/raw/icon_projects_lod2.glb",
+            "url": "/family_v007/raw/icon_projects_lod2.glb",
+            "existsAtMetadataGeneration": true,
+            "status": "file_present_validation_pending"
+          },
+          "optimized": {
+            "path": "web/family_v007/optimized/icon_projects_lod2.glb",
+            "url": "/family_v007/optimized/icon_projects_lod2.glb",
+            "existsAtMetadataGeneration": true,
+            "status": "file_present_validation_pending"
+          },
+          "mobileRaw": {
+            "path": "web/family_v007/mobile/raw/icon_projects_lod2.glb",
+            "url": "/family_v007/mobile/raw/icon_projects_lod2.glb",
+            "existsAtMetadataGeneration": true,
+            "status": "file_present_validation_pending"
+          },
+          "mobileOptimized": {
+            "path": "web/family_v007/mobile/optimized/icon_projects_lod2.glb",
+            "url": "/family_v007/mobile/optimized/icon_projects_lod2.glb",
+            "existsAtMetadataGeneration": true,
+            "status": "file_present_validation_pending"
+          }
+        }
+      },
+      {
+        "stageId": "s03_studio",
+        "node": "ICO_s03_studio_LOD0",
+        "lod": 0,
+        "variants": {
+          "raw": {
+            "path": "web/family_v007/raw/icon_studio_lod0.glb",
+            "url": "/family_v007/raw/icon_studio_lod0.glb",
+            "existsAtMetadataGeneration": true,
+            "status": "file_present_validation_pending"
+          },
+          "optimized": {
+            "path": "web/family_v007/optimized/icon_studio_lod0.glb",
+            "url": "/family_v007/optimized/icon_studio_lod0.glb",
+            "existsAtMetadataGeneration": true,
+            "status": "file_present_validation_pending"
+          },
+          "mobileRaw": {
+            "path": "web/family_v007/mobile/raw/icon_studio_lod0.glb",
+            "url": "/family_v007/mobile/raw/icon_studio_lod0.glb",
+            "existsAtMetadataGeneration": true,
+            "status": "file_present_validation_pending"
+          },
+          "mobileOptimized": {
+            "path": "web/family_v007/mobile/optimized/icon_studio_lod0.glb",
+            "url": "/family_v007/mobile/optimized/icon_studio_lod0.glb",
+            "existsAtMetadataGeneration": true,
+            "status": "file_present_validation_pending"
+          }
+        }
+      },
+      {
+        "stageId": "s03_studio",
+        "node": "ICO_s03_studio_LOD1",
+        "lod": 1,
+        "variants": {
+          "raw": {
+            "path": "web/family_v007/raw/icon_studio_lod1.glb",
+            "url": "/family_v007/raw/icon_studio_lod1.glb",
+            "existsAtMetadataGeneration": true,
+            "status": "file_present_validation_pending"
+          },
+          "optimized": {
+            "path": "web/family_v007/optimized/icon_studio_lod1.glb",
+            "url": "/family_v007/optimized/icon_studio_lod1.glb",
+            "existsAtMetadataGeneration": true,
+            "status": "file_present_validation_pending"
+          },
+          "mobileRaw": {
+            "path": "web/family_v007/mobile/raw/icon_studio_lod1.glb",
+            "url": "/family_v007/mobile/raw/icon_studio_lod1.glb",
+            "existsAtMetadataGeneration": true,
+            "status": "file_present_validation_pending"
+          },
+          "mobileOptimized": {
+            "path": "web/family_v007/mobile/optimized/icon_studio_lod1.glb",
+            "url": "/family_v007/mobile/optimized/icon_studio_lod1.glb",
+            "existsAtMetadataGeneration": true,
+            "status": "file_present_validation_pending"
+          }
+        }
+      },
+      {
+        "stageId": "s03_studio",
+        "node": "ICO_s03_studio_LOD2",
+        "lod": 2,
+        "variants": {
+          "raw": {
+            "path": "web/family_v007/raw/icon_studio_lod2.glb",
+            "url": "/family_v007/raw/icon_studio_lod2.glb",
+            "existsAtMetadataGeneration": true,
+            "status": "file_present_validation_pending"
+          },
+          "optimized": {
+            "path": "web/family_v007/optimized/icon_studio_lod2.glb",
+            "url": "/family_v007/optimized/icon_studio_lod2.glb",
+            "existsAtMetadataGeneration": true,
+            "status": "file_present_validation_pending"
+          },
+          "mobileRaw": {
+            "path": "web/family_v007/mobile/raw/icon_studio_lod2.glb",
+            "url": "/family_v007/mobile/raw/icon_studio_lod2.glb",
+            "existsAtMetadataGeneration": true,
+            "status": "file_present_validation_pending"
+          },
+          "mobileOptimized": {
+            "path": "web/family_v007/mobile/optimized/icon_studio_lod2.glb",
+            "url": "/family_v007/mobile/optimized/icon_studio_lod2.glb",
+            "existsAtMetadataGeneration": true,
+            "status": "file_present_validation_pending"
+          }
+        }
+      },
+      {
+        "stageId": "s04_levelup",
+        "node": "ICO_s04_levelup_LOD0",
+        "lod": 0,
+        "variants": {
+          "raw": {
+            "path": "web/family_v007/raw/icon_levelup_lod0.glb",
+            "url": "/family_v007/raw/icon_levelup_lod0.glb",
+            "existsAtMetadataGeneration": true,
+            "status": "file_present_validation_pending"
+          },
+          "optimized": {
+            "path": "web/family_v007/optimized/icon_levelup_lod0.glb",
+            "url": "/family_v007/optimized/icon_levelup_lod0.glb",
+            "existsAtMetadataGeneration": true,
+            "status": "file_present_validation_pending"
+          },
+          "mobileRaw": {
+            "path": "web/family_v007/mobile/raw/icon_levelup_lod0.glb",
+            "url": "/family_v007/mobile/raw/icon_levelup_lod0.glb",
+            "existsAtMetadataGeneration": true,
+            "status": "file_present_validation_pending"
+          },
+          "mobileOptimized": {
+            "path": "web/family_v007/mobile/optimized/icon_levelup_lod0.glb",
+            "url": "/family_v007/mobile/optimized/icon_levelup_lod0.glb",
+            "existsAtMetadataGeneration": true,
+            "status": "file_present_validation_pending"
+          }
+        }
+      },
+      {
+        "stageId": "s04_levelup",
+        "node": "ICO_s04_levelup_LOD1",
+        "lod": 1,
+        "variants": {
+          "raw": {
+            "path": "web/family_v007/raw/icon_levelup_lod1.glb",
+            "url": "/family_v007/raw/icon_levelup_lod1.glb",
+            "existsAtMetadataGeneration": true,
+            "status": "file_present_validation_pending"
+          },
+          "optimized": {
+            "path": "web/family_v007/optimized/icon_levelup_lod1.glb",
+            "url": "/family_v007/optimized/icon_levelup_lod1.glb",
+            "existsAtMetadataGeneration": true,
+            "status": "file_present_validation_pending"
+          },
+          "mobileRaw": {
+            "path": "web/family_v007/mobile/raw/icon_levelup_lod1.glb",
+            "url": "/family_v007/mobile/raw/icon_levelup_lod1.glb",
+            "existsAtMetadataGeneration": true,
+            "status": "file_present_validation_pending"
+          },
+          "mobileOptimized": {
+            "path": "web/family_v007/mobile/optimized/icon_levelup_lod1.glb",
+            "url": "/family_v007/mobile/optimized/icon_levelup_lod1.glb",
+            "existsAtMetadataGeneration": true,
+            "status": "file_present_validation_pending"
+          }
+        }
+      },
+      {
+        "stageId": "s04_levelup",
+        "node": "ICO_s04_levelup_LOD2",
+        "lod": 2,
+        "variants": {
+          "raw": {
+            "path": "web/family_v007/raw/icon_levelup_lod2.glb",
+            "url": "/family_v007/raw/icon_levelup_lod2.glb",
+            "existsAtMetadataGeneration": true,
+            "status": "file_present_validation_pending"
+          },
+          "optimized": {
+            "path": "web/family_v007/optimized/icon_levelup_lod2.glb",
+            "url": "/family_v007/optimized/icon_levelup_lod2.glb",
+            "existsAtMetadataGeneration": true,
+            "status": "file_present_validation_pending"
+          },
+          "mobileRaw": {
+            "path": "web/family_v007/mobile/raw/icon_levelup_lod2.glb",
+            "url": "/family_v007/mobile/raw/icon_levelup_lod2.glb",
+            "existsAtMetadataGeneration": true,
+            "status": "file_present_validation_pending"
+          },
+          "mobileOptimized": {
+            "path": "web/family_v007/mobile/optimized/icon_levelup_lod2.glb",
+            "url": "/family_v007/mobile/optimized/icon_levelup_lod2.glb",
+            "existsAtMetadataGeneration": true,
+            "status": "file_present_validation_pending"
+          }
+        }
+      },
+      {
+        "stageId": "s05_start",
+        "node": "ICO_s05_start_LOD0",
+        "lod": 0,
+        "variants": {
+          "raw": {
+            "path": "web/family_v007/raw/icon_start_lod0.glb",
+            "url": "/family_v007/raw/icon_start_lod0.glb",
+            "existsAtMetadataGeneration": true,
+            "status": "file_present_validation_pending"
+          },
+          "optimized": {
+            "path": "web/family_v007/optimized/icon_start_lod0.glb",
+            "url": "/family_v007/optimized/icon_start_lod0.glb",
+            "existsAtMetadataGeneration": true,
+            "status": "file_present_validation_pending"
+          },
+          "mobileRaw": {
+            "path": "web/family_v007/mobile/raw/icon_start_lod0.glb",
+            "url": "/family_v007/mobile/raw/icon_start_lod0.glb",
+            "existsAtMetadataGeneration": true,
+            "status": "file_present_validation_pending"
+          },
+          "mobileOptimized": {
+            "path": "web/family_v007/mobile/optimized/icon_start_lod0.glb",
+            "url": "/family_v007/mobile/optimized/icon_start_lod0.glb",
+            "existsAtMetadataGeneration": true,
+            "status": "file_present_validation_pending"
+          }
+        }
+      },
+      {
+        "stageId": "s05_start",
+        "node": "ICO_s05_start_LOD1",
+        "lod": 1,
+        "variants": {
+          "raw": {
+            "path": "web/family_v007/raw/icon_start_lod1.glb",
+            "url": "/family_v007/raw/icon_start_lod1.glb",
+            "existsAtMetadataGeneration": true,
+            "status": "file_present_validation_pending"
+          },
+          "optimized": {
+            "path": "web/family_v007/optimized/icon_start_lod1.glb",
+            "url": "/family_v007/optimized/icon_start_lod1.glb",
+            "existsAtMetadataGeneration": true,
+            "status": "file_present_validation_pending"
+          },
+          "mobileRaw": {
+            "path": "web/family_v007/mobile/raw/icon_start_lod1.glb",
+            "url": "/family_v007/mobile/raw/icon_start_lod1.glb",
+            "existsAtMetadataGeneration": true,
+            "status": "file_present_validation_pending"
+          },
+          "mobileOptimized": {
+            "path": "web/family_v007/mobile/optimized/icon_start_lod1.glb",
+            "url": "/family_v007/mobile/optimized/icon_start_lod1.glb",
+            "existsAtMetadataGeneration": true,
+            "status": "file_present_validation_pending"
+          }
+        }
+      },
+      {
+        "stageId": "s05_start",
+        "node": "ICO_s05_start_LOD2",
+        "lod": 2,
+        "variants": {
+          "raw": {
+            "path": "web/family_v007/raw/icon_start_lod2.glb",
+            "url": "/family_v007/raw/icon_start_lod2.glb",
+            "existsAtMetadataGeneration": true,
+            "status": "file_present_validation_pending"
+          },
+          "optimized": {
+            "path": "web/family_v007/optimized/icon_start_lod2.glb",
+            "url": "/family_v007/optimized/icon_start_lod2.glb",
+            "existsAtMetadataGeneration": true,
+            "status": "file_present_validation_pending"
+          },
+          "mobileRaw": {
+            "path": "web/family_v007/mobile/raw/icon_start_lod2.glb",
+            "url": "/family_v007/mobile/raw/icon_start_lod2.glb",
+            "existsAtMetadataGeneration": true,
+            "status": "file_present_validation_pending"
+          },
+          "mobileOptimized": {
+            "path": "web/family_v007/mobile/optimized/icon_start_lod2.glb",
+            "url": "/family_v007/mobile/optimized/icon_start_lod2.glb",
+            "existsAtMetadataGeneration": true,
+            "status": "file_present_validation_pending"
+          }
+        }
+      }
+    ],
+    "platform": {
+      "raw": {
+        "path": "web/family_v007/raw/platform.glb",
+        "url": "/family_v007/raw/platform.glb",
+        "existsAtMetadataGeneration": true,
+        "status": "file_present_validation_pending"
+      },
+      "optimized": {
+        "path": "web/family_v007/optimized/platform.glb",
+        "url": "/family_v007/optimized/platform.glb",
+        "existsAtMetadataGeneration": true,
+        "status": "file_present_validation_pending"
+      },
+      "mobileRaw": {
+        "path": "web/family_v007/mobile/raw/platform.glb",
+        "url": "/family_v007/mobile/raw/platform.glb",
+        "existsAtMetadataGeneration": true,
+        "status": "file_present_validation_pending"
+      },
+      "mobileOptimized": {
+        "path": "web/family_v007/mobile/optimized/platform.glb",
+        "url": "/family_v007/mobile/optimized/platform.glb",
+        "existsAtMetadataGeneration": true,
+        "status": "file_present_validation_pending"
+      }
+    },
+    "platformLod1": {
+      "raw": {
+        "path": "web/family_v007/raw/platform_lod1.glb",
+        "url": "/family_v007/raw/platform_lod1.glb",
+        "existsAtMetadataGeneration": true,
+        "status": "file_present_validation_pending"
+      },
+      "optimized": {
+        "path": "web/family_v007/optimized/platform_lod1.glb",
+        "url": "/family_v007/optimized/platform_lod1.glb",
+        "existsAtMetadataGeneration": true,
+        "status": "file_present_validation_pending"
+      },
+      "mobileRaw": {
+        "path": "web/family_v007/mobile/raw/platform_lod1.glb",
+        "url": "/family_v007/mobile/raw/platform_lod1.glb",
+        "existsAtMetadataGeneration": true,
+        "status": "file_present_validation_pending"
+      },
+      "mobileOptimized": {
+        "path": "web/family_v007/mobile/optimized/platform_lod1.glb",
+        "url": "/family_v007/mobile/optimized/platform_lod1.glb",
+        "existsAtMetadataGeneration": true,
+        "status": "file_present_validation_pending"
+      }
+    },
+    "environment": {
+      "raw": {
+        "path": "web/family_v007/raw/environment.glb",
+        "url": "/family_v007/raw/environment.glb",
+        "existsAtMetadataGeneration": true,
+        "status": "file_present_validation_pending"
+      },
+      "optimized": {
+        "path": "web/family_v007/optimized/environment.glb",
+        "url": "/family_v007/optimized/environment.glb",
+        "existsAtMetadataGeneration": true,
+        "status": "file_present_validation_pending"
+      },
+      "mobileRaw": {
+        "path": "web/family_v007/mobile/raw/environment.glb",
+        "url": "/family_v007/mobile/raw/environment.glb",
+        "existsAtMetadataGeneration": true,
+        "status": "file_present_validation_pending"
+      },
+      "mobileOptimized": {
+        "path": "web/family_v007/mobile/optimized/environment.glb",
+        "url": "/family_v007/mobile/optimized/environment.glb",
+        "existsAtMetadataGeneration": true,
+        "status": "file_present_validation_pending"
+      }
+    },
+    "neighbors": {
+      "raw": {
+        "path": "web/family_v007/raw/family_neighbors.glb",
+        "url": "/family_v007/raw/family_neighbors.glb",
+        "existsAtMetadataGeneration": true,
+        "status": "file_present_validation_pending"
+      },
+      "optimized": {
+        "path": "web/family_v007/optimized/family_neighbors.glb",
+        "url": "/family_v007/optimized/family_neighbors.glb",
+        "existsAtMetadataGeneration": true,
+        "status": "file_present_validation_pending"
+      },
+      "mobileRaw": {
+        "path": "web/family_v007/mobile/raw/family_neighbors.glb",
+        "url": "/family_v007/mobile/raw/family_neighbors.glb",
+        "existsAtMetadataGeneration": true,
+        "status": "file_present_validation_pending"
+      },
+      "mobileOptimized": {
+        "path": "web/family_v007/mobile/optimized/family_neighbors.glb",
+        "url": "/family_v007/mobile/optimized/family_neighbors.glb",
+        "existsAtMetadataGeneration": true,
+        "status": "file_present_validation_pending"
+      }
+    },
+    "hitProxies": {
+      "raw": {
+        "path": "web/family_v007/raw/hit_proxies.glb",
+        "url": "/family_v007/raw/hit_proxies.glb",
+        "existsAtMetadataGeneration": true,
+        "status": "file_present_validation_pending"
+      },
+      "optimized": {
+        "path": "web/family_v007/optimized/hit_proxies.glb",
+        "url": "/family_v007/optimized/hit_proxies.glb",
+        "existsAtMetadataGeneration": true,
+        "status": "file_present_validation_pending"
+      },
+      "mobileRaw": {
+        "path": "web/family_v007/mobile/raw/hit_proxies.glb",
+        "url": "/family_v007/mobile/raw/hit_proxies.glb",
+        "existsAtMetadataGeneration": true,
+        "status": "file_present_validation_pending"
+      },
+      "mobileOptimized": {
+        "path": "web/family_v007/mobile/optimized/hit_proxies.glb",
+        "url": "/family_v007/mobile/optimized/hit_proxies.glb",
+        "existsAtMetadataGeneration": true,
+        "status": "file_present_validation_pending"
+      }
+    }
+  },
+  "familyCameras": {
+    "path": "data/cameras_family_v007.json",
+    "url": "/data/cameras_family_v007.json",
+    "count": 39,
+    "overviewPassCount": 3,
+    "focusPassCount": 18,
+    "descentEndpointPassCount": 18
+  },
+  "familyVerification": {
+    "geometryPresence": "6 icons x 3 LOD measured in active Blender scene",
+    "exportConsistency": "PASS: exact geometry/UV/normals/materials work-to-final; matrix difference below 1e-7",
+    "glTFValidator": "PASS:92 distributed GLBs plus46 decoded; zero errors/warnings",
+    "runtime": "PASS:3 optimized viewport loops plus1 raw desktop Services loop; other full-section journeys non verificato",
+    "visualHierarchy": "PASS: common-light materials,24 orthographic views,36 native48/96px silhouettes and24 clay frames inspected; Services browser focus checked",
+    "hitProxySelection": "non verificato in runtime; six padded interaction meshes exported and audited",
+    "continuousDescent": "Services transition and loop verified in browser; other stage paths non verificato",
+    "note": "Runtime water, fog, DOF, bloom, VFX and HTML transitions are not implied by GLB metadata.",
+    "reimport": "PASS:92 actual Blender imports, zero degenerate triangles, zero bounds/point error"
+  },
+  "familyDeviations": [
+    {
+      "stageId": "s00_memento",
+      "kind": "approved_official_brand_ratio",
+      "nominalWidthMeters": 3.2,
+      "acceptedWidthMeters": 2.719796811062509,
+      "reason": "Official vector uniformly scaled to nominal height; no horizontal stretching."
+    }
+  ],
+  "verifiedSource": {
+    "path": "source/MEMENTO_TIDE_v007_family.blend",
+    "sha256": "2a9170542584cfa2d0d213012ad1e02d896ad27dbd83f5c1f2e2a3b45a545aa7"
+  },
+  "familyDelivery": {
+    "report": "reports/PHASE3_FAMILY_V007_REPORT.md",
+    "runtimeReport": "reports/family_v007/runtime_verification.json",
+    "lodRuntimeSwitching": "non verificato / not implemented",
+    "payloadTarget": "not reached; exact byte inventory in reports/family_v007/asset_audit_summary.json",
+    "effectsOwnership": "Interactive water, fog animation, DOF, bloom, VFX and HTML transitions belong to web runtime; GLBs do not export those effects automatically."
+  },
+  "worldRevision": "v008",
+  "worldV008": {
+    "source": {
+      "path": "source/MEMENTO_TIDE_v008_world.blend",
+      "sha256": "4a0c74f527d5c9137e7a5eecad1091a84b2e257a5f231092fa2b1f3b13a09cbe"
+    },
+    "components": {
+      "geometry": {
+        "path": "data/world_parameters_v008.json",
+        "sha256": "4621df86e6e51df1eb3a12400a6bd5502674abcb432f5ede5167ca16f5d5b464"
+      },
+      "atmosphere": {
+        "path": "data/world_atmosphere_v008.json",
+        "sha256": "05463fe096c44b86c9afe1e6db7c430a9bb38577508e80732f321c5e78e1c190"
+      },
+      "paths": {
+        "path": "data/paths_world_v008.json",
+        "sha256": "e6a8ea05165030585478283b5c9008efc4d39e784e21685cc1d3f5db0a6bb8c8"
+      },
+      "timeline": {
+        "path": "data/timeline_world_v008.json",
+        "sha256": "89e0a6a60b67fb3860167c457e0d2c881dd170ac78cc1a3dce03ca6a453155d6"
+      },
+      "staticCameras": {
+        "path": "data/cameras_family_v007.json",
+        "sha256": "0af5a96bc96877f45fa9f0d89001718927e49ceba07a9aa24517ac5bf109453e"
+      }
+    },
+    "geometry": {
+      "bands": {
+        "far": {
+          "budget": 6000,
+          "cuts": [
+            -37,
+            46,
+            142,
+            237,
+            323
+          ],
+          "height": [
+            18.0,
+            35.0
+          ],
+          "nx": 56,
+          "ny": 12,
+          "phase": 3.63,
+          "radius": [
+            280.0,
+            360.0
+          ]
+        },
+        "mid": {
+          "budget": 10000,
+          "cuts": [
+            11,
+            102,
+            181,
+            278,
+            371
+          ],
+          "height": [
+            14.0,
+            28.0
+          ],
+          "nx": 80,
+          "ny": 15,
+          "phase": 1.77,
+          "radius": [
+            160.0,
+            220.0
+          ]
+        },
+        "near": {
+          "budget": 12000,
+          "cuts": [
+            -19,
+            58,
+            154,
+            251,
+            341
+          ],
+          "height": [
+            8.0,
+            18.0
+          ],
+          "nx": 96,
+          "ny": 15,
+          "phase": 0.29,
+          "radius": [
+            90.0,
+            130.0
+          ]
+        }
+      },
+      "cameraData": "data/cameras_family_v007.json",
+      "cameraDataSha256": "0af5a96bc96877f45fa9f0d89001718927e49ceba07a9aa24517ac5bf109453e",
+      "coordinateSystem": "blender_z_up",
+      "finalPortraitPolish": [
+        {
+          "amplitude": -3.0,
+          "azimuth": 2.299471289502529,
+          "band": "near",
+          "width": 0.18
+        },
+        {
+          "amplitude": -1.3,
+          "azimuth": 2.3474678439323733,
+          "band": "mid",
+          "width": 0.18
+        },
+        {
+          "amplitude": -1.4,
+          "azimuth": 2.3474678439323733,
+          "band": "far",
+          "width": 0.18
+        },
+        {
+          "amplitude": -1.0,
+          "azimuth": 0.3010692959690218,
+          "band": "mid",
+          "width": 0.18
+        }
+      ],
+      "lodPolicy": "LOD0 only; underper-bandbudgets; no extra objects",
+      "massifsDegreesWeightSigma": {
+        "far": [
+          [
+            4,
+            0.82,
+            16
+          ],
+          [
+            48,
+            0.97,
+            13
+          ],
+          [
+            102,
+            0.76,
+            18
+          ],
+          [
+            147,
+            0.91,
+            12
+          ],
+          [
+            200,
+            1,
+            17
+          ],
+          [
+            248,
+            0.7,
+            15
+          ],
+          [
+            294,
+            0.93,
+            14
+          ],
+          [
+            339,
+            0.79,
+            16
+          ]
+        ],
+        "mid": [
+          [
+            -14,
+            0.88,
+            14
+          ],
+          [
+            29,
+            0.7,
+            12
+          ],
+          [
+            67,
+            0.98,
+            16
+          ],
+          [
+            116,
+            0.77,
+            11
+          ],
+          [
+            157,
+            0.94,
+            13
+          ],
+          [
+            198,
+            0.82,
+            16
+          ],
+          [
+            242,
+            1,
+            12
+          ],
+          [
+            282,
+            0.72,
+            15
+          ],
+          [
+            326,
+            0.9,
+            13
+          ]
+        ],
+        "near": [
+          [
+            0,
+            0.78,
+            9
+          ],
+          [
+            32,
+            0.96,
+            10
+          ],
+          [
+            72,
+            0.75,
+            12
+          ],
+          [
+            109,
+            1,
+            8
+          ],
+          [
+            149,
+            0.69,
+            11
+          ],
+          [
+            191,
+            0.91,
+            9
+          ],
+          [
+            235,
+            0.83,
+            13
+          ],
+          [
+            268,
+            0.98,
+            8
+          ],
+          [
+            306,
+            0.74,
+            11
+          ],
+          [
+            340,
+            0.88,
+            9
+          ]
+        ]
+      },
+      "objectNames": [
+        "MOUNTAIN_NEAR_01",
+        "MOUNTAIN_NEAR_02",
+        "MOUNTAIN_NEAR_03",
+        "MOUNTAIN_NEAR_04",
+        "MOUNTAIN_MID_01",
+        "MOUNTAIN_MID_02",
+        "MOUNTAIN_MID_03",
+        "MOUNTAIN_MID_04",
+        "MOUNTAIN_FAR_01",
+        "MOUNTAIN_FAR_02",
+        "MOUNTAIN_FAR_03",
+        "MOUNTAIN_FAR_04"
+      ],
+      "profiles": {
+        "far": {
+          "adjustments": [
+            {
+              "amplitude": -2.0,
+              "azimuth": 0,
+              "width": 0.22
+            },
+            {
+              "amplitude": -2.0,
+              "azimuth": 1.0471975511965976,
+              "width": 0.22
+            },
+            {
+              "amplitude": 2.0,
+              "azimuth": 2.0943951023931953,
+              "width": 0.22
+            },
+            {
+              "amplitude": 2.0,
+              "azimuth": 3.141592653589793,
+              "width": 0.22
+            },
+            {
+              "amplitude": -2.0,
+              "azimuth": 4.1887902047863905,
+              "width": 0.22
+            },
+            {
+              "amplitude": -2.0,
+              "azimuth": 5.235987755982989,
+              "width": 0.22
+            },
+            {
+              "amplitude": -9.0,
+              "azimuth": 0.3490658503988659,
+              "width": 0.2
+            },
+            {
+              "amplitude": -9.0,
+              "azimuth": -1.658062789394613,
+              "width": 0.2
+            },
+            {
+              "amplitude": -9.0,
+              "azimuth": -2.705260340591211,
+              "width": 0.2
+            },
+            {
+              "amplitude": -9.0,
+              "azimuth": -3.0543261909900767,
+              "width": 0.2
+            },
+            {
+              "amplitude": -1.4,
+              "azimuth": 2.3474678439323733,
+              "width": 0.18
+            }
+          ],
+          "phase": 5.2007963267948965
+        },
+        "mid": {
+          "adjustments": [
+            {
+              "amplitude": 2.0,
+              "azimuth": 0,
+              "width": 0.22
+            },
+            {
+              "amplitude": -2.0,
+              "azimuth": 1.0471975511965976,
+              "width": 0.22
+            },
+            {
+              "amplitude": 2.0,
+              "azimuth": 2.0943951023931953,
+              "width": 0.22
+            },
+            {
+              "amplitude": -2.0,
+              "azimuth": 4.1887902047863905,
+              "width": 0.22
+            },
+            {
+              "amplitude": -7.0,
+              "azimuth": -1.658062789394613,
+              "width": 0.2
+            },
+            {
+              "amplitude": -7.0,
+              "azimuth": -3.0543261909900767,
+              "width": 0.2
+            },
+            {
+              "amplitude": -7.0,
+              "azimuth": -2.705260340591211,
+              "width": 0.2
+            },
+            {
+              "amplitude": -7.0,
+              "azimuth": 0.17453292519943295,
+              "width": 0.2
+            },
+            {
+              "amplitude": -1.3,
+              "azimuth": 2.3474678439323733,
+              "width": 0.18
+            },
+            {
+              "amplitude": -1.0,
+              "azimuth": 0.3010692959690218,
+              "width": 0.18
+            }
+          ],
+          "phase": 5.958790204786391
+        },
+        "near": {
+          "adjustments": [
+            {
+              "amplitude": -2.0,
+              "azimuth": 0,
+              "width": 0.22
+            },
+            {
+              "amplitude": 2.0,
+              "azimuth": 1.0471975511965976,
+              "width": 0.22
+            },
+            {
+              "amplitude": -2.0,
+              "azimuth": 3.141592653589793,
+              "width": 0.22
+            },
+            {
+              "amplitude": -2.0,
+              "azimuth": 4.1887902047863905,
+              "width": 0.22
+            },
+            {
+              "amplitude": 2.0,
+              "azimuth": 5.235987755982989,
+              "width": 0.22
+            },
+            {
+              "amplitude": -5.0,
+              "azimuth": 0.3490658503988659,
+              "width": 0.2
+            },
+            {
+              "amplitude": -5.0,
+              "azimuth": 1.3962634015954636,
+              "width": 0.2
+            },
+            {
+              "amplitude": -3.0,
+              "azimuth": 2.299471289502529,
+              "width": 0.18
+            }
+          ],
+          "phase": 0.8135987755982987
+        }
+      },
+      "shoreDepthM": -2,
+      "solver": [
+        {
+          "band": "near",
+          "broadAdjustmentCandidates": 12,
+          "finalSampledLoss": 1.87540901151469,
+          "phaseCandidates": 12,
+          "phaseWinnerLoss": 4.244342684175571,
+          "salientRefinement": [
+            {
+              "adjustment": {
+                "amplitude": -5.0,
+                "azimuth": 0.3490658503988659,
+                "width": 0.2
+              },
+              "loss": 2.4628942995265786
+            },
+            {
+              "adjustment": {
+                "amplitude": -5.0,
+                "azimuth": 1.3962634015954636,
+                "width": 0.2
+              },
+              "loss": 1.8754090115146897
+            }
+          ]
+        },
+        {
+          "band": "mid",
+          "broadAdjustmentCandidates": 12,
+          "finalSampledLoss": 3.321674668119434,
+          "phaseCandidates": 12,
+          "phaseWinnerLoss": 8.311687351560005,
+          "salientRefinement": [
+            {
+              "adjustment": {
+                "amplitude": -7.0,
+                "azimuth": -1.658062789394613,
+                "width": 0.2
+              },
+              "loss": 5.680254126011848
+            },
+            {
+              "adjustment": {
+                "amplitude": -7.0,
+                "azimuth": -3.0543261909900767,
+                "width": 0.2
+              },
+              "loss": 4.694753827064837
+            },
+            {
+              "adjustment": {
+                "amplitude": -7.0,
+                "azimuth": -2.705260340591211,
+                "width": 0.2
+              },
+              "loss": 3.526175553082361
+            },
+            {
+              "adjustment": {
+                "amplitude": -7.0,
+                "azimuth": 0.17453292519943295,
+                "width": 0.2
+              },
+              "loss": 3.321674668119434
+            }
+          ]
+        },
+        {
+          "band": "far",
+          "broadAdjustmentCandidates": 12,
+          "finalSampledLoss": 3.2482944297141247,
+          "phaseCandidates": 12,
+          "phaseWinnerLoss": 7.673676847542631,
+          "salientRefinement": [
+            {
+              "adjustment": {
+                "amplitude": -9.0,
+                "azimuth": 0.3490658503988659,
+                "width": 0.2
+              },
+              "loss": 5.582712506111449
+            },
+            {
+              "adjustment": {
+                "amplitude": -9.0,
+                "azimuth": -1.658062789394613,
+                "width": 0.2
+              },
+              "loss": 4.513644300516378
+            },
+            {
+              "adjustment": {
+                "amplitude": -9.0,
+                "azimuth": -2.705260340591211,
+                "width": 0.2
+              },
+              "loss": 3.8357465626405225
+            },
+            {
+              "adjustment": {
+                "amplitude": -9.0,
+                "azimuth": -3.0543261909900767,
+                "width": 0.2
+              },
+              "loss": 3.2482944297141247
+            }
+          ]
+        }
+      ],
+      "tileMeters": 16.0,
+      "units": "meter",
+      "version": "tide_world_v008"
+    },
+    "atmosphere": {
+      "version": "v008_atmosphere_reference",
+      "coordinateSystem": "WebY-up in JSON; BlenderZ-up in scene; no double export conversion",
+      "fogCards": [
+        {
+          "objectName": "FOG_CARD_v008_00",
+          "role": "fog_reference_card",
+          "card_index": 0,
+          "width_m": 32,
+          "height_m": 1.4,
+          "peak_alpha": 0.045,
+          "peak_speed_m_per_s": 0.035,
+          "motion_amplitude_m": 1.5,
+          "phase_radians": 0.2,
+          "base_position_web": [
+            0,
+            0.85,
+            30
+          ],
+          "mobile_enabled": true,
+          "seed": 523192637,
+          "runtime_depth_write": false,
+          "runtime_render_order": 10,
+          "runtime_soft_intersection_required": true,
+          "triangles": 2,
+          "uv": "UVMap",
+          "blenderPosition": [
+            0.0,
+            -30.0,
+            0.8500000238418579
+          ]
+        },
+        {
+          "objectName": "FOG_CARD_v008_01",
+          "role": "fog_reference_card",
+          "card_index": 1,
+          "width_m": 20,
+          "height_m": 1.5,
+          "peak_alpha": 0.055,
+          "peak_speed_m_per_s": 0.047,
+          "motion_amplitude_m": 1.5,
+          "phase_radians": 1.1,
+          "base_position_web": [
+            28,
+            1.05,
+            8
+          ],
+          "mobile_enabled": false,
+          "seed": 1861006622,
+          "runtime_depth_write": false,
+          "runtime_render_order": 11,
+          "runtime_soft_intersection_required": true,
+          "triangles": 2,
+          "uv": "UVMap",
+          "blenderPosition": [
+            28.0,
+            -8.0,
+            1.0499999523162842
+          ]
+        },
+        {
+          "objectName": "FOG_CARD_v008_02",
+          "role": "fog_reference_card",
+          "card_index": 2,
+          "width_m": 22,
+          "height_m": 1.6,
+          "peak_alpha": 0.05,
+          "peak_speed_m_per_s": 0.059,
+          "motion_amplitude_m": 1.5,
+          "phase_radians": 2.0,
+          "base_position_web": [
+            -26,
+            1,
+            -6
+          ],
+          "mobile_enabled": false,
+          "seed": 797557758,
+          "runtime_depth_write": false,
+          "runtime_render_order": 12,
+          "runtime_soft_intersection_required": true,
+          "triangles": 2,
+          "uv": "UVMap",
+          "blenderPosition": [
+            -26.0,
+            6.0,
+            1.0
+          ]
+        },
+        {
+          "objectName": "FOG_CARD_v008_03",
+          "role": "fog_reference_card",
+          "card_index": 3,
+          "width_m": 35,
+          "height_m": 2.2,
+          "peak_alpha": 0.07,
+          "peak_speed_m_per_s": 0.071,
+          "motion_amplitude_m": 1.5,
+          "phase_radians": 2.9,
+          "base_position_web": [
+            0,
+            1.35,
+            -34
+          ],
+          "mobile_enabled": true,
+          "seed": 1708069097,
+          "runtime_depth_write": false,
+          "runtime_render_order": 13,
+          "runtime_soft_intersection_required": true,
+          "triangles": 2,
+          "uv": "UVMap",
+          "blenderPosition": [
+            0.0,
+            34.0,
+            1.350000023841858
+          ]
+        },
+        {
+          "objectName": "FOG_CARD_v008_04",
+          "role": "fog_reference_card",
+          "card_index": 4,
+          "width_m": 24,
+          "height_m": 1.8,
+          "peak_alpha": 0.06,
+          "peak_speed_m_per_s": 0.083,
+          "motion_amplitude_m": 1.5,
+          "phase_radians": 3.8,
+          "base_position_web": [
+            -30,
+            1.15,
+            -48
+          ],
+          "mobile_enabled": false,
+          "seed": 1613483762,
+          "runtime_depth_write": false,
+          "runtime_render_order": 14,
+          "runtime_soft_intersection_required": true,
+          "triangles": 2,
+          "uv": "UVMap",
+          "blenderPosition": [
+            -30.0,
+            48.0,
+            1.149999976158142
+          ]
+        },
+        {
+          "objectName": "FOG_CARD_v008_05",
+          "role": "fog_reference_card",
+          "card_index": 5,
+          "width_m": 30,
+          "height_m": 2.5,
+          "peak_alpha": 0.065,
+          "peak_speed_m_per_s": 0.095,
+          "motion_amplitude_m": 1.5,
+          "phase_radians": 4.7,
+          "base_position_web": [
+            32,
+            1.45,
+            -65
+          ],
+          "mobile_enabled": true,
+          "seed": 1743459053,
+          "runtime_depth_write": false,
+          "runtime_render_order": 15,
+          "runtime_soft_intersection_required": true,
+          "triangles": 2,
+          "uv": "UVMap",
+          "blenderPosition": [
+            32.0,
+            65.0,
+            1.4500000476837158
+          ]
+        }
+      ],
+      "particleAnchors": [
+        {
+          "stageId": "s00_memento",
+          "objectName": "VFX_ANCHOR_s00_memento",
+          "alias": "PARTICLE_ANCHOR_s00_memento",
+          "parent": "STAGE_s00_memento",
+          "positionWeb": [
+            -8.0,
+            0.4099999964237213,
+            13.856406211853027
+          ],
+          "localPositionBlender": [
+            0.0,
+            0.0,
+            0.4099999964237213
+          ],
+          "seed": 1132577026,
+          "counts": {
+            "desktop": {
+              "active": 60,
+              "inactive": 10
+            },
+            "mobile": {
+              "active": 25,
+              "inactive": 8
+            }
+          },
+          "regionsStageLocalWeb": {
+            "gap": {
+              "min": [
+                -1.9,
+                0.18,
+                -1.4
+              ],
+              "max": [
+                1.9,
+                0.82,
+                1.4
+              ]
+            },
+            "icon": {
+              "min": [
+                -1.9,
+                0.66,
+                -1.4
+              ],
+              "max": [
+                1.9,
+                3.86,
+                1.4
+              ]
+            }
+          },
+          "runtimeOnly": "Instanced/Points motes; no Blender particle system exported."
+        },
+        {
+          "stageId": "s01_services",
+          "objectName": "VFX_ANCHOR_s01_services",
+          "alias": "PARTICLE_ANCHOR_s01_services",
+          "parent": "STAGE_s01_services",
+          "positionWeb": [
+            8.0,
+            0.4099999964237213,
+            13.856406211853027
+          ],
+          "localPositionBlender": [
+            0.0,
+            0.0,
+            0.4099999964237213
+          ],
+          "seed": 115924816,
+          "counts": {
+            "desktop": {
+              "active": 60,
+              "inactive": 10
+            },
+            "mobile": {
+              "active": 25,
+              "inactive": 8
+            }
+          },
+          "regionsStageLocalWeb": {
+            "gap": {
+              "min": [
+                -1.9,
+                0.18,
+                -1.4
+              ],
+              "max": [
+                1.9,
+                0.82,
+                1.4
+              ]
+            },
+            "icon": {
+              "min": [
+                -1.9,
+                0.66,
+                -1.4
+              ],
+              "max": [
+                1.9,
+                3.86,
+                1.4
+              ]
+            }
+          },
+          "runtimeOnly": "Instanced/Points motes; no Blender particle system exported."
+        },
+        {
+          "stageId": "s02_projects",
+          "objectName": "VFX_ANCHOR_s02_projects",
+          "alias": "PARTICLE_ANCHOR_s02_projects",
+          "parent": "STAGE_s02_projects",
+          "positionWeb": [
+            16.0,
+            0.4099999964237213,
+            -0.0
+          ],
+          "localPositionBlender": [
+            0.0,
+            0.0,
+            0.4099999964237213
+          ],
+          "seed": 1003206116,
+          "counts": {
+            "desktop": {
+              "active": 60,
+              "inactive": 10
+            },
+            "mobile": {
+              "active": 25,
+              "inactive": 8
+            }
+          },
+          "regionsStageLocalWeb": {
+            "gap": {
+              "min": [
+                -1.9,
+                0.18,
+                -1.4
+              ],
+              "max": [
+                1.9,
+                0.82,
+                1.4
+              ]
+            },
+            "icon": {
+              "min": [
+                -1.9,
+                0.66,
+                -1.4
+              ],
+              "max": [
+                1.9,
+                3.86,
+                1.4
+              ]
+            }
+          },
+          "runtimeOnly": "Instanced/Points motes; no Blender particle system exported."
+        },
+        {
+          "stageId": "s03_studio",
+          "objectName": "VFX_ANCHOR_s03_studio",
+          "alias": "PARTICLE_ANCHOR_s03_studio",
+          "parent": "STAGE_s03_studio",
+          "positionWeb": [
+            8.0,
+            0.4099999964237213,
+            -13.856406211853027
+          ],
+          "localPositionBlender": [
+            0.0,
+            0.0,
+            0.4099999964237213
+          ],
+          "seed": 880660239,
+          "counts": {
+            "desktop": {
+              "active": 60,
+              "inactive": 10
+            },
+            "mobile": {
+              "active": 25,
+              "inactive": 8
+            }
+          },
+          "regionsStageLocalWeb": {
+            "gap": {
+              "min": [
+                -1.9,
+                0.18,
+                -1.4
+              ],
+              "max": [
+                1.9,
+                0.82,
+                1.4
+              ]
+            },
+            "icon": {
+              "min": [
+                -1.9,
+                0.66,
+                -1.4
+              ],
+              "max": [
+                1.9,
+                3.86,
+                1.4
+              ]
+            }
+          },
+          "runtimeOnly": "Instanced/Points motes; no Blender particle system exported."
+        },
+        {
+          "stageId": "s04_levelup",
+          "objectName": "VFX_ANCHOR_s04_levelup",
+          "alias": "PARTICLE_ANCHOR_s04_levelup",
+          "parent": "STAGE_s04_levelup",
+          "positionWeb": [
+            -8.0,
+            0.4099999964237213,
+            -13.856406211853027
+          ],
+          "localPositionBlender": [
+            0.0,
+            0.0,
+            0.4099999964237213
+          ],
+          "seed": 581176903,
+          "counts": {
+            "desktop": {
+              "active": 60,
+              "inactive": 10
+            },
+            "mobile": {
+              "active": 25,
+              "inactive": 8
+            }
+          },
+          "regionsStageLocalWeb": {
+            "gap": {
+              "min": [
+                -1.9,
+                0.18,
+                -1.4
+              ],
+              "max": [
+                1.9,
+                0.82,
+                1.4
+              ]
+            },
+            "icon": {
+              "min": [
+                -1.9,
+                0.66,
+                -1.4
+              ],
+              "max": [
+                1.9,
+                3.86,
+                1.4
+              ]
+            }
+          },
+          "runtimeOnly": "Instanced/Points motes; no Blender particle system exported."
+        },
+        {
+          "stageId": "s05_start",
+          "objectName": "VFX_ANCHOR_s05_start",
+          "alias": "PARTICLE_ANCHOR_s05_start",
+          "parent": "STAGE_s05_start",
+          "positionWeb": [
+            -16.0,
+            0.4099999964237213,
+            -0.0
+          ],
+          "localPositionBlender": [
+            0.0,
+            0.0,
+            0.4099999964237213
+          ],
+          "seed": 148026411,
+          "counts": {
+            "desktop": {
+              "active": 60,
+              "inactive": 10
+            },
+            "mobile": {
+              "active": 25,
+              "inactive": 8
+            }
+          },
+          "regionsStageLocalWeb": {
+            "gap": {
+              "min": [
+                -1.9,
+                0.18,
+                -1.4
+              ],
+              "max": [
+                1.9,
+                0.82,
+                1.4
+              ]
+            },
+            "icon": {
+              "min": [
+                -1.9,
+                0.66,
+                -1.4
+              ],
+              "max": [
+                1.9,
+                3.86,
+                1.4
+              ]
+            }
+          },
+          "runtimeOnly": "Instanced/Points motes; no Blender particle system exported."
+        }
+      ],
+      "fogDistance": {
+        "distanceNear": 45,
+        "distanceFar": 480,
+        "colorSrgb": "#343B40",
+        "cardsDesktopMax": 8,
+        "cardsMobileMax": 4,
+        "cardSpeedMetersPerSecond": [
+          0.03,
+          0.1
+        ],
+        "cardAlpha": [
+          0.03,
+          0.1
+        ]
+      },
+      "water": {
+        "objectName": "WATER_PROXY",
+        "worldY": 0,
+        "meshUnchanged": true,
+        "implementationStatus": "runtime_required",
+        "roughnessSeed": [
+          0.1,
+          0.16
+        ],
+        "ior": 1.333,
+        "f0": 0.02,
+        "reflection": "single_planar_target",
+        "ripple": {
+          "maxDesktop": 8,
+          "maxMobile": 4,
+          "maxInputHz": 12,
+          "minSpacingMeters": 0.08,
+          "propagationMetersPerSecond": 1.1,
+          "amplitudeEquivalentMeters": [
+            0.012,
+            0.025
+          ],
+          "lifetimeSeconds": 2.4,
+          "maxRadiusMeters": 3,
+          "v1Displacement": "normal_only"
+        }
+      },
+      "cameraClearance": {
+        "minWorldY": 0.45,
+        "minDistanceToMeshMeters": 0.6
+      },
+      "transition": {
+        "controller": "TIDE_ATMOSPHERE_CONTROLLER_v008",
+        "referenceMask": "TRANSITION_FOG_MASK_REFERENCE_v008",
+        "input": "path sample maskFog in[0,1]; same shader for entry and exit",
+        "progressProperty": "transition_u",
+        "fullOcclusionAlpha": 1,
+        "rebaseAllowedOnlyAtMask": 1,
+        "landmarkVisibilityAllowedAtRebase": false,
+        "contentReference": "No fabricated HTML in Blender; actual frontend is a separate test."
+      },
+      "runtimeEffectsNotInGlb": [
+        "interactiveWater",
+        "ripple",
+        "planarReflection",
+        "animatedFog",
+        "softParticles",
+        "DOF",
+        "bloom",
+        "HTMLTransitions"
+      ]
+    },
+    "routeSummary": {
+      "publicRoutes": 171,
+      "passedRoutes": 171,
+      "formats": [
+        "desktop",
+        "portrait",
+        "ultrawide"
+      ],
+      "timelineSeconds": 57.35,
+      "minimumClearanceMeters": 0.6398386766645673,
+      "minimumSampleGapAdjustedClearanceMeters": 0.6283238440454139,
+      "minimumY": 0.45,
+      "timelineContinuous": true
+    },
+    "review": {
+      "gallery": "review/world_v008/index.html",
+      "report": "reports/PHASE4_WORLD_V008_REPORT.md"
+    },
+    "runtimeBoundary": {
+      "waterInteractive": false,
+      "animatedFogInstalledInWeb": false,
+      "particleSystemInstalledInWeb": false,
+      "newRouteControllerInstalledInWeb": false,
+      "newHtmlTransitionsInstalledInWeb": false,
+      "blenderReferenceOnly": [
+        "water proxy",
+        "six fog cards",
+        "camera-facing transition mask",
+        "particle anchors",
+        "camera path curves and reference keys"
+      ],
+      "note": "Actual v008 web adoption and arbitrary interrupted navigation: non verificato. GLB contains geometry/materials only. The reference film content holds are opaque, with no simulated HTML."
+    }
+  }
+}

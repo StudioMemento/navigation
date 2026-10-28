@@ -1,0 +1,1 @@
+Evidence before the final history.scrollRestoration=manual correction: browser restored scroll803 after popstate, re-entering CONTENT and truncating Forward history. Retained as diagnostic, not a passing result. Final app SHA ad0d40e42c6119b874f89bed4beeec5587281f310c7ef798f2ada27d72c41cc9.

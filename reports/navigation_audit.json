@@ -1,0 +1,34 @@
+{
+  "version": "vercel_v009",
+  "checkedLocalDate": "2026-10-28",
+  "timeZone": "Europe/Rome",
+  "method": "Read-only HTTP GET through Invoke-WebRequest; response status, final URL, title and headers inspected. No form submitted, no account used, no external page modified.",
+  "scope": "Destination reachability and source mapping, not browser interaction or full external application certification.",
+  "mapping": [
+    {"stageId":"s00_memento","label":"Memento","action":"Local focus/explore and overview; no auto-embedded homepage.","externalUrl":null,"source":"MEMENTO_TIDE_MASTER_TECNICO.md and scene contract"},
+    {"stageId":"s01_services","label":"Services","action":"Retain existing local Services content loop, with real standalone fallback link.","externalUrl":"https://mementoservizi.vercel.app/","source":"Master section 8.6, existing Services provenance","status":200,"finalUrl":"https://mementoservizi.vercel.app/","title":"Servizi — Memento Design Studio","htmlCharacters":6532,"contentType":"text/html; charset=utf-8","contentSecurityPolicyHeader":null,"xFrameOptionsHeader":null},
+    {"stageId":"s02_projects","label":"Projects","action":"Local focus, then explicit standalone link in a new tab.","externalUrl":"https://mementoportfolio.vercel.app/","source":"Master section 8.6 and live public /projects wrapper iframe","status":200,"finalUrl":"https://mementoportfolio.vercel.app/","title":"Portfolio — Memento","htmlCharacters":3457,"contentType":"text/html; charset=utf-8","contentSecurityPolicyHeader":null,"xFrameOptionsHeader":null},
+    {"stageId":"s03_studio","label":"Studio","action":"Local focus, then explicit standalone link in a new tab.","externalUrl":"https://mementostudio.vercel.app/","source":"Explicit user-supplied URL in current export request, relayed by primary agent; supersedes original master missing-URL note and older Framer /studio destination.","status":200,"finalUrl":"https://mementostudio.vercel.app/","title":"Memento — Studio 3D","htmlCharacters":1890800,"contentType":"text/html; charset=utf-8","contentSecurityPolicyHeader":null,"xFrameOptionsHeader":null},
+    {"stageId":"s04_levelup","label":"Level Up","action":"Local focus, then explicit standalone link in a new tab.","externalUrl":"https://mementolevelup.vercel.app/","source":"Master section 8.6 and live public /levelup wrapper iframe","status":200,"finalUrl":"https://mementolevelup.vercel.app/","title":"Level Up — Memento","htmlCharacters":4300,"contentType":"text/html; charset=utf-8","contentSecurityPolicyHeader":null,"xFrameOptionsHeader":null},
+    {"stageId":"s05_start","label":"Start","action":"Local focus, then explicit standalone link in a new tab.","externalUrl":"https://mementostart.vercel.app/","source":"Master section 8.6 and live public /start wrapper iframe","status":200,"finalUrl":"https://mementostart.vercel.app/","title":"Start — Memento Design Studio","htmlCharacters":11219,"contentType":"text/html; charset=utf-8","contentSecurityPolicyHeader":null,"xFrameOptionsHeader":null}
+  ],
+  "allFiveDirectDestinationsHttp200": true,
+  "allFiveDirectDestinationsNoRedirect": true,
+  "externalPageInteraction": "non verificato",
+  "embeddedCompatibility": "non verificato; absence of CSP/X-Frame-Options response headers alone is not an integration test",
+  "formsAndSubmission": "non verificato; no form or email submitted",
+  "publicWrapperChecks": {
+    "https://mementostudio.it/": {"status":200,"title":"MementoStudio","iframe":"https://mementonav.vercel.app/"},
+    "https://mementostudio.it/services": {"status":200,"title":"Services","iframe":"https://mementoservizi.vercel.app/"},
+    "https://mementostudio.it/projects": {"status":200,"title":"Projects","iframe":"https://mementoportfolio.vercel.app/"},
+    "https://mementostudio.it/studio": {"status":200,"title":"Studio","iframe":null,"selected":false,"note":"Historical route exists but is not the user-selected Studio destination. Its text contains Sito in costruzione and placeholder phone numbers."},
+    "https://mementostudio.it/levelup": {"status":200,"title":"Memento","iframe":"https://mementolevelup.vercel.app/"},
+    "https://mementostudio.it/start": {"status":200,"title":"Memento","iframe":"https://mementostart.vercel.app/"}
+  },
+  "runtimeBoundary": {
+    "originalWebApp": "Existing app.js initially implements Services loop only; Projects, Level Up and Start were direct public links, Studio disabled, Memento overview.",
+    "v008Routes": "data/paths_world_v008.json has 171 public routes plus 30 internal definitions, Web Y-up, piecewise cubic position curves with arc-length tables, quintic easing, yaw/pitch look directions and separate target distance, six icon yaw channels, entry and exit masks.",
+    "recommendation": "Use a compact runtime derivation of the exact route definitions and verify sampler parity before claiming v008 path invariants. Do not ship the full offline path audit/timeline JSON as a startup request. Existing Services interpolation is not evidence that v008 validated paths execute in web.",
+    "fullContentLoops": "Only local Services loop is in this export scope. Four external standalone destinations preserve the landing tab and are not certified embedded TIDE content loops."
+  }
+}

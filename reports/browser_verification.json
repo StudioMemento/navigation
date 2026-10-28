@@ -1,0 +1,812 @@
+{
+  "date": "2026-10-28",
+  "appSha256": "ad0d40e42c6119b874f89bed4beeec5587281f310c7ef798f2ada27d72c41cc9",
+  "source": "Chrome UI interaction and DOM-exposed diagnostics at http://127.0.0.1:8770/; viewport tests are desktop browser emulation, not physical devices.",
+  "passed": true,
+  "checks": [
+    {
+      "evidence": "desktop_memento.json",
+      "expectedState": "FOCUSED",
+      "actualState": "FOCUSED",
+      "pass": true,
+      "selectedStage": "s00_memento",
+      "loops": 0,
+      "errors": [],
+      "warnings": [],
+      "viewport": {
+        "width": 1920,
+        "height": 1080,
+        "aspect": "desktop",
+        "dpr": 1,
+        "devicePixelRatio": 1,
+        "canvasWidth": 1920,
+        "canvasHeight": 1080,
+        "canvasRect": {
+          "width": 1920,
+          "height": 1080
+        },
+        "actualWebGLViewport": [
+          0,
+          0,
+          1920,
+          1080
+        ],
+        "drawingBuffer": [
+          1920,
+          1080
+        ]
+      },
+      "render": {
+        "calls": 68,
+        "triangles": 86884,
+        "geometries": 40,
+        "textures": 12,
+        "programs": 12,
+        "cpuRenderMilliseconds": 1.300000011920929
+      }
+    },
+    {
+      "evidence": "desktop_projects.json",
+      "expectedState": "FOCUSED",
+      "actualState": "FOCUSED",
+      "pass": true,
+      "selectedStage": "s02_projects",
+      "loops": 1,
+      "errors": [],
+      "warnings": [],
+      "viewport": {
+        "width": 1920,
+        "height": 1080,
+        "aspect": "desktop",
+        "dpr": 1,
+        "devicePixelRatio": 1,
+        "canvasWidth": 1920,
+        "canvasHeight": 1080,
+        "canvasRect": {
+          "width": 1920,
+          "height": 1080
+        },
+        "actualWebGLViewport": [
+          0,
+          0,
+          1920,
+          1080
+        ],
+        "drawingBuffer": [
+          1920,
+          1080
+        ]
+      },
+      "render": {
+        "calls": 69,
+        "triangles": 111788,
+        "geometries": 40,
+        "textures": 12,
+        "programs": 12,
+        "cpuRenderMilliseconds": 1.300000011920929
+      }
+    },
+    {
+      "evidence": "desktop_studio.json",
+      "expectedState": "FOCUSED",
+      "actualState": "FOCUSED",
+      "pass": true,
+      "selectedStage": "s03_studio",
+      "loops": 0,
+      "errors": [],
+      "warnings": [],
+      "viewport": {
+        "width": 1920,
+        "height": 1080,
+        "aspect": "desktop",
+        "dpr": 1,
+        "devicePixelRatio": 1,
+        "canvasWidth": 1920,
+        "canvasHeight": 1080,
+        "canvasRect": {
+          "width": 1920,
+          "height": 1080
+        },
+        "actualWebGLViewport": [
+          0,
+          0,
+          1920,
+          1080
+        ],
+        "drawingBuffer": [
+          1920,
+          1080
+        ]
+      },
+      "render": {
+        "calls": 64,
+        "triangles": 105288,
+        "geometries": 40,
+        "textures": 12,
+        "programs": 12,
+        "cpuRenderMilliseconds": 1
+      }
+    },
+    {
+      "evidence": "desktop_levelup.json",
+      "expectedState": "FOCUSED",
+      "actualState": "FOCUSED",
+      "pass": true,
+      "selectedStage": "s04_levelup",
+      "loops": 0,
+      "errors": [],
+      "warnings": [],
+      "viewport": {
+        "width": 1920,
+        "height": 1080,
+        "aspect": "desktop",
+        "dpr": 1,
+        "devicePixelRatio": 1,
+        "canvasWidth": 1920,
+        "canvasHeight": 1080,
+        "canvasRect": {
+          "width": 1920,
+          "height": 1080
+        },
+        "actualWebGLViewport": [
+          0,
+          0,
+          1920,
+          1080
+        ],
+        "drawingBuffer": [
+          1920,
+          1080
+        ]
+      },
+      "render": {
+        "calls": 66,
+        "triangles": 103176,
+        "geometries": 40,
+        "textures": 12,
+        "programs": 12,
+        "cpuRenderMilliseconds": 3
+      }
+    },
+    {
+      "evidence": "desktop_start.json",
+      "expectedState": "FOCUSED",
+      "actualState": "FOCUSED",
+      "pass": true,
+      "selectedStage": "s05_start",
+      "loops": 0,
+      "errors": [],
+      "warnings": [],
+      "viewport": {
+        "width": 1920,
+        "height": 1080,
+        "aspect": "desktop",
+        "dpr": 1,
+        "devicePixelRatio": 1,
+        "canvasWidth": 1920,
+        "canvasHeight": 1080,
+        "canvasRect": {
+          "width": 1920,
+          "height": 1080
+        },
+        "actualWebGLViewport": [
+          0,
+          0,
+          1920,
+          1080
+        ],
+        "drawingBuffer": [
+          1920,
+          1080
+        ]
+      },
+      "render": {
+        "calls": 65,
+        "triangles": 106946,
+        "geometries": 40,
+        "textures": 12,
+        "programs": 12,
+        "cpuRenderMilliseconds": 1.0999999940395355
+      }
+    },
+    {
+      "evidence": "desktop_services_content.json",
+      "expectedState": "CONTENT",
+      "actualState": "CONTENT",
+      "pass": true,
+      "selectedStage": "s01_services",
+      "loops": 0,
+      "errors": [],
+      "warnings": [],
+      "viewport": {
+        "width": 1920,
+        "height": 1080,
+        "aspect": "desktop",
+        "dpr": 1,
+        "devicePixelRatio": 1,
+        "canvasWidth": 1920,
+        "canvasHeight": 1080,
+        "canvasRect": {
+          "width": 1920,
+          "height": 1080
+        },
+        "actualWebGLViewport": [
+          0,
+          0,
+          1920,
+          1080
+        ],
+        "drawingBuffer": [
+          1920,
+          1080
+        ]
+      },
+      "render": {
+        "calls": 68,
+        "triangles": 108450,
+        "geometries": 40,
+        "textures": 12,
+        "programs": 12,
+        "cpuRenderMilliseconds": 0.699999988079071
+      }
+    },
+    {
+      "evidence": "desktop_services_loop.json",
+      "expectedState": "OVERVIEW",
+      "actualState": "OVERVIEW",
+      "pass": true,
+      "selectedStage": null,
+      "loops": 1,
+      "errors": [],
+      "warnings": [],
+      "viewport": {
+        "width": 1920,
+        "height": 1080,
+        "aspect": "desktop",
+        "dpr": 1,
+        "devicePixelRatio": 1,
+        "canvasWidth": 1920,
+        "canvasHeight": 1080,
+        "canvasRect": {
+          "width": 1920,
+          "height": 1080
+        },
+        "actualWebGLViewport": [
+          0,
+          0,
+          1920,
+          1080
+        ],
+        "drawingBuffer": [
+          1920,
+          1080
+        ]
+      },
+      "render": {
+        "calls": 81,
+        "triangles": 117566,
+        "geometries": 40,
+        "textures": 12,
+        "programs": 12,
+        "cpuRenderMilliseconds": 2.5
+      }
+    },
+    {
+      "evidence": "portrait_overview.json",
+      "expectedState": "OVERVIEW",
+      "actualState": "OVERVIEW",
+      "pass": true,
+      "selectedStage": null,
+      "loops": 0,
+      "errors": [],
+      "warnings": [],
+      "viewport": {
+        "width": 390,
+        "height": 844,
+        "aspect": "portrait",
+        "dpr": 1,
+        "devicePixelRatio": 1,
+        "canvasWidth": 390,
+        "canvasHeight": 844,
+        "canvasRect": {
+          "width": 390,
+          "height": 844
+        },
+        "actualWebGLViewport": [
+          0,
+          0,
+          390,
+          844
+        ],
+        "drawingBuffer": [
+          390,
+          844
+        ]
+      },
+      "render": {
+        "calls": 41,
+        "triangles": 58784,
+        "geometries": 37,
+        "textures": 12,
+        "programs": 12,
+        "cpuRenderMilliseconds": 0.6000000238418579
+      }
+    },
+    {
+      "evidence": "portrait_services_focus.json",
+      "expectedState": "FOCUSED",
+      "actualState": "FOCUSED",
+      "pass": true,
+      "selectedStage": "s01_services",
+      "loops": 0,
+      "errors": [],
+      "warnings": [],
+      "viewport": {
+        "width": 390,
+        "height": 844,
+        "aspect": "portrait",
+        "dpr": 1,
+        "devicePixelRatio": 1,
+        "canvasWidth": 390,
+        "canvasHeight": 844,
+        "canvasRect": {
+          "width": 390,
+          "height": 844
+        },
+        "actualWebGLViewport": [
+          0,
+          0,
+          390,
+          844
+        ],
+        "drawingBuffer": [
+          390,
+          844
+        ]
+      },
+      "render": {
+        "calls": 51,
+        "triangles": 95558,
+        "geometries": 37,
+        "textures": 12,
+        "programs": 12,
+        "cpuRenderMilliseconds": 1.4000000059604645
+      }
+    },
+    {
+      "evidence": "portrait_services_content.json",
+      "expectedState": "CONTENT",
+      "actualState": "CONTENT",
+      "pass": true,
+      "selectedStage": "s01_services",
+      "loops": 0,
+      "errors": [],
+      "warnings": [],
+      "viewport": {
+        "width": 390,
+        "height": 844,
+        "aspect": "portrait",
+        "dpr": 1,
+        "devicePixelRatio": 1,
+        "canvasWidth": 390,
+        "canvasHeight": 844,
+        "canvasRect": {
+          "width": 390,
+          "height": 844
+        },
+        "actualWebGLViewport": [
+          0,
+          0,
+          390,
+          844
+        ],
+        "drawingBuffer": [
+          390,
+          844
+        ]
+      },
+      "render": {
+        "calls": 46,
+        "triangles": 94556,
+        "geometries": 37,
+        "textures": 12,
+        "programs": 12,
+        "cpuRenderMilliseconds": 0.9000000059604645
+      }
+    },
+    {
+      "evidence": "portrait_services_loop.json",
+      "expectedState": "OVERVIEW",
+      "actualState": "OVERVIEW",
+      "pass": true,
+      "selectedStage": null,
+      "loops": 1,
+      "errors": [],
+      "warnings": [],
+      "viewport": {
+        "width": 390,
+        "height": 844,
+        "aspect": "portrait",
+        "dpr": 1,
+        "devicePixelRatio": 1,
+        "canvasWidth": 390,
+        "canvasHeight": 844,
+        "canvasRect": {
+          "width": 390,
+          "height": 844
+        },
+        "actualWebGLViewport": [
+          0,
+          0,
+          390,
+          844
+        ],
+        "drawingBuffer": [
+          390,
+          844
+        ]
+      },
+      "render": {
+        "calls": 78,
+        "triangles": 117560,
+        "geometries": 37,
+        "textures": 12,
+        "programs": 12,
+        "cpuRenderMilliseconds": 1.699999988079071
+      }
+    },
+    {
+      "evidence": "ultrawide_overview.json",
+      "expectedState": "OVERVIEW",
+      "actualState": "OVERVIEW",
+      "pass": true,
+      "selectedStage": null,
+      "loops": 0,
+      "errors": [],
+      "warnings": [],
+      "viewport": {
+        "width": 3440,
+        "height": 1440,
+        "aspect": "ultrawide",
+        "dpr": 1,
+        "devicePixelRatio": 1,
+        "canvasWidth": 3440,
+        "canvasHeight": 1440,
+        "canvasRect": {
+          "width": 3440,
+          "height": 1440
+        },
+        "actualWebGLViewport": [
+          0,
+          0,
+          3440,
+          1440
+        ],
+        "drawingBuffer": [
+          3440,
+          1440
+        ]
+      },
+      "render": {
+        "calls": 44,
+        "triangles": 58790,
+        "geometries": 40,
+        "textures": 12,
+        "programs": 12,
+        "cpuRenderMilliseconds": 0.800000011920929
+      }
+    },
+    {
+      "evidence": "ultrawide_services_focus.json",
+      "expectedState": "FOCUSED",
+      "actualState": "FOCUSED",
+      "pass": true,
+      "selectedStage": "s01_services",
+      "loops": 0,
+      "errors": [],
+      "warnings": [],
+      "viewport": {
+        "width": 3440,
+        "height": 1440,
+        "aspect": "ultrawide",
+        "dpr": 1,
+        "devicePixelRatio": 1,
+        "canvasWidth": 3440,
+        "canvasHeight": 1440,
+        "canvasRect": {
+          "width": 3440,
+          "height": 1440
+        },
+        "actualWebGLViewport": [
+          0,
+          0,
+          3440,
+          1440
+        ],
+        "drawingBuffer": [
+          3440,
+          1440
+        ]
+      },
+      "render": {
+        "calls": 69,
+        "triangles": 108666,
+        "geometries": 40,
+        "textures": 12,
+        "programs": 12,
+        "cpuRenderMilliseconds": 1.800000011920929
+      }
+    },
+    {
+      "evidence": "ultrawide_services_content.json",
+      "expectedState": "CONTENT",
+      "actualState": "CONTENT",
+      "pass": true,
+      "selectedStage": "s01_services",
+      "loops": 0,
+      "errors": [],
+      "warnings": [],
+      "viewport": {
+        "width": 3440,
+        "height": 1440,
+        "aspect": "ultrawide",
+        "dpr": 1,
+        "devicePixelRatio": 1,
+        "canvasWidth": 3440,
+        "canvasHeight": 1440,
+        "canvasRect": {
+          "width": 3440,
+          "height": 1440
+        },
+        "actualWebGLViewport": [
+          0,
+          0,
+          3440,
+          1440
+        ],
+        "drawingBuffer": [
+          3440,
+          1440
+        ]
+      },
+      "render": {
+        "calls": 69,
+        "triangles": 108666,
+        "geometries": 40,
+        "textures": 12,
+        "programs": 12,
+        "cpuRenderMilliseconds": 0.699999988079071
+      }
+    },
+    {
+      "evidence": "ultrawide_history_back_final.json",
+      "expectedState": "FOCUSED",
+      "actualState": "FOCUSED",
+      "pass": true,
+      "selectedStage": "s01_services",
+      "loops": 0,
+      "errors": [],
+      "warnings": [],
+      "viewport": {
+        "width": 3440,
+        "height": 1440,
+        "aspect": "ultrawide",
+        "dpr": 1,
+        "devicePixelRatio": 1,
+        "canvasWidth": 3440,
+        "canvasHeight": 1440,
+        "canvasRect": {
+          "width": 3440,
+          "height": 1440
+        },
+        "actualWebGLViewport": [
+          0,
+          0,
+          3440,
+          1440
+        ],
+        "drawingBuffer": [
+          3440,
+          1440
+        ]
+      },
+      "render": {
+        "calls": 69,
+        "triangles": 108666,
+        "geometries": 40,
+        "textures": 12,
+        "programs": 12,
+        "cpuRenderMilliseconds": 1
+      }
+    },
+    {
+      "evidence": "ultrawide_history_forward_final.json",
+      "expectedState": "CONTENT",
+      "actualState": "CONTENT",
+      "pass": true,
+      "selectedStage": "s01_services",
+      "loops": 0,
+      "errors": [],
+      "warnings": [],
+      "viewport": {
+        "width": 3440,
+        "height": 1440,
+        "aspect": "ultrawide",
+        "dpr": 1,
+        "devicePixelRatio": 1,
+        "canvasWidth": 3440,
+        "canvasHeight": 1440,
+        "canvasRect": {
+          "width": 3440,
+          "height": 1440
+        },
+        "actualWebGLViewport": [
+          0,
+          0,
+          3440,
+          1440
+        ],
+        "drawingBuffer": [
+          3440,
+          1440
+        ]
+      },
+      "render": {
+        "calls": 69,
+        "triangles": 108666,
+        "geometries": 40,
+        "textures": 12,
+        "programs": 12,
+        "cpuRenderMilliseconds": 1.5999999940395355
+      }
+    },
+    {
+      "evidence": "ultrawide_services_loop_final.json",
+      "expectedState": "OVERVIEW",
+      "actualState": "OVERVIEW",
+      "pass": true,
+      "selectedStage": null,
+      "loops": 1,
+      "errors": [],
+      "warnings": [],
+      "viewport": {
+        "width": 3440,
+        "height": 1440,
+        "aspect": "ultrawide",
+        "dpr": 1,
+        "devicePixelRatio": 1,
+        "canvasWidth": 3440,
+        "canvasHeight": 1440,
+        "canvasRect": {
+          "width": 3440,
+          "height": 1440
+        },
+        "actualWebGLViewport": [
+          0,
+          0,
+          3440,
+          1440
+        ],
+        "drawingBuffer": [
+          3440,
+          1440
+        ]
+      },
+      "render": {
+        "calls": 81,
+        "triangles": 117566,
+        "geometries": 40,
+        "textures": 12,
+        "programs": 12,
+        "cpuRenderMilliseconds": 1.4000000059604645
+      }
+    },
+    {
+      "evidence": "desktop_history_back.json",
+      "expectedState": "FOCUSED",
+      "actualState": "FOCUSED",
+      "pass": true,
+      "selectedStage": "s02_projects",
+      "loops": 0,
+      "errors": [],
+      "warnings": [],
+      "viewport": {
+        "width": 1920,
+        "height": 1080,
+        "aspect": "desktop",
+        "dpr": 1,
+        "devicePixelRatio": 1,
+        "canvasWidth": 1920,
+        "canvasHeight": 1080,
+        "canvasRect": {
+          "width": 1920,
+          "height": 1080
+        },
+        "actualWebGLViewport": [
+          0,
+          0,
+          1920,
+          1080
+        ],
+        "drawingBuffer": [
+          1920,
+          1080
+        ]
+      },
+      "render": {
+        "calls": 68,
+        "triangles": 111786,
+        "geometries": 40,
+        "textures": 12,
+        "programs": 12,
+        "cpuRenderMilliseconds": 1.2000000178813934
+      }
+    },
+    {
+      "evidence": "desktop_history_forward.json",
+      "expectedState": "FOCUSED",
+      "actualState": "FOCUSED",
+      "pass": true,
+      "selectedStage": "s03_studio",
+      "loops": 0,
+      "errors": [],
+      "warnings": [],
+      "viewport": {
+        "width": 1920,
+        "height": 1080,
+        "aspect": "desktop",
+        "dpr": 1,
+        "devicePixelRatio": 1,
+        "canvasWidth": 1920,
+        "canvasHeight": 1080,
+        "canvasRect": {
+          "width": 1920,
+          "height": 1080
+        },
+        "actualWebGLViewport": [
+          0,
+          0,
+          1920,
+          1080
+        ],
+        "drawingBuffer": [
+          1920,
+          1080
+        ]
+      },
+      "render": {
+        "calls": 64,
+        "triangles": 105288,
+        "geometries": 40,
+        "textures": 12,
+        "programs": 12,
+        "cpuRenderMilliseconds": 2.5999999940395355
+      }
+    }
+  ],
+  "observedExternalTabOpens": [
+    "https://mementoportfolio.vercel.app/",
+    "https://mementostudio.vercel.app/"
+  ],
+  "allFiveDestinationHttp200": true,
+  "standaloneServicesPhysicalFilterPass": true,
+  "servicesLoops": {
+    "desktop": 1,
+    "portrait": 1,
+    "ultrawide": 1
+  },
+  "initialEncodedBodyMiB": {
+    "desktop": 13.315389633178711,
+    "portrait": 11.921009063720703
+  },
+  "knownFailedDiagnostic": "diagnostics/history_auto_scroll_before_fix.json retained; corrected by manual scrollRestoration, final Back/Forward passed in ultrawide. Earlier desktop/portrait non-history captures precede this final isolated correction.",
+  "limitations": [
+    "Vercel deployed environment: non verificato",
+    "Safari/iOS and physical mobile/touch hardware: non verificato",
+    "Desktop10MiB/mobile6MiB initial master budgets not met; no FPS claim",
+    "Four external standalone applications full interaction: non verificato; only link reachability, two actual tab opens checked",
+    "Full iframe loops for other4 sections not implemented; this delivery is a linked navigation landing",
+    "Reduced-motion, offline GPU context-loss and interrupted resize browser matrix: non verificato",
+    "DOM fog smoothing is a runtime reference; exact full-mask clearance during arbitrary scroll interruptions not certified."
+  ]
+}
