@@ -1,0 +1,41 @@
+MEMENTO — INTEGRAZIONE SERVIZI V30 NELLA NAV
+
+Il catalogo rileva automaticamente se si trova in un iframe e mantiene
+html, body e sezioni trasparenti. Aperto da solo usa un unico fondo scuro.
+
+Per sfocare anche acqua/fog del contenitore, caricare il piccolo helper
+NEL DOCUMENTO MEMENTO NAV, esterno all'iframe (non dentro il catalogo):
+
+<script defer src="https://mementoservizi.vercel.app/memento-services-host.js"></script>
+
+Aggiungere l'attributo data-memento-services all'iframe già esistente:
+
+<iframe
+  data-memento-services
+  src="https://mementoservizi.vercel.app/"
+  title="Servizi Memento"
+  style="background:transparent;border:0;width:100%;height:100%">
+</iframe>
+
+Se il progetto usa un dominio diverso, sostituire l'origine in entrambi
+gli URL sopra. Conservare dimensioni, posizionamento e attributi di
+accessibilità già usati dal contenitore Nav.
+
+Il wrapper immediatamente sotto l'iframe deve essere trasparente:
+un pannello opaco del parent nasconderebbe acqua/fog anche con la pagina
+servizi in alpha. Tenere l'effetto acqua/fog dietro al wrapper.
+
+L'helper applica al solo iframe un backdrop-filter di 8px e lo porta a
+20px mentre è aperto il dettaglio di un servizio/bundle. Alla chiusura
+ripristina 8px. Supporta iframe aggiunti dopo il caricamento della pagina.
+I messaggi vengono accettati solo dall'origine esatta dell'iframe e dalla
+sua finestra; nessun targetOrigin wildcard.
+
+Se la Content Security Policy di Nav lo richiede, autorizzare il dominio
+servizi in frame-src e script-src, oppure ospitare l'helper nello stesso
+progetto Nav. Non disabilitare la policy. Se l'iframe usa sandbox,
+mantenere le autorizzazioni necessarie per script e origine e verificare
+che le CTA possano navigare verso Start con attivazione dell'utente.
+
+L'integrazione è stata verificata nel contenitore di prova locale.
+Questo pacchetto non modifica automaticamente il codice di Memento Nav.

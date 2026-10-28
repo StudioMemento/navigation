@@ -1,5 +1,5 @@
-MEMENTO — SERVIZI V29
-Polish completo: 44 servizi e 6 bundle, 200 tavole commerciali.
+MEMENTO — SERVIZI V30
+44 servizi, 6 bundle, 200 tavole commerciali.
 
 VERCEL
 Estrarre lo ZIP e caricare il CONTENUTO nella root del repository.
@@ -21,8 +21,22 @@ Questo ZIP non esegue un deploy su Vercel.
 Le route usano hash, per esempio #bundle/b-lancio o #servizio/sito.
 Le CTA aprono https://mementostudio.it/start fuori dall'embed.
 
-CONTENUTI
-I bundle aprono la pagina e mostrano esplicitamente i servizi inclusi.
-Titoli, testi, bordi e blending sono nel codice. Foto pulite e responsive.
-12 nuovi originali dei bundle e relativi prompt sono nello ZIP separato.
-Gli originali dei 44 servizi restano nell'archivio V28 già consegnato.
+POLISH V30
+Bundle e slider allineati ai margini del catalogo; copy sintetico ed elenco
+servizi inclusi. Toggle Digitale/Fisico con angoli tagliati. Bordi sfumati
+al piede e highlight ambra sul solo elemento attivo al passaggio.
+Titoli categoria: ambra dal basso verso il bianco in alto.
+Maschere alpha con dithering per ammorbidire le fasce nelle sfumature.
+Foto originali conservate: blending, titoli e testo restano separati.
+
+INTEGRAZIONE NAV
+La pagina e le sezioni sono trasparenti quando incorporate in un iframe.
+Il blur del fondale esterno va applicato da Memento Nav al suo iframe:
+seguire INTEGRAZIONE_NAV.txt. Il connettore è incluso in questo ZIP.
+Il fondale acqua/fog resta quello di Nav; non viene duplicato nel catalogo.
+La verifica usa un fondale di prova, non l'istanza live di Memento Nav.
+
+VERIFICHE
+Test funzionali del catalogo, carousel, popup, focus, CTA e bridge iframe.
+Controllo geometrico di 200 tavole su 8 formati: 1600 layout.
+Build eseguita anche dal contenuto estratto dello ZIP finale.

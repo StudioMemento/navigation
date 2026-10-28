@@ -1,10 +1,6 @@
-/* V29 — six bundles of named, coordinated services. */
+/* V30 — concise bundle summaries, named services and coordinated delivery. */
 const MEMENTO_BUNDLE_MASTERS = {
   "b-online": {
-    "copy": [
-      "Branding e sito web nello stesso progetto.",
-      "Un’identità coerente, dal marchio alle pagine."
-    ],
     "includes": "Branding + sito web",
     "roles": {
       "branding": "Marchio, colori e caratteri.",
@@ -40,13 +36,10 @@ const MEMENTO_BUNDLE_MASTERS = {
     "componentsTitleUnits": 9.627,
     "processTitleUnits": 7.6682,
     "startTitle": "Partiamo insieme.",
-    "startTitleUnits": 7.8582
+    "startTitleUnits": 7.8582,
+    "summary": "Identità e sito, progettati insieme."
   },
   "b-lancio": {
-    "copy": [
-      "Fotografia, video, landing e grafiche per il lancio.",
-      "Il tuo prodotto, raccontato con un’unica direzione."
-    ],
     "includes": "Fotografia + video + landing + grafiche",
     "roles": {
       "foto-emozionali": "L’immagine che identifica il lancio.",
@@ -84,13 +77,10 @@ const MEMENTO_BUNDLE_MASTERS = {
     "componentsTitleUnits": 9.6651,
     "processTitleUnits": 9.4513,
     "startTitle": "Partiamo insieme.",
-    "startTitleUnits": 7.8582
+    "startTitleUnits": 7.8582,
+    "summary": "Tutto per presentare il tuo prodotto."
   },
   "b-identita": {
-    "copy": [
-      "Branding e guida del brand, progettati insieme.",
-      "Un marchio riconoscibile e le regole per usarlo."
-    ],
     "includes": "Branding + guida del brand",
     "roles": {
       "branding": "Marchio e linguaggio visivo.",
@@ -126,13 +116,10 @@ const MEMENTO_BUNDLE_MASTERS = {
     "componentsTitleUnits": 9.627,
     "processTitleUnits": 9.2722,
     "startTitle": "Partiamo insieme.",
-    "startTitleUnits": 7.8582
+    "startTitleUnits": 7.8582,
+    "summary": "Un’identità riconoscibile, pronta da usare."
   },
   "b-apertura": {
-    "copy": [
-      "Branding, insegne e sito per la tua attività.",
-      "La stessa identità, nello spazio e online."
-    ],
     "includes": "Branding + insegne + sito web",
     "roles": {
       "branding": "L’identità della tua attività.",
@@ -169,13 +156,10 @@ const MEMENTO_BUNDLE_MASTERS = {
     "componentsTitleUnits": 9.6357,
     "processTitleUnits": 6.971,
     "startTitle": "Partiamo insieme.",
-    "startTitleUnits": 7.8582
+    "startTitleUnits": 7.8582,
+    "summary": "La tua attività, nello spazio e online."
   },
   "b-campagna": {
-    "copy": [
-      "Fotografia, grafiche e landing per la promozione.",
-      "Un messaggio coerente, su tutti i canali scelti."
-    ],
     "includes": "Fotografia + grafiche + landing",
     "roles": {
       "foto-emozionali": "L’immagine guida della campagna.",
@@ -212,13 +196,10 @@ const MEMENTO_BUNDLE_MASTERS = {
     "componentsTitleUnits": 9.6357,
     "processTitleUnits": 8.2277,
     "startTitle": "Partiamo insieme.",
-    "startTitleUnits": 7.8582
+    "startTitleUnits": 7.8582,
+    "summary": "Una campagna coordinata, su più canali."
   },
   "b-social": {
-    "copy": [
-      "Template e video brevi per i tuoi canali social.",
-      "Contenuti coordinati, con un ritmo concordato."
-    ],
     "includes": "Template social + video social",
     "roles": {
       "template-social": "Una base per post e storie coerenti.",
@@ -254,6 +235,7 @@ const MEMENTO_BUNDLE_MASTERS = {
     "componentsTitleUnits": 9.627,
     "processTitleUnits": 8.507,
     "startTitle": "Partiamo insieme.",
-    "startTitleUnits": 7.8582
+    "startTitleUnits": 7.8582,
+    "summary": "Contenuti coerenti, con continuità."
   }
 };

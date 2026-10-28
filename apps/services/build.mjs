@@ -17,4 +17,4 @@ await mkdir(output, { recursive: true });
 for (const entry of webEntries) {
   await cp(join(root, entry.name), join(output, entry.name), { recursive: true });
 }
-console.log('MEMENTO V29: build completata. Sito statico pronto in dist/.');
+console.log('MEMENTO V30: build completata. Sito statico pronto in dist/.');

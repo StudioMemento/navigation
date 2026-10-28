@@ -1,0 +1,202 @@
+/* V30 — one content edge, alpha surfaces and restrained interaction. */
+:root {
+  --memento-category-gradient: linear-gradient(0deg, #c98b42 0%, #dfba86 24%, #eee5d7 53%, #f5f3ef 83%, #f5f3ef 100%);
+}
+.showcase-card, .service-card, .catalogue-filters::before {
+  --memento-frame-ring: polygon(evenodd,
+    var(--corner-cut) 0, 100% 0,
+    100% calc(100% - var(--corner-cut)), calc(100% - var(--corner-cut)) 100%,
+    0 100%, 0 var(--corner-cut), var(--corner-cut) 0,
+    calc(var(--corner-cut) + .4142px) 1px,
+    1px calc(var(--corner-cut) + .4142px), 1px calc(100% - 1px),
+    calc(100% - var(--corner-cut) - .4142px) calc(100% - 1px),
+    calc(100% - 1px) calc(100% - var(--corner-cut) - .4142px),
+    calc(100% - 1px) 1px, calc(var(--corner-cut) + .4142px) 1px);
+}
+
+/* An embedded document has no painted page background. Standalone gets one
+   continuous fallback on html only, never one rectangle per section. */
+html, body, #memento-catalogo, #category-sections,
+#bundles.bundle-opening, #catalogo, .category-section,
+.catalogue-heading, .catalogue-page, .carousel, .carousel-stage {
+  background: transparent;
+}
+html { scrollbar-color: #746b5d transparent; }
+html[data-embedded="false"] { background: #0b0c0d; }
+.catalogue-heading { position: relative; top: auto; -webkit-backdrop-filter: none; backdrop-filter: none; }
+#detail-dialog::backdrop {
+  background: rgb(4 6 7 / .12);
+  -webkit-backdrop-filter: blur(18px);
+  backdrop-filter: blur(18px);
+}
+.start-action { background: rgb(10 12 13 / .24); }
+
+/* All central boards meet the same edges as the service grid. cqw is the
+   section's content box; safe insets remain shared with the catalogue. */
+#bundles.bundle-opening, .category-section, #detail-dialog.has-item-master {
+  --slide-width: calc(min(100cqw, 1960px) - var(--safe-left) - var(--safe-right));
+}
+#bundles.bundle-opening {
+  --bundle-board-height: calc(var(--slide-width) / 2);
+  padding-block: max(36px, env(safe-area-inset-top)) clamp(28px, 4vw, 64px);
+}
+.category-section {
+  --heading-size: min(calc(var(--slide-width) * .15), 190px);
+  --card-inset: clamp(24px, calc(var(--slide-width) * .044), 66px);
+}
+.category-section .service-carousel .carousel-stage { height: calc(var(--slide-width) / 2); min-height: 0; }
+.category-heading h2.spread-title { background-image: var(--memento-category-gradient); }
+.category-section .slide-title { font-size: clamp(30px, calc(var(--slide-width) * .062), 106px); letter-spacing: -.055em; }
+.category-section .slide-description { width: 46%; right: auto; font-size: clamp(14px, calc(var(--slide-width) * .017), 23px); line-height: 1.45; }
+
+/* A short promise and a compact, semantic list above the title. */
+#bundles .bundle-summary { max-width: 46%; }
+#bundles .bundle-intro { margin-top: 12px; font-size: clamp(15px, calc(var(--slide-width) * .018), 25px); line-height: 1.3; }
+.bundle-services {
+  list-style: none; display: grid; gap: .36em;
+  padding: 0; margin: 16px 0 0;
+  color: #bfb7ab; font-size: clamp(13px, calc(var(--slide-width) * .014), 20px);
+  line-height: 1.3; letter-spacing: -.02em;
+}
+.bundle-services li { position: relative; padding-left: .9em; }
+.bundle-services li::before { content: ''; position: absolute; left: 0; top: .62em; width: .32em; height: 1px; background: #c69b65; }
+.bundle-master .item-master-copy .bundle-services { margin-top: 14px; font-size: .82em; }
+
+/* Segmented switch: diagonal outer and selected corners, no rounded pill. */
+.catalogue-filters {
+  --toggle-cut: 10px;
+  display: grid; grid-template-columns: 1fr 1fr; gap: 4px;
+  padding: 4px; width: max-content; flex: none;
+  background: rgb(20 22 23 / .35); border-radius: 0;
+  clip-path: polygon(var(--toggle-cut) 0, 100% 0, 100% calc(100% - var(--toggle-cut)), calc(100% - var(--toggle-cut)) 100%, 0 100%, 0 var(--toggle-cut));
+}
+.catalogue-filters::before {
+  content: ''; position: absolute; inset: 0; pointer-events: none;
+  --corner-cut: var(--toggle-cut); clip-path: var(--memento-frame-ring);
+  background: linear-gradient(135deg, #b9ad995e, #98836a20);
+}
+.catalogue-filters button {
+  min-height: 44px; min-width: 124px; padding: 10px 18px;
+  font-size: 15px; gap: 8px; border-radius: 0; background: transparent;
+  clip-path: polygon(7px 0, 100% 0, 100% calc(100% - 7px), calc(100% - 7px) 100%, 0 100%, 0 7px);
+}
+.catalogue-filters button[aria-pressed="true"] { color: #edbf80; background: #c4955621; }
+.catalogue-filters button:hover { color: #f5dcc0; }
+.catalogue-filters button:focus-visible { outline: 1px solid #ecc089; outline-offset: -4px; }
+
+/* One dithered alpha ramp per image. Remove stacked black overlays and the
+   previous surface grain: neither should cover the parent's water/fog. */
+.category-section .slide-scrim, #bundles .bundle-shade,
+.category-section .service-carousel::after,
+.item-master .item-master-art::before, .item-master .item-master-art::after {
+  display: none; background: none;
+}
+.category-section .showcase-card, .catalogue-page .service-card,
+#bundle-boards > .carousel-stage > .bundle-board, .item-master .service-scene {
+  background: transparent;
+}
+.category-section .service-carousel, #bundle-boards {
+  -webkit-mask-image: url('assets/masks/stack-edges.png');
+  mask-image: url('assets/masks/stack-edges.png');
+  -webkit-mask-size: 100% 100%; mask-size: 100% 100%;
+  -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
+}
+.category-section .slide-visual, #bundles .bundle-visual, .item-master .item-master-art img {
+  -webkit-mask: url('assets/masks/blend-landscape.png') center / 100% 100% no-repeat;
+  mask: url('assets/masks/blend-landscape.png') center / 100% 100% no-repeat;
+  filter: none;
+  opacity: calc(.52 + var(--slide-focus, 1) * .48);
+}
+.category-section .slide-visual { inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.item-master .item-master-art { -webkit-mask-image: none; mask-image: none; }
+.card-surface {
+  position: absolute; inset: 0; z-index: 0; pointer-events: none;
+  background: rgb(5 7 8 / .88);
+  -webkit-mask: url('assets/masks/surface-bottom.png') 0 0 / 100% 100% no-repeat;
+  mask: url('assets/masks/surface-bottom.png') 0 0 / 100% 100% no-repeat;
+}
+.category-section .slide-visual, #bundles .bundle-visual, .item-master .item-master-art { z-index: 1; }
+#bundles .bundle-layout, .item-master .item-master-copy, .item-master .service-scene .item-master-title,
+.item-master .bundle-components-content, .item-master .item-master-cta { z-index: 2; }
+.catalogue-page .service-visual {
+  -webkit-mask-image: url('assets/masks/tile-bottom.png');
+  mask-image: url('assets/masks/tile-bottom.png');
+  -webkit-mask-size: 100% 100%; mask-size: 100% 100%;
+}
+
+/* The lower rim dissolves at rest. A full rim only appears on the one
+   hovered/focused tile or active slide, never the surrounding fan. */
+.service-card::before, .showcase-card::before, .bundle-board::before {
+  -webkit-mask-image: url('assets/masks/frame-bottom.png');
+  mask-image: url('assets/masks/frame-bottom.png');
+  -webkit-mask-size: 100% 100%; mask-size: 100% 100%;
+}
+.catalogue-page .service-card::after, .showcase-card::after, .bundle-board::after {
+  content: ''; position: absolute; inset: 0; z-index: 6; pointer-events: none;
+  background: var(--memento-frame-gradient); clip-path: var(--memento-frame-ring);
+  opacity: 0; transition: opacity .24s ease;
+}
+.catalogue-page .service-card:is(:hover, :focus-visible)::after,
+.showcase-card[data-active="true"]:is(:hover, :focus-visible)::after { opacity: 1; }
+.catalogue-page .service-card:is(:hover, :focus-visible) .service-title,
+.category-section .showcase-card[data-active="true"]:is(:hover, :focus-visible) .slide-title {
+  background: var(--memento-title-gradient); -webkit-background-clip: text; background-clip: text;
+  color: transparent; -webkit-text-fill-color: transparent;
+}
+.service-action .chevron, .slide-action .chevron { visibility: hidden; }
+.service-action::after, .slide-action::after {
+  content: ''; position: absolute; inset: 0;
+  background: #f3f0ea; transform: rotate(-45deg);
+  -webkit-mask: url('assets/icons/caret-right.svg') center / contain no-repeat;
+  mask: url('assets/icons/caret-right.svg') center / contain no-repeat;
+}
+.service-card:is(:hover, :focus-visible) .service-action::after,
+.showcase-card[data-active="true"]:is(:hover, :focus-visible) .slide-action::after { background: var(--memento-title-gradient); }
+
+@media (max-width: 1023px) and (orientation: portrait) {
+  #bundles.bundle-opening { --bundle-board-height: calc(var(--slide-width) / .74); }
+  .category-section .service-carousel .carousel-stage { height: calc(var(--slide-width) / .82); }
+  #bundles .bundle-summary { max-width: 100%; }
+  #bundles .bundle-intro { font-size: clamp(15px, calc(var(--slide-width) * .043), 23px); }
+  #bundles .bundle-services { margin-top: 12px; font-size: clamp(13px, calc(var(--slide-width) * .035), 18px); }
+  #bundles .bundle-visual { inset: 30% -1% 15% -36%; width: 137%; height: 55%; object-fit: contain; }
+  .category-section .slide-visual { inset: 16% -1% 12% -36%; width: 137%; height: 72%; object-fit: contain; }
+  .category-section .slide-visual, #bundles .bundle-visual, .item-master .item-master-art img {
+    -webkit-mask-image: url('assets/masks/blend-portrait.png'); mask-image: url('assets/masks/blend-portrait.png');
+  }
+  .category-section .slide-description { width: calc(100% - var(--card-inset) * 2); font-size: clamp(14px, 3.5vw, 20px); }
+  .category-section .slide-title { font-size: calc(var(--slide-width) * .11); }
+}
+@media (min-width: 768px) and (max-width: 1023px) and (orientation: portrait) {
+  #bundles.bundle-opening { --bundle-board-height: calc(var(--slide-width) / 1.25); }
+  #bundles .bundle-summary { max-width: 60%; }
+  #bundles .bundle-visual { inset: 12% -1% 10% -30%; height: 78%; width: 131%; }
+  .category-section .service-carousel .carousel-stage { height: calc(var(--slide-width) / 1.25); }
+  #bundles .bundle-services { font-size: 16px; gap: .3em; }
+}
+@media (max-width: 767px) {
+  #bundles.bundle-opening { padding-top: max(24px, env(safe-area-inset-top)); }
+  .catalogue-heading { gap: 20px; padding-bottom: 20px; }
+  .catalogue-filters { width: 100%; }
+  .catalogue-filters button { min-width: 0; font-size: 14px; }
+  .catalogue-page .service-action { display: block; }
+}
+@media (max-height: 600px) and (orientation: landscape) {
+  #bundles .bundle-services { font-size: 12px; gap: .25em; margin-top: 10px; }
+  #bundles .bundle-intro { font-size: 15px; }
+  .bundle-master .item-master-copy .bundle-services { font-size: 10px; margin-top: 7px; gap: .2em; }
+  .bundle-master .scene-result .item-master-copy { width: 70%; }
+  .bundle-master .scene-result .bundle-services { grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 12px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .service-card::after, .showcase-card::after, .bundle-board::after { transition: none; }
+}
+@media (forced-colors: active) {
+  .category-heading h2.spread-title,
+  .catalogue-page .service-card:is(:hover, :focus-visible) .service-title,
+  .category-section .showcase-card[data-active="true"]:is(:hover, :focus-visible) .slide-title {
+    background: none; color: CanvasText; -webkit-text-fill-color: CanvasText;
+  }
+  .catalogue-filters button[aria-pressed="true"] { outline: 2px solid Highlight; outline-offset: -5px; }
+  .service-card::before, .showcase-card::before, .bundle-board::before { mask-image: none; -webkit-mask-image: none; }
+}

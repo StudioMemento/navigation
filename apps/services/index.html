@@ -3,12 +3,13 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#0f0f0f">
+  <meta name="theme-color" content="#080a0b">
+  <script src="catalogo-surface.js"></script>
   <meta name="description" content="Servizi fisici e digitali. Bundle, web, 3D, video, visual, design e branding. Esplora i servizi e i percorsi Memento per il tuo prossimo progetto.">
   <title>Servizi — Memento Design Studio</title>
   <link rel="icon" href="data:,">
   <link rel="preload" href="assets/fonts/InterVariable.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="preload" href="assets/bundles-v29/b-online/hero-1536.webp" imagesrcset="assets/bundles-v29/b-online/hero-640.webp 640w, assets/bundles-v29/b-online/hero-1536.webp 1536w" imagesizes="(max-width: 767px) 90vw, 64vw" as="image" fetchpriority="high">
+  <link rel="preload" href="assets/bundles-v29/b-online/hero-1536.webp" imagesrcset="assets/bundles-v29/b-online/hero-640.webp 640w, assets/bundles-v29/b-online/hero-1536.webp 1536w" imagesizes="(min-width: 1960px) 1720px, 90vw" as="image" fetchpriority="high">
   <link rel="stylesheet" href="catalogo.css">
   <link rel="stylesheet" href="catalogo-slideshow.css">
   <link rel="stylesheet" href="catalogo-experience.css">
@@ -22,6 +23,7 @@
   <link rel="stylesheet" href="catalogo-item-masters.css">
   <link rel="stylesheet" href="catalogo-bundle-masters.css">
   <link rel="stylesheet" href="catalogo-polish-v29.css">
+  <link rel="stylesheet" href="catalogo-polish-v30.css">
   <script src="catalogo-images.js" defer></script>
   <script src="catalogo-data.js" defer></script>
   <script src="catalogo-editorial.js" defer></script>
@@ -35,18 +37,13 @@
 <a class="skip-link" href="#catalogo">Vai al catalogo completo</a>
 <main id="memento-catalogo">
   <h1 class="sr-only">Servizi e percorsi Memento Design Studio</h1>
-  <section class="bundle-section bundle-opening" id="bundles" data-scene aria-labelledby="bundles-heading">
+  <section class="bundle-section bundle-opening" id="bundles" data-scene aria-label="Bundle di servizi">
     <span id="inizio" class="section-anchor" aria-hidden="true"></span>
-    <div class="bundles-heading-wrap page-width">
-      <h2 id="bundles-heading">Più servizi.<br>Un unico progetto.</h2>
-      <p class="bundles-intro">I nostri bundle riuniscono servizi complementari per un obiettivo preciso.<br>Scegli il tuo punto di partenza e scopri cosa comprende.</p>
-    </div>
     <div id="bundle-boards" class="carousel bundle-carousel" role="region" aria-roledescription="carosello" aria-label="I bundle Memento"></div>
     <div id="bundle-controls" class="carousel-controls" data-carousel-for="bundle-boards"></div>
   </section>
   <section class="catalogue page-width" id="catalogo" aria-labelledby="catalogue-heading">
     <div class="catalogue-heading"><h2 id="catalogue-heading">Servizi di design.</h2><div class="catalogue-filters" role="group" aria-label="Tipo di servizio" data-selected="digital"><button data-medium="digital" aria-pressed="true" aria-controls="catalogue-groups"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="13" rx="2"/><path d="M8 21h8M12 17v4"/></svg><span>Digitale</span></button><button data-medium="physical" aria-pressed="false" aria-controls="catalogue-groups"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 2 9 5v10l-9 5-9-5V7Zm0 10 9-5M12 12 3 7m9 5v10M7.5 4.5l9 5v5"/></svg><span>Fisico</span></button></div></div>
-    <p class="catalogue-intro">Scegli un servizio: scopri cosa realizziamo per te e come iniziare.</p>
     <div id="catalogue-groups"></div>
   </section>
   <div id="category-sections"></div>
