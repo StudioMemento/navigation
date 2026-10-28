@@ -1,41 +1,38 @@
-/* Demo URLs checked against the supplied Vercel project list. */
+/* V06: destinations verified 2026-10-28. */
 window.MEMENTO_BOARDS = [
   {
     "id": "icecream",
     "title": "IceCream",
     "lines": [
-      "Entra nel",
-      "gusto."
+      "IceCream"
     ],
-    "image": "assets/previews/icecream-1586.b3dfe10aa7.webp",
+    "image": "assets/heroes/icecream-v6-1536.webp",
     "url": "https://mementoicecream.vercel.app/?gusto=pistacchio",
-    "srcset": "assets/previews/icecream-480.95d108c5f8.webp 480w, assets/previews/icecream-960.21625e06a8.webp 960w, assets/previews/icecream-1586.b3dfe10aa7.webp 1586w",
-    "width": 1586,
-    "height": 992
+    "srcset": "assets/heroes/icecream-v6-480.webp 480w, assets/heroes/icecream-v6-960.webp 960w, assets/heroes/icecream-v6-1536.webp 1536w",
+    "width": 1536,
+    "height": 1024
   },
   {
     "id": "auren",
     "title": "Auren",
     "lines": [
-      "Dritte",
-      "all’obiettivo."
+      "Auren"
     ],
-    "image": "assets/previews/auren-1600.2fc00971ef.webp",
+    "image": "assets/heroes/auren-v6-1536.webp",
     "url": "https://mementoauren.vercel.app/",
-    "srcset": "assets/previews/auren-480.9344101b3c.webp 480w, assets/previews/auren-960.bc307ede1a.webp 960w, assets/previews/auren-1600.2fc00971ef.webp 1600w",
-    "width": 1600,
-    "height": 900
+    "srcset": "assets/heroes/auren-v6-480.webp 480w, assets/heroes/auren-v6-960.webp 960w, assets/heroes/auren-v6-1536.webp 1536w",
+    "width": 1536,
+    "height": 1024
   },
   {
     "id": "elite",
     "title": "Memento Elite",
     "lines": [
-      "Racconta",
-      "la tua attività."
+      "Memento Elite"
     ],
-    "image": "assets/previews/elite-1536.86128a6b72.webp",
+    "image": "assets/heroes/elite-v6-1536.webp",
     "url": "https://mementoelite.vercel.app/",
-    "srcset": "assets/previews/elite-480.1a4cbb26c3.webp 480w, assets/previews/elite-960.1a3690e91c.webp 960w, assets/previews/elite-1536.86128a6b72.webp 1536w",
+    "srcset": "assets/heroes/elite-v6-480.webp 480w, assets/heroes/elite-v6-960.webp 960w, assets/heroes/elite-v6-1536.webp 1536w",
     "width": 1536,
     "height": 1024
   },
@@ -43,51 +40,47 @@ window.MEMENTO_BOARDS = [
     "id": "fashion",
     "title": "Fashion",
     "lines": [
-      "Valorizza",
-      "i tuoi prodotti."
+      "Fashion"
     ],
-    "image": "assets/previews/fashion-1280.5db3646667.webp",
+    "image": "assets/heroes/fashion-v6-1536.webp",
     "url": "https://mementofashion.vercel.app/",
-    "srcset": "assets/previews/fashion-480.09ec615dc3.webp 480w, assets/previews/fashion-960.620ffc7400.webp 960w, assets/previews/fashion-1280.5db3646667.webp 1280w",
-    "width": 1280,
-    "height": 720
+    "srcset": "assets/heroes/fashion-v6-480.webp 480w, assets/heroes/fashion-v6-960.webp 960w, assets/heroes/fashion-v6-1536.webp 1536w",
+    "width": 1536,
+    "height": 1024
   },
   {
     "id": "gamma",
-    "title": "GAMMA",
+    "title": "Unfreeze",
     "lines": [
-      "Esplora",
-      "la collezione."
+      "Unfreeze"
     ],
-    "image": "assets/previews/gamma-1122.0376f1760d.webp",
+    "image": "assets/heroes/gamma-v6-1536.webp",
     "url": "https://mementosl.vercel.app/",
-    "srcset": "assets/previews/gamma-480.b7beced076.webp 480w, assets/previews/gamma-960.f67c9d6114.webp 960w, assets/previews/gamma-1122.0376f1760d.webp 1122w",
-    "width": 1122,
-    "height": 1402
+    "srcset": "assets/heroes/gamma-v6-480.webp 480w, assets/heroes/gamma-v6-960.webp 960w, assets/heroes/gamma-v6-1536.webp 1536w",
+    "width": 1536,
+    "height": 1024
   },
   {
     "id": "food",
     "title": "Memento Food",
     "lines": [
-      "Tutti",
-      "da esplorare."
+      "Memento Food"
     ],
-    "image": "assets/previews/food-1254.92644c0964.webp",
+    "image": "assets/heroes/food-v6-1536.webp",
     "url": "https://mementofood.vercel.app/",
-    "srcset": "assets/previews/food-480.b4a6a7c501.webp 480w, assets/previews/food-960.a125d03458.webp 960w, assets/previews/food-1254.92644c0964.webp 1254w",
-    "width": 1254,
-    "height": 1254
+    "srcset": "assets/heroes/food-v6-480.webp 480w, assets/heroes/food-v6-960.webp 960w, assets/heroes/food-v6-1536.webp 1536w",
+    "width": 1536,
+    "height": 1024
   },
   {
     "id": "knives",
     "title": "Knives",
     "lines": [
-      "Ogni scelta",
-      "prende forma."
+      "Knives"
     ],
-    "image": "assets/previews/knives-1536.d9153ab5d1.webp",
+    "image": "assets/heroes/knives-v6-1536.webp",
     "url": "https://knives.vercel.app/",
-    "srcset": "assets/previews/knives-480.71f55ce3c2.webp 480w, assets/previews/knives-960.64482fb976.webp 960w, assets/previews/knives-1536.d9153ab5d1.webp 1536w",
+    "srcset": "assets/heroes/knives-v6-480.webp 480w, assets/heroes/knives-v6-960.webp 960w, assets/heroes/knives-v6-1536.webp 1536w",
     "width": 1536,
     "height": 1024
   },
@@ -95,11 +88,11 @@ window.MEMENTO_BOARDS = [
     "id": "techref",
     "title": "TechRef",
     "lines": [
-      "TechRef."
+      "TechRef"
     ],
-    "image": "assets/previews/techref-1536.7a766008d6.webp",
+    "image": "assets/heroes/techref-v6-1536.webp",
     "url": "https://techref.vercel.app/#/categoria/smartphone?set=selection&order=antutu&platform=iOS",
-    "srcset": "assets/previews/techref-480.12aba1cfbc.webp 480w, assets/previews/techref-960.3333971258.webp 960w, assets/previews/techref-1536.7a766008d6.webp 1536w",
+    "srcset": "assets/heroes/techref-v6-480.webp 480w, assets/heroes/techref-v6-960.webp 960w, assets/heroes/techref-v6-1536.webp 1536w",
     "width": 1536,
     "height": 1024
   },
@@ -107,25 +100,23 @@ window.MEMENTO_BOARDS = [
     "id": "productvis",
     "title": "ProductVis",
     "lines": [
-      "Dai forma",
-      "al visual."
+      "ProductVis"
     ],
-    "image": "assets/previews/productvis-1586.068d5c1426.webp",
+    "image": "assets/heroes/productvis-v6-1536.webp",
     "url": "https://productvis.vercel.app/",
-    "srcset": "assets/previews/productvis-480.fc9d9ecdd6.webp 480w, assets/previews/productvis-960.037443420c.webp 960w, assets/previews/productvis-1586.068d5c1426.webp 1586w",
-    "width": 1586,
-    "height": 992
+    "srcset": "assets/heroes/productvis-v6-480.webp 480w, assets/heroes/productvis-v6-960.webp 960w, assets/heroes/productvis-v6-1536.webp 1536w",
+    "width": 1536,
+    "height": 1024
   },
   {
     "id": "visualref",
     "title": "VisualRef",
     "lines": [
-      "Il nostro software.",
-      "Il tuo progetto."
+      "VisualRef"
     ],
-    "image": "assets/previews/visualref-1536.8b6e4d31da.webp",
+    "image": "assets/heroes/visualref-v6-1536.webp",
     "url": "https://visualref.vercel.app/",
-    "srcset": "assets/previews/visualref-480.7283dc085f.webp 480w, assets/previews/visualref-960.5b63fcfadf.webp 960w, assets/previews/visualref-1536.8b6e4d31da.webp 1536w",
+    "srcset": "assets/heroes/visualref-v6-480.webp 480w, assets/heroes/visualref-v6-960.webp 960w, assets/heroes/visualref-v6-1536.webp 1536w",
     "width": 1536,
     "height": 1024
   }

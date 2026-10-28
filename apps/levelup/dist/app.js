@@ -54,14 +54,14 @@
     copy.className = 'card-copy';
     const title = document.createElement('span');
     title.className = 'card-title amber-type';
-    for (const line of board.lines) {
+    for (const line of [board.title]) {
       const row = document.createElement('span');
       row.textContent = line;
       title.append(row);
     }
     const explore = document.createElement('span');
     explore.className = 'explore';
-    explore.innerHTML = '<span>Esplora</span>' + chevron;
+    explore.innerHTML = '<span>Esplora</span>'; 
     copy.append(title, explore);
     face.append(art,copy);
     card.append(face);
@@ -71,7 +71,7 @@
     card.addEventListener('focus', () => connectDemo(board));
     card.addEventListener('click', () => {
       if (performance.now() < ignoreClickUntil || player.open || contact.open) return;
-      go(i);
+      if (i !== index) { go(i); return; }
       openExperience(board, card);
     });
     slides.append(card);
@@ -96,15 +96,15 @@
     cards.forEach((card, i) => {
       const offset = distance(i), level = Math.abs(offset), side = Math.sign(offset);
       const active = level === 0;
-      const near = level <= 1;
+      const near = level <= (compact.matches ? 1 : 2);
       card.classList.toggle('is-current',active);
-      card.classList.toggle('is-near',level <= 1);
-      card.style.setProperty('--shift', side * cardWidth * (level === 1 ? .61 : .9 + (level - 2) * .1) + 'px');
+      card.classList.toggle('is-near',near);
+      card.style.setProperty('--shift', side * cardWidth * (level === 1 ? .69 : 1.14 + (level - 2) * .15) + 'px');
       card.style.setProperty('--depth', active ? '0px' : (level === 1 ? '-180px' : '-300px'));
       card.style.setProperty('--turn', -side * (level === 1 ? 13 : 18) + 'deg');
       card.style.setProperty('--scale', active ? '1' : level === 1 ? '.87' : '.74');
       card.style.setProperty('--opacity', near ? '1' : '0');
-      card.style.setProperty('--brightness', active ? '1' : level === 1 ? '.42' : '.17');
+      card.style.setProperty('--brightness', active ? '1' : level === 1 ? '.68' : '.42');
       card.style.setProperty('--layer', String(10 - level));
       card.style.visibility = near ? 'visible' : 'hidden';
       card.tabIndex = active ? 0 : -1;
@@ -133,16 +133,14 @@
   function resize() {
     cancelGesture();
     const tall = portrait.matches;
-    const ratio = tall ? (compact.matches ? (app.clientHeight < 700 ? .96 : .84) : 1.08) : (app.clientHeight < 480 ? 2.5 : 2.12);
-    cardWidth = Math.max(180,Math.floor(Math.min(stage.clientWidth * (tall ? .88 : .74),1120,stage.clientHeight * .96 * ratio)));
+    const ratio = tall ? (compact.matches ? 1.04 : 1.35) : 1.94;
+    cardWidth = Math.max(180,Math.floor(Math.min(stage.clientWidth * (tall ? .86 : .48),1040,Math.max(100,app.clientHeight - parseFloat(getComputedStyle(app).paddingTop) - parseFloat(getComputedStyle(app).paddingBottom) - (innerHeight < 560 && innerWidth > innerHeight ? 94 : 158)) * ratio)));
     cardHeight = Math.round(cardWidth / ratio);
     app.style.setProperty('--card-width',cardWidth + 'px');
     app.style.setProperty('--card-height',cardHeight + 'px');
     positionCards();
   }
-  new ResizeObserver(resize).observe(stage);
-  document.getElementById('previous').addEventListener('click', () => go(index - 1));
-  document.getElementById('next').addEventListener('click', () => go(index + 1));
+  new ResizeObserver(resize).observe(app);
   window.addEventListener('keydown', event => {
     if (player.open || contact.open || event.altKey || event.ctrlKey || event.metaKey) return;
     if (event.key === 'ArrowRight') {event.preventDefault(); go(index + 1);}
