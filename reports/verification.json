@@ -1,320 +1,52 @@
 {
-  "version": "v011",
+  "version": "v012",
   "date": "2026-10-28",
-  "delivery": "Source ZIP; no remote deployment made",
   "tests": {
-    "passed": 21,
+    "passed": 30,
     "failed": 0,
-    "command": "npm test",
-    "details": "reports/tests.txt"
+    "command": "npm test"
   },
   "build": {
-    "version": "v011",
-    "checks": [
-      {
-        "name": "Valid GLB family_v007/mobile/optimized/family_neighbors.glb",
-        "pass": true
-      },
-      {
-        "name": "Valid GLB family_v007/mobile/optimized/icon_services_lod0.glb",
-        "pass": true
-      },
-      {
-        "name": "Valid GLB family_v007/mobile/optimized/platform.glb",
-        "pass": true
-      },
-      {
-        "name": "Valid GLB family_v007/optimized/family_neighbors.glb",
-        "pass": true
-      },
-      {
-        "name": "Valid GLB family_v007/optimized/icon_services_lod0.glb",
-        "pass": true
-      },
-      {
-        "name": "Valid GLB family_v007/optimized/platform.glb",
-        "pass": true
-      },
-      {
-        "name": "Valid GLB world_v008/optimized/environment.glb",
-        "pass": true
-      },
-      {
-        "name": "Vendored vendor/LICENSE-MESHOPT.md",
-        "pass": true
-      },
-      {
-        "name": "Vendored vendor/LICENSE-THREE.txt",
-        "pass": true
-      },
-      {
-        "name": "Vendored vendor/meshopt_decoder.mjs",
-        "pass": true
-      },
-      {
-        "name": "Vendored vendor/three.core.js",
-        "pass": true
-      },
-      {
-        "name": "Vendored vendor/three.module.js",
-        "pass": true
-      },
-      {
-        "name": "Vendored vendor/loaders/GLTFLoader.js",
-        "pass": true
-      },
-      {
-        "name": "Vendored vendor/loaders/HDRLoader.js",
-        "pass": true
-      },
-      {
-        "name": "Vendored vendor/loaders/RGBELoader.js",
-        "pass": true
-      },
-      {
-        "name": "Vendored vendor/objects/Reflector.js",
-        "pass": true
-      },
-      {
-        "name": "Vendored vendor/utils/BufferGeometryUtils.js",
-        "pass": true
-      },
-      {
-        "name": "HTML reference data:,",
-        "pass": true
-      },
-      {
-        "name": "HTML reference /style.css",
-        "pass": true
-      },
-      {
-        "name": "HTML reference https://mementostudio.vercel.app/",
-        "pass": true
-      },
-      {
-        "name": "HTML reference https://mementostudio.vercel.app/",
-        "pass": true
-      },
-      {
-        "name": "HTML reference https://mementostudio.vercel.app/",
-        "pass": true
-      },
-      {
-        "name": "HTML reference https://mementoservizi.vercel.app/",
-        "pass": true
-      },
-      {
-        "name": "HTML reference https://mementoportfolio.vercel.app/",
-        "pass": true
-      },
-      {
-        "name": "HTML reference https://mementolevelup.vercel.app/",
-        "pass": true
-      },
-      {
-        "name": "HTML reference https://mementostart.vercel.app/",
-        "pass": true
-      },
-      {
-        "name": "HTML reference https://mementostudio.vercel.app/",
-        "pass": true
-      },
-      {
-        "name": "HTML reference https://mementoservizi.vercel.app/",
-        "pass": true
-      },
-      {
-        "name": "HTML reference https://mementoportfolio.vercel.app/",
-        "pass": true
-      },
-      {
-        "name": "HTML reference https://mementolevelup.vercel.app/",
-        "pass": true
-      },
-      {
-        "name": "HTML reference https://mementostart.vercel.app/",
-        "pass": true
-      },
-      {
-        "name": "Module /src/app.js \u2192 ../vendor/loaders/GLTFLoader.js",
-        "pass": true
-      },
-      {
-        "name": "Module /src/app.js \u2192 ../vendor/loaders/HDRLoader.js",
-        "pass": true
-      },
-      {
-        "name": "Module /src/app.js \u2192 ../vendor/meshopt_decoder.mjs",
-        "pass": true
-      },
-      {
-        "name": "Module /src/app.js \u2192 ./water.js",
-        "pass": true
-      },
-      {
-        "name": "Module /src/app.js \u2192 ./cinematography.js",
-        "pass": true
-      },
-      {
-        "name": "Module /src/app.js \u2192 ./assets.js",
-        "pass": true
-      },
-      {
-        "name": "Module /src/app.js \u2192 ./navigation.js",
-        "pass": true
-      },
-      {
-        "name": "Module /src/cinematography.js \u2192 ./navigation.js",
-        "pass": true
-      },
-      {
-        "name": "Module /src/water.js \u2192 ../vendor/objects/Reflector.js",
-        "pass": true
-      },
-      {
-        "name": "Module /src/water.js \u2192 ./core.js",
-        "pass": true
-      },
-      {
-        "name": "Module /vendor/loaders/GLTFLoader.js \u2192 ../utils/BufferGeometryUtils.js",
-        "pass": true
-      },
-      {
-        "name": "Module /vendor/loaders/RGBELoader.js \u2192 ./HDRLoader.js",
-        "pass": true
-      },
-      {
-        "name": "Module /vendor/three.module.js \u2192 ./three.core.js",
-        "pass": true
-      },
-      {
-        "name": "Module /vendor/three.module.js \u2192 ./three.core.js",
-        "pass": true
-      },
-      {
-        "name": "Exactly five concept sections",
-        "pass": true
-      },
-      {
-        "name": "External embed memento",
-        "pass": true
-      },
-      {
-        "name": "Direct redirect memento",
-        "pass": true
-      },
-      {
-        "name": "External embed services",
-        "pass": true
-      },
-      {
-        "name": "Direct redirect services",
-        "pass": true
-      },
-      {
-        "name": "External embed projects",
-        "pass": true
-      },
-      {
-        "name": "Direct redirect projects",
-        "pass": true
-      },
-      {
-        "name": "External embed levelup",
-        "pass": true
-      },
-      {
-        "name": "Direct redirect levelup",
-        "pass": true
-      },
-      {
-        "name": "External embed start",
-        "pass": true
-      },
-      {
-        "name": "Direct redirect start",
-        "pass": true
-      },
-      {
-        "name": "No copied page content",
-        "pass": true
-      },
-      {
-        "name": "Static Vercel output",
-        "pass": true
-      }
-    ],
-    "errors": [],
-    "files": 32,
-    "bytes": 17077892
-  },
-  "hdri": {
-    "sameAsUserUpload": true,
-    "sha256": "273003109ca1cfb798ce6b96e09ac8440f763d0ef0c376bbe77492613540b4a3"
-  },
-  "camera": {
-    "heightMeters": 0.24,
-    "platformTopMeters": 0.025,
-    "spacingDegrees": 72,
-    "projectionChecks": [
-      {
-        "width": 390,
-        "height": 844,
-        "cameraHeight": 0.24,
-        "heroTopPercent": 27.145267573717312,
-        "stageCenterPercent": 58.27783970092818,
-        "titlePercent": 65.77783970092817
-      },
-      {
-        "width": 1440,
-        "height": 900,
-        "cameraHeight": 0.24,
-        "heroTopPercent": 8.300529875829078,
-        "stageCenterPercent": 66.58572793781998,
-        "titlePercent": 74.08572793782
-      },
-      {
-        "width": 2048,
-        "height": 809,
-        "cameraHeight": 0.24,
-        "heroTopPercent": 8.300529875829078,
-        "stageCenterPercent": 66.58572793781998,
-        "titlePercent": 74.08572793781998
-      }
-    ]
+    "checks": 59,
+    "errors": []
   },
   "browser": {
-    "url": "http://terminal.local:4173/?qa=1",
-    "result": "Fallback shown",
-    "reason": "WebGL context unavailable: GL_VENDOR and GL_RENDERER Disabled",
-    "realtimeVisualVerified": false,
-    "fpsMeasured": false
-  },
-  "integration": {
-    "externalContentCopied": false,
-    "bridgeIncluded": true,
-    "remoteBridgeDeployed": false,
-    "framerHelperIncluded": true,
-    "installerCheck": {
-      "idempotent": true,
-      "backupPreserved": true
-    }
-  },
-  "boards": {
-    "count": 5,
-    "type": "Generated look-development concepts, not WebGL screenshots",
-    "sections": [
-      "Memento",
-      "Services",
-      "Projects",
-      "Levelup",
-      "Start"
+    "name": "Chrome",
+    "webgl2": true,
+    "gpu": "NVIDIA GeForce RTX 3070 Ti / ANGLE Direct3D11",
+    "visual": [
+      "1440x900 desktop",
+      "3440x1351 ultrawide",
+      "390x844 portrait"
     ],
-    "prompts": "art-direction/prompts.json"
+    "shaderErrors": 0,
+    "nativeTouchDeviceTested": false,
+    "fpsCertified": false
   },
-  "remaining": [
-    "Install bridge in all five remote sites and deploy through their normal workflow",
-    "Validate visual output and frame rate on desktop and mobile GPU",
-    "Final asset texture/bevel refinement and selective bloom/DOF are art-direction follow-up work"
+  "navigation": {
+    "horizontalDrag": "Memento to Services verified",
+    "downwardWheel": "Services external iframe entered; camera direction y=-0.951",
+    "externalURLs": "original live URLs; no copied page content",
+    "endProtocolTests": "real page sources in same-origin protected preview iframe fixtures",
+    "services": "arrival remains readable; new downward wheel emits END",
+    "projects": "custom #viewport ready handshake and END verified",
+    "start": "form open blocks END; closing it restores downward return",
+    "levelup": "downward wheel advances to Auren; last card VisualRef then END",
+    "studio": "final room: fresh 40 px wheel emits END; reopening restores room 01 verified",
+    "verticalPointerDrag": "390x844 mouse pointer gesture enters the selected Services iframe; native touch not claimed"
+  },
+  "release": {
+    "productionChanged": false,
+    "preview": "https://mementonav-6o1ye0tsn-studio-memento-s-projects.vercel.app/",
+    "productionBlock": "automatic approval review requires explicit production-release authorization",
+    "githubWriteBlock": "403 Resource not accessible by integration",
+    "crossOriginEndToEnd": "pending authorized installation in the five live pages",
+    "protectedPreviewEmbedding": "Vercel SSO redirect blocks nested cross-origin iframe; no protection was disabled",
+    "shareLinkCreated": false
+  },
+  "limitations": [
+    "Native phone touch still requires physical-device QA.",
+    "This visual fix is an iteration toward the TIDE reference, not equivalent to an offline cinematic render.",
+    "The public pages still lack the new bridge until release."
   ]
 }

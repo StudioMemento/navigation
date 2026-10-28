@@ -122,3 +122,12 @@ test('Framer selection during entry exits before changing the scene',()=>{
   h.events.get('message')({source:h.run('window.parent'),origin:'https://memento.framer.website',data:{channel:'memento:tide:control',version:1,type:'SELECT',slug:'levelup'}});
   h.tick(160);assert.equal(h.run('state'),'SCENE');assert.equal(h.run('selectedIndex'),3);assert.equal(h.location.hash,'#levelup');assert.equal(h.run('pageLayer.inert'),true);
 });
+
+test('Vertical wheel enters the selected embed; horizontal wheel selects the adjacent stage',()=>{
+ const h=host();const wheel=(x,y)=>h.nodes.get('#scene-layer').emit('wheel',{deltaX:x,deltaY:y,preventDefault(){}});
+ wheel(0,-100);assert.equal(h.run('state'),'SCENE');wheel(100,0);h.tick();assert.equal(h.run('selectedIndex'),1);assert.equal(h.run('frame'),null);
+ wheel(0,100);h.tick();assert.equal(h.run('state'),'CONTENT');assert.equal(h.run('selectedIndex'),1);
+});
+test('Vertical swipes open the embed without selecting a neighbour or emitting a click',()=>{
+ for(const endY of [150,450]){const h=host();h.run(`pointerDown({isPrimary:true,button:0,pointerId:2,clientX:500,clientY:300,timeStamp:100});pointerMove({pointerId:2,clientX:505,clientY:${endY},timeStamp:450,preventDefault(){}});pointerEnd({pointerId:2,timeStamp:470});`);h.tick();assert.equal(h.run('state'),'CONTENT');assert.equal(h.run('selectedIndex'),0);assert(h.run('suppressClickUntil')>0);}
+});

@@ -1,20 +1,26 @@
-# MEMENTO TIDE — v011
+# MEMENTO TIDE — v012
 
-Cinque tavole di regia accompagnano questa iterazione. Il dettaglio di art direction, asset, camera e integrazione è in `REGIA.md`. Le tavole sono concept generati, non screenshot della demo.
+Fix visivo e navigazione verticale. La camera resta a 24 cm dall’acqua, le cinque stazioni formano un pentagono e l’unica UI interna persistente è il titolo della sezione.
 
-## Modifiche
+- Acqua increspata, riflessi filtrati, foschia riflessa, montagne abbassate.
+- Grafite con roughness variabile, luce radente calda, pedane scure e sottili.
+- Resolve HDR con AgX, halation contenuta, vignetta e dithering.
+- Drag/swipe orizzontale: selezione circolare della sezione.
+- Scroll in basso o gesto verticale: discesa della camera e ingresso nell’iframe, senza fade opaco.
+- Arrivo al fondo: la pagina resta leggibile. Un nuovo gesto in basso completa il loop verso lo stesso stage.
+- Studio rispetta le quattro scene interne; Levelup scorre le dieci esperienze fino all’ultima; Projects usa il suo #viewport; Start protegge il form aperto.
 
-- Cinque stazioni su un pentagono regolare, 72° tra ogni coppia consecutiva.
-- Camera a 24 cm dall'acqua, stage quasi sommersi: top a 2,5 cm.
-- HDRI Belfast Sunset allegato, calibrazione più scura, pedane satinate, fog e riflessi più leggibili.
-- Nessun logo, navbar, contatore, freccia, CTA o toolbar. Resta solo il titolo della sezione sotto lo stage.
-- Drag/swipe e selezione da Framer. Click su titolo/scultura oppure ↓/Invio per entrare.
-- Entrata con camera verso il basso. Loop finale con pagina che esce verso l'alto e scena che risale dal basso. Nessun fade opaco.
-- Bridge completo per rilevare il vero fondo delle pagine remote e inoltrare Escape. **Da inserire e distribuire nei cinque siti esterni**: istruzioni in `REGIA.md` e installer in `integration/`.
+## Verifica e rilascio
 
-## Vercel e prova locale
+30 test automatici e build statica. Resa controllata in Chrome con WebGL 2 e RTX 3070 Ti; il rapporto in `reports/verification.json` distingue la verifica delle preview dalle prove live ancora da eseguire. Touch nativo su telefono non verificato.
 
-Framework: Other. Build: `npm run build`. Output: `public`. Node 22+. `vercel.json` contiene la configurazione. Librerie già incluse: nessun download npm necessario.
+Preview visiva: https://mementonav-6o1ye0tsn-studio-memento-s-projects.vercel.app/
+
+La produzione NON è stata aggiornata: il rilascio Vercel richiede autorizzazione esplicita. La connessione GitHub rifiuta la scrittura dei repository. Le pagine remote live non contengono ancora questo bridge: nella preview principale il loop finale dipende dal loro aggiornamento.
+
+## Avvio
+
+Framework Other, build `npm run build`, output `public`, Node 22+. Dipendenze già incluse.
 
 ```bash
 npm test
@@ -22,8 +28,18 @@ npm run build
 npm start
 ```
 
-Aprire `http://127.0.0.1:8770/`. Usare un server HTTP, non `file://`.
+Aprire http://127.0.0.1:8770/. Le pagine restano URL esterni in `public/data/navigation.json`; non sono copiate nel progetto.
 
-I link esterni restano in `public/data/navigation.json`. Memento apre Studio; le altre tappe aprono Services, Projects, Levelup e Start. Le pagine non sono copiate nel pacchetto.
+## Integrare le cinque pagine
 
-Questa consegna è un pacchetto sorgente, non un deploy. La resa realtime non va confusa con le tavole. Verifiche e limiti sono in `reports/verification.json`.
+L’installer modifica esclusivamente il tag script e copia il bridge accanto a index.html. Conserva un backup. Eseguire sui repository locali e ridistribuire con il workflow esistente:
+
+```bash
+python integration/install-bridge.py --profile studio /repo/mementostudio/index.html
+python integration/install-bridge.py --profile services /repo/servizi/index.html
+python integration/install-bridge.py --profile projects /repo/Portfolio/index.html
+python integration/install-bridge.py --profile levelup /repo/mementolevelup/dist/index.html
+python integration/install-bridge.py --profile start /repo/mementostart/index.html
+```
+
+Nelle pagine standalone il bridge è inattivo. Non legge né invia dati dei form. Il helper Framer rimane `integration/framer-controls.js`.

@@ -1,33 +1,42 @@
 
-> memento-tide-vercel@0.11.0 test
+> memento-tide-vercel@0.12.0 test
 > node --test scripts/*.test.mjs
 
-✔ Child bridge waits for real bottom scroll and emits END exactly once (3.79882ms)
-✔ Child bridge does not auto-exit short pages on entry but accepts a deliberate downward gesture (1.540328ms)
-✔ Nested scrolling and spoofed messages cannot start the loop (0.951357ms)
-✔ Visibility change cancels a pending end and returning after END resets scroll (1.185274ms)
-✔ Loop and flick selection behave in both directions, including cancelled and stale drags (1.513739ms)
-✔ The circular camera stays continuous across all seams and descent looks downward (1.631017ms)
-✔ All five pages open from their real URL, return reversibly, and retain only one iframe (56.0944ms)
-✔ Back/Forward restores selected section and content without new history entries (12.467804ms)
-✔ Escape reverses a partial entry without a jump or stuck inert state (3.087097ms)
-✔ Late iframe load events cannot mark a different destination loaded (2.951616ms)
-✔ A pointer swipe cancels its click and pointer cancellation settles cleanly (4.965325ms)
-✔ Cross-origin bridge rejects wrong source, origin, stage, and session (0.501752ms)
-✔ A stationary tap on the selected sculpture can immediately open the page (2.233233ms)
-✔ Rapid next clicks retain the queued destination instead of resetting the animation (6.730367ms)
-✔ Motion duration uses wall time at a low frame rate and Escape cancels queued entry (3.536792ms)
-✔ Five platforms form a regular pentagon and camera stays at waterline at every stop (0.198714ms)
-✔ End-of-page loop raises the scene from below and does not replay an END twice (5.455751ms)
-✔ Framer selection updates history and RETURN cancels a queued opening (5.616809ms)
-✔ Framer selection during entry exits before changing the scene (3.715477ms)
-✔ The static preview confines all paths to public (1.306172ms)
-✔ Static preview matches Services, asset, redirect and missing-file behavior (47.57322ms)
-ℹ tests 21
+✔ Arrival at the bottom stays readable; a fresh downward gesture completes the loop once (4.367972ms)
+✔ Short pages remain open until deliberate input after the entrance guard (1.123795ms)
+✔ Nested scrollers and modal dialogs consume input before the outer page can loop (1.026982ms)
+✔ Projects custom viewport controls the boundary, not the non-scrolling document (0.939342ms)
+✔ Touch must begin at the end and travel vertically toward the next page (1.030077ms)
+✔ Wrong source/origin/session is ignored; returning after the end resets the scroll root (0.947524ms)
+✔ Hidden content cannot trigger END, and a repeated keyboard hold does not dismiss it (1.111737ms)
+✔ Studio virtual navigation reaches its final scene before a new gesture can exit (0.977218ms)
+✔ Studio captures a final touch pointer before its own handler wraps to the first room (2.192188ms)
+✔ Studio exits before its native 65 px wheel threshold can wrap the final room (0.987402ms)
+✔ Levelup advances its native gallery and waits for a fresh gesture on the last card (0.894996ms)
+✔ Loop and flick selection behave in both directions, including cancelled and stale drags (1.330131ms)
+✔ The circular camera stays continuous across all seams and descent looks downward (1.397941ms)
+✔ All five pages open from their real URL, return reversibly, and retain only one iframe (54.989187ms)
+✔ Back/Forward restores selected section and content without new history entries (31.006105ms)
+✔ Escape reverses a partial entry without a jump or stuck inert state (10.220032ms)
+✔ Late iframe load events cannot mark a different destination loaded (4.074757ms)
+✔ A pointer swipe cancels its click and pointer cancellation settles cleanly (7.59255ms)
+✔ Cross-origin bridge rejects wrong source, origin, stage, and session (0.575452ms)
+✔ A stationary tap on the selected sculpture can immediately open the page (4.618663ms)
+✔ Rapid next clicks retain the queued destination instead of resetting the animation (13.730638ms)
+✔ Motion duration uses wall time at a low frame rate and Escape cancels queued entry (8.371233ms)
+✔ Five platforms form a regular pentagon and camera stays at waterline at every stop (0.269359ms)
+✔ End-of-page loop raises the scene from below and does not replay an END twice (4.228254ms)
+✔ Framer selection updates history and RETURN cancels a queued opening (8.334488ms)
+✔ Framer selection during entry exits before changing the scene (9.125606ms)
+✔ Vertical wheel enters the selected embed; horizontal wheel selects the adjacent stage (12.086322ms)
+✔ Vertical swipes open the embed without selecting a neighbour or emitting a click (5.421748ms)
+✔ The static preview confines all paths to public (1.455437ms)
+✔ Static preview matches Services, asset, redirect and missing-file behavior (72.871227ms)
+ℹ tests 30
 ℹ suites 0
-ℹ pass 21
+ℹ pass 30
 ℹ fail 0
 ℹ cancelled 0
 ℹ skipped 0
 ℹ todo 0
-ℹ duration_ms 305.309495
+ℹ duration_ms 405.631486

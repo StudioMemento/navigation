@@ -1,5 +1,5 @@
 {
-  "version": "v011",
+  "version": "v012",
   "checks": [
     {
       "name": "Valid GLB family_v007/mobile/optimized/family_neighbors.glb",
@@ -142,6 +142,10 @@
       "pass": true
     },
     {
+      "name": "Module /src/app.js → ./cinematic.js",
+      "pass": true
+    },
+    {
       "name": "Module /src/app.js → ./cinematography.js",
       "pass": true
     },
@@ -235,6 +239,6 @@
     }
   ],
   "errors": [],
-  "files": 32,
-  "bytes": 17077892
+  "files": 33,
+  "bytes": 17085827
 }

@@ -1,0 +1,1 @@
+<script src="/tide-child-bridge.js" defer data-tide-end-selector="#pagination button:last-child[aria-current=&quot;true&quot;]" data-tide-reset-selector="#pagination button:first-child" data-tide-next-selector="#pagination button[aria-current=&quot;true&quot;] + button"></script>

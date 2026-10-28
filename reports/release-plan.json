@@ -1,0 +1,54 @@
+{
+  "teamId": "team_i3FLB01EQajblQsRMdB6bBAr",
+  "productionChanged": false,
+  "hub": {
+    "repo": "navigation",
+    "project": "prj_PknpuQYIJjGLrDfD8kTKtd6hLp8P",
+    "baseCommit": "fdcb5bb4717c9c81eea9042d6980ba9438b0985e",
+    "preview": "https://mementonav-6o1ye0tsn-studio-memento-s-projects.vercel.app"
+  },
+  "children": [
+    {
+      "repo": "mementostudio",
+      "project": "prj_Brz3WLdDgSU8iz5nxEmUewFRKesL",
+      "name": "mementostudio",
+      "index": "index.html",
+      "output": "site",
+      "baseCommit": "238852e840c06899ee9e1411097e947ab67fae33"
+    },
+    {
+      "repo": "servizi",
+      "project": "prj_jgBAmJCm9n5pO2oNuDI7wgvsxjjh",
+      "name": "mementoservizi",
+      "index": "index.html",
+      "output": "site/dist",
+      "build": "build.mjs",
+      "baseCommit": "bfb4813493fb98dc9775399eda3627d50c02e78a"
+    },
+    {
+      "repo": "Portfolio",
+      "project": "prj_E46pr1Hilt3Aeucc5SkDwretQDss",
+      "name": "mementoportfolio",
+      "index": "index.html",
+      "output": "site",
+      "scrollRoot": "#viewport",
+      "baseCommit": "f94d1976d4262006fa08be2a2e21abc4c8a33d11"
+    },
+    {
+      "repo": "mementolevelup",
+      "project": "prj_RAhppqgL3tl3ghidZpiodZL0gDQZ",
+      "name": "mementolevelup",
+      "index": "dist/index.html",
+      "output": "site/dist",
+      "baseCommit": "68744ec141a4252c6b665d5c5f386d572d8e679b"
+    },
+    {
+      "repo": "mementostart",
+      "project": "prj_BXg6vukS9E6SQaGuEuYaOTeABcSY",
+      "name": "mementostart",
+      "index": "index.html",
+      "output": "site",
+      "baseCommit": "91fcaf10e77be1c1a7bd199391fa970fc1f50b18"
+    }
+  ]
+}

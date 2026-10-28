@@ -1,0 +1,1 @@
+<script src="/tide-child-bridge.js" defer data-tide-end-selector=".nav-item[data-zone=&quot;3&quot;][aria-current=&quot;page&quot;]" data-tide-reset-selector=".nav-item[data-zone=&quot;0&quot;]"></script>

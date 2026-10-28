@@ -1,0 +1,1 @@
+<script src="/tide-child-bridge.js" defer data-tide-block-selector="#mm-compose:not([hidden])"></script>
