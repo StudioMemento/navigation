@@ -209,7 +209,7 @@ const MEMENTO_SERVICES = [
     "kind": "service",
     "chapter": "visualizzazione",
     "image": "modello-3d-v28",
-    "title": "Modello 3D del tuo prodotto",
+    "title": "Modello 3D",
     "description": "Ricostruiamo il tuo prodotto in 3D. Per immagini, video e contenuti interattivi.",
     "features": [
       "Il modello con geometria e dettagli del prodotto.",
@@ -217,7 +217,7 @@ const MEMENTO_SERVICES = [
       "I file per immagini, video o interattività."
     ],
     "group": "3d",
-    "catalogTitle": "Modello 3D del tuo prodotto",
+    "catalogTitle": "Modello 3D",
     "alt": "Modello 3D di prodotto — visual illustrativo Memento",
     "details": {
       "does": "Ricostruiamo il prodotto in digitale, curandone geometria, materiali e dettagli in base ai riferimenti disponibili.",

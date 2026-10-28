@@ -1,12 +1,14 @@
-MEMENTO — SERVIZI V31
+MEMENTO — SERVIZI V32
 44 servizi, 6 bundle, 200 tavole commerciali.
 
-POLISH V31
-- Più spazio sopra al carousel bundle: 96–160 px responsive, più safe area.
-- Schede slider e popup nere opache, con bordo completo sempre visibile.
-- Dissolvenza del bordo inferiore limitata alle miniature del catalogo.
-- Titoli dei servizi con gradiente ambra sempre visibile.
-- Chevron diagonale ambra su hover e focus della scheda attiva.
+POLISH V32
+- Immagini contenute nelle schede, più margine e blending graduale.
+- Rimosso il velo nero inferiore delle slide; superfici nere e bordi completi.
+- Titoli senza tagli, allineati al padding; WEB DESIGN e 3D DESIGN.
+- Nome del servizio semplificato in Modello 3D.
+- Catalogo mobile a due colonne e margini laterali più ampi.
+- Swipe ripetuti, piccoli movimenti del trackpad, inerzia e inversioni
+  gestiti dal controllo condiviso di tutti i carousel e popup.
 
 VERCEL
 Estrarre lo ZIP e caricare il CONTENUTO nella root del repository.
@@ -30,7 +32,9 @@ consultare INTEGRAZIONE_NAV.txt. La Nav Framer live non viene modificata.
 
 VERIFICHE
 Test funzionali del catalogo, carousel, popup, focus, CTA e bridge iframe.
-Superfici e titoli controllati su sei formati, da 320 a 2560 px.
-Slide opache verificate anche su fondale bianco; popup verificato su mobile.
-Build eseguita dal contenuto estratto di questo ZIP, con confronto di tutti
-i file prodotti rispetto al runtime verificato.
+Controllo geometrico in Chromium su nove formati, da 320 a 2560 px:
+837 verifiche su catalogo e slider, 1800 verifiche sulle tavole dei popup.
+Test simulati di trackpad, touch, mouse, tastiera e cancellazione gesture.
+Build dal contenuto estratto dello ZIP e confronto di tutti i file prodotti
+rispetto al runtime verificato. Non è una certificazione su hardware fisico
+Mac/iPhone o su ogni motore browser.

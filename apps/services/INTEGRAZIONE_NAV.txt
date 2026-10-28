@@ -1,4 +1,4 @@
-MEMENTO — INTEGRAZIONE SERVIZI V31 NELLA NAV
+MEMENTO — INTEGRAZIONE SERVIZI V32 NELLA NAV
 
 Il catalogo rileva automaticamente se si trova in un iframe e mantiene
 html, body e sezioni trasparenti. Aperto da solo usa un unico fondo scuro.

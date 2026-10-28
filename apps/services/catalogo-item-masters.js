@@ -8,14 +8,13 @@ const MEMENTO_ITEM_MASTERS = {
         "label": "Il servizio",
         "image": "01-servizio-v28",
         "title": [
-          "Modello 3D",
-          "del tuo prodotto."
+          "Modello 3D"
         ],
         "copy": [
           "Ricostruiamo il tuo prodotto in 3D.",
           "Per immagini, video e contenuti interattivi."
         ],
-        "titleUnits": 7.292
+        "titleUnits": 5.4
       },
       {
         "key": "outputs",

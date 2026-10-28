@@ -11,15 +11,15 @@
   const services = [...MEMENTO_SERVICES, MEMENTO_APP_SERVICE];
   const byId = new Map([...services, ...MEMENTO_BUNDLES].map(item => [item.id, item]));
   const sections = MEMENTO_SECTIONS;
-  const titleUnits = {'WEB': 2.32, '3D': 1.4, 'VIDEO': 3.10, 'VISUAL': 3.57, 'BRANDING': 5.30, 'DESIGN': 4.1};
+  const titleUnits = {'WEB DESIGN': 6.65, '3D DESIGN': 5.7, 'VIDEO': 3.10, 'VISUAL': 3.57, 'BRANDING': 5.30, 'DESIGN': 4.1};
   const orderedServices = sections.flatMap(section => (section.catalogueIds || section.ids).map(id => byId.get(id)));
   const bundles = ['b-online', 'b-lancio', 'b-identita', 'b-apertura', 'b-campagna', 'b-social'].map(id => byId.get(id));
   const title = item => item.title;
   const medium = item => item.group === 'print' && item.id !== 'presentazione' ? 'physical' : 'digital';
   const sectionFor = item => sections.find(section => (section.catalogueIds || section.ids).includes(item.id));
   const imageSizes = {
-    grid: '(max-width: 479px) calc((100vw - 48px) / 2), (max-width: 767px) calc((100vw - 64px) / 3), (max-width: 1099px) calc((100vw - 108px) / 4), (min-width: 1920px) 336px, 18vw',
-    slide: '(max-width: 1023px) 128vw, (min-width: 1960px) 1720px, 90vw',
+    grid: '(max-width: 767px) calc((100vw - 88px) / 2), (max-width: 1099px) calc((100vw - 108px) / 4), (min-width: 1920px) 336px, 18vw',
+    slide: '(max-width: 767px) 82vw, (max-width: 1023px) 86vw, (min-width: 1960px) 1720px, 90vw',
     hero: '(max-width: 767px) 100vw, 83vw',
     detail: '(max-width: 767px) 90vw, (min-width: 1720px) 1040px, 64vw',
     thumbnail: '(max-width: 767px) 54px, 76px'
@@ -50,7 +50,7 @@
     }
     return `<span>${esc(words.slice(0, split).join(' '))}</span> <span>${esc(words.slice(split).join(' '))}</span>`;
   }
-  const spreadTitle = label => [...label].map(letter => `<span aria-hidden="true">${esc(letter)}</span>`).join('');
+  const spreadTitle = label => [...label].map(letter => `<span aria-hidden="true">${letter === ' ' ? '&nbsp;' : esc(letter)}</span>`).join('');
   function slideCard(item, index, bundle = null) {
     const heading = title(item);
     const lines = item.kind === 'bundle' ? [] : MEMENTO_ITEM_MASTERS[item.id]?.slides[0].copy || MEMENTO_SLIDE_COPY[item.id] || [MEMENTO_PLANNING[item.id][3], item.description];
@@ -109,7 +109,7 @@
     const base = `assets/bundles-v29/${id}/${role}`;
     const widths = role === 'hero' ? [320, 640, 1536] : [768, 1536];
     const prefix = deferred ? 'data-' : '';
-    return `${prefix}src="${base}-1536.webp" ${prefix}srcset="${widths.map(width => `${base}-${width}.webp ${width}w`).join(', ')}" sizes="(max-width: 1023px) 128vw, (min-width: 1960px) 1720px, 90vw" width="1536" height="1024" alt="" draggable="false" decoding="async" ${eager ? 'loading="eager" fetchpriority="high"' : 'loading="lazy"'}`;
+    return `${prefix}src="${base}-1536.webp" ${prefix}srcset="${widths.map(width => `${base}-${width}.webp ${width}w`).join(', ')}" sizes="(max-width: 767px) 82vw, (max-width: 1023px) 86vw, (min-width: 1960px) 1720px, 90vw" width="1536" height="1024" alt="" draggable="false" decoding="async" ${eager ? 'loading="eager" fetchpriority="high"' : 'loading="lazy"'}`;
   }
   const includedServices = (item, className = '') => `<ul class="bundle-services ${className}">${item.covers.map(id => `<li>${esc(title(byId.get(id)))}</li>`).join('')}</ul>`;
   $('#bundle-boards').innerHTML = '<div class="carousel-stage">' + bundles.map((item, index) => {

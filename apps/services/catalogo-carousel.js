@@ -18,7 +18,7 @@ class MementoCarousel {
     this.reduced = matchMedia('(prefers-reduced-motion: reduce)');
     this.compact = matchMedia('(max-width: 767px)');
     this.raf = this.autoTimer = 0;
-    this.pointer = this.motion = null;
+    this.pointer = this.motion = this.wheelGesture = null;
     this.autoEnabled = autoplay;
     this.inView = !('IntersectionObserver' in window);
     this.nearViewport = this.inView;
@@ -51,7 +51,12 @@ class MementoCarousel {
     this.listen(element, 'pointermove', event => this.move(event), {passive: false});
     this.listen(window, 'pointerup', event => this.up(event));
     this.listen(window, 'pointercancel', event => this.up(event, true));
+    this.listen(element, 'wheel', event => this.wheel(event), {passive: false});
     }
+    this.listen(window, 'blur', () => {
+      if (this.pointer) this.up({pointerId: this.pointer.id}, true);
+      this.wheelGesture = null;
+    });
     this.listen(element, 'lostpointercapture', event => {
       // Implicit touch capture on a child is released when the carousel takes ownership.
       // That bubbling event is not a cancellation of the carousel's new capture.
@@ -219,17 +224,62 @@ class MementoCarousel {
     this.target = Math.round(this.target) + direction;
     this.settle();
   }
+  wheel(event) {
+    if (event.defaultPrevented || event.ctrlKey || event.metaKey || this.pointer || this.count < 2) return;
+    if (event.target.closest('.carousel') !== this.element || event.target.closest('input, textarea, select, [contenteditable="true"], [data-no-swipe]')) return;
+    if (this.interactiveContents && !event.target.closest('[data-slide]')) return;
+    // Keep vertical page/board scrolling and trackpad pinch zoom native. Shift
+    // plus a mouse wheel is the conventional alternative to a horizontal wheel.
+    const unit = event.deltaMode === 1 ? 16 : event.deltaMode === 2 ? this.width : 1;
+    const dx = (event.shiftKey && !event.deltaX ? event.deltaY : event.deltaX) * unit;
+    const dy = event.shiftKey && !event.deltaX ? 0 : event.deltaY * unit;
+    if (!Number.isFinite(dx) || !Number.isFinite(dy) || Math.abs(dx) < .1 || Math.abs(dx) <= Math.abs(dy) * 1.1) return;
+    if (event.cancelable) event.preventDefault();
+    this.interact();
+    const now = performance.now(), magnitude = Math.abs(dx), direction = Math.sign(dx);
+    let gesture = this.wheelGesture;
+    const quiet = !gesture || now - gesture.lastAt > 160;
+    const reverseTotal = gesture && direction !== gesture.direction ? (gesture.reverseTotal || 0) + magnitude : 0;
+    if (gesture) gesture.reverseTotal = reverseTotal;
+    const reverse = reverseTotal >= 12;
+    // A fresh finger stroke can begin while the previous inertial tail is still
+    // arriving. A renewed pulse after that tail re-arms the player immediately;
+    // the decaying tail itself must never advance another board.
+    const freshPulse = gesture?.committed && direction === gesture.direction && now - gesture.committedAt >= 180 && gesture.tail && magnitude >= Math.max(8, gesture.trough * 3);
+    if (quiet || reverse || freshPulse) {
+      gesture = this.wheelGesture = {direction, total: reverse && !quiet ? reverseTotal - magnitude : 0, peak: magnitude, trough: Infinity, tail: false, committed: false};
+    }
+    gesture.lastAt = now;
+    if (direction !== gesture.direction) return;
+    gesture.peak = Math.max(gesture.peak, magnitude);
+    if (gesture.committed) {
+      if (magnitude <= gesture.peak * .35) {
+        gesture.tail = true;
+        gesture.trough = Math.min(gesture.trough, magnitude);
+      }
+      return;
+    }
+    gesture.total += magnitude;
+    // The threshold is in normalized pixels, never a fraction of a wide card.
+    if (gesture.total >= 12) {
+      gesture.committed = true;
+      gesture.committedAt = now;
+      this.step(direction);
+    }
+  }
   down(event) {
     if (event.isPrimary === false && this.pointer) { this.up({pointerId: this.pointer.id}, true); return; }
     if (this.interactiveContents && !this.externalGestures && !event.target.closest('[data-slide]')) return;
     if (this.pointer || event.isPrimary === false || event.button !== 0 || event.target.closest('input, textarea, select, [contenteditable="true"], [data-no-swipe]')) return;
     this.interact();
+    const origin = Math.round(this.motion?.kind === 'settle' ? this.target : this.current);
+    this.wheelGesture = null;
     cancelAnimationFrame(this.raf);
     this.raf = 0;
     this.motion = null;
     this.target = this.current;
     this.suppressClick = this.keyboardFocus = false;
-    this.pointer = {id: event.pointerId, x: event.clientX, y: event.clientY, start: this.current, lastX: event.clientX, lastT: performance.now(), velocity: 0, axis: null};
+    this.pointer = {id: event.pointerId, x: event.clientX, y: event.clientY, start: this.current, origin, lastX: event.clientX, lastT: performance.now(), velocity: 0, axis: null};
   }
   move(event) {
     const pointer = this.pointer;
@@ -237,7 +287,7 @@ class MementoCarousel {
     const dx = event.clientX - pointer.x, dy = event.clientY - pointer.y;
     if (!pointer.axis) {
       if (Math.abs(dy) > 8 && Math.abs(dy) > Math.abs(dx) * 1.1) { pointer.axis = 'y'; return; }
-      if (Math.abs(dx) < 8 || Math.abs(dx) < Math.abs(dy) * 1.1) return;
+      if (Math.abs(dx) < 6 || Math.abs(dx) < Math.abs(dy) * 1.1) return;
       pointer.axis = 'x';
       // Capture only a confirmed drag: normal taps must retain their original button target.
       try { this.element.setPointerCapture(event.pointerId); } catch { /* Native cancellation may already have released it. */ }
@@ -260,27 +310,27 @@ class MementoCarousel {
     // A short flick can have no intermediate pointermove on a busy touch device.
     const dx = (event.clientX ?? pointer.lastX) - pointer.x;
     const dy = (event.clientY ?? pointer.y) - pointer.y;
-    if (!cancelled && !pointer.axis && Math.abs(dx) >= 24 && Math.abs(dx) > Math.abs(dy) * 1.15) {
+    if (!cancelled && !pointer.axis && Math.abs(dx) >= 18 && Math.abs(dx) > Math.abs(dy) * 1.15) {
       pointer.axis = 'x';
       this.target = pointer.start - dx / this.stride;
     }
     this.pointer = null;
     this.element.classList.remove('is-dragging');
     if (this.element.hasPointerCapture(pointer.id)) this.element.releasePointerCapture(pointer.id);
-    if (pointer.axis !== 'x') { this.target = Math.round(this.current); this.settle(); return; }
+    if (pointer.axis !== 'x') { this.target = pointer.origin; this.settle(); return; }
     this.suppressClick = true;
     clearTimeout(this.clickTimer);
     this.clickTimer = setTimeout(() => { this.suppressClick = false; }, 450);
-    if (cancelled) { this.target = Math.round(pointer.start); this.settle(); return; }
+    if (cancelled) { this.target = pointer.origin; this.settle(); return; }
     // Include the final coalesced movement, even if no last move was dispatched.
     this.target = pointer.start - dx / this.stride;
     const velocity = cancelled || performance.now() - pointer.lastT > 100 ? 0 : Math.max(-.004, Math.min(.004, pointer.velocity));
     const progress = this.target - pointer.start;
-    const projection = Math.max(-.7, Math.min(.7, velocity * 220));
+    const projection = Math.abs(dx) >= 12 ? Math.max(-.7, Math.min(.7, velocity * 220)) : 0;
     let destination = Math.round(this.target + projection);
-    if (!cancelled && (Math.abs(dx) >= 24 || Math.abs(progress) > .12 || Math.abs(velocity) > .0005)) {
-      const direction = Math.sign(Math.abs(dx) >= 24 ? -dx : Math.abs(progress) > .04 ? progress : velocity);
-      destination = direction > 0 ? Math.max(destination, Math.round(pointer.start) + 1) : Math.min(destination, Math.round(pointer.start) - 1);
+    if (!cancelled && (Math.abs(dx) >= 18 || Math.abs(progress) > .12 || (Math.abs(dx) >= 12 && Math.abs(velocity) > .0005))) {
+      const direction = Math.sign(Math.abs(dx) >= 18 ? -dx : Math.abs(progress) > .04 ? progress : velocity);
+      destination = direction > 0 ? Math.max(destination, pointer.origin + 1) : Math.min(destination, pointer.origin - 1);
     }
     this.target = destination;
     this.settle(velocity);
@@ -317,7 +367,8 @@ class MementoCarousel {
     this.observer.disconnect();
     this.visibilityObserver?.disconnect();
     this.raf = this.autoTimer = 0;
-    this.motion = this.pointer = null;
+    if (this.pointer && this.element.hasPointerCapture(this.pointer.id)) this.element.releasePointerCapture(this.pointer.id);
+    this.motion = this.pointer = this.wheelGesture = null;
     this.element.classList.remove('is-dragging', 'is-moving');
   }
   setAutoplay(enabled) {

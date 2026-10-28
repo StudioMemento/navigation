@@ -1,0 +1,121 @@
+/* V32 — bounded artwork, generous touch gutters, complete type silhouettes. */
+.category-section {
+  --heading-size: min(calc(var(--slide-width) * .145), calc(var(--slide-width) / var(--title-units)), 190px);
+}
+.category-heading h2.spread-title,
+.category-heading :is(#heading-web, #heading-3d).spread-title {
+  width: 100%; max-width: 100%; justify-content: space-between; gap: 0;
+  line-height: 1.16; padding-block: .04em .12em; margin: 0;
+}
+.category-heading .spread-title > span { flex: 0 0 auto; }
+
+/* No bottom veil across a board. Feather only the photograph into its black
+   canvas, with the complete image contained inside that canvas. */
+.category-section .slide-visual,
+#bundles .bundle-visual {
+  inset: 4% 3% 4% auto; width: 69%; height: 92%; max-width: none;
+  object-fit: contain; object-position: center; transform: none;
+  -webkit-mask: url('assets/masks/photo-landscape-v32.png') center / 100% 100% no-repeat;
+  mask: url('assets/masks/photo-landscape-v32.png') center / 100% 100% no-repeat;
+}
+.item-master .item-master-art,
+.item-master--commercial .item-master-art {
+  inset: 4% 3% 4% auto; width: 69%; height: 92%;
+  display: flex; align-items: center; justify-content: center;
+  overflow: visible;
+}
+.item-master .item-master-art img {
+  width: 100%; height: auto; max-height: 100%; object-fit: contain;
+  object-position: center; transform: none;
+  -webkit-mask: url('assets/masks/photo-landscape-v32.png') center / 100% 100% no-repeat;
+  mask: url('assets/masks/photo-landscape-v32.png') center / 100% 100% no-repeat;
+}
+
+/* Gradient text needs room for descenders, accents and glyph overhangs.
+   The visible ink still starts at the same inset as the copy above it. */
+.category-section .slide-title {
+  bottom: var(--card-inset); line-height: 1.12;
+  padding: .06em .09em .18em .015em;
+  margin: -.06em -.09em -.18em -.015em;
+  max-width: calc(100% - var(--card-inset) * 2);
+  overflow: visible;
+}
+.category-section .slide-title > span { white-space: normal; }
+.item-master-gradient {
+  line-height: 1.12; padding: .06em .09em .18em .015em;
+  margin: -.06em -.09em -.18em -.015em;
+}
+.item-master .service-scene .item-master-title { line-height: 1.12; }
+#bundles .bundle-title { line-height: 1.12; }
+.catalogue-page .service-title {
+  line-height: 1.24; padding: .04em .08em .16em .01em;
+  margin: -.04em -.08em -.16em -.01em;
+}
+
+@media (max-width: 767px) {
+  :root { --gutter: clamp(32px, 8.5vw, 52px); }
+  .category-section { --card-inset: clamp(20px, calc(var(--slide-width) * .065), 32px); }
+  #detail-dialog.has-item-master { --master-inset: clamp(20px, calc(var(--slide-width) * .065), 32px); }
+  .catalogue-page .service-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px 12px; }
+  .catalogue-page .service-card { aspect-ratio: .9; }
+  .catalogue-page .service-title { font-size: clamp(13px, 9.5cqw, 20px); }
+  .catalogue-page .service-copy { inset: auto 10px 14px; }
+  .catalogue-heading { flex-wrap: wrap; }
+  .catalogue-heading h2 { width: 100%; font-size: clamp(27px, 6.8vw, 42px); }
+  .catalogue-filters { width: 100%; }
+  .catalogue-filters button { min-width: 0; padding-inline: 10px; }
+  .category-section .carousel-controls, #bundle-controls {
+    max-width: calc(100% - var(--safe-left) - var(--safe-right));
+  }
+  .category-section .carousel-controls .carousel-dot {
+    width: clamp(26px, 7vw, 38px); min-width: 0; flex-shrink: 1;
+  }
+}
+
+/* Portrait puts a complete photograph between the copy and the title.
+   No negative inset or zoom beyond the card: every source edge stays inside. */
+@media (max-width: 1023px) and (orientation: portrait) {
+  .category-section .slide-visual,
+  #bundles .bundle-visual {
+    inset: 23% 4% 18%; width: 92%; height: 59%; object-fit: contain;
+    -webkit-mask-image: url('assets/masks/photo-portrait-v32.png');
+    mask-image: url('assets/masks/photo-portrait-v32.png');
+  }
+  #bundles .bundle-visual { top: 30%; height: 49%; }
+  .item-master .item-master-art,
+  .item-master--commercial .item-master-art {
+    inset: 23% 4% 21%; width: 92%; height: 56%;
+  }
+  .item-master .item-master-art img {
+    -webkit-mask-image: url('assets/masks/photo-portrait-v32.png');
+    mask-image: url('assets/masks/photo-portrait-v32.png');
+  }
+  .item-master--commercial .scene-process .item-master-art { top: 37%; height: 42%; }
+  .item-master--commercial .scene-start .item-master-art { top: 23%; height: 47%; }
+  .category-section .slide-title { font-size: calc(var(--slide-width) * .108); }
+  #bundles .bundle-layout { padding: clamp(20px, calc(var(--slide-width) * .065), 42px); }
+  #bundles .bundle-title { font-size: calc(var(--slide-width) * .108); }
+}
+
+@media (min-width: 768px) and (max-width: 1023px) and (orientation: portrait) {
+  .category-section .slide-visual, #bundles .bundle-visual { inset: 9% 3% 9% auto; width: 78%; height: 82%; }
+  .item-master .item-master-art { inset: 16% 3% 16% auto; width: 80%; height: 68%; }
+  .category-section .slide-title, #bundles .bundle-title { font-size: calc(var(--slide-width) * .085); }
+}
+
+@media (max-height: 600px) and (orientation: landscape) {
+  #detail-dialog.has-item-master { --master-inset: clamp(18px, calc(var(--popup-height) * .06), 26px); }
+  .category-section .slide-title, #bundles .bundle-title { font-size: clamp(26px, calc(var(--slide-width) * .058), 48px); }
+  .item-master .service-scene .item-master-title { line-height: 1.08; }
+  .item-master .item-master-art { inset: 4% 3% 4% auto; width: 65%; height: 92%; }
+}
+
+@media (max-width: 370px) and (orientation: portrait) {
+  .bundle-master .bundle-components { gap: 6px; }
+  .bundle-master .bundle-components-intro { margin-bottom: 9px; }
+  .bundle-master .bundle-scope { margin-top: 10px; }
+}
+
+@media (forced-colors: active) {
+  .category-section .slide-visual, #bundles .bundle-visual, .item-master .item-master-art img { -webkit-mask: none; mask: none; }
+}
