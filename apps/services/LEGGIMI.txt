@@ -1,11 +1,22 @@
 MEMENTO — CATALOGO SERVIZI V28
 44 servizi, 44 copertine e 176 tavole commerciali. 6 bundle conservati.
 
-PACCHETTO PER VERCEL
-Estrarre questo ZIP. index.html e assets/ sono nella root del sito.
-Il contenuto è un sito statico già pronto: non richiede compilazione,
-installazione di dipendenze, database o variabili d’ambiente.
-La directory da pubblicare è quella che contiene index.html.
+PACCHETTO PER VERCEL — CORREZIONE BUILD 28.0.1
+Estrarre questo ZIP e caricare il suo contenuto nella root del repository
+StudioMemento/servizi. package.json, vercel.json, build.mjs, index.html
+e assets/ devono essere allo stesso livello, non in una sottocartella.
+
+vercel.json imposta automaticamente:
+- Framework Preset: Other
+- Install Command: nessuno (non ci sono dipendenze)
+- Build Command: npm run build
+- Output Directory: dist
+
+In Vercel, Root Directory deve essere la root del repository (campo vuoto).
+La build copia il catalogo statico in dist/ senza modificarne i contenuti.
+Il pacchetto include package.json e il comando richiesto dal deploy,
+correggendo l'errore ENOENT su /vercel/path0/package.json.
+Non servono database o variabili d'ambiente.
 Le route utilizzano hash, per esempio #servizio/menu-digitale.
 Questo archivio non esegue un deploy su Vercel.
 
