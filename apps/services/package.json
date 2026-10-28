@@ -1,6 +1,6 @@
 {
   "name": "memento-servizi",
-  "version": "30.0.0",
+  "version": "31.0.0",
   "private": true,
   "scripts": {
     "build": "node build.mjs"

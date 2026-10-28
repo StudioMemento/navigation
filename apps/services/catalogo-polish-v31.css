@@ -1,0 +1,62 @@
+/* V31 — opaque slideshow boards; the catalogue alone keeps its lower fade. */
+#bundles.bundle-opening {
+  padding-top: calc(clamp(96px, 8vw, 160px) + env(safe-area-inset-top, 0px));
+}
+
+/* Keep the page transparent for Nav, but give every slide a solid black plane.
+   Image masks now blend into this black plane, never into the parent page. */
+.category-section .showcase-card,
+#bundle-boards > .carousel-stage > .bundle-board,
+.item-master .service-scene {
+  background: #000;
+}
+.showcase-card .card-surface {
+  background: #000;
+  -webkit-mask: none;
+  mask: none;
+}
+.category-section .service-carousel,
+#bundle-boards,
+#detail-dialog .popup-carousel {
+  -webkit-mask: none;
+  mask: none;
+}
+
+/* A continuous chamfered rim, including the lower edge, on all slide boards. */
+.showcase-card::before,
+.bundle-board::before {
+  -webkit-mask: none;
+  mask: none;
+}
+
+/* The gradient follows the actual title width instead of the full board. */
+.catalogue-page .service-title,
+.category-section .slide-title {
+  background: var(--memento-title-gradient);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+}
+.category-section .slide-title {
+  right: auto;
+  width: fit-content;
+  max-width: calc(100% - var(--card-inset) * 2);
+}
+.catalogue-page .service-card:is(:hover, :focus-visible) .service-action::after,
+.category-section .showcase-card[data-active="true"]:is(:hover, :focus-visible) .slide-action::after {
+  background: #e4ad63;
+}
+
+@media (forced-colors: active) {
+  .catalogue-page .service-title,
+  .category-section .slide-title {
+    background: none;
+    color: CanvasText;
+    -webkit-text-fill-color: CanvasText;
+  }
+  .catalogue-page .service-card:is(:hover, :focus-visible) .service-action::after,
+  .category-section .showcase-card[data-active="true"]:is(:hover, :focus-visible) .slide-action::after {
+    background: Highlight;
+  }
+}

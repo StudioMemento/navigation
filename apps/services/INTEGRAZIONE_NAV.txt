@@ -1,7 +1,10 @@
-MEMENTO — INTEGRAZIONE SERVIZI V30 NELLA NAV
+MEMENTO — INTEGRAZIONE SERVIZI V31 NELLA NAV
 
 Il catalogo rileva automaticamente se si trova in un iframe e mantiene
 html, body e sezioni trasparenti. Aperto da solo usa un unico fondo scuro.
+Le schede degli slider e dei popup sono nere opache, con bordo completo.
+La dissolvenza inferiore in alpha riguarda solo le miniature del catalogo.
+Il margine iniziale dei bundle è 96–160 px, più la safe area del dispositivo.
 
 Per sfocare anche acqua/fog del contenitore, caricare il piccolo helper
 NEL DOCUMENTO MEMENTO NAV, esterno all'iframe (non dentro il catalogo):
