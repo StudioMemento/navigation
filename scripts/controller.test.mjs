@@ -5,6 +5,7 @@ import vm from 'node:vm';
 import {randomUUID} from 'node:crypto';
 import * as THREE from '../public/vendor/three.module.js';
 import * as math from '../public/src/navigation.js';
+import * as cine from '../public/src/cinematography.js';
 const fixture=Object.fromEntries(await Promise.all(['navigation','cameras_family_v007','scene_contract_world_v008'].map(async name=>[name,JSON.parse(await readFile(new URL('../public/data/'+name+'.json',import.meta.url)))])));
 const source=(await readFile(new URL('../public/src/app.js',import.meta.url),'utf8')).replace(/^import .*;\n/gm,'').replace('setup().catch(reportError);raf=requestAnimationFrame(animate);','');
 function host(){
@@ -17,15 +18,15 @@ function host(){
       setAttribute(k,v){attrs.set(k,v);},getAttribute(k){return attrs.get(k);},focus(){document.activeElement=this;},append(child){this.children.push(child);},replaceChildren(...children){this.children=children;},contains(other){return other===this||this.children.includes(other);},closest(){return null;},setPointerCapture(){},hasPointerCapture(){return false;},releasePointerCapture(){}};
     nodes.set(id,node);return node;
   }
-  const document={body:element('body'),hidden:false,activeElement:null,querySelector:element,querySelectorAll(selector){return selector==='iframe'?element('#frame-host').children:[];},createElement:tag=>element(tag+'-'+nodeId++),addEventListener(){}};
+  const document={referrer:'https://memento.framer.website/',body:element('body'),hidden:false,activeElement:null,querySelector:element,querySelectorAll(selector){return selector==='iframe'?element('#frame-host').children:[];},createElement:tag=>element(tag+'-'+nodeId++),addEventListener(){}};
   const location={hash:'',search:'',pathname:'/',origin:'https://tide.local'};
   const history={scrollRestoration:'auto',pushState(state,unused,url){this.state=state;location.hash=new URL(url,location.origin).hash;historyCalls.push('push');},replaceState(state,unused,url){this.state=state;location.hash=new URL(url,location.origin).hash;historyCalls.push('replace');}};
-  const window={addEventListener(type,fn){events.set(type,fn);}};
-  const context=vm.createContext({...math,THREE,document,window,history,location,fixture,innerWidth:1440,innerHeight:900,devicePixelRatio:1,URLSearchParams,URL,AbortController,crypto:{randomUUID},performance:{now:()=>time},requestAnimationFrame:()=>1,cancelAnimationFrame(){},setTimeout:()=>1,clearTimeout(){},console,
+  const window={parent:{postMessage(){}},addEventListener(type,fn){events.set(type,fn);}};
+  const context=vm.createContext({...math,...cine,THREE,document,window,history,location,fixture,innerWidth:1440,innerHeight:900,devicePixelRatio:1,URLSearchParams,URL,AbortController,crypto:{randomUUID},performance:{now:()=>time},requestAnimationFrame:()=>1,cancelAnimationFrame(){},setTimeout:()=>1,clearTimeout(){},console,
     matchMedia:()=>({matches:false,addEventListener(){}}),assetConfiguration:()=>({}),assetEntryPoints:()=>({})});
   const run=code=>vm.runInContext(code,context);
   run(source);
-  run(`navigation=fixture.navigation;contract=fixture.scene_contract_world_v008;cameraData=fixture.cameras_family_v007;scene=new THREE.Scene();camera=new THREE.PerspectiveCamera(38,1.6,.1,550);renderer={getPixelRatio:()=>1,info:{reset(){},render:{calls:0,triangles:0},memory:{textures:0}},render(){}};water={update(){}};updatePoses();ready=true;setState('SCENE');updateLabels();`);
+  run(`navigation=fixture.navigation;contract=fixture.scene_contract_world_v008;scene=new THREE.Scene();camera=new THREE.PerspectiveCamera(38,1.6,.1,550);renderer={getPixelRatio:()=>1,info:{reset(){},render:{calls:0,triangles:0},memory:{textures:0}},render(){}};water={update(){}};layout=pentagonLayout(navigation.stages);updatePoses();ready=true;setState('SCENE');updateLabels();`);
   return{run,nodes,events,location,historyCalls,tick(n=80){for(let i=0;i<n;i++){time+=50;context.now=time;run('animate(now)');}},pop(hash){location.hash=hash;events.get('popstate')();}};
 }
 test('Loop and flick selection behave in both directions, including cancelled and stale drags',()=>{
@@ -36,12 +37,12 @@ test('Loop and flick selection behave in both directions, including cancelled an
   assert.equal(math.releaseStop({start:0,position:.22,velocity:3,moved:true,cancelled:true}),0);
 });
 test('The circular camera stays continuous across all seams and descent looks downward',()=>{
-  const poses=fixture.navigation.stages.map(s=>{const c=fixture.cameras_family_v007.cameras.find(c=>c.name==='CAM_FOCUS_'+s.id);return{position:c.positionWeb,target:c.targetWeb,fov:c.verticalFovDegrees};});
+  const poses=cine.focusPoses(cine.pentagonLayout(fixture.navigation.stages),16/9);
   for(let i=-5;i<10;i++){
     const left=math.sampleCarousel(poses,i-1e-6),right=math.sampleCarousel(poses,i+1e-6);
     assert(Math.hypot(...left.position.map((x,j)=>x-right.position[j]))<.001);
     const start=math.sampleCarousel(poses,i);let lastPitch=1;
-    for(let t=0;t<=1;t+=.05){const p=math.sampleDescent(start,t);const pitch=Math.atan2(p.target[1]-p.position[1],Math.hypot(p.target[0]-p.position[0],p.target[2]-p.position[2]));assert(pitch<=lastPitch+1e-8);lastPitch=pitch;assert(p.position[1]>1);}
+    for(let t=0;t<=1;t+=.05){const p=math.sampleDescent(start,t);const pitch=Math.atan2(p.target[1]-p.position[1],Math.hypot(p.target[0]-p.position[0],p.target[2]-p.position[2]));assert(pitch<=lastPitch+1e-8);lastPitch=pitch;assert(p.position[1]>.08&&p.position[1]<=.24);}
     assert(lastPitch< -1.2);
   }
   assert.equal(math.panelProgress(0),0);assert.equal(math.panelProgress(1),1);
@@ -91,7 +92,33 @@ test('Rapid next clicks retain the queued destination instead of resetting the a
   const h=host();h.run('stepSection(1)');h.tick(2);h.run("pointerDown({isPrimary:true,button:0,pointerId:1,clientX:1200,clientY:450,timeStamp:200});pointerEnd({pointerId:1,timeStamp:220});stepSection(1);");h.tick();assert.equal(h.run('selectedIndex'),2);assert.equal(h.run('position'),2);
 });
 test('Motion duration uses wall time at a low frame rate and Escape cancels queued entry',()=>{
-  const h=host();h.run('movePage(1);animate(100);animate(2100)');assert.equal(h.run('state'),'CONTENT');
-  h.run('movePage(0);animate(4000)');assert.equal(h.run('state'),'SCENE');
+  const h=host();h.run('movePage(1);animate(100);animate(2500)');assert.equal(h.run('state'),'CONTENT');
+  h.run('movePage(0);animate(4500)');assert.equal(h.run('state'),'SCENE');
   h.run('selectIndex(2);movePage(1)');h.events.get('keydown')({key:'Escape',target:{},preventDefault(){}});h.tick();assert.equal(h.run('state'),'SCENE');assert.equal(h.run('pendingRoute'),null);
+});
+
+test('Five platforms form a regular pentagon and camera stays at waterline at every stop',()=>{
+  const layout=cine.pentagonLayout(fixture.navigation.stages);const lengths=layout.map((s,i)=>Math.hypot(s.position[0]-layout[(i+1)%5].position[0],s.position[2]-layout[(i+1)%5].position[2]));
+  assert(Math.max(...lengths)-Math.min(...lengths)<1e-10);
+  for(const aspect of [390/844,16/9,3440/1440])for(const pose of cine.focusPoses(layout,aspect)){assert.equal(pose.position[1],.24);assert(pose.target[1]>pose.position[1]);}
+});
+test('End-of-page loop raises the scene from below and does not replay an END twice',()=>{
+  const h=host();h.run('movePage(1)');h.tick();
+  const event=h.run("({origin:new URL(frameStage.href).origin,source:frame.contentWindow,data:{channel:'memento:tide',version:1,sessionId,stageId:frameStage.id,type:'END'}})");
+  h.events.get('message')(event);h.events.get('message')(event);assert.equal(h.run('transitionMode'),'loop');assert.equal(h.run('qa.loops'),1);
+  h.tick(15);assert.match(h.nodes.get('#scene-layer').style.transform,/translate3d\(0,[0-9]/);assert.match(h.nodes.get('#page-layer').style.transform,/translate3d\(0,-/);h.tick();assert.equal(h.run('state'),'SCENE');
+});
+
+test('Framer selection updates history and RETURN cancels a queued opening',()=>{
+  const h=host();
+  const control=(type,slug,origin='https://memento.framer.website')=>h.events.get('message')({source:h.run('window.parent'),origin,data:{channel:'memento:tide:control',version:1,type,slug}});
+  control('SELECT','projects','https://wrong.example');assert.equal(h.run('selectedIndex'),0);
+  control('SELECT','projects');h.tick();assert.equal(h.run('selectedIndex'),2);assert.equal(h.location.hash,'#projects');
+  control('OPEN','start');control('RETURN');h.tick(140);assert.equal(h.run('state'),'SCENE');assert.equal(h.run('pendingRoute'),null);assert.equal(h.run('frame'),null);
+});
+
+test('Framer selection during entry exits before changing the scene',()=>{
+  const h=host();h.run('movePage(1)');
+  h.events.get('message')({source:h.run('window.parent'),origin:'https://memento.framer.website',data:{channel:'memento:tide:control',version:1,type:'SELECT',slug:'levelup'}});
+  h.tick(160);assert.equal(h.run('state'),'SCENE');assert.equal(h.run('selectedIndex'),3);assert.equal(h.location.hash,'#levelup');assert.equal(h.run('pageLayer.inert'),true);
 });

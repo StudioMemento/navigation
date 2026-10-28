@@ -3,7 +3,7 @@ from pathlib import Path
 from zipfile import ZipFile, ZIP_DEFLATED
 import sys
 root = Path(__file__).resolve().parent.parent
-output = Path(sys.argv[1]).resolve() if len(sys.argv)>1 else root.parent/'MEMENTO_TIDE_VERCEL_v010.zip'
+output = Path(sys.argv[1]).resolve() if len(sys.argv)>1 else root.parent/'MEMENTO_TIDE_VERCEL_v011.zip'
 excluded = {'.openai', '.git', 'node_modules', '__qa__', '__pycache__'}
 with ZipFile(output, 'w', ZIP_DEFLATED, compresslevel=6) as archive:
     for file in sorted(root.rglob('*')):

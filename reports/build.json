@@ -1,5 +1,5 @@
 {
-  "version": "v010",
+  "version": "v011",
   "checks": [
     {
       "name": "Valid GLB family_v007/mobile/optimized/family_neighbors.glb",
@@ -90,10 +90,6 @@
       "pass": true
     },
     {
-      "name": "HTML reference https://mementostudio.vercel.app/",
-      "pass": true
-    },
-    {
       "name": "HTML reference https://mementoservizi.vercel.app/",
       "pass": true
     },
@@ -146,11 +142,19 @@
       "pass": true
     },
     {
+      "name": "Module /src/app.js → ./cinematography.js",
+      "pass": true
+    },
+    {
       "name": "Module /src/app.js → ./assets.js",
       "pass": true
     },
     {
       "name": "Module /src/app.js → ./navigation.js",
+      "pass": true
+    },
+    {
+      "name": "Module /src/cinematography.js → ./navigation.js",
       "pass": true
     },
     {
@@ -231,6 +235,6 @@
     }
   ],
   "errors": [],
-  "files": 30,
-  "bytes": 17075530
+  "files": 32,
+  "bytes": 17077892
 }

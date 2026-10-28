@@ -29,7 +29,7 @@ export function sampleDescent(pose, progress) {
   const t=smooth(clamp(progress/.86)),[x,y,z]=pose.position;
   const dx=pose.target[0]-x,dz=pose.target[2]-z,distance=Math.hypot(dx,dz);
   const startPitch=Math.atan2(pose.target[1]-y,distance),pitch=mix(startPitch,-Math.PI*.40,t);
-  const position=[x+dx/distance*.85*t,y-.45*t,z+dz/distance*.85*t];
+  const position=[x+dx/distance*.85*t,Math.max(.09,y-.10*t),z+dz/distance*.85*t];
   const reach=mix(distance,5,t);
   return {position,target:[position[0]+dx/distance*Math.cos(pitch)*reach,position[1]+Math.sin(pitch)*reach,position[2]+dz/distance*Math.cos(pitch)*reach],fov:mix(pose.fov,pose.fov+4,t)};
 }
@@ -41,5 +41,5 @@ export function resolveHash(hash, stages) {
 }
 export function validBridge(event, frame, stage, sessionId) {
   const d=event.data;
-  return Boolean(stage && event.origin===new URL(stage.href).origin && event.source===frame.contentWindow && d && d.channel==='memento:tide' && d.version===1 && d.stageId===stage.id && d.sessionId===sessionId && ['READY','ESCAPE','END'].includes(d.type));
+  return Boolean(stage && event.origin===new URL(stage.href).origin && event.source===frame.contentWindow && d && d.channel==='memento:tide' && d.version===1 && d.stageId===stage.id && d.sessionId===sessionId && ['READY','ESCAPE','END','SCROLL'].includes(d.type));
 }

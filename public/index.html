@@ -11,18 +11,10 @@
   <section id="scene-layer" aria-label="Navigazione 3D Memento">
     <canvas id="tide" aria-label="Trascina a destra o sinistra per scegliere una sezione" tabindex="0"></canvas>
     <div id="stage-targets"></div>
-    <header id="brand"><span>MEMENTO</span><span class="edition">TIDE / 010</span></header>
-    <p id="loading" role="status">Caricamento del lago<span>…</span></p>
-    <div id="scene-ui" hidden>
-      <button class="arrow previous" id="previous" type="button" aria-label="Sezione precedente"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 4-8 8 8 8"/></svg></button>
-      <button class="arrow next" id="next" type="button" aria-label="Sezione successiva"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 4 8 8-8 8"/></svg></button>
-      <div id="caption"><span id="stage-count">01 / 05</span><h1 id="stage-title">MEMENTO</h1><a id="open-section" href="https://mementostudio.vercel.app/">Esplora <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 9 7 7 7-7"/></svg></a></div>
-      <nav id="section-nav" aria-label="Scegli una sezione"></nav>
-      <p id="gesture-hint">Trascina per esplorare <span>·</span> Scroll per cambiare sezione</p>
-    </div>
+    <p id="loading" class="sr-only" role="status">Caricamento della scena…</p>
+    <div id="scene-ui" hidden><h1 id="caption"><a id="stage-title" href="https://mementostudio.vercel.app/">MEMENTO</a></h1></div>
   </section>
   <main id="page-layer" hidden inert aria-label="Pagina selezionata">
-    <header id="page-toolbar"><button id="back-scene" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 15 7-7 7 7"/></svg><span>Torna al lago</span></button><span id="page-label">Memento</span><a id="direct-link" href="https://mementostudio.vercel.app/" target="_blank" rel="noopener">Apri pagina ↗</a></header>
     <div id="frame-host"></div>
     <div id="page-loading" role="status">Apertura della pagina…</div>
     <aside id="embed-notice" hidden>La pagina sta impiegando più tempo del previsto. <a id="retry-direct" href="https://mementostudio.vercel.app/" target="_blank" rel="noopener">Aprila direttamente ↗</a></aside>

@@ -3,7 +3,7 @@ import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {createHash} from 'node:crypto';
 const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..'),output=path.join(root,'public');
-const report={version:'v010',checks:[],errors:[],files:0,bytes:0};
+const report={version:'v011',checks:[],errors:[],files:0,bytes:0};
 const check=(name,pass)=>{report.checks.push({name,pass});if(!pass)report.errors.push(name);};
 const text=file=>readFile(file,'utf8');
 async function walk(folder){const files=[];for(const entry of await readdir(folder,{withFileTypes:true})){if(entry.isSymbolicLink())throw Error('Unexpected symlink');const file=path.join(folder,entry.name);files.push(...entry.isDirectory()?await walk(file):[file]);}return files;}

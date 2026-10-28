@@ -1,6 +1,6 @@
 {
   "name": "memento-tide-vercel",
-  "version": "0.10.0",
+  "version": "0.11.0",
   "private": true,
   "type": "module",
   "engines": {
@@ -12,5 +12,5 @@
     "test": "node --test scripts/*.test.mjs",
     "dev": "node scripts/serve.mjs"
   },
-  "description": "Memento Tide v010 \u2014 five-section 3D navigation with external page embeds."
+  "description": "Memento Tide v011 \u2014 waterline pentagon camera rig; Framer overlay controls; external-page loop bridge."
 }
