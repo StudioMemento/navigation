@@ -1,4 +1,4 @@
-/* Memento V24: continuous catalogue → bundles → domains → Start. Native page scroll. */
+/* Memento V29: coordinated bundles → catalogue → domains → Start. */
 (() => {
   'use strict';
   const $ = selector => document.querySelector(selector);
@@ -77,11 +77,6 @@
   }
   function wireCarouselControls(element, controls, carousel, count) {
     controls.dataset.carouselFor = element.id;
-    if (!element.classList.contains('macro-carousel')) {
-      controls.insertAdjacentHTML('afterbegin', `<button class="carousel-arrow" data-step="-1" aria-label="Precedente">${icon('caret-left')}</button>`);
-      controls.insertAdjacentHTML('beforeend', `<button class="carousel-arrow" data-step="1" aria-label="Successivo">${icon()}</button>`);
-      controls.querySelectorAll('[data-step]').forEach(button => button.addEventListener('click', () => carousel.step(Number(button.dataset.step))));
-    }
     controls.addEventListener('pointerenter', event => {
       if (event.pointerType === 'mouse') { carousel.hovered = true; carousel.refreshAutoplay(); }
     });
@@ -107,19 +102,18 @@
       selectDot(next);
     });
   }
-  mountCarousel($('#hero-carousel'), $('#hero-controls'), sections, {hero: true});
   $('#category-sections').innerHTML = sections.map(section => `<section id="${section.id}" class="category-section" data-scene style="--title-units:${titleUnits[section.label]}" aria-labelledby="heading-${section.id}"><div class="category-heading"><h2 id="heading-${section.id}" class="spread-title" aria-label="${section.label}">${spreadTitle(section.label)}</h2></div><div class="carousel service-carousel" id="carousel-${section.id}" role="region" aria-roledescription="carosello" aria-label="Servizi ${section.label}"></div><div class="carousel-controls" id="controls-${section.id}"></div></section>`).join('');
   sections.forEach(section => mountCarousel($(`#carousel-${section.id}`), $(`#controls-${section.id}`), section.ids.map(id => byId.get(id))));
-  const bundlePreviews = {
-    'b-online': 'Identità e sito web, nella stessa direzione.',
-    'b-lancio': 'Dal primo sguardo al lancio del prodotto.',
-    'b-identita': 'Un’identità riconoscibile, in ogni applicazione.',
-    'b-apertura': 'Il tuo spazio e la tua presenza online, insieme.',
-    'b-campagna': 'Un’idea. Tutti i contenuti per raccontarla.',
-    'b-social': 'Contenuti che cambiano. Uno stile che resta.'
-  };
-  $('#bundles-heading').innerHTML = spreadTitle('BUNDLES');
-  $('#bundle-boards').innerHTML = '<div class="carousel-stage">' + bundles.map((item, index) => `<a id="percorso-${item.id}" href="#bundle/${item.id}" draggable="false" class="carousel-card showcase-card bundle-board" data-slide="${index}" data-bundle="${item.id}" aria-label="Scopri il bundle ${esc(item.title)}" tabindex="${index === 0 ? 0 : -1}"><img class="bundle-visual" ${imageAttrs(item.image, 'slide', {deferred: true})}><span class="bundle-shade" aria-hidden="true"></span><div class="bundle-layout"><p class="bundle-intro">${esc(bundlePreviews[item.id])}</p><h3 class="bundle-title" id="title-${item.id}">${splitTitle(item.title)}</h3><span class="bundle-open" aria-hidden="true">${icon()}</span></div></a>`).join('') + '</div>';
+  function bundleImageAttrs(id, role = 'hero', {deferred = true, eager = false} = {}) {
+    const base = `assets/bundles-v29/${id}/${role}`;
+    const widths = role === 'hero' ? [320, 640, 1536] : [768, 1536];
+    const prefix = deferred ? 'data-' : '';
+    return `${prefix}src="${base}-1536.webp" ${prefix}srcset="${widths.map(width => `${base}-${width}.webp ${width}w`).join(', ')}" sizes="(max-width: 767px) 105vw, 72vw" width="1536" height="1024" alt="" draggable="false" decoding="async" ${eager ? 'loading="eager" fetchpriority="high"' : 'loading="lazy"'}`;
+  }
+  $('#bundle-boards').innerHTML = '<div class="carousel-stage">' + bundles.map((item, index) => {
+    const master = MEMENTO_BUNDLE_MASTERS[item.id];
+    return `<a id="percorso-${item.id}" href="#bundle/${item.id}" draggable="false" class="carousel-card showcase-card bundle-board" data-slide="${index}" data-bundle="${item.id}" aria-label="Scopri il bundle ${esc(item.title)}: ${esc(master.includes)}" tabindex="${index === 0 ? 0 : -1}"><img class="bundle-visual" ${bundleImageAttrs(item.id, 'hero', {deferred: index !== 0, eager: index === 0})}><span class="bundle-shade" aria-hidden="true"></span><div class="bundle-layout"><div class="bundle-summary"><span class="bundle-kicker">Bundle di servizi</span><p class="bundle-intro">${master.copy.map(line => `<span>${esc(line)}</span>`).join(' ')}</p></div><div class="bundle-label"><h3 class="bundle-title" id="title-${item.id}"><span class="item-master-gradient">${master.title.map(line => `<span>${esc(line)}</span>`).join(' ')}</span></h3><p class="bundle-includes">${esc(master.includes)}</p></div></div></a>`;
+  }).join('') + '</div>';
   const bundleControls = $('#bundle-controls');
   bundleControls.setAttribute('role', 'group');
   bundleControls.setAttribute('aria-label', 'Scegli un bundle');
@@ -216,7 +210,7 @@
     return `<article class="product-sheet service-deck item-master${master.layout === 'commercial' ? ' item-master--commercial' : ''}" role="region" aria-roledescription="slideshow" aria-label="${esc(title(item))}">
       ${parentBundle ? `<div class="service-deck-topline"><a href="#bundle/${parentBundle.id}" class="back-link" data-back-bundle="${parentBundle.id}" aria-label="Torna a ${esc(parentBundle.title)}">${icon('caret-left')}</a></div>` : ''}
       <div class="carousel service-carousel popup-carousel" role="region" aria-roledescription="carosello" aria-label="Tavole di ${esc(title(item))}"><div class="carousel-stage">${slides}</div></div>
-      <nav class="service-deck-controls" aria-label="Tavole del servizio"><button class="carousel-arrow" data-scene-step="-1" aria-label="Tavola precedente">${icon('caret-left')}</button><div class="carousel-dots">${master.slides.map((slide, index) => `<button class="carousel-dot" data-scene-dot="${index}" aria-label="${esc(slide.label)}" aria-pressed="${index === 0}"><span></span></button>`).join('')}</div><button class="carousel-arrow" data-scene-step="1" aria-label="Tavola successiva">${icon()}</button></nav><span class="sr-only service-deck-status" aria-live="polite"></span>
+      <nav class="service-deck-controls" aria-label="Tavole del servizio"><div class="carousel-dots">${master.slides.map((slide, index) => `<button class="carousel-dot" data-scene-dot="${index}" aria-label="${esc(slide.label)}" aria-pressed="${index === 0}"><span></span></button>`).join('')}</div></nav><span class="sr-only service-deck-status" aria-live="polite"></span>
     </article>`;
   }
   function serviceSheet(item) {
@@ -247,21 +241,23 @@
           <div class="service-scene-copy"><span class="eyebrow">Il prossimo passo</span><h3 tabindex="-1">Da dove<br>cominciamo?</h3><p class="scene-description">${esc(data.needs)}</p>${stats(item)}${isPhysical ? '<p class="physical-note">Il servizio riguarda il progetto grafico e i file esecutivi. Materiali, quantità, stampa e installazione vengono definiti nel preventivo.</p>' : ''}<button class="primary-link" data-action="project">Parliamo del tuo progetto ${icon()}</button><nav class="detail-pager" aria-label="Esplora altri servizi"><button data-action="close-detail">${icon('caret-left')}Torna alla pagina</button><a href="#servizio/${next.id}" data-related="${next.id}"><span>${esc(title(next))}</span>${icon()}</a></nav></div>
         </div></div></section>
       </div></div>
-      <nav class="service-deck-controls" aria-label="Tavole del servizio"><button class="carousel-arrow" data-scene-step="-1" aria-label="Tavola precedente">${icon('caret-left')}</button><div class="carousel-dots">${labels.map((label, index) => `<button class="carousel-dot" data-scene-dot="${index}" aria-label="${label}" aria-pressed="${index === 0}"><span></span></button>`).join('')}</div><button class="carousel-arrow" data-scene-step="1" aria-label="Tavola successiva">${icon()}</button></nav><span class="sr-only service-deck-status" aria-live="polite"></span>
+      <nav class="service-deck-controls" aria-label="Tavole del servizio"><div class="carousel-dots">${labels.map((label, index) => `<button class="carousel-dot" data-scene-dot="${index}" aria-label="${label}" aria-pressed="${index === 0}"><span></span></button>`).join('')}</div></nav><span class="sr-only service-deck-status" aria-live="polite"></span>
     </article>`;
   }
   function bundleSheet(item) {
-    const editorial = MEMENTO_BUNDLE_EDITORIAL[item.id];
-    const labels = ['Il risultato', 'I servizi inclusi', 'Come prende forma', 'Da dove cominciamo'];
-    const visual = (variant = '') => `<div class="service-scene-art ${variant}" aria-hidden="true"><img ${imageAttrs(item.image, 'detail', {deferred: true})}></div>`;
+    const master = MEMENTO_BUNDLE_MASTERS[item.id];
+    const labels = ['Il bundle', 'I servizi inclusi', 'Il percorso', 'Partiamo insieme'];
+    const visual = role => `<div class="service-scene-art item-master-art" aria-hidden="true"><img ${bundleImageAttrs(item.id, role)}></div>`;
+    const heading = (lines, units, first = false) => `<${first ? 'h2' : 'h3'} class="item-master-title" style="--title-units:${units}" ${first ? 'id="detail-title"' : ''} tabindex="-1"><span class="item-master-gradient">${lines.map(line => `<span class="item-master-title-line">${esc(line)} </span>`).join('')}</span></${first ? 'h2' : 'h3'}>`;
+    const copy = lines => `<p>${lines.map(line => `<span class="item-master-copy-line">${esc(line)}</span>`).join(' ')}</p>`;
     const boards = [
-      `<div class="popup-card-body">${visual('art-result')}<div class="service-scene-copy"><span class="eyebrow">Il risultato</span><h2 id="detail-title" tabindex="-1">${esc(item.title)}</h2><p class="scene-description">${esc(editorial.output)}</p><div class="scene-note"><span class="eyebrow">Cosa risolve</span><p>${esc(item.details.solves)}</p></div></div></div>`,
-      `<div class="popup-card-body bundle-components-body"><div class="service-scene-copy"><span class="eyebrow">I servizi inclusi</span><h3 tabindex="-1">Un’unica<br>direzione.</h3><div class="bundle-components">${item.covers.map(id => { const service = byId.get(id); return `<a href="#servizio/${id}" class="component-row" data-component="${id}"><img ${imageAttrs(service.image, 'thumbnail', {deferred: true})}><span class="component-copy"><strong>${esc(title(service))}</strong><span>${esc(editorial.roles[id])}</span></span>${icon()}</a>`; }).join('')}</div></div></div>`,
-      `<div class="popup-card-body">${visual('art-process')}<div class="service-scene-copy"><span class="eyebrow">Come prende forma</span><h3 tabindex="-1">Un insieme<br>che funziona.</h3><p class="scene-description">${esc(editorial.coordination)}</p><ul class="scene-outputs-list delivery-list">${item.details.gets.map(text => `<li>${icon()}<span>${esc(text)}</span></li>`).join('')}</ul></div></div>`,
-      `<div class="popup-card-body">${visual('art-start')}<div class="service-scene-copy"><span class="eyebrow">Il prossimo passo</span><h3 tabindex="-1">Da dove<br>cominciamo?</h3><p class="scene-description">${esc(item.details.needs)}</p>${stats(item)}<button class="primary-link" data-action="project">Costruiamo il tuo percorso ${icon()}</button><nav class="detail-pager" aria-label="Torna ai bundle"><button data-action="close-detail">${icon('caret-left')}Torna ai bundle</button></nav></div></div>`
+      `${visual('hero')}<div class="item-master-copy"><p class="bundle-kicker">Bundle di servizi</p>${copy(master.copy)}<p class="bundle-master-includes">${esc(master.includes)}</p></div>${heading(master.title, master.titleUnits, true)}`,
+      `<div class="bundle-components-content"><p class="bundle-components-intro">Apri un servizio e scopri cosa realizziamo.</p><div class="bundle-components">${item.covers.map(id => { const service = byId.get(id); return `<a href="#servizio/${id}" class="component-row" data-component="${id}"><img ${imageAttrs(service.image, 'thumbnail', {deferred: true})}><span class="component-copy"><strong>${esc(title(service))}</strong><span>${esc(master.roles[id])}</span></span></a>`; }).join('')}</div><p class="bundle-scope">${esc(master.scope)}</p></div>${heading([master.componentsTitle], master.componentsTitleUnits)}`,
+      `${visual('process')}<div class="item-master-copy"><dl class="item-master-steps">${master.steps.map(step => `<div><dt>${esc(step.title)}</dt><dd>${esc(step.copy)}</dd></div>`).join('')}</dl></div>${heading([master.processTitle], master.processTitleUnits)}`,
+      `${visual('hero')}<div class="item-master-copy">${copy(master.start)}</div>${heading([master.startTitle], master.startTitleUnits)}<a class="item-master-cta" href="${esc(MEMENTO_CONFIG.startUrl)}" target="_top" aria-label="${esc(master.cta)}: vai a Start"><span>${esc(master.cta)}</span>${icon()}</a>`
     ];
-    const classes = ['scene-result', 'scene-components', 'scene-process', 'scene-start'];
-    return `<article class="bundle-sheet service-deck" role="region" aria-roledescription="slideshow" aria-label="${esc(item.title)}"><div class="service-deck-topline"><span class="eyebrow">Bundle / ${esc(item.title)}</span></div><div class="carousel service-carousel popup-carousel" role="region" aria-roledescription="carosello" aria-label="Tavole di ${esc(item.title)}"><div class="carousel-stage">${boards.map((board, index) => `<section id="board-${index}" class="carousel-card showcase-card service-scene ${classes[index]}" data-slide="${index}" aria-label="${labels[index]}" tabindex="${index === 0 ? 0 : -1}"><div class="popup-card-scroll">${board}</div></section>`).join('')}</div></div><nav class="service-deck-controls" aria-label="Tavole del bundle"><button class="carousel-arrow" data-scene-step="-1" aria-label="Tavola precedente">${icon('caret-left')}</button><div class="carousel-dots">${labels.map((label, index) => `<button class="carousel-dot" data-scene-dot="${index}" aria-label="${label}" aria-pressed="${index === 0}"><span></span></button>`).join('')}</div><button class="carousel-arrow" data-scene-step="1" aria-label="Tavola successiva">${icon()}</button></nav><span class="sr-only service-deck-status" aria-live="polite"></span></article>`;
+    const classes = ['result', 'components', 'process', 'start'];
+    return `<article class="bundle-sheet bundle-master service-deck item-master item-master--commercial" role="region" aria-roledescription="slideshow" aria-label="${esc(item.title)}"><div class="carousel service-carousel popup-carousel" role="region" aria-roledescription="carosello" aria-label="Tavole di ${esc(item.title)}"><div class="carousel-stage">${boards.map((board, index) => `<section id="board-${index}" class="carousel-card showcase-card service-scene scene-${classes[index]}" data-slide="${index}" aria-label="${labels[index]}" tabindex="${index === 0 ? 0 : -1}"><div class="popup-card-scroll"><div class="popup-card-body">${board}</div></div></section>`).join('')}</div></div><nav class="service-deck-controls" aria-label="Tavole del bundle"><div class="carousel-dots">${labels.map((label, index) => `<button class="carousel-dot" data-scene-dot="${index}" aria-label="${label}" aria-pressed="${index === 0}"><span></span></button>`).join('')}</div></nav><span class="sr-only service-deck-status" aria-live="polite"></span></article>`;
   }
   function openDetail(item, {fromBundle = null} = {}) {
     if (!item) return;
@@ -270,7 +266,7 @@
     serviceDeck?.destroy(); serviceDeck = null;
     currentDetail = item; parentBundle = fromBundle;
     detail.dataset.kind = item.kind;
-    detail.classList.toggle('has-item-master', item.kind !== 'bundle' && !!MEMENTO_ITEM_MASTERS[item.id]);
+    detail.classList.toggle('has-item-master', item.kind === 'bundle' || !!MEMENTO_ITEM_MASTERS[item.id]);
     $('#detail-content').innerHTML = item.kind === 'bundle' ? bundleSheet(item) : serviceSheet(item);
     if (!detail.open) detail.showModal();
     lockBody(); detail.scrollTop = 0;

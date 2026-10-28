@@ -8,7 +8,7 @@
   <title>Servizi — Memento Design Studio</title>
   <link rel="icon" href="data:,">
   <link rel="preload" href="assets/fonts/InterVariable.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="preload" href="assets/hero-web.webp" imagesrcset="assets/responsive/hero-web-768.webp 768w, assets/responsive/hero-web-1152.webp 1152w, assets/hero-web.webp 1536w" imagesizes="(max-width: 767px) 100vw, 83vw" as="image" fetchpriority="high">
+  <link rel="preload" href="assets/bundles-v29/b-online/hero-1536.webp" imagesrcset="assets/bundles-v29/b-online/hero-640.webp 640w, assets/bundles-v29/b-online/hero-1536.webp 1536w" imagesizes="(max-width: 767px) 90vw, 64vw" as="image" fetchpriority="high">
   <link rel="stylesheet" href="catalogo.css">
   <link rel="stylesheet" href="catalogo-slideshow.css">
   <link rel="stylesheet" href="catalogo-experience.css">
@@ -20,9 +20,12 @@
   <link rel="stylesheet" href="catalogo-structure.css">
   <link rel="stylesheet" href="catalogo-devices.css">
   <link rel="stylesheet" href="catalogo-item-masters.css">
+  <link rel="stylesheet" href="catalogo-bundle-masters.css">
+  <link rel="stylesheet" href="catalogo-polish-v29.css">
   <script src="catalogo-images.js" defer></script>
   <script src="catalogo-data.js" defer></script>
   <script src="catalogo-editorial.js" defer></script>
+  <script src="catalogo-bundle-masters.js" defer></script>
   <script src="catalogo-carousel.js" defer></script>
   <script src="catalogo-service-deck.js" defer></script>
   <script src="catalogo-item-masters.js" defer></script>
@@ -32,24 +35,25 @@
 <a class="skip-link" href="#catalogo">Vai al catalogo completo</a>
 <main id="memento-catalogo">
   <h1 class="sr-only">Servizi e percorsi Memento Design Studio</h1>
-  <section class="macro-hero" id="inizio" data-scene aria-label="Le sei aree Memento">
-    <div id="hero-carousel" class="carousel macro-carousel" role="region" aria-roledescription="carosello" aria-label="Aree Memento"></div>
-    <div class="carousel-controls hero-controls" id="hero-controls"></div>
+  <section class="bundle-section bundle-opening" id="bundles" data-scene aria-labelledby="bundles-heading">
+    <span id="inizio" class="section-anchor" aria-hidden="true"></span>
+    <div class="bundles-heading-wrap page-width">
+      <h2 id="bundles-heading">Più servizi.<br>Un unico progetto.</h2>
+      <p class="bundles-intro">I nostri bundle riuniscono servizi complementari per un obiettivo preciso.<br>Scegli il tuo punto di partenza e scopri cosa comprende.</p>
+    </div>
+    <div id="bundle-boards" class="carousel bundle-carousel" role="region" aria-roledescription="carosello" aria-label="I bundle Memento"></div>
+    <div id="bundle-controls" class="carousel-controls" data-carousel-for="bundle-boards"></div>
   </section>
   <section class="catalogue page-width" id="catalogo" aria-labelledby="catalogue-heading">
     <div class="catalogue-heading"><h2 id="catalogue-heading">Servizi di design.</h2><div class="catalogue-filters" role="group" aria-label="Tipo di servizio" data-selected="digital"><button data-medium="digital" aria-pressed="true" aria-controls="catalogue-groups"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="13" rx="2"/><path d="M8 21h8M12 17v4"/></svg><span>Digitale</span></button><button data-medium="physical" aria-pressed="false" aria-controls="catalogue-groups"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 2 9 5v10l-9 5-9-5V7Zm0 10 9-5M12 12 3 7m9 5v10M7.5 4.5l9 5v5"/></svg><span>Fisico</span></button></div></div>
     <p class="catalogue-intro">Scegli un servizio: scopri cosa realizziamo per te e come iniziare.</p>
     <div id="catalogue-groups"></div>
   </section>
-  <section class="bundle-section" id="bundles" data-scene aria-labelledby="bundles-heading">
-    <h2 id="bundles-heading" class="spread-title" aria-label="BUNDLES">BUNDLES</h2>
-    <div id="bundle-boards" class="carousel bundle-carousel" role="region" aria-roledescription="carosello" aria-label="I bundle Memento"></div>
-    <div id="bundle-controls" class="carousel-controls" data-carousel-for="bundle-boards"></div>
-  </section>
   <div id="category-sections"></div>
   <section class="start-section page-width" id="finale" aria-labelledby="start-heading">
     <a id="start-link" class="start-action" href="https://mementostudio.it/start" target="_top">
-      <h2 id="start-heading">Ready to<br>start?</h2>
+      <img class="start-sparkle" src="assets/icons/sparkle.svg" alt="" aria-hidden="true">
+      <h2 id="start-heading">ready to start?</h2>
       <img class="chevron" src="assets/icons/caret-right.svg" alt="">
     </a>
   </section>

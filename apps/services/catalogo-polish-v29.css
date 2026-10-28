@@ -1,0 +1,244 @@
+/* V29 — shared alignment, chamfered frames and quiet amber finishing. */
+:root {
+  --memento-title-gradient: linear-gradient(135deg, #f5f3ef 0%, #f5f3ef 34%, #eee4d6 61%, #ddbb8b 81%, #c98b42 100%);
+  --memento-frame-gradient: linear-gradient(135deg, #d8d1c3c7 0%, #aaa28f66 27%, #716a5e57 62%, #8c744b75 83%, #d9913de0 100%);
+}
+
+/* Use the grid's exact outer width and safe-area padding for both headings. */
+.catalogue-heading,
+.catalogue-intro,
+.catalogue-page {
+  width: min(1960px, 100%);
+  max-width: none;
+  margin-inline: auto;
+  padding-left: var(--safe-left);
+  padding-right: var(--safe-right);
+}
+.catalogue-heading { justify-content: space-between; }
+.catalogue-intro { margin-bottom: 24px; }
+.catalogue-filters { margin: 0; }
+
+/* A single clipped polygon ring draws the diagonal edges, not a cut rectangle.
+   The .4142px adjustment keeps the chamfer's perpendicular thickness at 1px. */
+.showcase-card,
+.service-card,
+.bundle-board,
+.start-action {
+  --corner-cut: clamp(16px, 1.5vw, 24px);
+  border: 0;
+  border-radius: 0;
+  clip-path: polygon(var(--corner-cut) 0, 100% 0, 100% calc(100% - var(--corner-cut)), calc(100% - var(--corner-cut)) 100%, 0 100%, 0 var(--corner-cut));
+}
+.showcase-card::before,
+.service-card::before,
+.bundle-board::before,
+.start-action::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 6;
+  pointer-events: none;
+  border: 0;
+  border-radius: 0;
+  background: var(--memento-frame-gradient);
+  -webkit-mask-image: none;
+  mask-image: none;
+  clip-path: polygon(evenodd,
+    var(--corner-cut) 0, 100% 0,
+    100% calc(100% - var(--corner-cut)), calc(100% - var(--corner-cut)) 100%,
+    0 100%, 0 var(--corner-cut), var(--corner-cut) 0,
+    calc(var(--corner-cut) + .4142px) 1px,
+    1px calc(var(--corner-cut) + .4142px), 1px calc(100% - 1px),
+    calc(100% - var(--corner-cut) - .4142px) calc(100% - 1px),
+    calc(100% - 1px) calc(100% - var(--corner-cut) - .4142px),
+    calc(100% - 1px) 1px, calc(var(--corner-cut) + .4142px) 1px);
+}
+.showcase-card::before,
+.bundle-board::before { opacity: calc(.22 + var(--slide-focus, 1) * .78); }
+.service-card::before { opacity: .76; transition: opacity .2s ease; }
+.service-card:is(:hover, :focus-visible)::before,
+.start-action:is(:hover, :focus-visible)::before { opacity: 1; }
+.showcase-card:focus-visible,
+.service-card:focus-visible,
+.start-action:focus-visible { outline: 2px solid var(--amber); outline-offset: -5px; }
+
+/* The close target stays large while the icon has no disc or blur behind it. */
+.dialog-close,
+.dialog-close:hover,
+.dialog-close:active {
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+#detail-dialog .dialog-close,
+#detail-dialog .dialog-close:hover,
+#detail-dialog .dialog-close:active {
+  top: calc(50% - var(--popup-height) / 2 - 44px);
+  right: max(8px, calc((100% - var(--slide-width)) / 2 - 44px));
+  width: 44px;
+  height: 44px;
+  margin: 0;
+  background: transparent;
+  border-radius: 0;
+  opacity: .82;
+  transition: opacity .18s ease;
+}
+#detail-dialog .dialog-close:hover,
+#detail-dialog .dialog-close:focus-visible { opacity: 1; }
+.dialog-close img { width: 20px; height: 20px; }
+
+/* Dots are the sole carousel navigation; CTA chevrons retain their function. */
+.carousel-controls:not(.hero-controls),
+.service-deck-controls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  grid-template-columns: none;
+  width: max-content;
+  max-width: calc(100% - 24px);
+  gap: 0;
+}
+.carousel-controls .carousel-dots,
+.service-deck-controls .carousel-dots { flex-wrap: nowrap; }
+.carousel-controls .carousel-dot,
+#bundle-controls .carousel-dot,
+.service-deck-controls .carousel-dot { width: 44px; height: 44px; }
+.carousel-controls .carousel-dot span,
+.service-deck-controls .carousel-dot span { width: 5px; height: 5px; }
+
+/* The gradient spans the whole category title, rather than restarting per letter. */
+.category-heading h2.spread-title {
+  background: var(--memento-title-gradient);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  padding-bottom: .06em;
+  margin-bottom: -.06em;
+}
+.category-heading .spread-title > span {
+  background: none;
+  color: inherit;
+  -webkit-text-fill-color: inherit;
+}
+.item-master-gradient { background-image: var(--memento-title-gradient); }
+
+/* Fine static dithering breaks up broad near-black alpha ramps in code. */
+.category-section .slide-scrim {
+  background-image: url('assets/textures/dither.svg'),
+    linear-gradient(90deg, #101010 0%, #101010f5 9%, #101010dc 19%, #101010ab 31%, #1010106b 44%, #10101030 57%, #1010100c 71%, #10101000 84%),
+    linear-gradient(0deg, #101010f5 0%, #101010c7 7%, #10101087 15%, #10101043 25%, #10101018 35%, #10101000 47%);
+  background-size: 192px 192px, 100% 100%, 100% 100%;
+  background-repeat: repeat, no-repeat, no-repeat;
+}
+.category-section .service-carousel::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 7;
+  pointer-events: none;
+  background: url('assets/textures/dither.svg') repeat;
+  background-size: 192px 192px;
+  opacity: .45;
+}
+.item-master .item-master-art::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  background: url('assets/textures/dither.svg') repeat;
+  background-size: 192px 192px;
+  opacity: .6;
+}
+.item-master .item-master-art::after { z-index: 1; }
+
+/* Final invitation: one large sparkle, one phrase, one direction. */
+.start-section { padding-block: clamp(72px, 9vw, 144px) max(90px, env(safe-area-inset-bottom)); }
+.start-action {
+  position: relative;
+  isolation: isolate;
+  display: grid;
+  grid-template-columns: clamp(72px, 8.5vw, 140px) minmax(0, 1fr) auto;
+  align-items: center;
+  justify-content: stretch;
+  gap: clamp(20px, 3vw, 54px);
+  width: 100%;
+  max-width: 1720px;
+  margin-inline: auto;
+  padding: clamp(26px, 3.8vw, 62px);
+  background: linear-gradient(120deg, #121211 0%, #0e0e0d 55%, #13110e 100%);
+}
+.start-action .start-sparkle {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: 140px;
+  color: #ddbd8c;
+  object-fit: contain;
+}
+.start-action h2 {
+  min-width: 0;
+  width: auto;
+  font-size: clamp(38px, 6.2vw, 110px);
+  font-weight: 380;
+  line-height: 1.05;
+  letter-spacing: -.06em;
+  white-space: nowrap;
+  background: var(--memento-title-gradient);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  padding-bottom: .08em;
+  margin-bottom: -.08em;
+}
+.start-action > .chevron {
+  width: clamp(32px, 3.6vw, 62px);
+  height: clamp(44px, 4.5vw, 80px);
+  flex: none;
+  opacity: .9;
+}
+.start-action:hover > .chevron { transform: translateX(5px); opacity: 1; }
+
+@media (max-width: 767px) {
+  .catalogue-heading { padding-top: max(14px, env(safe-area-inset-top)); }
+  .catalogue-intro { margin-bottom: 20px; }
+  .catalogue-page .service-card { --corner-cut: 12px; }
+  .carousel-controls .carousel-dot,
+  #bundle-controls .carousel-dot,
+  .service-deck-controls .carousel-dot { width: clamp(32px, 9vw, 44px); }
+  .start-action { gap: 18px; padding: 28px; grid-template-columns: 64px minmax(0, 1fr) 34px; }
+  .start-action h2 { font-size: clamp(34px, 5.5vw, 42px); }
+  .start-action > .chevron { width: 30px; height: 44px; }
+}
+@media (max-width: 599px) {
+  .start-action { grid-template-columns: minmax(0, 1fr) 28px; gap: 18px 12px; padding: 25px 22px 28px; }
+  .start-action .start-sparkle { grid-column: 1 / -1; width: 92px; height: 92px; margin-bottom: 10px; }
+  .start-action h2 { font-size: clamp(30px, 8vw, 42px); }
+  .start-action > .chevron { width: 28px; height: 44px; }
+}
+@media (max-width: 370px) {
+  .start-action { padding-inline: 18px; gap: 16px 8px; }
+  .start-action h2 { font-size: 29px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .service-card::before,
+  #detail-dialog .dialog-close,
+  .start-action > .chevron { transition: none; }
+}
+@media (forced-colors: active) {
+  .category-heading h2.spread-title,
+  .category-heading .spread-title > span,
+  .item-master-gradient,
+  .start-action h2 { background: none; color: CanvasText; -webkit-text-fill-color: CanvasText; }
+  .showcase-card::before,
+  .service-card::before,
+  .bundle-board::before,
+  .start-action::before { background: CanvasText; opacity: 1; forced-color-adjust: none; }
+  .category-section .service-carousel::after,
+  .item-master .item-master-art::before { display: none; }
+}

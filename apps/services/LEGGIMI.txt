@@ -1,32 +1,28 @@
-MEMENTO — CATALOGO SERVIZI V28
-44 servizi, 44 copertine e 176 tavole commerciali. 6 bundle conservati.
+MEMENTO — SERVIZI V29
+Polish completo: 44 servizi e 6 bundle, 200 tavole commerciali.
 
-PACCHETTO PER VERCEL — CORREZIONE BUILD 28.0.1
-Estrarre questo ZIP e caricare il suo contenuto nella root del repository
-StudioMemento/servizi. package.json, vercel.json, build.mjs, index.html
-e assets/ devono essere allo stesso livello, non in una sottocartella.
+VERCEL
+Estrarre lo ZIP e caricare il CONTENUTO nella root del repository.
+index.html, package.json, build.mjs, vercel.json e assets/ devono essere
+allo stesso livello. Non caricare la cartella contenitore dello ZIP.
 
-vercel.json imposta automaticamente:
-- Framework Preset: Other
-- Install Command: nessuno (non ci sono dipendenze)
-- Build Command: npm run build
-- Output Directory: dist
+Impostazioni progetto:
+  Framework Preset: Other
+  Root Directory: vuota (root del repository)
+  Build Command: npm run build
+  Output Directory: dist
+  Install Command: vuoto
 
-In Vercel, Root Directory deve essere la root del repository (campo vuoto).
-La build copia il catalogo statico in dist/ senza modificarne i contenuti.
-Il pacchetto include package.json e il comando richiesto dal deploy,
-correggendo l'errore ENOENT su /vercel/path0/package.json.
-Non servono database o variabili d'ambiente.
-Le route utilizzano hash, per esempio #servizio/menu-digitale.
-Questo archivio non esegue un deploy su Vercel.
+La build copia il sito statico in dist/. Nessuna dipendenza esterna,
+variabile d'ambiente o database richiesto. Per verificarla localmente:
+  npm run build
 
-CONTENUTO E CONTATTI
-Copy e grafica in HTML/CSS; immagini WebP responsive, font locali.
-Ogni servizio ha quattro tavole: servizio, consegna, processo e contatto.
-La CTA con chevron apre https://mementostudio.it/start fuori dall’embed.
-Il modulo email preesistente dei bundle prepara una bozza nell’app
-email dell’utente, senza invio automatico.
+Questo ZIP non esegue un deploy su Vercel.
+Le route usano hash, per esempio #bundle/b-lancio o #servizio/sito.
+Le CTA aprono https://mementostudio.it/start fuori dall'embed.
 
-I PNG puliti, i prompt e la guida di replica sono nell’archivio
-ORIGINALI_E_PROMPT separato. Le immagini sono illustrazioni di servizio,
-non testimonianze o screenshot di progetti consegnati a clienti.
+CONTENUTI
+I bundle aprono la pagina e mostrano esplicitamente i servizi inclusi.
+Titoli, testi, bordi e blending sono nel codice. Foto pulite e responsive.
+12 nuovi originali dei bundle e relativi prompt sono nello ZIP separato.
+Gli originali dei 44 servizi restano nell'archivio V28 già consegnato.
