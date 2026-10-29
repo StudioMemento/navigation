@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 720" fill="none">
+  <defs>
+    <linearGradient id="metal" x1="260" y1="140" x2="730" y2="590" gradientUnits="userSpaceOnUse"><stop stop-color="#303739"/><stop offset=".22" stop-color="#131819"/><stop offset=".46" stop-color="#41433f"/><stop offset=".52" stop-color="#0b1012"/><stop offset=".81" stop-color="#1c2120"/><stop offset="1" stop-color="#080b0c"/></linearGradient>
+    <linearGradient id="edge" x1="280" y1="80" x2="690" y2="610" gradientUnits="userSpaceOnUse"><stop stop-color="#fcf5e5"/><stop offset=".23" stop-color="#a7aaa2"/><stop offset=".42" stop-color="#29302e"/><stop offset=".68" stop-color="#d7b181"/><stop offset=".86" stop-color="#b87532"/><stop offset="1" stop-color="#f4d6a0"/></linearGradient>
+    <linearGradient id="side" x1="210" y1="190" x2="720" y2="580" gradientUnits="userSpaceOnUse"><stop stop-color="#080c0e"/><stop offset=".58" stop-color="#1d2424"/><stop offset=".76" stop-color="#65482d"/><stop offset=".9" stop-color="#171712"/><stop offset="1" stop-color="#8e6138"/></linearGradient>
+    <linearGradient id="facetA" x1="300" y1="210" x2="500" y2="370" gradientUnits="userSpaceOnUse"><stop stop-color="#b8bfb5"/><stop offset=".28" stop-color="#3b4240"/><stop offset="1" stop-color="#090d0f"/></linearGradient>
+    <linearGradient id="facetB" x1="500" y1="170" x2="710" y2="390" gradientUnits="userSpaceOnUse"><stop stop-color="#0a0e10"/><stop offset=".63" stop-color="#272b27"/><stop offset="1" stop-color="#cf9b5e"/></linearGradient>
+    <linearGradient id="facetC" x1="630" y1="335" x2="480" y2="610" gradientUnits="userSpaceOnUse"><stop stop-color="#192121"/><stop offset=".35" stop-color="#3c3426"/><stop offset=".72" stop-color="#0a0d0e"/><stop offset="1" stop-color="#ad7c40"/></linearGradient>
+    <linearGradient id="facetD" x1="225" y1="340" x2="490" y2="550" gradientUnits="userSpaceOnUse"><stop stop-color="#4c5149"/><stop offset=".24" stop-color="#121819"/><stop offset=".74" stop-color="#222b2a"/><stop offset="1" stop-color="#070b0c"/></linearGradient>
+    <path id="star" d="M490 70C510 260 570 320 760 340C570 360 510 420 490 610C470 420 410 360 220 340C410 320 470 260 490 70ZM490 160C516 278 552 314 670 340C552 366 516 402 490 520C464 402 428 366 310 340C428 314 464 278 490 160Z"/>
+  </defs>
+  <g transform="matrix(1 .045 -.11 .96 53 5)">
+    <use href="#star" transform="translate(20 17)" fill="url(#side)" fill-rule="evenodd" stroke="#745b3c" stroke-opacity=".4"/>
+    <use href="#star" fill="url(#metal)" fill-rule="evenodd"/>
+    <path d="M490 70C470 260 410 320 220 340L310 340C428 314 464 278 490 160Z" fill="url(#facetA)"/>
+    <path d="M490 70C510 260 570 320 760 340L670 340C552 314 516 278 490 160Z" fill="url(#facetB)"/>
+    <path d="M760 340C570 360 510 420 490 610L490 520C516 402 552 366 670 340Z" fill="url(#facetC)"/>
+    <path d="M490 610C470 420 410 360 220 340L310 340C428 366 464 402 490 520Z" fill="url(#facetD)"/>
+    <use href="#star" fill-rule="evenodd" stroke="url(#edge)" stroke-width="1.8"/>
+    <path d="M490 86C470 267 414 322 236 340M490 596C510 416 566 359 744 340" stroke="url(#edge)" stroke-opacity=".55" stroke-width=".7"/>
+    <path d="M490 160 490 70M670 340l90 0M490 520v90M310 340h-90" stroke="#c5b99d" stroke-opacity=".2"/>
+    <path d="M758 88C763 132 779 148 823 153C779 158 763 174 758 218C753 174 737 158 693 153C737 148 753 132 758 88Z" fill="#151d1e" stroke="url(#edge)" stroke-width="1.3"/>
+    <path d="M758 109C764 139 772 147 802 153C772 159 764 167 758 197C752 167 744 159 714 153C744 147 752 139 758 109Z" stroke="#dcb77c" stroke-opacity=".4" stroke-width=".7"/>
+  </g>
+</svg>

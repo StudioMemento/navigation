@@ -1,19 +1,24 @@
-MEMENTO — SERVIZI V32
+MEMENTO — SERVIZI V34
 44 servizi, 6 bundle, 200 tavole commerciali.
 
-POLISH V32
-- Immagini contenute nelle schede, più margine e blending graduale.
-- Rimosso il velo nero inferiore delle slide; superfici nere e bordi completi.
-- Titoli senza tagli, allineati al padding; WEB DESIGN e 3D DESIGN.
-- Nome del servizio semplificato in Modello 3D.
-- Catalogo mobile a due colonne e margini laterali più ampi.
-- Swipe ripetuti, piccoli movimenti del trackpad, inerzia e inversioni
-  gestiti dal controllo condiviso di tutti i carousel e popup.
+POLISH V34
+- Immagini desktop a filo dei bordi superiore, inferiore e destro; nessun
+  rientro nero. Su mobile foto a tutta larghezza, con soggetti interi.
+- Rimosso l'hover luminoso delle schede, l'alone sotto al mouse, lo zoom,
+  il sollevamento delle tessere e la parallasse del CTA.
+- Nuovo sparkle 3D generato, con alpha: monocromatico a riposo e ambra
+  all'hover/focus. Testo Ready to start? con R maiuscola e tracking aperto.
+- Glow solo sul perimetro del CTA, vicino al puntatore: due tratti SVG
+  senza riempimento, con animazione lungo i lati e gli angoli della cornice.
+- Fade orizzontale in alpha alle estremita di bundle, categorie e popup.
+  La dissolvenza termina prima della tavola centrale, che resta opaca.
+- Conservati: fade coordinato di copy/titolo/CTA nei popup, scrollbar senza
+  gutter, catalogo mobile a due colonne e motore gesti condiviso.
 
 VERCEL
 Estrarre lo ZIP e caricare il CONTENUTO nella root del repository.
 index.html, package.json, build.mjs, vercel.json e assets/ devono essere
-allo stesso livello. Non caricare una cartella contenitore aggiuntiva.
+allo stesso livello. Non aggiungere una cartella contenitore.
 
 Framework Preset: Other
 Root Directory: vuota (root del repository)
@@ -27,14 +32,16 @@ Questo pacchetto non esegue automaticamente un deploy su Vercel.
 
 Le route rimangono hash (#bundle/b-lancio, #servizio/sito).
 Le CTA aprono https://mementostudio.it/start fuori dall'embed.
-Il fondo pagina rimane trasparente nell'iframe: per il blur esterno
-consultare INTEGRAZIONE_NAV.txt. La Nav Framer live non viene modificata.
+Per il blur esterno consultare INTEGRAZIONE_NAV.txt.
+Per riutilizzare il linguaggio visivo consultare MASTER_VISUAL.md.
+La Nav Framer live e le altre pagine non sono modificate dal pacchetto.
 
 VERIFICHE
-Test funzionali del catalogo, carousel, popup, focus, CTA e bridge iframe.
-Controllo geometrico in Chromium su nove formati, da 320 a 2560 px:
-837 verifiche su catalogo e slider, 1800 verifiche sulle tavole dei popup.
+Test funzionali del catalogo, carousel, popup, focus, CTA e scrollbar.
+Verifica in Chromium su nove formati, da 320 a 2560 px:
+837 controlli di catalogo e slider, 1800 misurazioni delle tavole popup,
+più controlli mirati su CTA, maschere, gutter e ripristino dello scroll.
 Test simulati di trackpad, touch, mouse, tastiera e cancellazione gesture.
-Build dal contenuto estratto dello ZIP e confronto di tutti i file prodotti
-rispetto al runtime verificato. Non è una certificazione su hardware fisico
-Mac/iPhone o su ogni motore browser.
+Build dal contenuto estratto dello ZIP con confronto di tutti i file
+rispetto al runtime verificato. Non è una certificazione su hardware
+fisico Mac/iPhone o su ogni motore browser.

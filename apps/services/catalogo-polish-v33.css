@@ -1,0 +1,71 @@
+/* V33 — continuous edges, coordinated copy, restrained light and native scroll. */
+:root { --memento-ease: cubic-bezier(.22,1,.36,1); --memento-amber: #dfad6b; }
+html[data-overlay-scrollbar="true"] { scrollbar-gutter: auto; scrollbar-width: none; }
+html[data-overlay-scrollbar="true"]::-webkit-scrollbar { display: none; width: 0; height: 0; }
+/* Only a left-hand blend for copy. Top, right and bottom never fade. */
+.category-section .slide-visual, #bundles .bundle-visual, .item-master .item-master-art img {
+  -webkit-mask: url('assets/masks/photo-left-v33.png') center / 100% 100% no-repeat;
+  mask: url('assets/masks/photo-left-v33.png') center / 100% 100% no-repeat;
+}
+@media (max-width: 1023px) and (orientation: portrait) {
+  .category-section .slide-visual, #bundles .bundle-visual, .item-master .item-master-art img {
+    -webkit-mask: none; mask: none;
+  }
+}
+/* The call to action shares the exact opacity curve of the entire text layer. */
+.item-master .service-scene { --text-focus: clamp(0, calc((var(--slide-focus,1) - .18) / .82), 1); }
+.item-master .item-master-copy, .item-master .service-scene .item-master-title,
+.item-master .bundle-components-content, .item-master .item-master-cta { opacity: var(--text-focus); }
+.item-master .item-master-cta { transition: color .35s ease; }
+.item-master .item-master-cta:is(:hover,:focus-visible) { color: var(--memento-amber); }
+.item-master .item-master-cta .chevron { transition: transform .55s var(--memento-ease), filter .4s ease; }
+.item-master .item-master-cta:is(:hover,:focus-visible) .chevron { transform: translateX(6px); filter: invert(78%) sepia(29%) saturate(643%) hue-rotate(346deg) brightness(95%); }
+
+/* Light travels over the rim and the black plane; it does not soften the edges. */
+.surface-light { position: absolute; inset: 0; z-index: 3; pointer-events: none; opacity: 0; background: radial-gradient(ellipse 58% 80% at var(--light-x,50%) var(--light-y,50%),#e4bc8210,transparent 72%); transition: opacity .6s var(--memento-ease); }
+.surface-light::after { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse 46% 70% at var(--light-x,50%) var(--light-y,50%),#fff1ceba,transparent 78%); clip-path: var(--memento-frame-ring); }
+.showcase-card[data-active="true"].is-lit > .surface-light,
+.service-card.is-lit > .surface-light, .start-action.is-lit > .surface-light,
+.showcase-card[data-active="true"]:focus-visible > .surface-light,
+.service-card:focus-visible > .surface-light, .start-action:focus-visible > .surface-light { opacity: 1; }
+.carousel.is-moving .surface-light { opacity: 0 !important; }
+.start-action { --memento-frame-ring: polygon(evenodd,var(--corner-cut) 0,100% 0,100% calc(100% - var(--corner-cut)),calc(100% - var(--corner-cut)) 100%,0 100%,0 var(--corner-cut),var(--corner-cut) 0,calc(var(--corner-cut) + .4142px) 1px,1px calc(var(--corner-cut) + .4142px),1px calc(100% - 1px),calc(100% - var(--corner-cut) - .4142px) calc(100% - 1px),calc(100% - 1px) calc(100% - var(--corner-cut) - .4142px),calc(100% - 1px) 1px,calc(var(--corner-cut) + .4142px) 1px); }
+.catalogue-page .service-card { transition: transform .6s var(--memento-ease); }
+.catalogue-page .service-visual { transition: transform .8s var(--memento-ease), filter .65s ease; }
+.catalogue-page .service-title { background-size: 170% 100%; background-position: 0% 50%; transition: background-position .6s var(--memento-ease); }
+.catalogue-page .service-card:is(:hover,:focus-visible) .service-title { background-size: 170% 100%; background-position: 100% 50%; }
+.service-action, .slide-action { transition: opacity .4s ease, transform .55s var(--memento-ease); }
+.showcase-card[data-active="true"]:is(:hover,:focus-visible) .slide-action,
+.service-card:is(:hover,:focus-visible) .service-action { transform: translate(2px,-2px); }
+.catalogue-filters button { transition: color .3s ease, background-color .4s ease; }
+.carousel-dot span { transition: transform .5s var(--memento-ease), background-color .4s ease, box-shadow .5s ease; }
+.carousel-dot[aria-pressed="true"] span { box-shadow: 0 0 13px #d8994f45; }
+#detail-dialog .dialog-close img { transition: transform .55s var(--memento-ease), filter .4s ease; }
+#detail-dialog .dialog-close:is(:hover,:focus-visible) img { transform: rotate(90deg); filter: invert(78%) sepia(29%) saturate(643%) hue-rotate(346deg) brightness(95%); }
+.category-heading.is-revealed { animation: memento-heading-arrive .85s var(--memento-ease) both; }
+@keyframes memento-heading-arrive { from { opacity: .48; transform: translate3d(0,18px,0); } to { opacity: 1; transform: translate3d(0,0,0); } }
+@media (hover:hover) and (pointer:fine) {
+  .catalogue-page .service-card:hover { transform: translateY(-3px); }
+  .catalogue-page .service-card:hover .service-visual { transform: scale(1.025); filter: brightness(1.05); }
+}
+
+/* The indicator overlays the page. It never reserves a blank strip. */
+.memento-scrollbar { position: fixed; z-index: 90; inset: 4px 0 4px auto; width: 16px; background: transparent; touch-action: none; cursor: default; }
+.memento-scrollbar[hidden] { display: none; }
+.memento-scrollbar-thumb { position: absolute; top: 0; right: 3px; width: 2px; min-height: 32px; border-radius: 2px; background: #cdb994; opacity: .32; transform: translateY(var(--scroll-top,0px)); height: var(--scroll-size,44px); pointer-events: none; transition: opacity .35s ease, width .2s ease, background-color .35s ease; }
+.memento-scrollbar:is(:hover,:focus-visible,.is-scrolling,.is-dragging) .memento-scrollbar-thumb { opacity: .85; width: 3px; background: #e0b57d; }
+.memento-scrollbar:focus-visible { outline: 1px solid #d2aa73; outline-offset: -1px; }
+@media (max-width: 767px) { .memento-scrollbar { width: 12px; } .memento-scrollbar-thumb { right: 2px; } }
+@media (prefers-reduced-motion: reduce) {
+  .surface-light, .catalogue-page .service-card, .catalogue-page .service-visual,
+  .catalogue-page .service-title, .carousel-dot span, .slide-action, .service-action,
+  .item-master .item-master-cta, .item-master .item-master-cta .chevron, #detail-dialog .dialog-close img { transition: none; }
+  .category-heading.is-revealed { animation: none; }
+  .catalogue-page .service-card:hover, .catalogue-page .service-card:hover .service-visual { transform: none; }
+}
+@media (forced-colors: active) {
+  html[data-overlay-scrollbar="true"] { scrollbar-width: auto; }
+  html[data-overlay-scrollbar="true"]::-webkit-scrollbar { display: block; width: auto; }
+  .memento-scrollbar, .surface-light { display: none; }
+  .category-section .slide-visual, #bundles .bundle-visual, .item-master .item-master-art img { -webkit-mask: none; mask: none; }
+}

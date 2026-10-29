@@ -1,9 +1,11 @@
-MEMENTO — INTEGRAZIONE SERVIZI V32 NELLA NAV
+MEMENTO — INTEGRAZIONE SERVIZI V34 NELLA NAV
 
 Il catalogo rileva automaticamente se si trova in un iframe e mantiene
 html, body e sezioni trasparenti. Aperto da solo usa un unico fondo scuro.
 Le schede degli slider e dei popup sono nere opache, con bordo completo.
 La dissolvenza inferiore in alpha riguarda solo le miniature del catalogo.
+Le estremita sinistra e destra dei viewport slider sfumano in alpha verso
+il fondale Nav. Il fade termina prima della tavola centrale, che resta opaca.
 Il margine iniziale dei bundle è 96–160 px, più la safe area del dispositivo.
 
 Per sfocare anche acqua/fog del contenitore, caricare il piccolo helper
@@ -42,3 +44,9 @@ che le CTA possano navigare verso Start con attivazione dell'utente.
 
 L'integrazione è stata verificata nel contenitore di prova locale.
 Questo pacchetto non modifica automaticamente il codice di Memento Nav.
+
+V34: nessun gutter viene riservato dalla scrollbar interna. Il suo indicatore
+sottile si sovrappone al contenuto senza nasconderlo con un fondale opaco.
+Le immagini non hanno maschere di dissolvenza su alto, basso o destra;
+il solo blending sinistro sostiene la leggibilità del copy su desktop.
+Su mobile verticale le immagini sono prive di maschere e restano contenute.

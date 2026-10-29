@@ -1,0 +1,80 @@
+/* Reusable invitation: monochrome sculpture, amber material, perimeter light. */
+.start-action {
+  --start-ease: cubic-bezier(.22,1,.36,1); --start-amber: #dfad6b; --corner-cut: 20px;
+  position: relative; isolation: isolate; overflow: hidden;
+  display: flex; align-items: center; justify-content: space-between;
+  gap: clamp(20px,3vw,60px); width: 100%; max-width: none;
+  min-height: clamp(270px,26vw,450px); padding: clamp(28px,4.4vw,76px); margin: 0;
+  background: #07090a; color: #eeeae3; text-decoration: none; border: 0; border-radius: 0;
+  clip-path: polygon(var(--corner-cut) 0,100% 0,100% calc(100% - var(--corner-cut)),calc(100% - var(--corner-cut)) 100%,0 100%,0 var(--corner-cut));
+  -webkit-tap-highlight-color: transparent;
+}
+/* A static neutral hairline is present before JS enhances the perimeter. */
+.start-action::before {
+  content: ''; position: absolute; inset: 0; z-index: 5; pointer-events: none;
+  background: #c4c4be70;
+  clip-path: polygon(evenodd,var(--corner-cut) 0,100% 0,100% calc(100% - var(--corner-cut)),calc(100% - var(--corner-cut)) 100%,0 100%,0 var(--corner-cut),var(--corner-cut) 0,calc(var(--corner-cut) + .4142px) 1px,1px calc(var(--corner-cut) + .4142px),1px calc(100% - 1px),calc(100% - var(--corner-cut) - .4142px) calc(100% - 1px),calc(100% - 1px) calc(100% - var(--corner-cut) - .4142px),calc(100% - 1px) 1px,calc(var(--corner-cut) + .4142px) 1px);
+}
+.start-action .start-art {
+  position: absolute; z-index: -1; width: 46%; height: 145%; right: 7%; top: -22%;
+  pointer-events: none; opacity: .58;
+  -webkit-mask-image: linear-gradient(90deg,transparent,#000 25%); mask-image: linear-gradient(90deg,transparent,#000 25%);
+  transition: opacity .75s var(--start-ease);
+}
+.start-action .start-sparkle {
+  display: block; width: 100%; height: 100%; max-height: none; margin: 0;
+  object-fit: contain; filter: grayscale(1) brightness(.8);
+  transition: filter .75s var(--start-ease);
+}
+.start-action h2 {
+  position: relative; z-index: 2; flex: 0 1 auto; min-width: 0; width: auto;
+  margin: 0; padding: .08em .05em .15em 0;
+  font-family: Inter,'Helvetica Neue',Arial,sans-serif;
+  font-size: clamp(38px,6.6vw,112px); font-weight: 380; letter-spacing: .012em;
+  line-height: 1.12; white-space: nowrap;
+  color: #f0ede7; -webkit-text-fill-color: currentColor; background: none;
+  transition: color .65s var(--start-ease);
+}
+.start-action .start-question { display: inline-block; }
+.start-action > .chevron {
+  position: relative; z-index: 2; flex: 0 0 auto;
+  width: clamp(28px,3.6vw,62px); height: clamp(50px,6vw,104px);
+  filter: none; color: #ece8e0; opacity: .9;
+  transition: color .65s var(--start-ease);
+}
+.start-action:is(:hover,:focus-visible) .start-art { opacity: .94; }
+.start-action:is(:hover,:focus-visible) .start-sparkle { filter: grayscale(0) brightness(1); }
+.start-action:is(:hover,:focus-visible) h2,
+.start-action:is(:hover,:focus-visible) > .chevron { color: var(--start-amber); }
+.start-action:is(:hover,:focus-visible,:active) h2,
+.start-action:is(:hover,:focus-visible,:active) > .chevron { transform: none; filter: none; }
+.start-action:focus-visible { outline: 2px solid var(--start-amber); outline-offset: -5px; }
+.start-rim { position: absolute; z-index: 6; inset: 0; width: 100%; height: 100%; pointer-events: none; overflow: visible; opacity: 0; transition: opacity .5s ease; }
+.start-action:is(.is-rim-lit,:focus-visible) .start-rim { opacity: 1; }
+@media (max-width: 767px) {
+  .start-action { --corner-cut: 16px; min-height: clamp(340px,92vw,460px); padding: 28px 24px; gap: 12px; align-items: flex-end; }
+  .start-action h2 { font-size: clamp(38px,9vw,64px); white-space: normal; }
+  .start-action h2 > span { display: block; }
+  .start-action .start-art { width: 92%; height: 82%; right: -4%; top: -9%; }
+  .start-action > .chevron { width: 28px; height: 52px; margin-bottom: 7px; }
+}
+@media (max-width: 370px) {
+  .start-action { padding: 22px 18px; gap: 8px; min-height: 320px; }
+  .start-action h2 { font-size: 36px; }
+  .start-action > .chevron { width: 24px; }
+}
+@media (max-height: 600px) and (orientation: landscape) {
+  .start-action { min-height: 220px; padding: 28px; align-items: center; }
+  .start-action h2 { font-size: clamp(32px,5vw,58px); white-space: nowrap; }
+  .start-action h2 > span { display: inline; }
+  .start-action .start-art { width: 45%; height: 130%; right: 8%; top: -15%; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .start-action, .start-action *, .start-action::before { animation: none !important; transition: none !important; }
+}
+@media (forced-colors: active) {
+  .start-action { background: Canvas; color: LinkText; outline: 1px solid CanvasText; outline-offset: -2px; }
+  .start-action h2, .start-action:is(:hover,:focus-visible) h2 { color: LinkText; -webkit-text-fill-color: LinkText; }
+  .start-action > .chevron { color: LinkText; }
+  .start-art, .start-rim, .start-action::before { display: none; }
+}

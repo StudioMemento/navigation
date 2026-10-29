@@ -116,7 +116,9 @@ class MementoCarousel {
       const distance = this.delta(index - this.current);
       const amount = Math.abs(distance);
       card.dataset.nearby = String(amount < 1.3);
-      if (this.nearViewport && amount < (navigator.connection?.saveData ? .6 : 1.3)) {
+      // Expose the current board and its neighbours to native loading="lazy".
+      // A direct hash jump must not depend on a later IntersectionObserver tick.
+      if (amount < (navigator.connection?.saveData ? .6 : 1.3)) {
         card.querySelectorAll('img[data-src]').forEach(img => {
           if (img.dataset.srcset) { img.srcset = img.dataset.srcset; delete img.dataset.srcset; }
           img.src = img.dataset.src; delete img.dataset.src;
