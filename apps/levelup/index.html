@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="it" data-embedded="false">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0b0c0d">
+  <meta name="description" content="Esplora le esperienze digitali di Memento. Scegli una demo, provala e immagina il tuo prossimo progetto.">
+  <title>LevelUp — Memento Design Studio</title>
+  <script>document.documentElement.dataset.embedded = String(window.parent !== window);</script>
+  <script src="tide-child-bridge.js"></script>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="preload" href="assets/fonts/InterVariable.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" as="image" href="assets/heroes/icecream-v6-1536.webp" imagesrcset="assets/heroes/icecream-v6-480.webp 480w, assets/heroes/icecream-v6-960.webp 960w, assets/heroes/icecream-v6-1536.webp 1536w" imagesizes="(max-width: 767px) 60vw, (max-width: 1023px) 80vw, (min-width: 1600px) 998px, 62.4vw" fetchpriority="high">
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="start.css">
+  <script src="experiences.js" defer></script>
+  <script src="carousel.js" defer></script>
+  <script src="smooth.js" defer></script>
+  <script src="app.js" defer></script>
+  <script src="visuals.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#finale">Vai al contatto</a>
+  <main id="levelup">
+    <section class="experience-section" aria-labelledby="page-title">
+      <header class="intro slide-width"><h1 id="page-title">Esplora le possibilità.</h1></header>
+      <div class="carousel" id="experience-carousel" role="region" aria-roledescription="carosello" aria-label="Le esperienze Memento" aria-describedby="gesture-help">
+        <div class="carousel-stage" id="slides"></div>
+      </div>
+      <nav class="carousel-controls" id="pagination" aria-label="Scegli un’esperienza"></nav>
+      <p class="sr-only" id="gesture-help">Trascina in orizzontale o usa i punti e le frecce della tastiera per cambiare esperienza. Seleziona la tavola centrale per provarla. Scorri in verticale per continuare la pagina.</p>
+      <p class="sr-only" id="slide-announcement" role="status" aria-live="polite" aria-atomic="true"></p>
+    </section>
+    <section class="start-section page-width" id="finale" aria-labelledby="start-heading">
+      <a id="start-link" class="start-action" href="https://mementostudio.it/start" target="_top" aria-label="Ready to start?">
+        <span class="start-art" aria-hidden="true"><img class="start-sparkle" src="assets/icons/sparkle-sculpture-v34.webp" width="1254" height="1254" alt="" loading="lazy" decoding="async"></span>
+        <h2 id="start-heading"><span>Ready to</span> <span>start<span class="start-question">?</span></span></h2>
+        <svg class="chevron" viewBox="0 0 48 80" fill="none" aria-hidden="true"><path d="m12 14 26 26-26 26" stroke="currentColor" stroke-width="1.6" stroke-linecap="square" stroke-linejoin="miter"/></svg>
+      </a>
+    </section>
+    <noscript>
+      <div class="no-script page-width"><p>Apri un’esperienza:</p><ul>
+        <li><a href="https://mementoicecream.vercel.app/?gusto=pistacchio">IceCream</a></li>
+        <li><a href="https://mementoauren.vercel.app/">Auren</a></li>
+        <li><a href="https://mementoelite.vercel.app/">Memento Elite</a></li>
+        <li><a href="https://mementofashion.vercel.app/">Fashion</a></li>
+        <li><a href="https://mementosl.vercel.app/">Unfreeze</a></li>
+        <li><a href="https://mementofood.vercel.app/">Memento Food</a></li>
+        <li><a href="https://knives.vercel.app/">Knives</a></li>
+        <li><a href="https://techref.vercel.app/#/categoria/smartphone?set=selection&amp;order=antutu&amp;platform=iOS">TechRef</a></li>
+        <li><a href="https://productvis.vercel.app/">ProductVis</a></li>
+        <li><a href="https://visualref.vercel.app/">VisualRef</a></li>
+      </ul></div>
+    </noscript>
+  </main>
+  <dialog class="player" id="experience-dialog" aria-labelledby="experience-title">
+    <div class="player-window">
+      <div class="player-toolbar">
+        <h2 id="experience-title">Esperienza</h2>
+        <a id="external-experience" class="external-experience" target="_blank" rel="noopener noreferrer" aria-label="Apri l’esperienza in una nuova scheda"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5H5v14h14v-4M12 3h9v9M21 3 10 14"/></svg></a>
+        <button id="close-player" class="dialog-close" aria-label="Chiudi esperienza"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 5 14 14M5 19 19 5"/></svg></button>
+      </div>
+      <div class="player-frame frame" id="player-frame">
+        <div class="player-content">
+          <div class="player-poster" id="player-poster" aria-hidden="true"></div>
+          <div id="frame-mount"></div>
+          <div id="frame-loading" class="frame-loading" role="status"><span class="loader" aria-hidden="true"></span><span>Caricamento esperienza</span></div>
+          <div id="load-fallback" class="load-fallback" hidden><p>Sta impiegando più del previsto.</p><a id="fallback-link" target="_blank" rel="noopener noreferrer">Apri in una nuova scheda ↗</a></div>
+        </div>
+      </div>
+    </div>
+  </dialog>
+</body>
+</html>
