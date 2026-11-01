@@ -1,74 +1,73 @@
 <!doctype html>
 <html lang="it" data-embedded="false">
 <head>
-  <meta charset="utf-8">
+  <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#0b0c0d">
-  <meta name="description" content="Esplora le esperienze digitali di Memento. Scegli una demo, provala e immagina il tuo prossimo progetto.">
+  <meta name="description" content="Diamo forma a ciò che rende unico il tuo brand. Esplora le esperienze Memento e immagina il tuo prossimo progetto.">
   <title>LevelUp — Memento Design Studio</title>
   <script>document.documentElement.dataset.embedded = String(window.parent !== window);</script>
-  <script src="tide-child-bridge.js"></script>
-  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <script src="tide-child-bridge.js" defer></script>
   <link rel="preload" href="assets/fonts/InterVariable.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="preload" as="image" href="assets/heroes/icecream-v6-1536.webp" imagesrcset="assets/heroes/icecream-v6-480.webp 480w, assets/heroes/icecream-v6-960.webp 960w, assets/heroes/icecream-v6-1536.webp 1536w" imagesizes="(max-width: 767px) 60vw, (max-width: 1023px) 80vw, (min-width: 1600px) 998px, 62.4vw" fetchpriority="high">
-  <link rel="stylesheet" href="style.css">
-  <link rel="stylesheet" href="start.css">
-  <script src="experiences.js" defer></script>
-  <script src="carousel.js" defer></script>
-  <script src="smooth.js" defer></script>
-  <script src="app.js" defer></script>
-  <script src="visuals.js" defer></script>
+  <link rel="preload" href="assets/editorial/value.webp" as="image" fetchpriority="high">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="smooth-gradients.css">
+  <script type="module" src="src/app.js"></script>
 </head>
 <body>
-  <a class="skip-link" href="#finale">Vai al contatto</a>
+  <a class="skip-link" href="#contatto">Vai al contatto</a>
   <main id="levelup">
-    <section class="experience-section" aria-labelledby="page-title">
-      <header class="intro slide-width"><h1 id="page-title">Esplora le possibilità.</h1></header>
-      <div class="carousel" id="experience-carousel" role="region" aria-roledescription="carosello" aria-label="Le esperienze Memento" aria-describedby="gesture-help">
-        <div class="carousel-stage" id="slides"></div>
+    <section class="opening bundle-opening" aria-labelledby="page-title">
+      <header class="page-width opening-heading"><h1 id="page-title" class="gradient-text fitted-heading">Cosa ti rende speciale?</h1></header>
+      <div class="carousel bundle-carousel benefit-carousel" id="benefits" role="region" aria-roledescription="carosello" aria-label="Come valorizzare il tuo brand" aria-describedby="carousel-help"><div class="carousel-stage"></div></div>
+      <nav class="carousel-controls" id="benefit-dots" aria-label="Scegli un beneficio"></nav>
+      <p id="carousel-help" class="sr-only">Trascina in orizzontale, usa i punti o le frecce della tastiera. Scorri in verticale per continuare.</p>
+    </section>
+
+    <section class="experiences-section" aria-labelledby="experiences-title">
+      <header class="page-width section-heading centered"><h2 id="experiences-title" class="gradient-text">Prova le nostre esperienze</h2><p>Sfoglia i progetti. Entra nell’esperienza.</p></header>
+      <div class="carousel portfolio-carousel" id="portfolio" role="region" aria-roledescription="carosello" aria-label="Esperienze Memento" aria-describedby="portfolio-help"><div class="carousel-stage"></div></div>
+      <nav class="carousel-controls" id="portfolio-dots" aria-label="Scegli una demo"></nav>
+      <p id="portfolio-help" class="sr-only">La selezione aggiorna la demo nel pannello sottostante. Premi Invio sulla slide attiva per raggiungere il pannello.</p>
+      <div id="demo-slot" class="page-width">
+        <article class="demo-panel cut-frame" id="demo-panel" aria-labelledby="demo-title" tabindex="-1">
+          <header class="demo-header"><div><h3 id="demo-title">ProductVis</h3><p id="demo-category">Demo · Configuratori 3D</p></div><div class="demo-actions">
+            <a id="demo-external" class="icon-button" href="https://productvis.vercel.app/" target="_blank" rel="noopener noreferrer" aria-label="Apri ProductVis in una nuova scheda"><img src="assets/icons/caret-right.svg" alt="" class="diagonal-arrow"></a>
+            <button id="expand-demo" class="text-button" type="button" aria-haspopup="dialog">Espandi</button>
+            <button id="close-demo" class="icon-button" type="button" aria-label="Riduci esperienza" hidden><img src="assets/icons/x.svg" alt=""></button>
+          </div></header>
+          <div class="demo-viewport" id="demo-viewport">
+            <img id="demo-poster" src="assets/heroes/productvis.webp" alt="" width="1536" height="1024" loading="lazy">
+            <div id="frame-mount"></div>
+            <div id="demo-loading" class="demo-loading" role="status">Caricamento esperienza…</div>
+            <div id="demo-fallback" class="demo-fallback" hidden><p>L’esperienza sta impiegando più del previsto.</p><div><button id="retry-demo" type="button" class="cut-button">Riprova</button><a id="fallback-link" class="cut-button" href="https://productvis.vercel.app/" target="_blank" rel="noopener noreferrer">Apri la demo</a></div></div>
+          </div>
+        </article>
       </div>
-      <nav class="carousel-controls" id="pagination" aria-label="Scegli un’esperienza"></nav>
-      <p class="sr-only" id="gesture-help">Trascina in orizzontale o usa i punti e le frecce della tastiera per cambiare esperienza. Seleziona la tavola centrale per provarla. Scorri in verticale per continuare la pagina.</p>
-      <p class="sr-only" id="slide-announcement" role="status" aria-live="polite" aria-atomic="true"></p>
     </section>
-    <section class="start-section page-width" id="finale" aria-labelledby="start-heading">
-      <a id="start-link" class="start-action" href="https://mementostudio.it/start" target="_top" aria-label="Ready to start?">
-        <span class="start-art" aria-hidden="true"><img class="start-sparkle" src="assets/icons/sparkle-sculpture-v34.webp" width="1254" height="1254" alt="" loading="lazy" decoding="async"></span>
-        <h2 id="start-heading"><span>Ready to</span> <span>start<span class="start-question">?</span></span></h2>
-        <svg class="chevron" viewBox="0 0 48 80" fill="none" aria-hidden="true"><path d="m12 14 26 26-26 26" stroke="currentColor" stroke-width="1.6" stroke-linecap="square" stroke-linejoin="miter"/></svg>
-      </a>
+
+    <section class="vision-section page-width" aria-labelledby="vision-title">
+      <header class="section-heading"><h2 id="vision-title" class="gradient-text">Immagina applicato<br> al tuo brand.</h2><p>Il valore che hai in mente, finalmente visibile.</p></header>
+      <div class="vision-grid">
+        <article class="vision-card cut-frame">
+          <div class="comparison" id="comparison"><img src="assets/editorial/product-after.webp" alt="Concept di un profumo ambientato con luce cinematografica" width="1024" height="1536" loading="lazy"><div class="comparison-before"><img src="assets/editorial/product-before.webp" alt="Lo stesso profumo in una presentazione neutra" width="1024" height="1536" loading="lazy"></div><span class="comparison-label before">Oggi</span><span class="comparison-label after">Domani</span><div class="comparison-divider" aria-hidden="true"><span><img src="assets/icons/caret-left.svg" alt=""><img src="assets/icons/caret-right.svg" alt=""></span></div><label class="sr-only" for="comparison-range">Confronta la presentazione del prodotto, da oggi a domani</label><input id="comparison-range" type="range" min="0" max="100" value="50" aria-valuetext="Metà presentazione neutra, metà cinematografica"></div>
+          <span class="concept-label">Concept</span><div class="vision-copy"><h3 class="gradient-text">Il tuo prodotto,<br> protagonista.</h3><p>Immagini capaci di far percepire la qualità che c’è già.</p></div>
+        </article>
+        <article class="vision-card cut-frame"><img class="vision-photo" src="assets/editorial/restaurant.webp" alt="Concept di ristorante con menu e sito coordinati" width="1024" height="1536" loading="lazy"><span class="concept-label">Concept</span><div class="vision-copy"><h3 class="gradient-text">Il tuo locale,<br> una destinazione.</h3><p>Atmosfera, identità e sito raccontano la stessa storia.</p></div></article>
+        <article class="vision-card cut-frame"><img class="vision-photo" src="assets/editorial/collection.webp" alt="Concept di una poltrona e della sua esperienza digitale con materiali selezionabili" width="1024" height="1536" loading="lazy"><span class="concept-label">Concept</span><div class="vision-copy"><h3 class="gradient-text">La tua collezione,<br> da vivere.</h3><p>Materiali e dettagli da esplorare, prima di scegliere.</p></div></article>
+      </div>
     </section>
-    <noscript>
-      <div class="no-script page-width"><p>Apri un’esperienza:</p><ul>
-        <li><a href="https://mementoicecream.vercel.app/?gusto=pistacchio">IceCream</a></li>
-        <li><a href="https://mementoauren.vercel.app/">Auren</a></li>
-        <li><a href="https://mementoelite.vercel.app/">Memento Elite</a></li>
-        <li><a href="https://mementofashion.vercel.app/">Fashion</a></li>
-        <li><a href="https://mementosl.vercel.app/">Unfreeze</a></li>
-        <li><a href="https://mementofood.vercel.app/">Memento Food</a></li>
-        <li><a href="https://knives.vercel.app/">Knives</a></li>
-        <li><a href="https://techref.vercel.app/#/categoria/smartphone?set=selection&amp;order=antutu&amp;platform=iOS">TechRef</a></li>
-        <li><a href="https://productvis.vercel.app/">ProductVis</a></li>
-        <li><a href="https://visualref.vercel.app/">VisualRef</a></li>
-      </ul></div>
-    </noscript>
+
+    <section class="steps-section page-width" aria-labelledby="steps-title"><header class="section-heading"><h2 id="steps-title" class="gradient-text">Basta un’idea!</h2><p>Partiamo da una chiacchierata.</p></header><ol class="steps-grid">
+      <li class="step-card cut-frame"><span class="step-number" aria-hidden="true">01</span><h3 class="gradient-text">Ci racconti.</h3><p>Chi sei e cosa<br> hai in mente.</p></li>
+      <li class="step-card cut-frame"><span class="step-number" aria-hidden="true">02</span><h3 class="gradient-text">Ne parliamo.</h3><p>Capiamo insieme<br> cosa ti serve.</p></li>
+      <li class="step-card cut-frame"><span class="step-number" aria-hidden="true">03</span><h3 class="gradient-text">Hai una<br> proposta.</h3><p>Cosa fare,<br> tempi e costi.</p></li>
+    </ol><p class="reassurance">Poi decidi tu, senza impegno.</p></section>
+
+    <section class="contact-section page-width" id="contatto" aria-label="Parliamo del tuo brand"><a class="start-action cut-frame" id="contact-link" href="https://mementostudio.it/start?from=levelup" target="_top"><img class="start-sculpture" src="assets/icons/sparkle-sculpture-v34.webp" alt="" width="1024" height="1024" loading="lazy"><div class="start-copy"><span class="eyebrow">Parliamone</span><h2>Ready to<br> start?</h2><p>Raccontaci la tua idea.</p></div><div class="start-footer"><span>Vai alla pagina contatti</span><img src="assets/icons/caret-right.svg" alt="" class="start-arrow"></div></a></section>
   </main>
-  <dialog class="player" id="experience-dialog" aria-labelledby="experience-title">
-    <div class="player-window">
-      <div class="player-toolbar">
-        <h2 id="experience-title">Esperienza</h2>
-        <a id="external-experience" class="external-experience" target="_blank" rel="noopener noreferrer" aria-label="Apri l’esperienza in una nuova scheda"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5H5v14h14v-4M12 3h9v9M21 3 10 14"/></svg></a>
-        <button id="close-player" class="dialog-close" aria-label="Chiudi esperienza"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 5 14 14M5 19 19 5"/></svg></button>
-      </div>
-      <div class="player-frame frame" id="player-frame">
-        <div class="player-content">
-          <div class="player-poster" id="player-poster" aria-hidden="true"></div>
-          <div id="frame-mount"></div>
-          <div id="frame-loading" class="frame-loading" role="status"><span class="loader" aria-hidden="true"></span><span>Caricamento esperienza</span></div>
-          <div id="load-fallback" class="load-fallback" hidden><p>Sta impiegando più del previsto.</p><a id="fallback-link" target="_blank" rel="noopener noreferrer">Apri in una nuova scheda ↗</a></div>
-        </div>
-      </div>
-    </div>
-  </dialog>
+  <p class="sr-only" id="announcement" aria-live="polite" aria-atomic="true"></p>
+  <dialog id="demo-dialog" aria-label="Esperienza a schermo intero"></dialog>
+  <noscript><p class="no-script">Attiva JavaScript per provare le esperienze. <a href="https://mementostudio.it/start" target="_top">Contatta Memento</a>.</p></noscript>
 </body>
 </html>

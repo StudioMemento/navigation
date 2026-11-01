@@ -1,0 +1,135 @@
+[
+  {
+    "size": "390x844",
+    "headingOverflow": 0,
+    "hero": {
+      "h": 316.203125,
+      "w": 234,
+      "x": 78
+    },
+    "scrollWidth": 390,
+    "viewport": [
+      390,
+      844
+    ],
+    "visionColumns": "323.688px",
+    "wrapper": {
+      "w": 323.6875,
+      "x": 33.15625
+    }
+  },
+  {
+    "size": "360x800",
+    "headingOverflow": 0,
+    "hero": {
+      "h": 291.890625,
+      "w": 216,
+      "x": 72
+    },
+    "scrollWidth": 360,
+    "viewport": [
+      360,
+      800
+    ],
+    "visionColumns": "296px",
+    "wrapper": {
+      "w": 296,
+      "x": 32
+    }
+  },
+  {
+    "size": "820x1180",
+    "headingOverflow": 0,
+    "hero": {
+      "h": 524.796875,
+      "w": 656,
+      "x": 82
+    },
+    "scrollWidth": 820,
+    "viewport": [
+      820,
+      1180
+    ],
+    "visionColumns": "209.328px 209.328px 209.328px",
+    "wrapper": {
+      "w": 656,
+      "x": 82
+    }
+  },
+  {
+    "size": "844x390",
+    "headingOverflow": 0,
+    "hero": {
+      "h": 337.59375,
+      "w": 675.1875,
+      "x": 84.40625
+    },
+    "scrollWidth": 844,
+    "viewport": [
+      844,
+      390
+    ],
+    "visionColumns": "215.719px 215.734px 215.734px",
+    "wrapper": {
+      "w": 675.1875,
+      "x": 84.40625
+    }
+  },
+  {
+    "size": "1440x1000",
+    "headingOverflow": 0,
+    "hero": {
+      "h": 576,
+      "w": 1152,
+      "x": 144
+    },
+    "scrollWidth": 1440,
+    "viewport": [
+      1440,
+      1000
+    ],
+    "visionColumns": "368.641px 368.641px 368.656px",
+    "wrapper": {
+      "w": 1152,
+      "x": 144
+    }
+  },
+  {
+    "size": "1600x1000",
+    "headingOverflow": 0,
+    "hero": {
+      "h": 640,
+      "w": 1280,
+      "x": 160
+    },
+    "scrollWidth": 1600,
+    "viewport": [
+      1600,
+      1000
+    ],
+    "visionColumns": "409.594px 409.609px 409.594px",
+    "wrapper": {
+      "w": 1280,
+      "x": 160
+    }
+  },
+  {
+    "size": "1920x1080",
+    "headingOverflow": 0,
+    "hero": {
+      "h": 640,
+      "w": 1280,
+      "x": 320
+    },
+    "scrollWidth": 1920,
+    "viewport": [
+      1920,
+      1080
+    ],
+    "visionColumns": "409.594px 409.609px 409.594px",
+    "wrapper": {
+      "w": 1280,
+      "x": 320
+    }
+  }
+]
