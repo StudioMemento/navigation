@@ -29,8 +29,8 @@ const stable = (frame) =>
       }),
   );
 try {
-  await page.goto(origin + '/host?version=v38');
-  const f = page.frames().find((f) => f.url().includes('/v38/'));
+  await page.goto(origin + '/host');
+  const f = page.frames().find((f) => f.url().includes('/v39/'));
   const link = f.locator('[data-service="motion"]');
   await link.scrollIntoViewIfNeeded();
   await stable(f);

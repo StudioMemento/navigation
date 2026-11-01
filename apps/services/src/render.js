@@ -16,7 +16,7 @@ const sizes = {
     '(max-width: 500px) 320px, (max-width: 1023px) calc(100vw - 180px), (min-width: 1900px) 1342px, calc((100vw - 180px) * .78)',
   detail:
     '(max-width: 500px) 320px, (max-width: 1023px) calc(100vw - 180px), (max-width: 1555px) 656px, (min-width: 2370px) 999px, 42.12vw',
-  thumbnail: '(max-width: 767px) 54px, 76px',
+  thumbnail: '(max-width: 767px) 40px, 72px',
 };
 function image(name, profile, { deferred = true, eager = false, className = '' } = {}) {
   const photo = media(name);
@@ -82,12 +82,12 @@ export function grid(medium) {
   return { html, announcement: `${label}: ${matching.length} servizi` };
 }
 function components(slide) {
-  return `<div class="bundle-components-content"><p class="bundle-components-intro">${escape(slide.intro)}</p><div class="bundle-components">${slide.components
+  return `<div class="bundle-components-content"><p class="sr-only">${escape(slide.intro)}</p><ul class="bundle-components">${slide.components
     .map(({ id, role }) => {
       const item = getItem(id);
-      return `<a href="#servizio/${id}" class="component-row" data-component="${id}">${image(item.cover, 'thumbnail')}<span class="component-copy"><strong>${escape(item.title)}</strong><span>${escape(role)}</span></span></a>`;
+      return `<li><a href="#servizio/${id}" class="component-row" data-component="${id}">${image(item.cover, 'thumbnail')}<span class="component-copy"><strong>${escape(item.title)}</strong><span>${escape(role)}</span></span></a></li>`;
     })
-    .join('')}</div><p class="bundle-scope">${escape(slide.scope)}</p></div>`;
+    .join('')}</ul><p class="bundle-scope">${escape(slide.scope)}</p></div>`;
 }
 function board(item, slide, index) {
   const heading = index === 0 ? 'h2' : 'h3';

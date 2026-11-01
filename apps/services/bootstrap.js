@@ -1,3 +1,13 @@
+/* Keep browser editing tools available in fields and the request preview. */
+document.addEventListener('contextmenu', (event) => {
+  if (
+    !event.target.closest(
+      'input, textarea, select, [contenteditable]:not([contenteditable="false"]), #request-preview',
+    )
+  )
+    event.preventDefault();
+});
+
 /* Transparent child surface. Parent blur belongs to the hosting document. */
 (() => {
   const embedded = window.parent !== window;

@@ -16,14 +16,14 @@ const types = {
   '.png': 'image/png',
   '.woff2': 'font/woff2',
 };
-const host = `<!doctype html><meta name="viewport" content="width=device-width,initial-scale=1"><style>html,body{margin:0;height:100%;background:radial-gradient(ellipse at 20% 60%,#45535c,transparent 55%),#050b0e}iframe{position:fixed;inset:0;width:100%;height:100%;border:0}</style><iframe src="/v38/" title="Servizi"></iframe>`;
+const host = `<!doctype html><meta name="viewport" content="width=device-width,initial-scale=1"><style>html,body{margin:0;height:100%;background:radial-gradient(ellipse at 20% 60%,#45535c,transparent 55%),#050b0e}iframe{position:fixed;inset:0;width:100%;height:100%;border:0}</style><iframe src="/v39/" title="Servizi"></iframe>`;
 const server = http.createServer((req, res) => {
   const url = new URL(req.url, 'http://localhost');
   if (url.pathname === '/host') {
     res.setHeader('content-type', 'text/html');
     return res.end(host);
   }
-  const relative = decodeURIComponent(url.pathname.replace(/^\/v38\//, '')) || 'index.html';
+  const relative = decodeURIComponent(url.pathname.replace(/^\/v39\//, '')) || 'index.html';
   const file = path.resolve(root, relative);
   if (!file.startsWith(root)) {
     res.statusCode = 403;

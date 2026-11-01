@@ -12,6 +12,10 @@
 
 `--page-content` allinea catalogo, categorie e CTA. `--slide-width` definisce il fronte della card. `--board-ratio` passa continuamente da 1 a 2; `--photo-width` e `--photo-height` ne derivano. Il dialogo limita la larghezza anche in funzione dell’altezza disponibile.
 
+La posa 3D del carosello è definita una sola volta in `Carousel.pose()`. `reserveBleed()` campiona il suo ingombro proiettato al ridimensionamento e riserva spazio nella maschera: evitare padding fissi che taglino le card laterali.
+
+La tavola dei servizi inclusi usa sempre una lista verticale, con un target minimo di 44 px per servizio e miniature quadrate. La sua scala dipende dall’altezza della tavola, così anche i quattro servizi del bundle Lancio restano visibili su mobile.
+
 I breakpoint residui cambiano composizione di filtri, spazi accessori e CTA, non ricostruiscono dimensioni indipendenti delle tavole. Un nuovo problema va risolto nella regola proprietaria, non con una nuova coda di override.
 
 ## Livelli della card
@@ -29,6 +33,10 @@ La sfumatura del titolo deve seguire la stessa fotografia, dimensione e posizion
 Il carosello gestisce soltanto movimenti orizzontali intenzionali. Scroll verticale e pinch zoom restano nativi. Non aggiungere transizioni CSS ai transform delle card: l’animazione ha un solo proprietario JavaScript. Il focus e il contenuto interattivo appartengono alla tavola attiva.
 
 Il popup usa il top layer nativo di `dialog`. Il catalogo viene congelato in una superficie grande quanto il viewport; il documento conserva la sua altezza. Non fissare il `body`, non animare l’opacità del dialogo e non affidare il blur interno esclusivamente a `backdrop-filter`.
+
+Nel catalogo il filtro grayscale appartiene solo alla fotografia: hover e focus-visible lo portano a zero. Reduced motion elimina la transizione. Il testo e la cornice conservano i propri colori.
+
+Selezione e menu contestuale sono disattivati sui contenuti; campi del form e anteprima della richiesta sono esclusi dalla regola. Non intercettare comandi di zoom, tastiera o editing.
 
 Start mantiene la scultura, la chevron e la luce sul perimetro. Hover e focus cambiano colore/materiale, senza spostare il testo o ingrandire le fotografie.
 

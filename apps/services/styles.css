@@ -54,6 +54,18 @@ body {
   font-family: Inter, 'Helvetica Neue', Arial, sans-serif;
   letter-spacing: 0.018em;
   -webkit-font-smoothing: antialiased;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+}
+input,
+textarea,
+select,
+[contenteditable]:not([contenteditable='false']),
+#request-preview {
+  -webkit-user-select: text;
+  user-select: text;
+  -webkit-touch-callout: default;
 }
 button,
 input,
@@ -330,8 +342,6 @@ section[id] {
   position: relative;
   width: 100%;
   touch-action: pan-y pinch-zoom;
-  user-select: none;
-  -webkit-user-select: none;
   isolation: isolate;
   cursor: grab;
 }
@@ -385,8 +395,8 @@ section[id] {
   mask: var(--slider-alpha);
 }
 .category-section .service-carousel {
-  padding-block: 24px 32px;
-  margin-block: -24px -32px;
+  padding-block: var(--carousel-bleed-top) var(--carousel-bleed-bottom);
+  margin-block: calc(-1 * var(--carousel-bleed-top)) calc(-1 * var(--carousel-bleed-bottom));
 }
 .carousel-controls,
 .service-deck-controls {
@@ -444,12 +454,17 @@ section[id] {
 
 /* 3. Page flow: bundles → catalogue → categories → Start. */
 .bundle-opening {
+  --carousel-bleed-top: 54px;
+  --carousel-bleed-bottom: 26px;
   position: relative;
   display: flex;
   flex-direction: column;
   isolation: isolate;
   overflow: clip;
-  padding: calc(clamp(96px, 8vw, 160px) + env(safe-area-inset-top, 0px)) 0 clamp(28px, 4vw, 64px);
+  padding: calc(
+      max(clamp(96px, 8vw, 160px), var(--carousel-bleed-top) + 24px) + env(safe-area-inset-top, 0px)
+    )
+    0 clamp(28px, 4vw, 64px);
 }
 .section-anchor {
   position: absolute;
@@ -461,8 +476,8 @@ section[id] {
 }
 #bundle-boards {
   flex: none;
-  padding-block: 54px 26px;
-  margin-block: -54px -26px;
+  padding-block: var(--carousel-bleed-top) var(--carousel-bleed-bottom);
+  margin-block: calc(-1 * var(--carousel-bleed-top)) calc(-1 * var(--carousel-bleed-bottom));
 }
 .bundle-board {
   cursor: pointer;
@@ -646,8 +661,13 @@ section[id] {
   height: 100%;
   object-fit: cover;
   pointer-events: none;
+  filter: grayscale(1);
+  transition: filter 0.45s var(--ease);
   -webkit-mask: url('assets/masks/tile-bottom.png') 0 0 / 100% 100%;
   mask: url('assets/masks/tile-bottom.png') 0 0 / 100% 100%;
+}
+.service-card:is(:hover, :focus-visible) .service-visual {
+  filter: grayscale(0);
 }
 .service-copy {
   position: absolute;
@@ -840,7 +860,7 @@ dialog::backdrop {
 .popup-carousel {
   position: absolute;
   top: 50%;
-  padding-block: 32px;
+  padding-block: max(var(--carousel-bleed-top), var(--carousel-bleed-bottom));
   transform: translateY(-50%);
 }
 .popup-card-scroll {
@@ -883,8 +903,6 @@ dialog::backdrop {
   font-weight: 400;
   line-height: 1.4;
   letter-spacing: -0.025em;
-  user-select: text;
-  -webkit-user-select: text;
 }
 .item-master-copy p {
   font: inherit;
@@ -944,7 +962,7 @@ dialog::backdrop {
   font-weight: 420;
   text-wrap: pretty;
 }
-:is(.scene-outputs, .scene-process, .scene-components) .item-master-title {
+:is(.scene-outputs, .scene-process) .item-master-title {
   font-size: clamp(26px, calc(var(--slide-width) * (0.081 - 0.023 * var(--layout-wide))), 74px);
 }
 .item-master-title:focus {
@@ -1033,59 +1051,67 @@ dialog::backdrop {
 .bundle-master .bundle-services {
   margin-top: 14px;
   font-size: clamp(12px, calc(var(--slide-width) * 0.014), 18px);
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
+}
+.scene-components {
+  --master-inset: clamp(16px, calc(var(--board-height) * 0.05), 32px);
+  --component-size: clamp(40px, calc(var(--board-height) * 0.115), 72px);
+}
+.scene-components .popup-card-body {
+  gap: clamp(10px, calc(var(--board-height) * 0.025), 16px);
+}
+.scene-components .item-master-title {
+  font-size: clamp(24px, calc(var(--board-height) * 0.1), 64px);
 }
 .bundle-components-content {
   width: 100%;
-  font-size: var(--master-copy);
-  line-height: 1.4;
-}
-.bundle-components-intro {
-  margin-bottom: 16px;
-  color: #c8c4bd;
 }
 .bundle-components {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 250px), 1fr));
-  gap: clamp(12px, calc(var(--slide-width) * 0.025), 24px);
+  grid-template-columns: minmax(0, 1fr);
+  gap: clamp(6px, calc(var(--board-height) * 0.018), 12px);
+  list-style: none;
+  margin: 0;
+  padding: 0;
 }
 .component-row {
   display: grid;
-  grid-template-columns: clamp(44px, calc(var(--slide-width) * 0.085), 80px) minmax(0, 1fr);
+  grid-template-columns: var(--component-size) minmax(0, 1fr);
   align-items: center;
   gap: 12px;
   min-width: 0;
+  min-height: 44px;
 }
 .component-row > img {
   width: 100%;
+  height: auto;
   aspect-ratio: 1;
   object-fit: cover;
   border: 1px solid #d0b28e40;
 }
 .component-copy {
   display: grid;
-  gap: 5px;
+  gap: clamp(3px, calc(var(--board-height) * 0.006), 5px);
   min-width: 0;
 }
 .component-copy strong {
   color: #f2efea;
-  font-size: clamp(16px, calc(var(--slide-width) * 0.021), 26px);
+  font-size: clamp(14px, calc(var(--board-height) * 0.041), 22px);
   font-weight: 450;
   line-height: 1.15;
   letter-spacing: -0.035em;
 }
 .component-copy > span {
   color: #bdb8b0;
-  font-size: clamp(12px, calc(var(--slide-width) * 0.014), 17px);
+  font-size: clamp(12px, calc(var(--board-height) * 0.029), 16px);
   line-height: 1.35;
 }
-.component-row:hover strong {
+.component-row:is(:hover, :focus-visible) strong {
   color: #e5b978;
 }
 .bundle-scope {
-  margin-top: 14px;
+  margin-top: clamp(8px, calc(var(--board-height) * 0.02), 14px);
   color: #a8a29a;
-  font-size: clamp(11px, calc(var(--slide-width) * 0.0125), 15px);
+  font-size: clamp(11px, calc(var(--board-height) * 0.025), 14px);
   line-height: 1.35;
 }
 
@@ -1366,14 +1392,6 @@ html[data-overlay-scrollbar='true']::-webkit-scrollbar {
 
 /* Only composition changes at this breakpoint. Board geometry remains fluid. */
 @media (max-width: 767px) {
-  #bundle-boards {
-    padding-block: 28px 20px;
-    margin-block: -28px -20px;
-  }
-  .category-section .service-carousel {
-    padding-block: 16px 24px;
-    margin-block: -16px -24px;
-  }
   .carousel-dot {
     width: clamp(32px, 9vw, 44px);
   }
@@ -1415,12 +1433,6 @@ html[data-overlay-scrollbar='true']::-webkit-scrollbar {
   }
   .slide-description {
     letter-spacing: -0.015em;
-  }
-  .popup-carousel {
-    padding-block: 24px;
-  }
-  .bundle-components-content {
-    padding-bottom: 4px;
   }
   #lead-dialog {
     max-height: var(--dialog-height, 100dvh);

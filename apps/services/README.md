@@ -1,6 +1,13 @@
-# Memento Servizi — V38
+# Memento Servizi — V39
 
-Refactoring della V37: stessa identità visiva, contenuti e percorsi; una base unica per layout, dati e interazioni.
+Correzioni dei bundle e rifiniture del catalogo sulla base unificata V38.
+
+## Novità V39
+
+- Bundle: servizi inclusi in un elenco verticale semantico, miniature quadrate e dimensioni legate all’altezza disponibile. Il suggerimento introduttivo resta disponibile ai lettori di schermo; la lista e la nota di ambito sono visibili.
+- Caroselli: lo spazio della maschera deriva dalla proiezione 3D effettiva lungo tutta la transizione. La stessa funzione determina posa e ingombro delle card laterali.
+- Catalogo: fotografie in bianco e nero, a colori durante hover e focus da tastiera. Titoli e cornici conservano il trattamento originale.
+- Selezione e menu contestuale disattivati nei contenuti della pagina. Campi modificabili e anteprima della richiesta conservano selezione e strumenti di modifica.
 
 ## Avvio e pubblicazione
 
@@ -27,7 +34,7 @@ Su Vercel il file `vercel.json` imposta preset Other, nessuna installazione, com
 | `src/dialogs.js` | Apertura/chiusura, hash, ritorno al bundle, focus, blocco viewport e bozza email. |
 | `src/visuals.js` | Luce perimetrale Start, comparsa dei titoli, indicatore di scroll. |
 | `src/app.js` | Montaggio della pagina e filtro Digitale/Fisico. |
-| `bootstrap.js` | Superficie trasparente in iframe, handshake con il parent e proporzioni prima del primo paint. |
+| `bootstrap.js` | Superficie trasparente in iframe, handshake con il parent e proporzioni prima del primo paint e regola del menu contestuale. |
 | `styles.css` | Fondamenti, card, caroselli, pagina, dialoghi, CTA e accessibilità. |
 | `memento-services-host.js` | Helper opzionale da caricare nel documento che ospita l’iframe. |
 
@@ -39,7 +46,7 @@ Non aggiungere nuovi file `polish-vXX.css` e non modificare i dati dopo il caric
 
 La larghezza del contenuto parte da 320 px sui telefoni e cresce fino a 1720 px, mantenendo i margini condivisi. Tra 768 e 1024 px `bootstrap.js` interpola il rapporto delle card da 1:1 a 2:1. CSS e motore del carosello leggono le stesse variabili `--layout-wide` e `--board-ratio`.
 
-La fotografia rimane ancorata in basso a destra. Una maschera continua passa dalla sfumatura superiore a quella laterale; la protezione del titolo segue lo stesso ritaglio. Nei popup la dimensione è limitata anche dall’altezza disponibile. I contenuti lunghi scorrono dentro la card.
+La fotografia rimane ancorata in basso a destra. Una maschera continua passa dalla sfumatura superiore a quella laterale; la protezione del titolo segue lo stesso ritaglio. Nei popup la dimensione è limitata anche dall’altezza disponibile. Le liste dei bundle sono dimensionate per rientrare nella card alle misure ordinarie. Lo scroll nativo resta un fallback per viewport particolarmente bassi o testo ingrandito: nessun contenuto viene troncato per nasconderlo.
 
 I nomi `v28`, `v29` e `v34` negli asset identificano fotografie già approvate, non fogli di patch. Le immagini originali sono conservate byte per byte. `media.js` costruisce gli URL delle varianti esistenti; i test verificano ogni variante.
 
@@ -66,6 +73,6 @@ npx playwright install chromium
 npm run test:browser
 ```
 
-La suite avvia un server su loopback e controlla proporzioni, overflow, breakpoint adiacenti, tutte le tavole a 320 e 820 px, iframe, scroll, tap, drag, focus, tastiera, filtri, hash e bozza email. I risultati vengono scritti in `test-results/`, escluso dalla build. In un ambiente con browser già installato sono supportate le variabili `PLAYWRIGHT_MODULE` e `CHROMIUM_EXECUTABLE`.
+La suite avvia un server su loopback e controlla proporzioni, overflow, breakpoint adiacenti, tutte le tavole a 320 e 820 px, iframe, scroll, tap, drag, focus, tastiera, filtri, hash e bozza email. La suite dedicata ai bundle verifica inoltre miniature quadrate, elenco verticale, assenza di scroll parassita, ingombro delle card durante la rotazione, grayscale/hover/focus e selezione nei campi. I risultati vengono scritti in `test-results/`, escluso dalla build. In un ambiente con browser già installato sono supportate le variabili `PLAYWRIGHT_MODULE` e `CHROMIUM_EXECUTABLE`.
 
 Leggi `AUDIT.md` per risultati e limiti della verifica, `DESIGN_SYSTEM.md` per le regole visive.

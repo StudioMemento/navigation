@@ -26,6 +26,8 @@ export class Carousel {
       this.height = this.cards[0].offsetHeight || 1;
       this.wide = Number(getComputedStyle(element).getPropertyValue('--layout-wide')) || 0;
       this.stride = width * (this.fan ? 0.78 - 0.14 * this.wide : 0.94 - 0.25 * this.wide);
+      this.perspective = 1100 + 900 * this.wide;
+      this.reserveBleed();
       this.render();
     };
     this.observer = new ResizeObserver(this.measure);
@@ -100,9 +102,51 @@ export class Carousel {
   delta(value) {
     return this.mod(value + this.count / 2) - this.count / 2;
   }
+  pose(distance) {
+    const amount = Math.abs(distance);
+    const wide = this.wide;
+    // Neighbours tuck behind at rest, then open around the layer handoff.
+    const bow = amount < 1 ? Math.sin(Math.PI * amount) * this.width * (0.08 + 0.12 * wide) : 0;
+    return {
+      x: distance * this.stride + Math.sign(distance) * bow,
+      y: this.fan
+        ? -this.height * (0.035 + 0.03 * wide) * Math.min(amount, 2)
+        : this.height * (0.008 + 0.017 * wide) * Math.min(amount, 2.6),
+      scale: Math.pow(this.fan ? 0.88 : 0.97 - 0.07 * wide, amount),
+      yaw:
+        -Math.sign(distance) *
+        Math.min(
+          this.fan ? 62 : 22 + 16 * wide,
+          amount * (this.fan ? 32 + 16 * wide : 12 + 12 * wide),
+        ),
+    };
+  }
+  reserveBleed() {
+    // A CSS mask clips to its box. Reserve the projected envelope for every
+    // visible swipe position, using the same pose as render (not a breakpoint).
+    const edge = Math.min(2.7, this.count / 2 - 0.06);
+    let top = 0;
+    let bottom = 0;
+    for (let sample = 0; sample <= 80; sample++) {
+      const { y, scale, yaw } = this.pose((sample / 80) * edge);
+      const depth = (this.width * scale * Math.abs(Math.sin((yaw * Math.PI) / 180))) / 2;
+      const halfHeight = (this.height * scale) / 2 / (1 - depth / this.perspective);
+      top = Math.max(top, halfHeight - this.height / 2 - y);
+      bottom = Math.max(bottom, halfHeight - this.height / 2 + y);
+    }
+    const owner = this.fan ? this.element.closest('.bundle-opening') : this.element;
+    for (const [side, amount] of [
+      ['top', top],
+      ['bottom', bottom],
+    ]) {
+      const property = `--carousel-bleed-${side}`;
+      const value = `${Math.ceil(amount) + 8}px`;
+      if (owner.style.getPropertyValue(property) !== value)
+        owner.style.setProperty(property, value);
+    }
+  }
   render() {
     const active = this.mod(Math.round(this.current));
-    const wide = this.wide || 0;
     // Hide cards before they wrap, including the four-card VISUAL stack.
     const edge = Math.min(2.7, this.count / 2 - 0.06);
     this.cards.forEach((card, index) => {
@@ -121,26 +165,14 @@ export class Carousel {
           delete img.dataset.src;
         });
       }
-      // Neighbours tuck behind at rest, then open apart around the layer handoff.
-      const bow = amount < 1 ? Math.sin(Math.PI * amount) * this.width * (0.08 + 0.12 * wide) : 0;
-      const x = distance * this.stride + Math.sign(distance) * bow;
-      const y = this.fan
-        ? -this.height * (0.035 + 0.03 * wide) * Math.min(amount, 2)
-        : this.height * (0.008 + 0.017 * wide) * Math.min(amount, 2.6);
-      const scale = Math.pow(this.fan ? 0.88 : 0.97 - 0.07 * wide, amount);
-      const yaw =
-        -Math.sign(distance) *
-        Math.min(
-          this.fan ? 62 : 22 + 16 * wide,
-          amount * (this.fan ? 32 + 16 * wide : 12 + 12 * wide),
-        );
+      const { x, y, scale, yaw } = this.pose(distance);
       card.style.transform =
         'translate3d(calc(-50% + ' +
         x.toFixed(3) +
         'px), ' +
         y.toFixed(3) +
         'px, 0) perspective(' +
-        (1100 + 900 * wide).toFixed(1) +
+        this.perspective.toFixed(1) +
         'px) rotateY(' +
         yaw.toFixed(3) +
         'deg) scale(' +

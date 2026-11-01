@@ -12,7 +12,7 @@ page.on('response', (r) => {
   if (r.status() >= 400) failed.push({ url: r.url(), status: r.status() });
 });
 try {
-  await page.goto(origin + '/v38/');
+  await page.goto(origin + '/v39/');
   await page.evaluate(() => document.fonts.ready);
   await page.locator('[data-medium="physical"]').click();
   assert.equal(await page.locator('.service-card').count(), 14);
@@ -82,7 +82,7 @@ try {
   assert.equal(style.duration, '0s');
   await page.locator('.start-sparkle').evaluate((image) => image.decode());
   await page.locator('#start-link').focus();
-  await page.screenshot({ path: 'test-results/v38-start-mobile.png' });
+  await page.screenshot({ path: 'test-results/v39-start-mobile.png' });
   await page.emulateMedia({ forcedColors: 'active' });
   const forced = await page.locator('#start-link').evaluate((e) => ({
     text: getComputedStyle(e.querySelector('h2')).color,
