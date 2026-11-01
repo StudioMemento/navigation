@@ -1,4 +1,4 @@
-MEMENTO — INTEGRAZIONE SERVIZI V36 NELLA NAV
+MEMENTO — INTEGRAZIONE SERVIZI V37 NELLA NAV
 
 Il catalogo rileva automaticamente se si trova in un iframe e mantiene
 html, body e sezioni trasparenti. Aperto da solo usa un unico fondo scuro.
@@ -8,7 +8,7 @@ Le estremita sinistra e destra dei viewport slider sfumano in alpha verso
 il fondale Nav. Il fade termina prima della tavola centrale, che resta opaca.
 Il margine iniziale dei bundle è 96–160 px, più la safe area del dispositivo.
 
-V36 applica il blur mobile direttamente al catalogo durante l'apertura
+V37 applica il blur direttamente al catalogo su ogni formato durante l'apertura
 dei dettagli. Questo effetto interno non richiede modifiche al contenitore
 Nav e non dipende dal supporto del backdrop-filter del dialogo.
 
@@ -55,4 +55,6 @@ V34: nessun gutter viene riservato dalla scrollbar interna. Il suo indicatore
 sottile si sovrappone al contenuto senza nasconderlo con un fondale opaco.
 Su desktop il blending sinistro sostiene la leggibilità del copy.
 Su mobile le immagini sono ancorate in basso, sfumano al nero in alto e
-ricevono un gradient blur inferiore dietro ai titoli. Card sempre quadrate.
+ricevono un gradient blur inferiore dietro ai titoli. Card quadrate fino a
+768 px, con passaggio graduale a 2:1 tra 768 e 1024 px. Le misure seguono
+la larghezza effettiva dell'iframe; evitare zoom/scale CSS nel contenitore.

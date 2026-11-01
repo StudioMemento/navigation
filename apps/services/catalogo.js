@@ -19,10 +19,10 @@
   const medium = item => item.group === 'print' && item.id !== 'presentazione' ? 'physical' : 'digital';
   const sectionFor = item => sections.find(section => (section.catalogueIds || section.ids).includes(item.id));
   const imageSizes = {
-    grid: '(max-width: 767px) 154px, (max-width: 1099px) calc((100vw - 108px) / 4), (min-width: 1920px) 336px, 18vw',
-    slide: '(max-width: 767px) 375px, (max-width: 1023px) 86vw, (min-width: 1960px) 1720px, 90vw',
+    grid: '(max-width: 500px) 154px, (max-width: 927px) 200px, (min-width: 1900px) 325px, calc((100vw - 180px) / 5)',
+    slide: '(max-width: 500px) 320px, (max-width: 1023px) calc(100vw - 180px), (min-width: 1900px) 1342px, calc((100vw - 180px) * .78)',
     hero: '(max-width: 767px) 100vw, 83vw',
-    detail: '(max-width: 767px) 90vw, (min-width: 1720px) 1040px, 64vw',
+    detail: '(max-width: 500px) 320px, (max-width: 1023px) calc(100vw - 180px), (max-width: 1555px) 656px, (min-width: 2370px) 999px, 42.12vw',
     thumbnail: '(max-width: 767px) 54px, 76px'
   };
   function imageAttrs(name, profile, {deferred = false, eager = false} = {}) {
@@ -111,7 +111,7 @@
     const base = `assets/bundles-v29/${id}/${role}`;
     const widths = role === 'hero' ? [320, 640, 1536] : [768, 1536];
     const prefix = deferred ? 'data-' : '';
-    return `${prefix}src="${base}-1536.webp" ${prefix}srcset="${widths.map(width => `${base}-${width}.webp ${width}w`).join(', ')}" sizes="(max-width: 767px) 375px, (max-width: 1023px) 86vw, (min-width: 1960px) 1720px, 90vw" width="1536" height="1024" alt="" draggable="false" decoding="async" ${eager ? 'loading="eager" fetchpriority="high"' : 'loading="lazy"'}`;
+    return `${prefix}src="${base}-1536.webp" ${prefix}srcset="${widths.map(width => `${base}-${width}.webp ${width}w`).join(', ')}" sizes="${imageSizes.slide}" width="1536" height="1024" alt="" draggable="false" decoding="async" ${eager ? 'loading="eager" fetchpriority="high"' : 'loading="lazy"'}`;
   }
   const includedServices = (item, className = '') => `<ul class="bundle-services ${className}">${item.covers.map(id => `<li>${esc(title(byId.get(id)))}</li>`).join('')}</ul>`;
   $('#bundle-boards').innerHTML = '<div class="carousel-stage">' + bundles.map((item, index) => {
@@ -219,7 +219,7 @@
       const startLink = slide.action === 'start'
         ? `<a class="item-master-cta" href="${esc(MEMENTO_CONFIG.startUrl)}" target="_top" aria-label="${esc(slide.cta)}: vai a Start"><span>${esc(slide.cta)}</span>${icon()}</a>`
         : '';
-      const picture = `<img data-src="${asset}-1536.webp" data-srcset="${asset}-768.webp 768w, ${asset}-1536.webp 1536w" sizes="(max-width: 767px) 375px, (max-width: 1023px) 100vw, (min-width: 1960px) 1342px, 72vw" width="1536" height="1024" alt="" draggable="false" decoding="async" loading="lazy">`;
+      const picture = `<img data-src="${asset}-1536.webp" data-srcset="${asset}-768.webp 768w, ${asset}-1536.webp 1536w" sizes="${imageSizes.detail}" width="1536" height="1024" alt="" draggable="false" decoding="async" loading="lazy">`;
       return `<section class="carousel-card showcase-card service-scene scene-${slide.key}" data-slide="${index}" aria-label="${esc(slide.label)}" tabindex="${index === 0 ? 0 : -1}"><div class="popup-card-scroll"><div class="popup-card-body">${surface}
         <div class="service-scene-art item-master-art" aria-hidden="true">${picture}</div>${titleVeil(picture)}
         <div class="item-master-copy">${copy}</div>

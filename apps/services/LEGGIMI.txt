@@ -1,5 +1,25 @@
-MEMENTO — SERVIZI V36
+MEMENTO — SERVIZI V37
 44 servizi, 6 bundle, 200 tavole commerciali.
+
+RESPONSIVE V37
+- Larghezza di 320 px conservata sui telefoni fino a 500 px; oltre questa
+  soglia il contenuto cresce continuamente, fino a 1720 px sulla pagina.
+- Card quadrate fino a 768 px. Tra 768 e 1024 px il rapporto passa
+  progressivamente da 1:1 a 2:1, senza salti ai vecchi breakpoint.
+- I dettagli tengono conto anche dell'altezza disponibile: in landscape
+  si riducono insieme larghezza e altezza, lasciando accessibili X e dots.
+- Immagini ancorate in basso, con geometria coerente con le sorgenti 3:2.
+  Il blending passa gradualmente dall'alto al lato sinistro; su tablet
+  non compare piu un rettangolo separato con bordi netti.
+- Gradient blur limitato alla zona del titolo; immagini responsive
+  selezionate anche in base alla nuova larghezza delle card.
+- Griglia adattiva da 2 a 5 colonne. Copy, titoli, spaziatura e componenti
+  bundle seguono lo spazio reale; i dettagli lunghi scorrono nella card.
+- Anche prospettiva e distanza delle card laterali cambiano gradualmente.
+- Blur stabile V36 esteso a tutti i formati, anche durante il resize.
+- catalogo-responsive.js va caricato nel head, prima degli stili.
+  catalogo-responsive.css va caricato per ultimo: centralizza le regole
+  di layout e sostituisce i breakpoint delle revisioni precedenti.
 
 DETTAGLI MOBILE V36
 - Apertura e chiusura senza spostare il body: la posizione del catalogo
@@ -13,13 +33,13 @@ DETTAGLI MOBILE V36
 - Gli aggiornamenti del viewport sono coordinati con il rendering.
 - catalogo-mobile-v36.css viene caricato dopo catalogo-mobile-v35.css.
 
-MOBILE POLISH V35
+MOBILE POLISH V35 — base aggiornata dalle regole V37
 - Allineamento al logo e alla navbar Framer: area centrale mobile di 320 px.
   Un unico gutter governa titoli, catalogo, slider e CTA.
 - Card degli slider servizi, bundle e popup quadrate (1:1).
 - Immagini a filo del bordo inferiore, con sfumatura in alto al nero.
 - Copy e titoli dimensionati sulla card; contenuti popup lunghi scorribili.
-- In landscape basso il popup si riduce mantenendo proporzioni quadrate.
+- In landscape basso il popup si riduce conservando il rapporto corrente.
 - Stili dedicati entro 767 px in catalogo-mobile-v35.css.
 
 BASE V34 CONSERVATA
@@ -58,14 +78,14 @@ Per riutilizzare il linguaggio visivo consultare MASTER_VISUAL.md.
 La Nav Framer live e le altre pagine non sono modificate dal pacchetto.
 
 VERIFICHE
-Controlli in Chromium headless: 320x740, 390x844, 500x870, 667x375 e
-1440x1000. A 390 e 500 px il catalogo gira in un iframe trasparente di prova.
-Menu digitale, Foto prodotti e Sito web: apertura, cambio slide e chiusura;
-posizione dello scroll e del catalogo costante nei frame di apertura,
-blur del fondale, titoli sopra il gradient blur e proporzioni 1:1.
-Verificato anche il percorso bundle > servizio > bundle > chiusura.
-Nessun errore JavaScript nei percorsi eseguiti. Revisione visiva degli
-screenshot mobile Menu digitale e Foto prodotti; build statica, sintassi
-JavaScript, risorse e contenuto dello ZIP controllati.
+V37: controlli Chromium tra 320 e 2048 px, portrait e landscape.
+Resize con dettaglio aperto e campioni consecutivi attorno a 500, 600,
+768, 1024 e 1100 px; card, controlli, titoli e immagini verificati.
+Catalogo e slider controllati a 13 larghezze, comprese quelle immediatamente
+prima e dopo i vecchi breakpoint. Revisione visiva di Motion Graphics e
+dello slider Web Design su mobile, tablet e desktop.
+Dettagli di tutti i 44 servizi e 6 bundle controllati a 320 e 820 px,
+inclusi ordine dei contenuti, accesso ai titoli lunghi e CTA.
+Build statica, sintassi JavaScript, risorse e contenuto dello ZIP verificati.
 Il contenitore di prova non sostituisce Framer in produzione. Nessuna
 certificazione su Safari/WebKit o su hardware iPhone fisico.

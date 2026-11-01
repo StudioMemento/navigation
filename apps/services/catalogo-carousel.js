@@ -31,11 +31,14 @@ class MementoCarousel {
       if (this.width && this.width !== width && this.pointer) this.up({pointerId: this.pointer.id}, true);
       this.width = width;
       this.height = this.cards[0]?.offsetHeight || 1;
-      this.stride = this.flat ? Math.min(360, this.width * .68) : this.width * (this.fan ? (this.compact.matches ? .78 : .64) : (this.compact.matches ? .94 : .69));
+      this.wide = Math.max(0, Math.min(1, Number(getComputedStyle(element).getPropertyValue('--layout-wide')) || 0));
+      this.stride = this.flat ? Math.min(360, this.width * .68) : this.width * (this.fan ? .78 - .14 * this.wide : .94 - .25 * this.wide);
       this.render();
     };
     this.observer = new ResizeObserver(this.measure);
     this.observer.observe(element);
+    // A height-constrained popup may keep its outer width while its card resizes.
+    if (this.cards[0]) this.observer.observe(this.cards[0]);
     this.measure();
     if ('IntersectionObserver' in window) {
       this.visibilityObserver = new IntersectionObserver(entries => {
@@ -119,7 +122,7 @@ class MementoCarousel {
   render() {
     const active = this.mod(Math.round(this.current));
     const flat = this.flat;
-    const compact = this.compact.matches;
+    const wide = this.wide || 0;
     // Hide cards before they wrap, including the four-card VISUAL stack.
     const edge = flat ? Math.min(1.5, this.count / 2) : Math.min(2.7, this.count / 2 - .06);
     this.cards.forEach((card, index) => {
@@ -135,14 +138,14 @@ class MementoCarousel {
         });
       }
       // Neighbours tuck behind at rest, then open apart around the layer handoff.
-      const bow = amount < 1 ? Math.sin(Math.PI * amount) * this.width * (compact ? .08 : .2) : 0;
+      const bow = amount < 1 ? Math.sin(Math.PI * amount) * this.width * (.08 + .12 * wide) : 0;
       const x = distance * this.stride + Math.sign(distance) * bow;
-      const y = this.fan ? -this.height * (compact ? .035 : .065) * Math.min(amount, 2) : this.height * (compact ? .008 : .025) * Math.min(amount, 2.6);
-      const scale = Math.pow(this.fan ? .88 : compact ? .97 : .9, amount);
-      const yaw = -Math.sign(distance) * Math.min(this.fan ? 62 : compact ? 22 : 38, amount * (this.fan ? (compact ? 32 : 48) : compact ? 12 : 24));
+      const y = this.fan ? -this.height * (.035 + .03 * wide) * Math.min(amount, 2) : this.height * (.008 + .017 * wide) * Math.min(amount, 2.6);
+      const scale = Math.pow(this.fan ? .88 : .97 - .07 * wide, amount);
+      const yaw = -Math.sign(distance) * Math.min(this.fan ? 62 : 22 + 16 * wide, amount * (this.fan ? 32 + 16 * wide : 12 + 12 * wide));
       card.style.transform = flat
         ? 'translate3d(-50%, 0, 0)'
-        : 'translate3d(calc(-50% + ' + x.toFixed(3) + 'px), ' + y.toFixed(3) + 'px, 0) perspective(' + (compact ? 1100 : 2000) + 'px) rotateY(' + yaw.toFixed(3) + 'deg) scale(' + scale.toFixed(5) + ')';
+        : 'translate3d(calc(-50% + ' + x.toFixed(3) + 'px), ' + y.toFixed(3) + 'px, 0) perspective(' + (1100 + 900 * wide).toFixed(1) + 'px) rotateY(' + yaw.toFixed(3) + 'deg) scale(' + scale.toFixed(5) + ')';
       // Light and text follow distance continuously, including both sides of a swipe.
       const fade = Math.min(1, amount);
       card.style.setProperty('--slide-focus', (1 - fade * fade * (3 - 2 * fade)).toFixed(4));

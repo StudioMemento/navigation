@@ -1,4 +1,4 @@
-# Memento — base visiva V36
+# Memento — base visiva V37
 
 Servizi rimane il riferimento per le prossime pagine. Questo rilascio aggiorna
 la pagina Servizi; non modifica automaticamente Framer Nav o altre pagine.
@@ -16,23 +16,40 @@ la pagina Servizi; non modifica automaticamente Framer Nav o altre pagine.
   Il fade termina prima della tavola centrale; nessuna velatura nera esterna.
 - Pagina trasparente negli iframe e scrollbar sovrapposta senza fascia opaca.
 
-## Mobile V35
+## Layout responsive V37
 
-- Breakpoint: fino a 767 px. Logo e navbar Framer misurano 320 px e sono
-  centrati; titoli, catalogo, card attive e CTA condividono quei bordi.
-- Un solo token `--mobile-content-width: 320px` definisce il riferimento.
-  Il gutter è `max(0px, (100vw - 320px) / 2)`, con safe area del dispositivo.
-- Slider servizi, bundle e popup sono 1:1. L'altezza dello stage è uguale
-  alla larghezza della card; la sola proprietà `aspect-ratio` non basta.
-- Padding interno delle slide: 20 px. Copy 14 px, titoli cover 32 px.
-  La tipografia resta proporzionata alla card anche sui telefoni più larghi.
-- Le immagini cover coprono il 78% inferiore della card, senza margine sotto.
-  Il fade superiore è verticale e termina al 52% dell'immagine.
-- Nei popup il testo usa il flusso del layout: le schede più ricche scorrono
-  verticalmente dentro la cornice quadrata senza sovrapporre copy e titolo.
-- In landscape basso il popup quadrato si riduce per lasciare visibili
-  chiusura e dots. Le versioni desktop mantengono il layout precedente.
-- `catalogo-mobile-v35.css` precede `catalogo-mobile-v36.css`.
+- Fino a 500 px rimane il riferimento mobile di 320 px, centrato come il
+  logo e la navbar Framer. Sotto 320 px il contenuto rispetta il viewport.
+- Oltre 500 px la larghezza cresce senza salti: `100vw - 180px`, fino a
+  1720 px. Titoli, catalogo, slider di pagina e CTA condividono quei bordi.
+  Il gutter deriva da questa larghezza e rispetta le safe area.
+- Il rapporto delle card è 1:1 fino a 768 px. Tra 768 e 1024 px cambia
+  continuamente fino a 2:1; oltre 1024 px rimane 2:1. Lo stesso valore
+  governa altezza dello stage e card, senza affidarsi solo ad aspect-ratio.
+- `catalogo-responsive.js` misura il viewport del documento/iframe e
+  pubblica `--layout-wide` (0–1) e `--board-ratio` (1–2). Le misure non
+  dipendono dallo schermo fisico né dal viewport ridotto dal pinch zoom.
+- Il popup mantiene il limite desktop da 840 a 1280 px e si riduce quando
+  serve a rientrare in larghezza o altezza. Restano 144 px, più safe area,
+  per chiusura, ritorno al bundle e dots. La card conserva il suo rapporto.
+- Padding, copy e titoli dipendono dalla larghezza effettiva della card.
+  Il testo usa il flusso del layout su ogni dispositivo; i contenuti lunghi
+  scorrono all'interno, senza sovrapporre copy, titolo e CTA.
+- Le foto seguono le sorgenti 3:2 e toccano il bordo inferiore. Sul layout
+  quadrato non vengono ingrandite per riempire una finestra più verticale.
+  Sul 2:1 rimane il piccolo crop verticale necessario a riempire il frame.
+- Il blending superiore diventa gradualmente laterale quando la card si
+  allarga. Non usare `object-fit: contain` in un riquadro isolato interno.
+- Il gradient blur occupa una fascia inferiore da 128 a 260 px, proporzionata
+  al titolo. La foto resta leggibile sopra questa fascia; sul desktop la
+  protezione è più leggera. Foto e copia sfocata condividono crop e posizione.
+- La griglia passa da 2 a 5 colonne quando le tessere hanno spazio sufficiente.
+  Le sezioni con pochi elementi mantengono la stessa dimensione delle tessere.
+- Le trasformazioni del carosello interpolano la stessa progressione: nessun
+  cambio improvviso di prospettiva o distanza delle card a 768 px.
+- Caricare `catalogo-responsive.js` nel head e `catalogo-responsive.css`
+  dopo tutti gli stili precedenti. Questo file è il riferimento per il layout;
+  non aggiungere nuovi override tablet/portrait ai vecchi fogli V24–V36.
 
 ## Dettagli mobile V36
 
@@ -41,13 +58,13 @@ la pagina Servizi; non modifica automaticamente Framer Nav o altre pagine.
 - Il blur di 16 px si applica a una superficie ritagliata al viewport,
   evitando una texture estesa quanto l'intera pagina. Il dialogo rimane
   all'esterno di questa superficie, nel top layer nativo del browser.
-- Su mobile dialogo e fondale compaiono senza animazioni di opacità.
+- Dialogo e fondale compaiono senza animazioni di opacità su ogni formato.
   Il fondale scurisce la pagina; il catalogo è sfocato esplicitamente anche
   negli iframe trasparenti. Gli slider di sfondo restano in pausa.
 - Il gradient blur dei titoli usa una copia in cache della foto con blur
   di 10 px, maschera progressiva e sfumatura al nero verso il bordo basso.
   Foto e sfocatura condividono crop e ancoraggio; il testo rimane sopra.
-  Lo strato decorativo è escluso dall'accessibilità e nascosto su desktop.
+  Lo strato decorativo è escluso dall'accessibilità e attenuato su desktop.
 - La posizione torna immediatamente al punto di partenza alla chiusura.
   Il percorso bundle/servizio conserva lo stesso blocco dello scroll.
 
@@ -87,12 +104,12 @@ Focus visibile, decorazioni escluse dal nome accessibile e testo HTML.
 Il movimento ridotto disabilita l'inseguimento animato; il touch non attiva
 la luce del puntatore. In colori forzati tornano i colori di sistema.
 
-V35: riferimento del logo/navbar misurato sul sito Framer a 320, 360, 390,
-500, 600 e 767 px. V36: apertura, cambio slide e chiusura di Menu digitale,
-Foto prodotti e Sito web in Chromium a 320x740, 390x844, 500x870, 667x375
-e 1440x1000; i formati 390 e 500 px usano un iframe trasparente di prova.
-Verificati posizione dello scroll, blur, rapporto 1:1 e percorso bundle >
-servizio > bundle. Screenshot mobile controllati visivamente. Build statica,
+V37: resize in Chromium da 320 a 2048 px con dettaglio aperto, portrait e
+landscape; campioni a un pixel di distanza attorno ai vecchi breakpoint.
+Controllati card, controlli, immagini e titoli. Catalogo, categorie e CTA
+verificati a 13 larghezze. Tutte le 200 tavole di servizi e bundle controllate
+a 320 e 820 px, con accesso ai contenuti che richiedono scroll interno.
+Screenshot mobile/tablet/desktop controllati visivamente. Build statica,
 sintassi JavaScript, risorse e ZIP verificati. Nessuna certificazione su
 Safari/WebKit, hardware iPhone fisico o Framer in produzione.
 
