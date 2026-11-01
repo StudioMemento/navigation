@@ -12,7 +12,7 @@ page.on('pageerror', (e) => errors.push(e.message));
 const result = [];
 const fans = [];
 try {
-  await page.goto(origin + '/v39/');
+  await page.goto(origin + '/v40/');
   await page.locator('#web').waitFor();
   await page.evaluate(() => document.fonts.ready);
   for (const [width, height] of [
@@ -74,7 +74,7 @@ try {
       });
       if (['b-lancio', 'b-apertura'].includes(bundle.id) && [320, 820, 1371].includes(width)) {
         await card.locator('img').evaluateAll((imgs) => Promise.all(imgs.map((i) => i.decode())));
-        await page.screenshot({ path: `test-results/screens/v39-${bundle.id}-${width}.png` });
+        await page.screenshot({ path: `test-results/screens/v40-${bundle.id}-${width}.png` });
       }
       await page.getByRole('button', { name: 'Chiudi dettaglio', exact: true }).click();
     }
@@ -121,7 +121,7 @@ try {
       await page
         .locator('#bundle-boards [data-nearby="true"] img')
         .evaluateAll((imgs) => Promise.all(imgs.map((i) => i.decode())));
-      await page.screenshot({ path: `test-results/screens/v39-bundle-fan-${width}.png` });
+      await page.screenshot({ path: `test-results/screens/v40-bundle-fan-${width}.png` });
     }
   }
   // Catalogue colour belongs to the image; keyboard focus gets the same state.
@@ -139,7 +139,7 @@ try {
   await tiles.first().hover();
   assert.equal(await filter(0), 'grayscale(0)');
   assert.equal(await filter(1), 'grayscale(1)');
-  await page.screenshot({ path: 'test-results/screens/v39-catalogue-hover.png' });
+  await page.screenshot({ path: 'test-results/screens/v40-catalogue-hover.png' });
   await page.mouse.move(5, 5);
   await tiles.first().focus();
   await page.keyboard.press('Tab');

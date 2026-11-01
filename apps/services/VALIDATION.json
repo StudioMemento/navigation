@@ -1,8 +1,8 @@
 {
-  "version": "39.0.0",
-  "baseline": "38.0.0",
+  "version": "40.0.0",
+  "baseline": "39.0.0",
   "verifiedAt": "2026-11-01",
-  "browser": "Chromium 153 (headless)",
+  "browser": "Chromium 153 (headless; touch emulation)",
   "result": "PASS",
   "unitTests": 5,
   "build": {
@@ -106,49 +106,58 @@
       },
       {
         "width": 600,
-        "frames": 99
+        "frames": 89
       },
       {
         "width": 767,
-        "frames": 93
+        "frames": 91
       },
       {
         "width": 768,
-        "frames": 95
+        "frames": 91
       },
       {
         "width": 820,
-        "frames": 93
+        "frames": 91
       },
       {
         "width": 927,
-        "frames": 100
+        "frames": 95
       },
       {
         "width": 1024,
-        "frames": 87
+        "frames": 83
       },
       {
         "width": 1371,
-        "frames": 65
+        "frames": 58
       },
       {
         "width": 1440,
-        "frames": 63
+        "frames": 54
       },
       {
         "width": 2048,
-        "frames": 52
+        "frames": 49
       }
     ]
   },
-  "interactionChecks": {
-    "catalogueHover": true,
-    "keyboardColour": true,
-    "verticalIncludes": true,
-    "nestedNavigation": true,
-    "selectionPolicy": true,
-    "contextMenuPolicy": true
+  "visualStates": {
+    "result": "PASS",
+    "headingGradient": true,
+    "catalogueTitleStates": true,
+    "carousels": 7,
+    "popupSlides": 8,
+    "animationFrames": 49,
+    "inactiveColourLeaks": 0,
+    "modalSelectionBlocked": true,
+    "embeddedSelectionBlocked": true,
+    "touchLongPress": true,
+    "touchNestedNavigation": true,
+    "formEditing": true,
+    "draftSelection": true,
+    "errors": [],
+    "failed": []
   },
   "embedded": {
     "result": "PASS",

@@ -14,7 +14,7 @@
 
 La posa 3D del carosello è definita una sola volta in `Carousel.pose()`. `reserveBleed()` campiona il suo ingombro proiettato al ridimensionamento e riserva spazio nella maschera: evitare padding fissi che taglino le card laterali.
 
-La tavola dei servizi inclusi usa sempre una lista verticale, con un target minimo di 44 px per servizio e miniature quadrate. La sua scala dipende dall’altezza della tavola, così anche i quattro servizi del bundle Lancio restano visibili su mobile.
+La tavola dei servizi inclusi usa sempre una lista verticale, con un target minimo di 44 px per servizio e miniature quadrate. La scala dei contenuti dipende dall’altezza della tavola, così anche i quattro servizi del bundle Lancio restano visibili su mobile. Il visual riusa la copertina del bundle, sfumata a destra e con opacità ridotta sul formato quadrato. I nomi sono bianchi, con gradiente su hover/focus; le miniature riprendono gli angoli tagliati della card.
 
 I breakpoint residui cambiano composizione di filtri, spazi accessori e CTA, non ricostruiscono dimensioni indipendenti delle tavole. Un nuovo problema va risolto nella regola proprietaria, non con una nuova coda di override.
 
@@ -34,9 +34,11 @@ Il carosello gestisce soltanto movimenti orizzontali intenzionali. Scroll vertic
 
 Il popup usa il top layer nativo di `dialog`. Il catalogo viene congelato in una superficie grande quanto il viewport; il documento conserva la sua altezza. Non fissare il `body`, non animare l’opacità del dialogo e non affidare il blur interno esclusivamente a `backdrop-filter`.
 
-Nel catalogo il filtro grayscale appartiene solo alla fotografia: hover e focus-visible lo portano a zero. Reduced motion elimina la transizione. Il testo e la cornice conservano i propri colori.
+Nel catalogo il filtro grayscale appartiene solo alla fotografia: hover e focus-visible lo portano a zero. “Servizi di design.” usa il gradiente avorio/ambra; i nomi sono bianchi a riposo e sfumati in hover/focus. Reduced motion elimina le transizioni.
 
-Selezione e menu contestuale sono disattivati sui contenuti; campi del form e anteprima della richiesta sono esclusi dalla regola. Non intercettare comandi di zoom, tastiera o editing.
+Nei caroselli il grayscale appartiene all’intera card, così include cornice, immagine e duplicato sfocato. Le card inattive restano completamente monocromatiche; la card attiva usa `--slide-focus`, già prodotto dal controller, per riacquistare colore avvicinandosi al centro. Non aggiungere una seconda animazione CSS al cambio slide.
+
+La selezione è disattivata esplicitamente su `body` e `dialog`: i dialoghi nativi impostano un proprio valore che può prevalere su quello ereditato dalla pagina. Campi del form e anteprima della richiesta sono esclusi dalla regola. CSS possiede la selezione; il bootstrap gestisce soltanto menu contestuale e trascinamento nativo degli asset. Non intercettare Seleziona tutto, zoom o altri comandi da tastiera: le aree modificabili devono mantenere il comportamento nativo.
 
 Start mantiene la scultura, la chevron e la luce sul perimetro. Hover e focus cambiano colore/materiale, senza spostare il testo o ingrandire le fotografie.
 

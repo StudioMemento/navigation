@@ -16,7 +16,7 @@ const sizes = {
     '(max-width: 500px) 320px, (max-width: 1023px) calc(100vw - 180px), (min-width: 1900px) 1342px, calc((100vw - 180px) * .78)',
   detail:
     '(max-width: 500px) 320px, (max-width: 1023px) calc(100vw - 180px), (max-width: 1555px) 656px, (min-width: 2370px) 999px, 42.12vw',
-  thumbnail: '(max-width: 767px) 40px, 72px',
+  thumbnail: '(max-width: 500px) 40px, 80px',
 };
 function image(name, profile, { deferred = true, eager = false, className = '' } = {}) {
   const photo = media(name);
@@ -85,14 +85,15 @@ function components(slide) {
   return `<div class="bundle-components-content"><p class="sr-only">${escape(slide.intro)}</p><ul class="bundle-components">${slide.components
     .map(({ id, role }) => {
       const item = getItem(id);
-      return `<li><a href="#servizio/${id}" class="component-row" data-component="${id}">${image(item.cover, 'thumbnail')}<span class="component-copy"><strong>${escape(item.title)}</strong><span>${escape(role)}</span></span></a></li>`;
+      return `<li><a href="#servizio/${id}" class="component-row" data-component="${id}"><span class="component-thumbnail">${image(item.cover, 'thumbnail')}</span><span class="component-copy"><strong>${escape(item.title)}</strong><span>${escape(role)}</span></span><span class="component-arrow" aria-hidden="true">${icon()}</span></a></li>`;
     })
     .join('')}</ul><p class="bundle-scope">${escape(slide.scope)}</p></div>`;
 }
 function board(item, slide, index) {
   const heading = index === 0 ? 'h2' : 'h3';
-  const artwork = slide.image
-    ? `<div class="item-master-art" aria-hidden="true">${image(slide.image, 'detail')}</div>${veil(image(slide.image, 'detail'))}`
+  const artworkName = slide.image || (slide.components ? item.cover : null);
+  const artwork = artworkName
+    ? `<div class="item-master-art" aria-hidden="true">${image(artworkName, 'detail')}</div>${veil(image(artworkName, 'detail'))}`
     : '';
   const copy = slide.components
     ? components(slide)

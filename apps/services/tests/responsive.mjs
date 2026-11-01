@@ -15,7 +15,7 @@ page.on('pageerror', (e) => errors.push(e.message));
 const results = [];
 const rect = (e) => e.getBoundingClientRect().toJSON();
 try {
-  await page.goto(origin + '/v39/#servizio/motion');
+  await page.goto(origin + '/v40/#servizio/motion');
   await page.locator('#detail-dialog[open]').waitFor();
   await page.evaluate(() => document.fonts.ready);
   await page.locator('[data-scene-dot="1"]').click();
@@ -82,7 +82,7 @@ try {
       await page
         .locator('#detail-dialog [data-active="true"] .item-master-art img')
         .evaluate((img) => img.decode());
-      await page.screenshot({ path: `test-results/screens/v39-motion-${width}.png` });
+      await page.screenshot({ path: `test-results/screens/v40-motion-${width}.png` });
     }
   }
   // Resize across the exact thresholds while the same detail stays open.

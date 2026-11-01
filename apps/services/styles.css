@@ -54,6 +54,10 @@ body {
   font-family: Inter, 'Helvetica Neue', Arial, sans-serif;
   letter-spacing: 0.018em;
   -webkit-font-smoothing: antialiased;
+}
+/* Native modal dialogs reset selection; cover the top layer explicitly. */
+body,
+dialog {
   -webkit-user-select: none;
   user-select: none;
   -webkit-touch-callout: none;
@@ -62,6 +66,7 @@ input,
 textarea,
 select,
 [contenteditable]:not([contenteditable='false']),
+[contenteditable]:not([contenteditable='false']) *,
 #request-preview {
   -webkit-user-select: text;
   user-select: text;
@@ -87,6 +92,7 @@ a {
 img {
   display: block;
   max-width: 100%;
+  -webkit-user-drag: none;
 }
 h1,
 h2,
@@ -192,7 +198,8 @@ section[id] {
 .showcase-card,
 .service-card,
 .start-action,
-.catalogue-filters {
+.catalogue-filters,
+.component-thumbnail {
   --corner-cut: clamp(16px, 1.5vw, 24px);
   --frame-ring: polygon(
     evenodd,
@@ -223,7 +230,8 @@ section[id] {
 .showcase-card::before,
 .service-card::before,
 .start-action::before,
-.catalogue-filters::before {
+.catalogue-filters::before,
+.component-thumbnail::before {
   content: '';
   position: absolute;
   inset: 0;
@@ -320,12 +328,14 @@ section[id] {
 }
 .item-master-gradient,
 .slide-title,
-.service-title {
+.service-title,
+.catalogue-heading h2,
+.component-copy strong {
   background: var(--title-gradient);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
-  -webkit-text-fill-color: transparent;
+  -webkit-text-fill-color: currentColor;
 }
 .item-master-gradient {
   display: inline-block;
@@ -368,6 +378,12 @@ section[id] {
   text-align: left;
   transform-origin: center;
   cursor: inherit;
+  filter: grayscale(1);
+}
+.carousel-card[data-active='true'] {
+  /* Chroma follows the existing pose: neighbours remain fully monochrome,
+     and colour returns continuously as the active card reaches the centre. */
+  filter: grayscale(calc(1 - clamp(0, (var(--slide-focus, 1) - 0.5) * 2, 1)));
 }
 .carousel.is-moving .carousel-card {
   will-change: transform;
@@ -562,6 +578,8 @@ section[id] {
   font-weight: 380;
   letter-spacing: -0.035em;
   line-height: 1;
+  padding-block: 0.06em 0.12em;
+  margin-block: -0.06em -0.12em;
 }
 .catalogue-filters {
   --corner-cut: 10px;
@@ -685,6 +703,11 @@ section[id] {
   overflow-wrap: anywhere;
   padding: 0.04em 0.08em 0.16em 0.01em;
   margin: -0.04em -0.08em -0.16em -0.01em;
+  color: var(--ink);
+  transition: color 0.35s var(--ease);
+}
+.service-card:is(:hover, :focus-visible) .service-title {
+  color: transparent;
 }
 .service-action {
   position: absolute;
@@ -1053,8 +1076,15 @@ dialog::backdrop {
   font-size: clamp(12px, calc(var(--slide-width) * 0.014), 18px);
 }
 .scene-components {
-  --master-inset: clamp(16px, calc(var(--board-height) * 0.05), 32px);
-  --component-size: clamp(40px, calc(var(--board-height) * 0.115), 72px);
+  --master-inset: clamp(16px, calc(var(--slide-width) * 0.044), 56px);
+  --component-size: clamp(40px, calc(var(--board-height) * 0.12), 80px);
+  --photo-fade-left: calc(78% * var(--layout-wide));
+}
+.scene-components .item-master-art {
+  opacity: calc(0.12 + 0.88 * var(--layout-wide));
+}
+.scene-components .mobile-title-veil {
+  opacity: calc(0.12 + 0.13 * var(--layout-wide));
 }
 .scene-components .popup-card-body {
   gap: clamp(10px, calc(var(--board-height) * 0.025), 16px);
@@ -1063,7 +1093,7 @@ dialog::backdrop {
   font-size: clamp(24px, calc(var(--board-height) * 0.1), 64px);
 }
 .bundle-components-content {
-  width: 100%;
+  width: calc(100% - 42% * var(--layout-wide));
 }
 .bundle-components {
   display: grid;
@@ -1075,18 +1105,32 @@ dialog::backdrop {
 }
 .component-row {
   display: grid;
-  grid-template-columns: var(--component-size) minmax(0, 1fr);
+  grid-template-columns: var(--component-size) minmax(0, 1fr) clamp(
+      12px,
+      calc(var(--board-height) * 0.025),
+      16px
+    );
   align-items: center;
-  gap: 12px;
+  gap: clamp(10px, calc(var(--board-height) * 0.022), 18px);
   min-width: 0;
   min-height: 44px;
+  cursor: pointer;
 }
-.component-row > img {
-  width: 100%;
-  height: auto;
+.component-thumbnail {
+  --corner-cut: clamp(5px, calc(var(--component-size) * 0.1), 8px);
+  position: relative;
+  width: var(--component-size);
   aspect-ratio: 1;
+  overflow: hidden;
+}
+.component-thumbnail img {
+  width: 100%;
+  height: 100%;
   object-fit: cover;
-  border: 1px solid #d0b28e40;
+}
+.component-thumbnail::before {
+  opacity: 0.45;
+  transition: opacity 0.3s var(--ease);
 }
 .component-copy {
   display: grid;
@@ -1094,11 +1138,14 @@ dialog::backdrop {
   min-width: 0;
 }
 .component-copy strong {
-  color: #f2efea;
+  color: var(--ink);
+  width: fit-content;
+  max-width: 100%;
   font-size: clamp(14px, calc(var(--board-height) * 0.041), 22px);
   font-weight: 450;
   line-height: 1.15;
   letter-spacing: -0.035em;
+  transition: color 0.35s var(--ease);
 }
 .component-copy > span {
   color: #bdb8b0;
@@ -1106,7 +1153,18 @@ dialog::backdrop {
   line-height: 1.35;
 }
 .component-row:is(:hover, :focus-visible) strong {
-  color: #e5b978;
+  color: transparent;
+}
+.component-arrow .chevron {
+  width: 100%;
+  height: auto;
+  opacity: 0.35;
+  transform: rotate(-45deg);
+  transition: opacity 0.3s var(--ease);
+}
+.component-row:is(:hover, :focus-visible) .component-thumbnail::before,
+.component-row:is(:hover, :focus-visible) .component-arrow .chevron {
+  opacity: 1;
 }
 .bundle-scope {
   margin-top: clamp(8px, calc(var(--board-height) * 0.02), 14px);
@@ -1532,7 +1590,9 @@ html[data-overlay-scrollbar='true']::-webkit-scrollbar {
   .item-master-gradient,
   .slide-title,
   .service-title,
-  .spread-title {
+  .spread-title,
+  .catalogue-heading h2,
+  .component-copy strong {
     background: none;
     color: CanvasText;
     -webkit-text-fill-color: CanvasText;

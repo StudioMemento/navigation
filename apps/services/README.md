@@ -1,13 +1,13 @@
-# Memento Servizi — V39
+# Memento Servizi — V40
 
-Correzioni dei bundle e rifiniture del catalogo sulla base unificata V38.
+Rifinitura dei popup, degli stati colore e della tavola dei servizi inclusi, sulla base unificata delle versioni precedenti.
 
-## Novità V39
+## Novità V40
 
-- Bundle: servizi inclusi in un elenco verticale semantico, miniature quadrate e dimensioni legate all’altezza disponibile. Il suggerimento introduttivo resta disponibile ai lettori di schermo; la lista e la nota di ambito sono visibili.
-- Caroselli: lo spazio della maschera deriva dalla proiezione 3D effettiva lungo tutta la transizione. La stessa funzione determina posa e ingombro delle card laterali.
-- Catalogo: fotografie in bianco e nero, a colori durante hover e focus da tastiera. Titoli e cornici conservano il trattamento originale.
-- Selezione e menu contestuale disattivati nei contenuti della pagina. Campi modificabili e anteprima della richiesta conservano selezione e strumenti di modifica.
+- Selezione disabilitata anche sui `dialog` nativi: trascinamento, doppio clic e Seleziona tutto non evidenziano testi o immagini del dettaglio. La regola CSS sul solo `body` veniva scavalcata dallo stile nativo del popup. I campi e l’anteprima della richiesta conservano le operazioni di modifica e copia.
+- “Servizi di design.” usa il gradiente avorio/ambra. I nomi del catalogo sono bianchi in idle e sfumati su hover/focus. Le fotografie mantengono il passaggio bianco e nero → colore.
+- Nei caroselli solo la card attiva acquista colore, progressivamente mentre raggiunge il centro. Le card laterali restano interamente monocromatiche, comprese cornici e immagini sfocate.
+- La tavola dei servizi inclusi combina elenco verticale, visual del bundle sfumato a destra, miniature con angoli tagliati e indicazioni discrete dei collegamenti. Su mobile il visual arretra per proteggere il testo; il bundle da quattro servizi continua a rientrare nella card quadrata.
 
 ## Avvio e pubblicazione
 
@@ -73,6 +73,6 @@ npx playwright install chromium
 npm run test:browser
 ```
 
-La suite avvia un server su loopback e controlla proporzioni, overflow, breakpoint adiacenti, tutte le tavole a 320 e 820 px, iframe, scroll, tap, drag, focus, tastiera, filtri, hash e bozza email. La suite dedicata ai bundle verifica inoltre miniature quadrate, elenco verticale, assenza di scroll parassita, ingombro delle card durante la rotazione, grayscale/hover/focus e selezione nei campi. I risultati vengono scritti in `test-results/`, escluso dalla build. In un ambiente con browser già installato sono supportate le variabili `PLAYWRIGHT_MODULE` e `CHROMIUM_EXECUTABLE`.
+La suite avvia un server su loopback e controlla proporzioni, overflow, breakpoint adiacenti, tutte le tavole a 320 e 820 px, iframe, scroll, tap, drag, focus, tastiera, filtri, hash e bozza email. La suite degli stati visivi verifica selezione nei popup standalone e iframe, Seleziona tutto, trascinamento, pressione touch prolungata, colori delle card laterali durante le animazioni, stati dei titoli e copia della bozza. La suite dedicata ai bundle verifica inoltre miniature quadrate, elenco verticale, assenza di scroll parassita, ingombro delle card durante la rotazione, grayscale/hover/focus e selezione nei campi. I risultati vengono scritti in `test-results/`, escluso dalla build. In un ambiente con browser già installato sono supportate le variabili `PLAYWRIGHT_MODULE` e `CHROMIUM_EXECUTABLE`.
 
 Leggi `AUDIT.md` per risultati e limiti della verifica, `DESIGN_SYSTEM.md` per le regole visive.

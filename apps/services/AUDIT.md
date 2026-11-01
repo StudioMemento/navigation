@@ -1,35 +1,38 @@
-# Verifica Servizi V39
+# Verifica Servizi V40
 
-1 novembre 2026. Base: sorgenti V38 e segnalazioni con screenshot. Questa versione corregge i componenti esistenti: un solo stylesheet, stessi moduli, nessuna dipendenza aggiunta.
+1 novembre 2026. Base: sorgenti V39 e screenshot del feedback. Interventi nei componenti esistenti; nessun nuovo stylesheet, nessuna dipendenza di produzione aggiunta.
 
-## Modifiche
+## Correzioni e direzione visiva
 
-| Problema | Causa | Correzione |
-| --- | --- | --- |
-| Tab dei servizi inclusi con miniature alte e scroll interno | L’attributo HTML `height` dell’immagine rimaneva attivo; `aspect-ratio` da solo non imponeva la forma quadrata. La griglia poteva creare più colonne. | Altezza automatica e rapporto 1:1 esplicito; lista semantica in una sola colonna. Tipografia, miniature e spazi derivano dall’altezza della card. |
-| Elenco della copertina bundle distribuito in colonne | Regola `auto-fit` sul riepilogo del dettaglio | Rimosso l’override: il riepilogo segue l’elenco verticale condiviso. |
-| Card laterali tagliate in alto | La maschera del carosello aveva padding fisso, inferiore alla proiezione delle card ruotate | `Carousel.pose()` è la fonte unica della posa. Al ridimensionamento si calcola l’ingombro lungo la transizione e si riserva spazio nella maschera e nell’apertura bundle. |
-| Fotografie del catalogo sempre a colori | Nessuno stato grayscale | Grayscale sulle sole fotografie; colore durante hover e focus-visible, con transizione disattivata in reduced motion. |
-| Selezione e menu contestuale sui contenuti | Selezione abilitata nel testo e nessuna policy del menu | Regole CSS e listener centrale nel bootstrap. Eccezioni per campi modificabili e anteprima della richiesta. |
+| Richiesta | Intervento |
+| --- | --- |
+| Selezione blu di testi e immagini nei popup | Riprodotto il difetto: in Chromium, il dialogo nativo impostava `user-select: text` e prevaleva sul valore ereditato dal body. Applicato `user-select: none` esplicitamente anche ai dialoghi. Asset non trascinabili. Campi e anteprima della richiesta mantengono selezione e copia native. |
+| “Servizi di design.” con gradiente ambra | Applicato lo stesso gradiente avorio/ambra dei titoli, con spazio per le estremità dei caratteri. |
+| Nomi dei servizi bianchi, sfumati su hover | Nomi bianchi nel catalogo e nella lista bundle; il gradiente emerge in hover e focus-visible. Le fotografie del catalogo mantengono il comportamento bianco e nero → colore. |
+| Solo la slide attiva a colori | Grayscale sull’intera card inattiva, inclusi cornice, immagini e velo sfocato. La saturazione della card attiva segue il valore di posizione già prodotto dal carosello, senza un secondo motore di animazione. |
+| Tavola dei servizi inclusi più curata | Visual del bundle sfumato a destra, lista verticale a sinistra, miniature quadrate con angoli tagliati e indicazioni discrete dei link. Margini coerenti con le altre tavole; su mobile il visual arretra per lasciare leggibile la lista. |
 
-La lista conserva nomi, ruoli e nota di ambito. Il suggerimento introduttivo rimane disponibile ai lettori di schermo senza occupare spazio visivo. I link dei servizi e il ritorno al bundle restano funzionanti. Il catalogo canonico e tutti i 521 asset sono identici alla V38.
+Il catalogo canonico e tutti i 521 asset sono identici alla V39. La nuova tavola riusa la copertina approvata del bundle e conserva tutti i servizi, ruoli e note di ambito.
 
-## Evidenza
+## Verifiche eseguite
 
-- Cinque test Node di integrità superati e build completata. I file pubblicati sono copie esatte dei sorgenti previsti dalla allowlist.
-- Responsive: 14 viewport, 34 misure adiacenti ai breakpoint e 13 larghezze per griglia, titoli e allineamenti.
+- Cinque test Node di integrità superati e build statica completata. I 532 file pubblicati corrispondono byte per byte ai sorgenti previsti dalla allowlist.
+- Responsive: 14 viewport, 34 misure adiacenti ai breakpoint e 13 larghezze di pagina per griglia, titoli e allineamenti.
 - 400 verifiche delle tavole: tutti i 50 elementi a 320 e 820 px, quattro tavole ciascuno.
-- 72 verifiche dedicate alle liste: sei bundle in 12 viewport da 320 a 2048 px. Nessuno scroll verticale o orizzontale anomalo; miniature quadrate; righe verticali con area minima di 44 px.
-- Ingombro delle card verificato fotogramma per fotogramma in 12 animazioni, rispetto alla maschera e alla sezione che le contiene.
-- Hover e focus da tastiera verificati sia nel catalogo Digitale sia nel comportamento del filtro Fisico; la fotografia torna in bianco e nero all’uscita dallo stato attivo.
-- Verificati elenco verticale della copertina, apertura di un servizio incluso, ritorno alla tab del bundle, menu contestuale bloccato sui contenuti e consentito nei campi, assenza di selezione sul titolo e selezione del testo nei campi.
-- Iframe: ridimensionamento con popup aperto, blur, scroll e ripristino, tap e trascinamento verificati. Superati anche focus, Escape, backdrop, hash legacy, filtri, bozza email locale, reduced motion e forced colors.
-- Nessun errore JavaScript rilevato nelle suite. Ispezionate le catture di liste mobile/tablet/desktop, del catalogo e del carosello su schermo ampio.
+- 72 verifiche delle liste: sei bundle in 12 viewport da 320 a 2048 px. Nessuno scroll parassita; miniature quadrate; righe verticali con target minimo di 44 px.
+- Ingombro laterale verificato lungo 12 animazioni, rispetto alla maschera e alla sezione contenitrice.
+- Stati colore verificati nei sette caroselli della pagina e in otto tavole popup. Le card inattive sono rimaste monocromatiche in ogni fotogramma campionato dell’animazione di servizio.
+- Titolo del catalogo e nomi dei servizi verificati in idle, hover e focus da tastiera.
+- Riprodotto Seleziona tutto nella V39: 356 caratteri selezionati nella tavola bundle. In V40, nessuna selezione nel popup con Ctrl+A, doppio clic o trascinamento, sia standalone sia dentro iframe.
+- Pressione touch prolungata e navigazione touch bundle → servizio → ritorno verificate con emulazione Chromium.
+- Selezione/modifica nei campi e selezione completa della bozza email restano operative; nessuna email inviata.
+- Superati anche iframe resize, blur, ripristino scroll, tap, drag, focus, Escape, backdrop, hash legacy, filtri, reduced motion e forced colors.
+- Nessun errore JavaScript rilevato. Ispezionate le catture del catalogo e delle liste mobile, tablet e desktop, inclusi visual di sfondo e stati delle card laterali.
 
-I test della V38 consentivano overflow verticale purché il contenuto restasse raggiungibile; non verificavano il rapporto effettivo delle miniature. La suite V39 aggiunge assert specifici per questi due difetti.
+La selezione è gestita da CSS, così i comandi nativi di editing restano disponibili nelle aree modificabili. Non vengono intercettati Ctrl+A, zoom o altri comandi da tastiera.
 
 ## Limiti
 
-Verifiche eseguite in Chromium 153. Safari e dispositivi iPhone/iPad reali non sono stati provati. L’embed usa una fixture locale, non il documento Framer di produzione. Su viewport particolarmente bassi o con testo ingrandito resta disponibile lo scroll nativo come fallback, per mantenere raggiungibili tutti i contenuti.
+Verifiche eseguite in Chromium 153, con fixture iframe ed emulazione touch. Safari, dispositivi iPhone/iPad reali e il documento Framer di produzione non sono stati verificati. Lo scroll nativo resta un fallback per viewport particolarmente bassi o testo ingrandito, per evitare contenuti irraggiungibili.
 
-`VALIDATION.json` contiene il riepilogo della release; `npm test` e `npm run test:browser` riproducono i controlli. I risultati e le catture vengono generati in `test-results/`, escluso dalla build e dal pacchetto.
+`VALIDATION.json` contiene il riepilogo. `npm test` e `npm run test:browser` riproducono i controlli. Risultati e catture sono generati in `test-results/`, escluso dalla build e dal pacchetto.

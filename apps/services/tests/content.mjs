@@ -15,7 +15,7 @@ page.on('pageerror', (e) => errors.push(e.message));
 const results = [];
 let boards = 0;
 try {
-  await page.goto(origin + '/v39/');
+  await page.goto(origin + '/v40/');
   await page.locator('#web').waitFor();
   await page.evaluate(() => document.fonts.ready);
   for (const width of [320, 390, 500, 600, 767, 768, 820, 900, 1023, 1024, 1100, 1440, 1920]) {
@@ -85,7 +85,7 @@ try {
       await page
         .locator('#web .carousel-card[data-active="true"] .slide-visual')
         .evaluate((img) => img.decode());
-      await page.screenshot({ path: `test-results/screens/v39-page-${width}.png` });
+      await page.screenshot({ path: `test-results/screens/v40-page-${width}.png` });
     }
   }
   const { catalogue } = await import('../src/content.js');

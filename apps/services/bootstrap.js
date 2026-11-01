@@ -1,12 +1,14 @@
-/* Keep browser editing tools available in fields and the request preview. */
-document.addEventListener('contextmenu', (event) => {
-  if (
-    !event.target.closest(
-      'input, textarea, select, [contenteditable]:not([contenteditable="false"]), #request-preview',
-    )
-  )
-    event.preventDefault();
-});
+/* CSS owns selection on page and modal surfaces. Preserve native editing
+   menus and dragging in fields while protecting the surrounding content. */
+(() => {
+  const editable =
+    'input, textarea, select, [contenteditable]:not([contenteditable="false"]), #request-preview';
+  const protectContent = (event) => {
+    const target = event.target instanceof Element ? event.target : event.target.parentElement;
+    if (!target?.closest(editable)) event.preventDefault();
+  };
+  for (const type of ['contextmenu', 'dragstart']) document.addEventListener(type, protectContent);
+})();
 
 /* Transparent child surface. Parent blur belongs to the hosting document. */
 (() => {

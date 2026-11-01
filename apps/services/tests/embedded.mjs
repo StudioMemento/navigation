@@ -30,7 +30,7 @@ const stable = (frame) =>
   );
 try {
   await page.goto(origin + '/host');
-  const f = page.frames().find((f) => f.url().includes('/v39/'));
+  const f = page.frames().find((f) => f.url().includes('/v40/'));
   const link = f.locator('[data-service="motion"]');
   await link.scrollIntoViewIfNeeded();
   await stable(f);
