@@ -1,0 +1,1121 @@
+{
+  "version": "38.0.0",
+  "date": "2026-11-01",
+  "engine": "Chromium 153",
+  "results": {
+    "interactions-report": {
+      "result": "PASS",
+      "keyboard": true,
+      "focusTrap": true,
+      "focusReturn": true,
+      "backdrop": true,
+      "legacyRoutes": true,
+      "filters": true,
+      "emailDraft": true,
+      "reducedMotion": true,
+      "forcedColors": true,
+      "errors": [],
+      "failed": []
+    },
+    "content-report": {
+      "result": "PASS",
+      "page": [
+        {
+          "width": 320,
+          "columns": 2,
+          "card": 320
+        },
+        {
+          "width": 390,
+          "columns": 2,
+          "card": 320
+        },
+        {
+          "width": 500,
+          "columns": 2,
+          "card": 320
+        },
+        {
+          "width": 600,
+          "columns": 2,
+          "card": 420
+        },
+        {
+          "width": 767,
+          "columns": 3,
+          "card": 587
+        },
+        {
+          "width": 768,
+          "columns": 3,
+          "card": 588
+        },
+        {
+          "width": 820,
+          "columns": 4,
+          "card": 640
+        },
+        {
+          "width": 900,
+          "columns": 4,
+          "card": 720
+        },
+        {
+          "width": 1023,
+          "columns": 5,
+          "card": 843
+        },
+        {
+          "width": 1024,
+          "columns": 5,
+          "card": 844
+        },
+        {
+          "width": 1100,
+          "columns": 5,
+          "card": 920
+        },
+        {
+          "width": 1440,
+          "columns": 5,
+          "card": 1260
+        },
+        {
+          "width": 1920,
+          "columns": 5,
+          "card": 1720
+        }
+      ],
+      "boards": 400,
+      "items": 50,
+      "errors": []
+    },
+    "embedded-report": {
+      "result": "PASS",
+      "embeddedResize": true,
+      "scrollRestored": true,
+      "tap": true,
+      "pointerDrag": true,
+      "nestedBundle": true,
+      "leadResize": true,
+      "errors": []
+    },
+    "responsive-report": {
+      "result": "PASS",
+      "checks": [
+        {
+          "width": 320,
+          "height": 740,
+          "ratio": "1.00000",
+          "card": {
+            "x": 0,
+            "y": 210,
+            "width": 320,
+            "height": 320,
+            "top": 210,
+            "right": 320,
+            "bottom": 530,
+            "left": 0
+          },
+          "photo": {
+            "x": -1,
+            "y": 315.671875,
+            "width": 320,
+            "height": 213.328125,
+            "top": 315.671875,
+            "right": 319,
+            "bottom": 529,
+            "left": -1
+          },
+          "fit": "cover",
+          "mask": "linear-gradient(90deg, rgba(0, 0, 0, 0), rgb(0, 0, 0) 0%), linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.1) 7.68%, rgba(0, 0, 0, 0.5) 17.6%, rgba(0, 0, 0, 0.898) 26.88%, rgb(0, 0, 0) 32%)",
+          "title": {
+            "x": 21,
+            "y": 471.890625,
+            "width": 241.453125,
+            "height": 37.109375,
+            "top": 471.890625,
+            "right": 262.453125,
+            "bottom": 509,
+            "left": 21
+          },
+          "titleSize": "26px",
+          "titleScroll": 244,
+          "titleClient": 241,
+          "copy": {
+            "x": 21,
+            "y": 231,
+            "width": 278,
+            "height": 90.125,
+            "top": 231,
+            "right": 299,
+            "bottom": 321.125,
+            "left": 21
+          },
+          "close": {
+            "x": 268,
+            "y": 158,
+            "width": 44,
+            "height": 44,
+            "top": 158,
+            "right": 312,
+            "bottom": 202,
+            "left": 268
+          },
+          "dots": {
+            "x": 96,
+            "y": 538,
+            "width": 128,
+            "height": 44,
+            "top": 538,
+            "right": 224,
+            "bottom": 582,
+            "left": 96
+          },
+          "scrollWidth": 320
+        },
+        {
+          "width": 500,
+          "height": 892,
+          "ratio": "1.00000",
+          "card": {
+            "x": 90,
+            "y": 286,
+            "width": 320,
+            "height": 320,
+            "top": 286,
+            "right": 410,
+            "bottom": 606,
+            "left": 90
+          },
+          "photo": {
+            "x": 89,
+            "y": 391.671875,
+            "width": 320,
+            "height": 213.328125,
+            "top": 391.671875,
+            "right": 409,
+            "bottom": 605,
+            "left": 89
+          },
+          "fit": "cover",
+          "mask": "linear-gradient(90deg, rgba(0, 0, 0, 0), rgb(0, 0, 0) 0%), linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.1) 7.68%, rgba(0, 0, 0, 0.5) 17.6%, rgba(0, 0, 0, 0.898) 26.88%, rgb(0, 0, 0) 32%)",
+          "title": {
+            "x": 111,
+            "y": 547.890625,
+            "width": 241.453125,
+            "height": 37.109375,
+            "top": 547.890625,
+            "right": 352.453125,
+            "bottom": 585,
+            "left": 111
+          },
+          "titleSize": "26px",
+          "titleScroll": 244,
+          "titleClient": 241,
+          "copy": {
+            "x": 111,
+            "y": 307,
+            "width": 278,
+            "height": 90.125,
+            "top": 307,
+            "right": 389,
+            "bottom": 397.125,
+            "left": 111
+          },
+          "close": {
+            "x": 410,
+            "y": 234,
+            "width": 44,
+            "height": 44,
+            "top": 234,
+            "right": 454,
+            "bottom": 278,
+            "left": 410
+          },
+          "dots": {
+            "x": 162,
+            "y": 614,
+            "width": 176,
+            "height": 44,
+            "top": 614,
+            "right": 338,
+            "bottom": 658,
+            "left": 162
+          },
+          "scrollWidth": 500
+        },
+        {
+          "width": 600,
+          "height": 1000,
+          "ratio": "1.00000",
+          "card": {
+            "x": 90,
+            "y": 290,
+            "width": 420,
+            "height": 420,
+            "top": 290,
+            "right": 510,
+            "bottom": 710,
+            "left": 90
+          },
+          "photo": {
+            "x": 89,
+            "y": 429,
+            "width": 420,
+            "height": 280,
+            "top": 429,
+            "right": 509,
+            "bottom": 709,
+            "left": 89
+          },
+          "fit": "cover",
+          "mask": "linear-gradient(90deg, rgba(0, 0, 0, 0), rgb(0, 0, 0) 0%), linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.1) 7.68%, rgba(0, 0, 0, 0.5) 17.6%, rgba(0, 0, 0, 0.898) 26.88%, rgb(0, 0, 0) 32%)",
+          "title": {
+            "x": 111,
+            "y": 642.90625,
+            "width": 301.9375,
+            "height": 46.09375,
+            "top": 642.90625,
+            "right": 412.9375,
+            "bottom": 689,
+            "left": 111
+          },
+          "titleSize": "34.02px",
+          "titleScroll": 305,
+          "titleClient": 302,
+          "copy": {
+            "x": 111,
+            "y": 311,
+            "width": 378,
+            "height": 70.53125,
+            "top": 311,
+            "right": 489,
+            "bottom": 381.53125,
+            "left": 111
+          },
+          "close": {
+            "x": 510,
+            "y": 238,
+            "width": 44,
+            "height": 44,
+            "top": 238,
+            "right": 554,
+            "bottom": 282,
+            "left": 510
+          },
+          "dots": {
+            "x": 212,
+            "y": 718,
+            "width": 176,
+            "height": 44,
+            "top": 718,
+            "right": 388,
+            "bottom": 762,
+            "left": 212
+          },
+          "scrollWidth": 600
+        },
+        {
+          "width": 767,
+          "height": 1294,
+          "ratio": "1.00000",
+          "card": {
+            "x": 90,
+            "y": 353.5,
+            "width": 587,
+            "height": 587,
+            "top": 353.5,
+            "right": 677,
+            "bottom": 940.5,
+            "left": 90
+          },
+          "photo": {
+            "x": 89,
+            "y": 548.171875,
+            "width": 587,
+            "height": 391.328125,
+            "top": 548.171875,
+            "right": 676,
+            "bottom": 939.5,
+            "left": 89
+          },
+          "fit": "cover",
+          "mask": "linear-gradient(90deg, rgba(0, 0, 0, 0), rgb(0, 0, 0) 0%), linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.1) 7.68%, rgba(0, 0, 0, 0.5) 17.6%, rgba(0, 0, 0, 0.898) 26.88%, rgb(0, 0, 0) 32%)",
+          "title": {
+            "x": 116.8125,
+            "y": 852.4375,
+            "width": 425.828125,
+            "height": 61.25,
+            "top": 852.4375,
+            "right": 542.640625,
+            "bottom": 913.6875,
+            "left": 116.8125
+          },
+          "titleSize": "47.547px",
+          "titleScroll": 430,
+          "titleClient": 426,
+          "copy": {
+            "x": 116.8125,
+            "y": 380.3125,
+            "width": 533.375,
+            "height": 79.828125,
+            "top": 380.3125,
+            "right": 650.1875,
+            "bottom": 460.140625,
+            "left": 116.8125
+          },
+          "close": {
+            "x": 677,
+            "y": 301.5,
+            "width": 44,
+            "height": 44,
+            "top": 301.5,
+            "right": 721,
+            "bottom": 345.5,
+            "left": 677
+          },
+          "dots": {
+            "x": 295.5,
+            "y": 948.5,
+            "width": 176,
+            "height": 44,
+            "top": 948.5,
+            "right": 471.5,
+            "bottom": 992.5,
+            "left": 295.5
+          },
+          "scrollWidth": 767
+        },
+        {
+          "width": 768,
+          "height": 1294,
+          "ratio": "1.00000",
+          "card": {
+            "x": 90,
+            "y": 353,
+            "width": 588,
+            "height": 588,
+            "top": 353,
+            "right": 678,
+            "bottom": 941,
+            "left": 90
+          },
+          "photo": {
+            "x": 89,
+            "y": 548,
+            "width": 588,
+            "height": 392,
+            "top": 548,
+            "right": 677,
+            "bottom": 940,
+            "left": 89
+          },
+          "fit": "cover",
+          "mask": "linear-gradient(90deg, rgba(0, 0, 0, 0), rgb(0, 0, 0) 0%), linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.1) 7.68%, rgba(0, 0, 0, 0.5) 17.6%, rgba(0, 0, 0, 0.898) 26.88%, rgb(0, 0, 0) 32%)",
+          "title": {
+            "x": 116.859375,
+            "y": 852.8125,
+            "width": 425.703125,
+            "height": 61.328125,
+            "top": 852.8125,
+            "right": 542.5625,
+            "bottom": 914.140625,
+            "left": 116.859375
+          },
+          "titleSize": "47.628px",
+          "titleScroll": 430,
+          "titleClient": 426,
+          "copy": {
+            "x": 116.859375,
+            "y": 379.859375,
+            "width": 534.28125,
+            "height": 79.96875,
+            "top": 379.859375,
+            "right": 651.140625,
+            "bottom": 459.828125,
+            "left": 116.859375
+          },
+          "close": {
+            "x": 678,
+            "y": 301,
+            "width": 44,
+            "height": 44,
+            "top": 301,
+            "right": 722,
+            "bottom": 345,
+            "left": 678
+          },
+          "dots": {
+            "x": 296,
+            "y": 949,
+            "width": 176,
+            "height": 44,
+            "top": 949,
+            "right": 472,
+            "bottom": 993,
+            "left": 296
+          },
+          "scrollWidth": 768
+        },
+        {
+          "width": 820,
+          "height": 1180,
+          "ratio": "1.20313",
+          "card": {
+            "x": 90,
+            "y": 324.03125,
+            "width": 640,
+            "height": 531.9375,
+            "top": 324.03125,
+            "right": 730,
+            "bottom": 855.96875,
+            "left": 90
+          },
+          "photo": {
+            "x": 117.609375,
+            "y": 447.375,
+            "width": 611.390625,
+            "height": 407.59375,
+            "top": 447.375,
+            "right": 729,
+            "bottom": 854.96875,
+            "left": 117.609375
+          },
+          "fit": "cover",
+          "mask": "linear-gradient(90deg, rgba(0, 0, 0, 0), rgb(0, 0, 0) 10.969%), linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.1) 6.11996%, rgba(0, 0, 0, 0.5) 14.0249%, rgba(0, 0, 0, 0.898) 21.4199%, rgb(0, 0, 0) 25.4998%)",
+          "title": {
+            "x": 119.15625,
+            "y": 764.109375,
+            "width": 437.796875,
+            "height": 62.703125,
+            "top": 764.109375,
+            "right": 556.953125,
+            "bottom": 826.8125,
+            "left": 119.15625
+          },
+          "titleSize": "48.8499px",
+          "titleScroll": 442,
+          "titleClient": 438,
+          "copy": {
+            "x": 119.15625,
+            "y": 353.1875,
+            "width": 522.59375,
+            "height": 80.53125,
+            "top": 353.1875,
+            "right": 641.75,
+            "bottom": 433.71875,
+            "left": 119.15625
+          },
+          "close": {
+            "x": 730,
+            "y": 272.015625,
+            "width": 44,
+            "height": 44,
+            "top": 272.015625,
+            "right": 774,
+            "bottom": 316.015625,
+            "left": 730
+          },
+          "dots": {
+            "x": 322,
+            "y": 863.96875,
+            "width": 176,
+            "height": 44,
+            "top": 863.96875,
+            "right": 498,
+            "bottom": 907.96875,
+            "left": 322
+          },
+          "scrollWidth": 820
+        },
+        {
+          "width": 900,
+          "height": 1200,
+          "ratio": "1.51563",
+          "card": {
+            "x": 90,
+            "y": 362.4765625,
+            "width": 720,
+            "height": 475.046875,
+            "top": 362.4765625,
+            "right": 810,
+            "bottom": 837.5234375,
+            "left": 90
+          },
+          "photo": {
+            "x": 170.6875,
+            "y": 410.9765625,
+            "width": 638.3125,
+            "height": 425.546875,
+            "top": 410.9765625,
+            "right": 809,
+            "bottom": 836.5234375,
+            "left": 170.6875
+          },
+          "fit": "cover",
+          "mask": "linear-gradient(90deg, rgba(0, 0, 0, 0), rgb(0, 0, 0) 27.844%), linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.1) 3.71996%, rgba(0, 0, 0, 0.5) 8.52491%, rgba(0, 0, 0, 0.898) 13.0199%, rgb(0, 0, 0) 15.4998%)",
+          "title": {
+            "x": 122.671875,
+            "y": 741.1015625,
+            "width": 440.34375,
+            "height": 63.75,
+            "top": 741.1015625,
+            "right": 563.015625,
+            "bottom": 804.8515625,
+            "left": 122.671875
+          },
+          "titleSize": "49.7812px",
+          "titleScroll": 445,
+          "titleClient": 440,
+          "copy": {
+            "x": 122.671875,
+            "y": 395.1484375,
+            "width": 485.875,
+            "height": 79.234375,
+            "top": 395.1484375,
+            "right": 608.546875,
+            "bottom": 474.3828125,
+            "left": 122.671875
+          },
+          "close": {
+            "x": 810,
+            "y": 310.46875,
+            "width": 44,
+            "height": 44,
+            "top": 310.46875,
+            "right": 854,
+            "bottom": 354.46875,
+            "left": 810
+          },
+          "dots": {
+            "x": 362,
+            "y": 845.515625,
+            "width": 176,
+            "height": 44,
+            "top": 845.515625,
+            "right": 538,
+            "bottom": 889.515625,
+            "left": 362
+          },
+          "scrollWidth": 900
+        },
+        {
+          "width": 1023,
+          "height": 1366,
+          "ratio": "1.99609",
+          "card": {
+            "x": 91.5,
+            "y": 472.59375,
+            "width": 840,
+            "height": 420.8125,
+            "top": 472.59375,
+            "right": 931.5,
+            "bottom": 893.40625,
+            "left": 91.5
+          },
+          "photo": {
+            "x": 274.578125,
+            "y": 471.59375,
+            "width": 655.921875,
+            "height": 420.8125,
+            "top": 471.59375,
+            "right": 930.5,
+            "bottom": 892.40625,
+            "left": 274.578125
+          },
+          "fit": "cover",
+          "mask": "linear-gradient(90deg, rgba(0, 0, 0, 0), rgb(0, 0, 0) 53.7889%), linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.1) 0.0300288%, rgba(0, 0, 0, 0.5) 0.068816%, rgba(0, 0, 0, 0.898) 0.105101%, rgb(0, 0, 0) 0.12512%)",
+          "title": {
+            "x": 129.453125,
+            "y": 792.8125,
+            "width": 437.890625,
+            "height": 62.640625,
+            "top": 792.8125,
+            "right": 567.34375,
+            "bottom": 855.453125,
+            "left": 129.453125
+          },
+          "titleSize": "48.7955px",
+          "titleScroll": 442,
+          "titleClient": 438,
+          "copy": {
+            "x": 129.453125,
+            "y": 510.546875,
+            "width": 383.53125,
+            "height": 72.09375,
+            "top": 510.546875,
+            "right": 512.984375,
+            "bottom": 582.640625,
+            "left": 129.453125
+          },
+          "close": {
+            "x": 931.5,
+            "y": 420.578125,
+            "width": 44,
+            "height": 44,
+            "top": 420.578125,
+            "right": 975.5,
+            "bottom": 464.578125,
+            "left": 931.5
+          },
+          "dots": {
+            "x": 423.5,
+            "y": 901.40625,
+            "width": 176,
+            "height": 44,
+            "top": 901.40625,
+            "right": 599.5,
+            "bottom": 945.40625,
+            "left": 423.5
+          },
+          "scrollWidth": 1023
+        },
+        {
+          "width": 1024,
+          "height": 1366,
+          "ratio": "2.00000",
+          "card": {
+            "x": 92,
+            "y": 473,
+            "width": 840,
+            "height": 420,
+            "top": 473,
+            "right": 932,
+            "bottom": 893,
+            "left": 92
+          },
+          "photo": {
+            "x": 275.8125,
+            "y": 472,
+            "width": 655.1875,
+            "height": 420,
+            "top": 472,
+            "right": 931,
+            "bottom": 892,
+            "left": 275.8125
+          },
+          "fit": "cover",
+          "mask": "linear-gradient(90deg, rgba(0, 0, 0, 0), rgb(0, 0, 0) 54%), linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.1) 0%, rgba(0, 0, 0, 0.5) 0%, rgba(0, 0, 0, 0.898) 0%, rgb(0, 0, 0) 0%)",
+          "title": {
+            "x": 129.953125,
+            "y": 792.484375,
+            "width": 438,
+            "height": 62.5625,
+            "top": 792.484375,
+            "right": 567.953125,
+            "bottom": 855.046875,
+            "left": 129.953125
+          },
+          "titleSize": "48.72px",
+          "titleScroll": 442,
+          "titleClient": 438,
+          "copy": {
+            "x": 129.953125,
+            "y": 510.953125,
+            "width": 382.046875,
+            "height": 71.921875,
+            "top": 510.953125,
+            "right": 512,
+            "bottom": 582.875,
+            "left": 129.953125
+          },
+          "close": {
+            "x": 932,
+            "y": 421,
+            "width": 44,
+            "height": 44,
+            "top": 421,
+            "right": 976,
+            "bottom": 465,
+            "left": 932
+          },
+          "dots": {
+            "x": 424,
+            "y": 901,
+            "width": 176,
+            "height": 44,
+            "top": 901,
+            "right": 600,
+            "bottom": 945,
+            "left": 424
+          },
+          "scrollWidth": 1024
+        },
+        {
+          "width": 1100,
+          "height": 800,
+          "ratio": "2.00000",
+          "card": {
+            "x": 130,
+            "y": 190,
+            "width": 840,
+            "height": 420,
+            "top": 190,
+            "right": 970,
+            "bottom": 610,
+            "left": 130
+          },
+          "photo": {
+            "x": 313.8125,
+            "y": 189,
+            "width": 655.1875,
+            "height": 420,
+            "top": 189,
+            "right": 969,
+            "bottom": 609,
+            "left": 313.8125
+          },
+          "fit": "cover",
+          "mask": "linear-gradient(90deg, rgba(0, 0, 0, 0), rgb(0, 0, 0) 54%), linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.1) 0%, rgba(0, 0, 0, 0.5) 0%, rgba(0, 0, 0, 0.898) 0%, rgb(0, 0, 0) 0%)",
+          "title": {
+            "x": 167.953125,
+            "y": 509.484375,
+            "width": 438,
+            "height": 62.5625,
+            "top": 509.484375,
+            "right": 605.953125,
+            "bottom": 572.046875,
+            "left": 167.953125
+          },
+          "titleSize": "48.72px",
+          "titleScroll": 442,
+          "titleClient": 438,
+          "copy": {
+            "x": 167.953125,
+            "y": 227.953125,
+            "width": 382.046875,
+            "height": 71.921875,
+            "top": 227.953125,
+            "right": 550,
+            "bottom": 299.875,
+            "left": 167.953125
+          },
+          "close": {
+            "x": 970,
+            "y": 138,
+            "width": 44,
+            "height": 44,
+            "top": 138,
+            "right": 1014,
+            "bottom": 182,
+            "left": 970
+          },
+          "dots": {
+            "x": 462,
+            "y": 618,
+            "width": 176,
+            "height": 44,
+            "top": 618,
+            "right": 638,
+            "bottom": 662,
+            "left": 462
+          },
+          "scrollWidth": 1100
+        },
+        {
+          "width": 1440,
+          "height": 900,
+          "ratio": "2.00000",
+          "card": {
+            "x": 300,
+            "y": 240,
+            "width": 840,
+            "height": 420,
+            "top": 240,
+            "right": 1140,
+            "bottom": 660,
+            "left": 300
+          },
+          "photo": {
+            "x": 483.8125,
+            "y": 239,
+            "width": 655.1875,
+            "height": 420,
+            "top": 239,
+            "right": 1139,
+            "bottom": 659,
+            "left": 483.8125
+          },
+          "fit": "cover",
+          "mask": "linear-gradient(90deg, rgba(0, 0, 0, 0), rgb(0, 0, 0) 54%), linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.1) 0%, rgba(0, 0, 0, 0.5) 0%, rgba(0, 0, 0, 0.898) 0%, rgb(0, 0, 0) 0%)",
+          "title": {
+            "x": 337.953125,
+            "y": 559.484375,
+            "width": 438,
+            "height": 62.5625,
+            "top": 559.484375,
+            "right": 775.953125,
+            "bottom": 622.046875,
+            "left": 337.953125
+          },
+          "titleSize": "48.72px",
+          "titleScroll": 442,
+          "titleClient": 438,
+          "copy": {
+            "x": 337.953125,
+            "y": 277.953125,
+            "width": 382.046875,
+            "height": 71.921875,
+            "top": 277.953125,
+            "right": 720,
+            "bottom": 349.875,
+            "left": 337.953125
+          },
+          "close": {
+            "x": 1140,
+            "y": 188,
+            "width": 44,
+            "height": 44,
+            "top": 188,
+            "right": 1184,
+            "bottom": 232,
+            "left": 1140
+          },
+          "dots": {
+            "x": 632,
+            "y": 668,
+            "width": 176,
+            "height": 44,
+            "top": 668,
+            "right": 808,
+            "bottom": 712,
+            "left": 632
+          },
+          "scrollWidth": 1440
+        },
+        {
+          "width": 2048,
+          "height": 806,
+          "ratio": "2.00000",
+          "card": {
+            "x": 471.046875,
+            "y": 126.5234375,
+            "width": 1105.90625,
+            "height": 552.953125,
+            "top": 126.5234375,
+            "right": 1576.953125,
+            "bottom": 679.4765625,
+            "left": 471.046875
+          },
+          "photo": {
+            "x": 713.34375,
+            "y": 125.5234375,
+            "width": 862.609375,
+            "height": 552.953125,
+            "top": 125.5234375,
+            "right": 1575.953125,
+            "bottom": 678.4765625,
+            "left": 713.34375
+          },
+          "fit": "cover",
+          "mask": "linear-gradient(90deg, rgba(0, 0, 0, 0), rgb(0, 0, 0) 54%), linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.1) 0%, rgba(0, 0, 0, 0.5) 0%, rgba(0, 0, 0, 0.898) 0%, rgb(0, 0, 0) 0%)",
+          "title": {
+            "x": 520.703125,
+            "y": 549.9921875,
+            "width": 571.9375,
+            "height": 79.828125,
+            "top": 549.9921875,
+            "right": 1092.640625,
+            "bottom": 629.8203125,
+            "left": 520.703125
+          },
+          "titleSize": "64.1434px",
+          "titleScroll": 578,
+          "titleClient": 572,
+          "copy": {
+            "x": 520.703125,
+            "y": 176.1796875,
+            "width": 503.296875,
+            "height": 94.71875,
+            "top": 176.1796875,
+            "right": 1024,
+            "bottom": 270.8984375,
+            "left": 520.703125
+          },
+          "close": {
+            "x": 1576.96875,
+            "y": 74.515625,
+            "width": 44,
+            "height": 44,
+            "top": 74.515625,
+            "right": 1620.96875,
+            "bottom": 118.515625,
+            "left": 1576.96875
+          },
+          "dots": {
+            "x": 936,
+            "y": 687.46875,
+            "width": 176,
+            "height": 44,
+            "top": 687.46875,
+            "right": 1112,
+            "bottom": 731.46875,
+            "left": 936
+          },
+          "scrollWidth": 2048
+        },
+        {
+          "width": 667,
+          "height": 375,
+          "ratio": "1.00000",
+          "card": {
+            "x": 218,
+            "y": 72,
+            "width": 231,
+            "height": 231,
+            "top": 72,
+            "right": 449,
+            "bottom": 303,
+            "left": 218
+          },
+          "photo": {
+            "x": 217,
+            "y": 170.53125,
+            "width": 231,
+            "height": 154,
+            "top": 170.53125,
+            "right": 448,
+            "bottom": 324.53125,
+            "left": 217
+          },
+          "fit": "cover",
+          "mask": "linear-gradient(90deg, rgba(0, 0, 0, 0), rgb(0, 0, 0) 0%), linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.1) 7.68%, rgba(0, 0, 0, 0.5) 17.6%, rgba(0, 0, 0, 0.898) 26.88%, rgb(0, 0, 0) 32%)",
+          "title": {
+            "x": 239,
+            "y": 238.3125,
+            "width": 189,
+            "height": 66.21875,
+            "top": 238.3125,
+            "right": 428,
+            "bottom": 304.53125,
+            "left": 239
+          },
+          "titleSize": "26px",
+          "titleScroll": 191,
+          "titleClient": 189,
+          "copy": {
+            "x": 239,
+            "y": 93,
+            "width": 189,
+            "height": 129.3125,
+            "top": 93,
+            "right": 428,
+            "bottom": 222.3125,
+            "left": 239
+          },
+          "close": {
+            "x": 449,
+            "y": 20,
+            "width": 44,
+            "height": 44,
+            "top": 20,
+            "right": 493,
+            "bottom": 64,
+            "left": 449
+          },
+          "dots": {
+            "x": 245.5,
+            "y": 311,
+            "width": 176,
+            "height": 44,
+            "top": 311,
+            "right": 421.5,
+            "bottom": 355,
+            "left": 245.5
+          },
+          "scrollWidth": 667
+        },
+        {
+          "width": 768,
+          "height": 375,
+          "ratio": "1.00000",
+          "card": {
+            "x": 268.5,
+            "y": 72,
+            "width": 231,
+            "height": 231,
+            "top": 72,
+            "right": 499.5,
+            "bottom": 303,
+            "left": 268.5
+          },
+          "photo": {
+            "x": 267.5,
+            "y": 170.53125,
+            "width": 231,
+            "height": 154,
+            "top": 170.53125,
+            "right": 498.5,
+            "bottom": 324.53125,
+            "left": 267.5
+          },
+          "fit": "cover",
+          "mask": "linear-gradient(90deg, rgba(0, 0, 0, 0), rgb(0, 0, 0) 0%), linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.1) 7.68%, rgba(0, 0, 0, 0.5) 17.6%, rgba(0, 0, 0, 0.898) 26.88%, rgb(0, 0, 0) 32%)",
+          "title": {
+            "x": 289.5,
+            "y": 238.3125,
+            "width": 189,
+            "height": 66.21875,
+            "top": 238.3125,
+            "right": 478.5,
+            "bottom": 304.53125,
+            "left": 289.5
+          },
+          "titleSize": "26px",
+          "titleScroll": 191,
+          "titleClient": 189,
+          "copy": {
+            "x": 289.5,
+            "y": 93,
+            "width": 189,
+            "height": 129.3125,
+            "top": 93,
+            "right": 478.5,
+            "bottom": 222.3125,
+            "left": 289.5
+          },
+          "close": {
+            "x": 499.5,
+            "y": 20,
+            "width": 44,
+            "height": 44,
+            "top": 20,
+            "right": 543.5,
+            "bottom": 64,
+            "left": 499.5
+          },
+          "dots": {
+            "x": 296,
+            "y": 311,
+            "width": 176,
+            "height": 44,
+            "top": 311,
+            "right": 472,
+            "bottom": 355,
+            "left": 296
+          },
+          "scrollWidth": 768
+        }
+      ],
+      "errors": []
+    },
+    "release": {
+      "result": "PASS",
+      "contentParity": true,
+      "assetByteParity": 521,
+      "productionBuild": true,
+      "errors": [],
+      "failed": []
+    }
+  },
+  "visualComparisons": {
+    "widths": [
+      390,
+      820,
+      1440
+    ],
+    "sampledElementsPerWidth": 12,
+    "differencesOver1px": 0
+  }
+}
