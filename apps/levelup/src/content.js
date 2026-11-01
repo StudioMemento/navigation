@@ -1,11 +1,23 @@
 export const START_URL = 'https://mementostudio.it/start';
 
 export const benefits = [
-  { id: 'valore', title: ['Il tuo valore,', 'a prima vista.'], copy: 'La qualità del tuo lavoro merita\nun’immagine all’altezza.', asset: 'assets/editorial/value.webp', alt: 'Libro di identità Memento e biglietti su un piano scuro' },
-  { id: 'identita', title: ['Un’immagine', 'che ti somiglia.'], copy: 'Colori, parole e contenuti.\nLa stessa identità, ovunque.', asset: 'assets/editorial/identity.webp', alt: 'Packaging e shopper coordinati' },
-  { id: 'coinvolgimento', title: ['Più voglia', 'di esplorarti.'], copy: 'Dalla prima impressione\nal piacere di scoprire di più.', asset: 'assets/heroes/icecream.webp', alt: 'Il mondo sensoriale di IceCream' },
-  { id: 'dettagli', title: ['Ogni dettaglio,', 'più chiaro.'], copy: 'Prodotti da osservare,\nconfigurare e conoscere.', asset: 'assets/heroes/productvis.webp', alt: 'Automobile in una scena di visualizzazione prodotto' },
-  { id: 'chiarezza', title: ['Capirti diventa', 'più semplice.'], copy: 'Un sito che racconta chi sei\ne aiuta a trovare ciò che conta.', asset: 'assets/editorial/website.webp', alt: 'Sito Memento su un portatile' },
+  { id: 'immagine', title: ['Avere un’immagine', 'chiara.'], copy: 'Il valore del tuo lavoro, riconoscibile\nfin dal primo sguardo.', asset: 'assets/editorial/value.webp', alt: 'Libro di identità Memento e biglietti su un piano scuro' },
+  { id: 'comunicazione', title: ['Avere una comunicazione', 'coerente.'], copy: 'Parole, immagini e contenuti\nche raccontano la stessa storia.', asset: 'assets/editorial/identity.webp', alt: 'Packaging e shopper coordinati' },
+  { id: 'direzione', title: ['Avere vision e mission', 'chiare.'], copy: 'Sapere chi sei e dove vuoi arrivare.\nE renderlo visibile a chi ti sceglie.', asset: 'assets/editorial/website.webp', alt: 'Identità e sito Memento presentati insieme' },
+  { id: 'prodotto', title: ['Avere un prodotto', 'che si fa capire.'], copy: 'Dettagli da esplorare, qualità da vedere.\nAnche prima di averlo tra le mani.', asset: 'assets/heroes/productvis.webp', alt: 'Automobile in una scena di visualizzazione prodotto' },
+  { id: 'esperienza', title: ['Avere un’esperienza', 'che ti somiglia.'], copy: 'Un mondo digitale che parla di te.\nE invita le persone a scoprirti.', asset: 'assets/heroes/icecream.webp', alt: 'Il mondo sensoriale di IceCream' },
+];
+
+export const visions = [
+  { id: 'product', title: ['Il tuo prodotto,', 'protagonista.'], copy: 'Materiali, luce e dettagli.\nLa qualità prende forma.', alt: 'Flacone di profumo senza marchio', before: 'assets/v09/product-before.webp', after: 'assets/v09/product-after.webp' },
+  { id: 'brand', title: ['Il tuo brand,', 'ovunque.'], copy: 'Dal packaging al digitale.\nLa stessa identità, in ogni incontro.', alt: 'Shopper, confezione, biglietti e smartphone coordinati', before: 'assets/v09/brand-before.webp', after: 'assets/v09/brand-after.webp' },
+  { id: 'collection', title: ['La tua collezione,', 'online.'], copy: 'Il tuo catalogo prende vita.\nOgni dettaglio, a portata di mano.', alt: 'Poltrona e tablet con il suo catalogo', before: 'assets/v09/collection-before.webp', after: 'assets/v09/collection-after.webp' },
+];
+
+export const steps = [
+  { number: '01', title: ['Raccontaci', 'la tua idea.'], copy: 'Da dove parti.\nCosa vorresti realizzare.', asset: 'assets/v09/step-idea.webp' },
+  { number: '02', title: ['Definiamo', 'il progetto.'], copy: 'Mettiamo a fuoco insieme\nobiettivi e direzione.', asset: 'assets/v09/step-project.webp' },
+  { number: '03', title: ['Ti presentiamo', 'l’offerta.'], copy: 'Attività, tempi e costi.\nTutto chiaro, fin dall’inizio.', asset: 'assets/v09/step-offer.webp' },
 ];
 
 // Public production aliases. No preview deployment URLs or legacy Memento routes.

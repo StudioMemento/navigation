@@ -1,69 +1,55 @@
-# Design QA — LevelUp V08
-
-Date: 2026-11-01
-
-## References and normalization
-
-Source visual truth: approved sequence `exec-afa62400-0811-4573-86cd-fba4de353195.png` (809×1944), hero board `exec-9d62e5d1-56e5-4b47-8ae8-4f9a43cd6618.png` (1650×953), Vision board `exec-a8295dc5-229f-4394-9ead-1855b833832b.png` (1402×1122), CTA board `exec-98d4b9e5-ff5e-49b6-96c3-27b1199fc2b5.png` (1774×887). Original conversation artifacts were inspected from `../generated_images/`. The combined comparisons below include the reference pixels.
-
-Geometry/color authority: `Memento_Visual_DNA(1).md`, revision 1.1. Source implementation/assets: Servizi V40; live LevelUp manifest for production aliases.
-
-Implementation: browser-rendered local page. Standalone viewport 1363×936 CSS px. Combined full-page evidence `qa/page-browser.jpg`: 1363×4862, assembled from seven actual viewport screenshots at CSS 1363×844, scale 1, scroll offsets 0/800/1600/2400/3200/4000/4018. Only the QA host's 44px toolbar and outside canvas were cropped; no UI content was repainted. Native full-page captures sometimes omitted transformed image layers; visible-viewport captures were used to avoid that capture artifact.
-
-`qa/full-comparison.jpg` places the approved sequence and implementation in the same comparison canvas, each normalized to 809px width. The source is an editorial board, not a measured browser capture: its compact vertical spacing and heavy type are not pixel-match targets when they conflict with the explicit Services DNA. No pixel-identical claim is made.
-
-Focused comparison: `qa/vision-comparison.jpg`, source and implemented Vision region normalized to 800px width each. Further readable browser evidence: `qa/levelup-hero-final.jpg`, `qa/portfolio-final.jpg`, `qa/levelup-productvis-expanded.jpg`, `qa/levelup-mobile-contact.jpg`, `qa/levelup-tablet-vision.jpg`, `qa/levelup-alpha-390.jpg`.
-
-State: initial benefit, ProductVis selected, comparison 50/50, idle CTA. Expanded demo evidence uses the external app's actual WebGL-unavailable fallback. Mobile/tablet evidence includes changed selections and a 100% comparison endpoint.
-
-## Findings and iteration history
-
-1. **P1 — Embedded canvas appeared opaque despite transparent CSS.** Observed on the checkerboard parent at 390×844. Global `color-scheme:dark` made the iframe canvas opaque. Limited the dark scheme to standalone and set the embedded scheme to normal. Recaptured checkerboard: root, spacing and carousel edges expose the parent; cards remain black. Evidence: `qa/levelup-alpha-390.jpg`. Resolved.
-2. **P2 — Mobile step text lost spaces at hidden editorial line breaks.** Added explicit whitespace after the breaks. Rechecked rendered mobile steps: “Chi sei e cosa hai in mente”, “Capiamo insieme cosa ti serve”, “Hai una proposta”. No clipping or joined words. Resolved.
-3. **P2 — Projected neighbouring carousel images could remain unloaded.** Native lazy loading was inconsistent for transformed overflow-masked cards. Warm the visible arc, respecting data-saver mode. Browser verified Fashion, Auren, ProductVis, IceCream and Elite as loaded at the initial portfolio state. `qa/portfolio-final.jpg`. Resolved.
-4. **P2 — Side-card captions were partially obscured by the active coverflow card.** Apply the Services slide-focus fade to captions. Final browser state reports opacity 1 for the selected caption and 0 for the four neighbours. Adjacent images remain visible; dots keep accessible project labels. `qa/portfolio-final.jpg` and revised `qa/full-comparison.jpg`. Resolved.
-5. **P2 — ProductVis preview was from an older project version.** Replaced it with the current production app's `studio-fallback.webp`, converted once into local WebP sizes. It now shows the same vehicle as the live embed. Resolved.
-6. **P3 — Comparison handle at endpoints was half clipped.** Kept the divider at the true split and constrained the handle to the card interior. Resolved in CSS; native range remains 0–100.
-
-The revised full-view and focused comparisons were reopened after the fixes. No actionable P0/P1/P2 finding remains.
-
-## Five fidelity surfaces
-
-| Surface | Result |
-| --- | --- |
-| Fonts / typography | Local Inter Variable from Services; weights 350/380/420 follow roles, essential thin section type. Heading fits its wrapper with no measured overflow at seven sizes. Editorial line breaks retained with glyph protection. Heavier type in image-generated boards is intentionally superseded by the master. |
-| Spacing / layout | Master 80% / max 1280px verified; desktop hero 2:1, mobile 60vw with .74 ratio, tablet portrait 1.25 ratio. Internal padding and TL/BR cuts preserved. The approved sequence is expanded to the Services rhythm. |
-| Colors / tokens | Warm white, graphite and amber; opaque black boards, transparent embedded root, own CTA surface. PCHIP color/alpha ramps preserve anchors. No visible gradient bands in inspected captures; display-level dithering cannot be certified on every device. |
-| Images / assets | Real Services book/identity/website and CTA sculpture reused. New Vision photography follows product, restaurant/menu/phone and chair/tablet compositions. Copy is HTML, not baked into images. No CSS/SVG approximations of photographic assets. Real live demo UI supersedes illustrative mock controls. |
-| Copy / content | All five approved section titles and the simple three steps are present. Opening cards contain no sales buttons. Vision cards are explicitly concepts; no invented client metrics or testimonials. Final whole-card action names the contact destination. |
-
-## Browser verification
-
-- Measured viewport CSS sizes: 360×800, 390×844, 820×1180, 844×390, 1440×1000, 1600×1000, 1920×1080. Exact values: `qa/levelup-viewport-checks.json`.
-- Body/root scroll width equals viewport width at all seven sizes. Hero widths: 216, 234, 656, 675.1875, 1152, 1280, 1280px respectively.
-- Drag moved hero index 0→1. Keyboard End selected index 4. Dots select benefits and projects; no autoplay.
-- Fashion, IceCream and ProductVis selected; panel title/source and contextual CTA URL update. One iframe remains mounted at a time. Actual external UI rendered.
-- Expanded ProductVis dialog opens; Escape closes it, returns panel to its slot, restores scroll and focus to Espandi. Cloud browser did not expose native fullscreen; fallback branch was exercised.
-- Before/after range supports keyboard End (value 100 and CSS split 100%). Pointer/range semantics are native.
-- Mobile long project heading and actions fit the panel. Mobile steps and CTA remain readable. Tablet Vision cards have no title overflow.
-- CTA was clicked: it navigated to `https://mementostudio.it/start?from=levelup&experience=icecream&idea=...`; the actual Start iframe displayed contact email, WhatsApp and FAQ. No contact message was sent. Start does not currently consume the parameters.
-- Embedded root alpha visually verified; Tide INIT→READY observed in the QA host. Full animated hub journey was not tested or modified.
-- Console reviewed: no LevelUp-origin error/warning observed. Repeated metadata errors were from the browser extension URL, not app code.
-- Six Node tests passed, including missing-asset negative control, category/URL contracts, parameter encoding, PCHIP bounds/error and unchanged Tide bridge hash. Production local resource resolution passed. Ten demos plus Start returned HTML 200; framing headers recorded in `qa/link-check.json`.
-
-## Accepted extensions / remaining device checks
-
-The opening book and CTA sculpture use the actual Services assets instead of the approximate art in the generated mockups. Project cards display their actual public demos. Inactive captions fade with the original Services focus model. These are intentional decisions to honor the user's request for the Services master and updated experiences.
-
-Reduced-motion and forced-colors paths are implemented; not certified with assistive technology. Mobile sizes were browser viewport tests, not physical phones. Safari/iOS, Instagram in-app browser, GPU-backed 3D interaction, 200% text zoom and a complete live Tide journey remain device/integration checks. In this cloud browser ProductVis reports “WebGL non disponibile”; the static fallback and controls are visible. External demo availability and embedding policies can change after the recorded check.
-
-## Implementation checklist
-
-- [x] Five-section journey, no opening CTA
-- [x] Master typography, geometry, alpha and clipped frames
-- [x] Real production demos, one loaded embed, expansion and fallback
-- [x] Before/after, keyboard, drag and context link
-- [x] Revised visual comparisons and responsive measurements
-- [x] Build, six tests, local assets and public URL checks
+# LevelUp V09 — design QA
 
 final result: passed
+
+## Source of truth
+
+The user's six screenshots in `/workspace/scratch/d5ef3d47abf8/upload/`, the accompanying five requested corrections, and MEMENTO_MASTER_VISUAL_DNA_V40.md. The screenshots show V08, whose copy, hierarchy, imagery and proportions are explicitly being revised. This is a controlled redesign, not a claim of pixel equality to the old screenshots. V40 supersedes V08's 80%/1280 px wrapper.
+
+## Evidence and normalization
+
+Implementation: browser-rendered local LevelUp V09, dark standalone state. Raw captures are in `/workspace/scratch/d5ef3d47abf8/levelup-v09/qa/` during this working session. Internal screenshots and the QA harness are not part of the deployment ZIP.
+
+- Desktop opening: `desktop-opening-final.jpg`, 1363 × 936 CSS/pixels, density 1.
+- Experiences: `desktop-experiences-v1.jpg`, 1363 × 844 iframe, plus 44 px harness toolbar; `mobile-experiences-v1.jpg`, 390 × 844 iframe.
+- Vision: `desktop-vision-final.jpg`, 1363 × 844 iframe; `tablet-vision-final.jpg`, 1024 × 768 iframe; `mobile-vision-final.jpg`, 390 × 844 iframe, third comparison focused.
+- Steps: `desktop-steps-v1.jpg`, 1363 × 844 iframe.
+- Source dimensions: opening 1715 × 1278, experiences 1710 × 1353, Vision 1717 × 1217, steps 1373 × 728, Start imagery 1294 × 612.
+- Combined inputs actually opened and inspected: `compare-opening.jpg`, `compare-experiences.jpg`, `compare-vision.jpg`, `compare-steps.jpg`. Toolbar removed from implementation captures; both columns normalized to 800 px width without distortion. Different source and implementation viewport widths/heights are explicitly retained as a limitation: geometry is assessed against V40 and measured DOM bounds, rather than a misleading pixel-diff score.
+- Focused comparisons: `compare-vision-focus.jpg` normalizes both product cards to 380 px width; `compare-start-art.jpg` compares the supplied Start artwork against the new carbon sculptures. Pair contact sheets verify corresponding neutral/rendered subjects.
+- Final geometry matrix: `geometry-final.json`, 320×740, 390×844, 768×1024, 820×1180, 900×1000, 1024×768, 1363×844, 1600×1000, 1920×1080 and 844×390. All headings fit and no horizontal page overflow. At 844×390 the 680 px minimum deliberately allows ordinary vertical scrolling.
+
+## Comparison history and resolved findings
+
+1. **P1: mobile Vision cards collapsed into three narrow tracks.** Observed in `mobile-vision-v1.jpg` at 390×844. Replaced the narrow grid with a native horizontal flex strip; cards have 86% basis and a 460 px cap. Post-fix: `mobile-vision-final.jpg`; measured mobile width 275 px and total strip width 858 px. All three comparisons are keyboard-reachable; focusing the third scrolls it into view.
+2. **P2: images and titles touched at narrow card widths.** Observed in the mobile second pass and at 1024×768. Increased card height and retained natural image aspect at phone/intermediate widths; shortened collection copy. Post-fix: `mobile-vision-final.jpg` and `tablet-vision-final.jpg`, with clear separation of subjects and copy.
+3. **Expected deviations:** padding-to-padding headings, top-left opening titles, cinematic 3:1 portfolio, removed embed recap, neutral comparisons and redesigned steps are all requested changes. The comparison references therefore intentionally differ in composition and copy.
+
+## Required fidelity surfaces
+
+- **Typography:** local Inter; master weights, negative tracking and ivory/amber gradients. Four display headings fitted to their own wrapper using font metrics. Long phone headings use two lines. No clipped display text in the final ten-size matrix.
+- **Spacing and layout:** shared V40 safe gutters; opening ratio continuously 1:1 to 2:1; opposing cut corners and continuous one-pixel rings. Experiences occupy one normal viewport with no forced scrolling. Measured live embed: about 509 px high at 390×844, 430 px at 1363×844.
+- **Colors and tokens:** black cards, #0b0c0d standalone background, original title/frame gradients, amber active dot and monochrome neighbouring slides. Actual embedded HTML/body/section computed backgrounds all verified as rgba(0,0,0,0).
+- **Images:** source portfolio/benefit assets retained; three generated material/clay pairs visually registered at 1122×1402; three new carbon sculptures in Start's restrained particulate style. WebP assets checked in browser. No fake SVG illustrations or screenshot substitutes for interactive content.
+- **Copy:** five “Avere” benefits; exact new section headings and three step titles; requested deletions applied. Opening copy remains two brief lines. Vision titles are the requested product/brand/collection formulations.
+
+## Interaction checks
+
+- Carousel dots and horizontal navigation select the corresponding content; no autoplay. Visible neighbours load correctly after projection/resize.
+- Selecting Auren updates the active portfolio card, the single iframe URL and contact query; only one slide's action group is interactive.
+- “Espandi Auren” opens the fallback native dialog; X and Escape both close it, return the panel to `demo-slot`, preserve one iframe and restore focus to “Espandi Auren”. Background/body remains separate from modal treatment.
+- All three comparisons respond independently. Keyboard test produced 0 / 100 / 51. A real pointer drag changed product 50→17 while the other values stayed unchanged.
+- Mobile keyboard focus brings the third comparison into the horizontal viewport.
+- Contact remains reachable without exploring; it links to the existing Start page. It prepares URL context but does not claim Start prefill support.
+- Bridge byte hash unchanged. Frame allow/sandbox attributes, loading state and retry/open fallback present.
+- Console inspected: no error/warning originating from the local landing URL. Cloud browser extension metadata errors and external WebGL fallback are outside the landing.
+
+## Build and link verification
+
+`npm run build` and `npm test` pass: four contract tests plus 46 local resource references. All ten public demo aliases and Start returned HTML 200; no framing-block header detected for the demos. Fresh ZIP extraction is rebuilt and compared by SHA-256 before delivery.
+
+## Residual limits
+
+Cloud browser has no WebGL, so ProductVis displays its honest static fallback. Hardware rendering, Safari iOS and Instagram's real in-app browser were not tested. Native fullscreen could not be exercised here; the dialog fallback was tested. External demos may reload when reparented for fallback expansion. The generated comparison pairs are visually aligned artistic renders, not a mathematically identical CAD scene.
+
+No actionable P0/P1/P2 finding remains in the delivered landing.

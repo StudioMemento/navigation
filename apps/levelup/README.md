@@ -1,81 +1,88 @@
-# Memento LevelUp V08
+# Memento LevelUp · V09
 
-Landing completa in cinque sezioni, pronta per Vercel. HTML, CSS ed ES modules, senza framework o dipendenze npm da installare. Font e immagini sono locali. Le demo restano le applicazioni pubbliche originali.
+Landing aggiornata alle correzioni sulle cinque sezioni. Sorgenti HTML/CSS/JavaScript, immagini WebP locali, font Inter locale e build statica già inclusa in `dist/`. Non richiede dipendenze npm, backend o variabili d’ambiente.
 
-## Deploy su Vercel
+## Avvio e build
 
-1. Estrai lo ZIP: `package.json`, `index.html` e `vercel.json` devono essere nella root del progetto.
-2. Carica questi file nel repository collegato al progetto Vercel LevelUp, oppure importa un nuovo repository.
-3. Imposta **Framework Preset: Other**, **Build Command: npm run build**, **Output Directory: dist**. Lascia vuoto l'Install Command. Non servono variabili d'ambiente.
-4. Avvia il deploy. `vercel.json` contiene già build, output e header statici.
-
-È incluso anche `dist/`, già compilato. Per il normale deploy del sorgente Vercel lo rigenera. Non caricare soltanto lo ZIP come un file del sito: va estratto.
-
-Per provarlo in locale, con Node.js 20 o successivo:
+Dalla cartella estratta, con Node.js 20 o successivo:
 
 ```sh
 npm run dev
-```
-
-Il server mostra l'indirizzo locale. Per validare il pacchetto:
-
-```sh
 npm run build
 npm test
 npm run check:links
 ```
 
-## Cosa contiene
+Il server locale usa la porta 4173. `build` rigenera `dist/`; `test` controlla risorse, contesto del contatto e integrità del bridge. `check:links` richiede connessione e controlla le dieci demo e Start.
 
-- **Cosa ti rende speciale?** — titolo che si adatta da padding a padding, cinque benefici senza CTA nelle card; trascinamento, punti e tastiera, senza autoplay.
-- **Prova le nostre esperienze** — coverflow con dieci progetti, categoria dentro ogni card, demo reale nel pannello sotto. ProductVis è la selezione iniziale. Viene caricato un solo iframe alla volta, vicino all'area visibile.
-- **Immagina applicato al tuo brand.** — tre concept: profumo prima/dopo con cursore, ristorante e identità coordinata, collezione con visualizzazione prodotto.
-- **Basta un'idea!** — tre passaggi: ci racconti, ne parliamo, hai una proposta.
-- **Ready to start?** — tutta la grande card apre Start, con indicazione esplicita “Vai alla pagina contatti”. Il contatto è disponibile anche subito da tastiera attraverso il collegamento di salto.
+## Deploy su Vercel
 
-## Master visivo e integrazione
+Estrai lo ZIP. Usa la cartella che contiene `package.json` e `vercel.json` come root del progetto/repository. Il file `vercel.json` include già:
 
-La geometria segue **Memento Visual DNA R1.1**: area centrale 80%, massimo 1280 px; card hero desktop 2:1; carousel mobile 20/60/20; gutter mobile da 32 a 52 px. Le proporzioni portrait restano quelle del master. Inter Variable, icone, frame a due angoli tagliati, controller dei carousel e luce perimetrale CTA provengono dal pacchetto Servizi V40. Le quote R1.1 prevalgono sulle diverse larghezze presenti nel codice V40.
+| Impostazione | Valore |
+| --- | --- |
+| Framework Preset | Other (`framework: null`) |
+| Build Command | `npm run build` |
+| Output Directory | `dist` |
+| Install Command | vuoto; nessuna dipendenza |
 
-I titoli e i frame usano rampe PCHIP in precisione float, campionate in CSS; i test verificano ancoraggi, assenza di overshoot ed errore inferiore a 1/255. Il risultato finale resta affidato al compositing del browser: non viene sovrapposta una grana al testo.
+La configurazione è verificata sulla [documentazione ufficiale di vercel.json](https://vercel.com/docs/project-configuration/vercel-json). Per un progetto esistente, aggiorna i file nella sua root e avvia il normale deploy. Nessun deploy è stato eseguito durante questa consegna.
 
-In standalone il fondo è `#0b0c0d`. Dentro un iframe, `html`, `body`, sezioni e stage rimangono trasparenti. Le grandi card sono nere e la CTA ha fondo proprio `#07090a`. La dissolvenza laterale è una maschera alpha, non un pannello nero. Il colore di sistema scuro è applicato soltanto allo standalone per non rendere opaco il canvas embedded.
+## Cosa cambia
 
-Non è inclusa una seconda navbar: la navigazione dell'hub rimane nel parent. `tide-child-bridge.js` v014 è conservato senza modifiche. Richiede un iframe con scrolling e un parent che invii il protocollo Tide; il controllo origine/sessione resta attivo. Per consentire l'espansione nativa, il parent può usare `allow="fullscreen"`. È previsto anche un dialog quando il fullscreen non è disponibile.
+- **Cosa ti rende speciale?** Cinque titoli che iniziano con “Avere”, in alto a sinistra. Copy breve in basso a sinistra; nessun pulsante nelle tavole.
+- **Prova le nostre esperienze!** Titolo adattato al padding, coverflow in rapporto 3:1 e un’unica demo caricata. “Apri” ed “Espandi” sono in basso a destra nella slide attiva. Eliminato il recap sopra l’embed.
+- **Immagina applicato al tuo brand!** Tre coppie di render neutri, con lo stesso soggetto e inquadratura, e tre cursori indipendenti. Nessun badge Concept/Oggi/Domani. Su telefono le card scorrono orizzontalmente.
+- **Basta un’idea!** I tre step richiesti, con copy in alto a sinistra, numero in alto a destra, titolo in basso a sinistra e nuove sculture in carbonio nella metà destra. La disposizione delle immagini risolve l’indicazione finale ambigua senza sovrapporre i testi.
+- **Ready to start?** Conservata la grande card verso la pagina contatti, con luce sul bordo al passaggio del puntatore.
+
+## Master Visual DNA
+
+La geometria segue il Master V40: `min(1720px, 100vw, max(320px, 100vw - 180px))`, safe area e allineamento condiviso tra titoli, card frontale, embed e griglie. Le tavole introduttive passano continuamente da quadrate a 2:1 fra 768 e 1024 px. Restano frame con tagli opposti, gradienti del master, foto sfumate, Inter e carousel senza autoplay.
+
+Il selettore delle esperienze è un’eccezione intenzionale: rapporto cinematico 3:1. Titolo, slide, punti ed embed occupano `100svh`, con un minimo di 680 px per mantenere usabile la demo su schermi molto bassi. Nessuno scroll verticale forzato. Sui telefoni i titoli lunghi vanno su due righe.
+
+In un iframe, `html`, `body` e sezioni sono trasparenti; le card mantengono il proprio fondo. Da solo, il sito usa `#0b0c0d`. Il bridge Tide v014 è preservato byte per byte. L’handshake opzionale `memento:levelup:surface` comunica l’apertura del dialog al parent, verificando origine e mittente.
 
 ## Demo aggiornate
 
-| Progetto | Categoria | URL pubblico |
-| --- | --- | --- |
-| Fashion | Siti web | https://mementofashion.vercel.app/ |
-| Auren | Esperienze digitali | https://mementoauren.vercel.app/ |
-| ProductVis | Configuratori 3D | https://productvis.vercel.app/ |
-| IceCream | Esperienze digitali | https://mementoicecream.vercel.app/?gusto=pistacchio |
-| Elite | Siti web | https://mementoelite.vercel.app/ |
-| Knives | Configuratori 3D | https://knives.vercel.app/ |
-| Memento Food | Siti web | https://mementofood.vercel.app/ |
-| Unfreeze | Esperienze digitali | https://mementosl.vercel.app/ |
-| TechRef | Siti web | https://techref.vercel.app/#/categoria/smartphone?set=selection&order=antutu&platform=iOS |
-| VisualRef | Esperienze digitali | https://visualref.vercel.app/ |
+La fonte unica per ordine, immagini, categorie e link è `src/content.js`.
 
-Le categorie sono etichette delle card, coerenti con la scelta del portfolio a slideshow. Tutti i comandi della demo sono nel relativo pannello: espandi/riduci, apertura esterna e fallback di caricamento. Il link esterno resta sempre raggiungibile anche se una demo cambia policy di embedding.
+| Esperienza | Link |
+| --- | --- |
+| Fashion | https://mementofashion.vercel.app/ |
+| Auren | https://mementoauren.vercel.app/ |
+| ProductVis | https://productvis.vercel.app/ |
+| IceCream | https://mementoicecream.vercel.app/?gusto=pistacchio |
+| Elite | https://mementoelite.vercel.app/ |
+| Knives | https://knives.vercel.app/ |
+| Memento Food | https://mementofood.vercel.app/ |
+| Unfreeze | https://mementosl.vercel.app/ |
+| TechRef | https://techref.vercel.app/#/categoria/smartphone?set=selection&order=antutu&platform=iOS |
+| VisualRef | https://visualref.vercel.app/ |
 
-## Modifiche frequenti
+La demo si carica quando il blocco si avvicina allo schermo. Il cambio di slide sostituisce l’unico iframe dopo una breve stabilizzazione, evitando più scene 3D attive insieme. Il codice gestisce ritardo/errore con Riprova e Apri la demo. Le demo restano applicazioni esterne: aggiornamenti e requisiti GPU appartengono ai rispettivi deployment.
 
-- `src/content.js`: benefici, progetti, categorie, immagini, URL e destinazione Start.
-- `index.html`: testi delle sezioni, tre concept e step.
-- `styles.css`: layout, responsive, trasparenza, frame e stati.
-- `scripts/gradients.mjs`: ancoraggi e generazione di `smooth-gradients.css`.
-- `public/assets/`: immagini WebP e font. Non sono richiesti URL temporanei per gli asset della landing.
+## Contatto e fullscreen
 
-La CTA apre `https://mementostudio.it/start` nel contesto principale e aggiunge `from`, `experience` e `idea` quando una demo è stata selezionata. **La pagina Start attuale mostra contatti email e WhatsApp e non utilizza questi parametri nel proprio iframe. Il contesto resta quindi nell’URL come predisposizione: questo pacchetto non modifica Start e non dichiara una precompilazione funzionante.** Non è presente un modulo di invio su LevelUp.
+La card finale porta a `https://mementostudio.it/start`. Se è stata esplorata una demo, il link conserva `experience` e `idea` nella query string. Questo prepara il contesto ma **non garantisce la precompilazione**: la pagina Start deve leggere e utilizzare quei parametri.
 
-## Verifiche e limiti
+Espandi prova il fullscreen nativo quando consentito. In alternativa apre un dialog accessibile, chiudibile con X, Escape o clic sullo sfondo, ripristinando focus e scroll. Nel fallback il browser può ricaricare l’iframe quando viene spostato; lo stato interno di una demo esterna non è controllabile dalla landing.
 
-Build statico e test Node superati. Risposte HTML 200 per dieci demo e Start; nessun header di blocco iframe rilevato sulle demo alla data riportata in `qa/link-check.json`.
+## Verifica e limiti
 
-Verifica in Chrome dei viewport CSS 360×800, 390×844, 820×1180, 844×390, 1440×1000, 1600×1000 e 1920×1080. Nessun overflow orizzontale; controllati wrapper, rapporto hero, titolo e colonne. Browser QA: drag, navigazione da tastiera, selezione delle tre categorie, iframe unico, dialog e Escape, cursore prima/dopo, CTA, trasparenza e handshake Tide READY.
+Build e test locali superati. Controllati gli alias delle dieci demo e Start: risposte HTML 200 e nessun header di blocco dell’embed rilevato al momento della verifica. Verificati layout desktop/mobile, cambio demo, link contestuale, slider da tastiera e trascinamento, espansione in dialog e ripristino del focus. Dettagli in `design-qa.md`.
 
-Le dimensioni mobile sono viewport di test, non dispositivi fisici. Rimangono da verificare Safari/iOS e il browser Instagram su telefoni reali. Nel browser cloud ProductVis mostra il proprio fallback “WebGL non disponibile”: i controlli sono raggiungibili, ma la rotazione 3D non è stata certificata su hardware GPU. In un browser senza fullscreen nativo il dialog può ricaricare l'iframe; la selezione del progetto e il ritorno al punto della pagina sono conservati.
+Il browser cloud non dispone di WebGL: ProductVis mostra il proprio fallback statico. Non sono stati eseguiti test su GPU, Safari iOS o browser Instagram su telefoni fisici. Prima della campagna, resta utile una verifica su quei dispositivi reali.
 
-Le immagini Vision sono concept illustrativi; non attestano lavori commissionati o risultati commerciali. Le immagini reali dei progetti restano copertine: il contenuto interattivo è sempre la demo originale.
+## File principali
+
+- `src/content.js`: copy, step, immagini e demo.
+- `src/app.js`: rendering e interazioni.
+- `src/carousel.js`: gesti orizzontali e animazione del master.
+- `bootstrap.js`: geometria e superficie embedded.
+- `styles.css`: stile completo, senza override accumulati.
+- `public/assets/`: tutte le risorse locali usate dal progetto.
+- `vercel.json`: configurazione del deploy.
+
+Le immagini di confronto e degli step sono visual illustrativi generati per questa pagina; non rappresentano risultati commerciali o casi cliente documentati. Nello ZIP sono incluse le versioni WebP ottimizzate, non i file temporanei o le schermate interne di collaudo.

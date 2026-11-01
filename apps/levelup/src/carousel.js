@@ -64,6 +64,7 @@ export class Carousel {
         e.stopImmediatePropagation();
         return;
       }
+      if (e.target.closest('[data-no-swipe]')) return;
       const index = Number(card.dataset.slide);
       if (interactiveContents && Math.abs(this.delta(index - this.current)) <= 0.025) return;
       e.preventDefault();
@@ -192,6 +193,8 @@ export class Carousel {
       card.dataset.active = String(isActive);
       card.tabIndex = isActive ? 0 : -1;
       card.setAttribute('aria-hidden', String(!isActive));
+      const actions = card.querySelector('.project-actions');
+      if (actions) actions.inert = !isActive;
       if (this.interactiveContents)
         (card.querySelector('.popup-card-scroll') || card).inert = !isActive;
       card.style.pointerEvents = amount >= edge ? 'none' : 'auto';
