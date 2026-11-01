@@ -5,6 +5,7 @@
   const $$ = selector => [...document.querySelectorAll(selector)];
   const esc = value => String(value ?? '').replace(/[&<>"']/g, char => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'}[char]));
   const surface = '<span class="card-surface" aria-hidden="true"></span>';
+  const titleVeil = image => `<span class="mobile-title-veil" aria-hidden="true">${image}</span>`;
   const icon = (name = 'caret-right', className = 'chevron') => `<img class="${className}" src="assets/icons/${name}.svg" alt="" aria-hidden="true">`;
   let serviceDeck;
   const reduced = matchMedia('(prefers-reduced-motion: reduce)');
@@ -53,8 +54,9 @@
   const spreadTitle = label => [...label].map(letter => `<span aria-hidden="true">${letter === ' ' ? '&nbsp;' : esc(letter)}</span>`).join('');
   function slideCard(item, index, bundle = null) {
     const heading = title(item);
+    const picture = `<img ${imageAttrs(item.image, 'slide', {deferred: true})}>`;
     const lines = item.kind === 'bundle' ? [] : MEMENTO_ITEM_MASTERS[item.id]?.slides[0].copy || MEMENTO_SLIDE_COPY[item.id] || [MEMENTO_PLANNING[item.id][3], item.description];
-    return `<a href="#${item.kind === 'bundle' ? 'bundle' : 'servizio'}/${item.id}" draggable="false" class="carousel-card showcase-card${bundle ? ' bundle-mini-card' : ''}" data-slide="${index}" data-item="${item.id}" aria-label="Scopri ${item.kind === 'bundle' ? 'il bundle ' : ''}${esc(heading)}" tabindex="${index === 0 ? 0 : -1}">${surface}<img class="slide-visual" ${imageAttrs(item.image, 'slide', {deferred: true})}><span class="slide-scrim" aria-hidden="true"></span>${item.kind === 'bundle' ? '<span class="slide-kicker">L’offerta</span>' : ''}${bundle ? '' : `<span class="slide-description">${lines.map(line => `<span>${esc(line)}</span>`).join('')}</span>`}<span class="slide-title">${bundle ? esc(heading) : splitTitle(heading)}</span><span class="slide-action" aria-hidden="true">${icon()}</span></a>`;
+    return `<a href="#${item.kind === 'bundle' ? 'bundle' : 'servizio'}/${item.id}" draggable="false" class="carousel-card showcase-card${bundle ? ' bundle-mini-card' : ''}" data-slide="${index}" data-item="${item.id}" aria-label="Scopri ${item.kind === 'bundle' ? 'il bundle ' : ''}${esc(heading)}" tabindex="${index === 0 ? 0 : -1}">${surface}<img class="slide-visual" ${imageAttrs(item.image, 'slide', {deferred: true})}><span class="slide-scrim" aria-hidden="true"></span>${titleVeil(picture)}${item.kind === 'bundle' ? '<span class="slide-kicker">L’offerta</span>' : ''}${bundle ? '' : `<span class="slide-description">${lines.map(line => `<span>${esc(line)}</span>`).join('')}</span>`}<span class="slide-title">${bundle ? esc(heading) : splitTitle(heading)}</span><span class="slide-action" aria-hidden="true">${icon()}</span></a>`;
   }
   function mountCarousel(element, controls, items, {hero = false, bundle = null} = {}) {
     // Repeated visual cycles keep both neighbours visible even in two-service bundles.
@@ -114,7 +116,7 @@
   const includedServices = (item, className = '') => `<ul class="bundle-services ${className}">${item.covers.map(id => `<li>${esc(title(byId.get(id)))}</li>`).join('')}</ul>`;
   $('#bundle-boards').innerHTML = '<div class="carousel-stage">' + bundles.map((item, index) => {
     const master = MEMENTO_BUNDLE_MASTERS[item.id];
-    return `<a id="percorso-${item.id}" href="#bundle/${item.id}" draggable="false" class="carousel-card showcase-card bundle-board" data-slide="${index}" data-bundle="${item.id}" aria-label="Scopri il bundle ${esc(item.title)}: ${esc(master.includes)}" tabindex="${index === 0 ? 0 : -1}">${surface}<img class="bundle-visual" ${bundleImageAttrs(item.id, 'hero', {deferred: index !== 0, eager: index === 0})}><span class="bundle-shade" aria-hidden="true"></span><div class="bundle-layout"><div class="bundle-summary"><span class="bundle-kicker">Bundle di servizi</span><p class="bundle-intro">${esc(master.summary)}</p>${includedServices(item)}</div><div class="bundle-label"><h3 class="bundle-title" id="title-${item.id}"><span class="item-master-gradient">${master.title.map(line => `<span>${esc(line)}</span>`).join(' ')}</span></h3></div></div></a>`;
+    return `<a id="percorso-${item.id}" href="#bundle/${item.id}" draggable="false" class="carousel-card showcase-card bundle-board" data-slide="${index}" data-bundle="${item.id}" aria-label="Scopri il bundle ${esc(item.title)}: ${esc(master.includes)}" tabindex="${index === 0 ? 0 : -1}">${surface}<img class="bundle-visual" ${bundleImageAttrs(item.id, 'hero', {deferred: index !== 0, eager: index === 0})}><span class="bundle-shade" aria-hidden="true"></span>${titleVeil(`<img ${bundleImageAttrs(item.id, 'hero', {deferred: index !== 0, eager: index === 0})}>`)}<div class="bundle-layout"><div class="bundle-summary"><span class="bundle-kicker">Bundle di servizi</span><p class="bundle-intro">${esc(master.summary)}</p>${includedServices(item)}</div><div class="bundle-label"><h3 class="bundle-title" id="title-${item.id}"><span class="item-master-gradient">${master.title.map(line => `<span>${esc(line)}</span>`).join(' ')}</span></h3></div></div></a>`;
   }).join('') + '</div>';
   const bundleControls = $('#bundle-controls');
   bundleControls.setAttribute('role', 'group');
@@ -145,38 +147,53 @@
     activeMedium = button.dataset.medium;
     renderCatalogue();
   }));
-  let lockedScroll = null;
+  const pageRoot = document.documentElement;
+  const catalogueShell = $('#catalogue-shell');
+  let lockedScroll = null, lockedX = 0, shellHeight = '', viewportFrame = 0;
   function syncVisualViewport() {
+    viewportFrame = 0;
     const view = window.visualViewport;
-    if (!view || lockedScroll === null) return;
+    if (lockedScroll === null) return;
     // Browser pinch zoom owns its viewport; only follow keyboard/toolbar resizing at 1×.
-    if (Math.abs(view.scale - 1) > .01) return;
+    if (view && Math.abs(view.scale - 1) > .01) return;
     // Embedded pages use their own layout viewport. During an iframe resize,
     // visualViewport can report the previous height until a later paint.
     const embedded = window !== window.top;
-    const height = embedded ? window.innerHeight : view.height;
-    const top = embedded ? 0 : view.offsetTop;
+    const height = Math.round(embedded || !view ? window.innerHeight : view.height);
+    const top = Math.round(embedded || !view ? 0 : view.offsetTop);
     [detail, lead].forEach(dialog => {
-      dialog.style.setProperty('--dialog-height', height + 'px');
-      dialog.style.setProperty('--dialog-top', top + 'px');
+      for (const [name, value] of [['--dialog-height', height + 'px'], ['--dialog-top', top + 'px']]) {
+        if (dialog.style.getPropertyValue(name) !== value) dialog.style.setProperty(name, value);
+      }
     });
   }
-  window.addEventListener('resize', syncVisualViewport, {passive: true});
-  window.visualViewport?.addEventListener('resize', syncVisualViewport, {passive: true});
-  window.visualViewport?.addEventListener('scroll', syncVisualViewport, {passive: true});
-  function lockBody() {
-    const open = detail.open || lead.open;
+  const scheduleViewport = () => {
+    if (lockedScroll !== null && !viewportFrame) viewportFrame = requestAnimationFrame(syncVisualViewport);
+  };
+  window.addEventListener('resize', scheduleViewport, {passive: true});
+  window.visualViewport?.addEventListener('resize', scheduleViewport, {passive: true});
+  window.visualViewport?.addEventListener('scroll', scheduleViewport, {passive: true});
+  function lockBody(open = detail.open || lead.open, announce = true) {
     if (open && lockedScroll === null) {
       lockedScroll = window.scrollY;
-      Object.assign(document.body.style, {overflow: 'hidden', position: 'fixed', top: -lockedScroll + 'px', width: '100%'});
+      lockedX = window.scrollX;
+      shellHeight = catalogueShell.style.height;
+      // Preserve document height and scroll position. Only the viewport-sized
+      // catalogue surface is frozen; body and the native top layer never move.
+      catalogueShell.style.height = catalogueShell.getBoundingClientRect().height + 'px';
+      pageRoot.style.setProperty('--catalogue-scroll-y', -lockedScroll + 'px');
+      pageRoot.dataset.overlayOpen = 'true';
     } else if (!open && lockedScroll !== null) {
       const y = lockedScroll; lockedScroll = null;
-      Object.assign(document.body.style, {overflow: '', position: '', top: '', width: ''});
-      window.scrollTo(0, y);
+      cancelAnimationFrame(viewportFrame); viewportFrame = 0;
+      pageRoot.dataset.overlayOpen = 'false';
+      pageRoot.style.removeProperty('--catalogue-scroll-y');
+      catalogueShell.style.height = shellHeight;
+      window.scrollTo({left: lockedX, top: y, behavior: 'instant'});
       [detail, lead].forEach(dialog => { dialog.style.removeProperty('--dialog-height'); dialog.style.removeProperty('--dialog-top'); });
     }
     syncVisualViewport();
-    document.dispatchEvent(new Event('memento:overlay-change'));
+    if (announce) document.dispatchEvent(new Event('memento:overlay-change'));
   }
   function setHash(hash) { history.replaceState(null, '', hash); }
   function restoreFocus() { if (focusReturn?.isConnected) focusReturn.focus({preventScroll: true}); }
@@ -202,8 +219,9 @@
       const startLink = slide.action === 'start'
         ? `<a class="item-master-cta" href="${esc(MEMENTO_CONFIG.startUrl)}" target="_top" aria-label="${esc(slide.cta)}: vai a Start"><span>${esc(slide.cta)}</span>${icon()}</a>`
         : '';
+      const picture = `<img data-src="${asset}-1536.webp" data-srcset="${asset}-768.webp 768w, ${asset}-1536.webp 1536w" sizes="(max-width: 767px) 375px, (max-width: 1023px) 100vw, (min-width: 1960px) 1342px, 72vw" width="1536" height="1024" alt="" draggable="false" decoding="async" loading="lazy">`;
       return `<section class="carousel-card showcase-card service-scene scene-${slide.key}" data-slide="${index}" aria-label="${esc(slide.label)}" tabindex="${index === 0 ? 0 : -1}"><div class="popup-card-scroll"><div class="popup-card-body">${surface}
-        <div class="service-scene-art item-master-art" aria-hidden="true"><img data-src="${asset}-1536.webp" data-srcset="${asset}-768.webp 768w, ${asset}-1536.webp 1536w" sizes="(max-width: 767px) 375px, (max-width: 1023px) 100vw, (min-width: 1960px) 1342px, 72vw" width="1536" height="1024" alt="" draggable="false" decoding="async" loading="lazy"></div>
+        <div class="service-scene-art item-master-art" aria-hidden="true">${picture}</div>${titleVeil(picture)}
         <div class="item-master-copy">${copy}</div>
         <${heading} class="item-master-title" style="--title-units:${Number(slide.titleUnits) || 1}" ${index === 0 ? 'id="detail-title"' : ''} tabindex="-1">${slide.action && slide.action !== 'start' ? `<button type="button" data-action="${esc(slide.action)}" aria-label="Avvia un progetto: ${esc(title(item))}">${titleMarkup}</button>` : titleMarkup}</${heading}>
         ${startLink}
@@ -249,7 +267,7 @@
   function bundleSheet(item) {
     const master = MEMENTO_BUNDLE_MASTERS[item.id];
     const labels = ['Il bundle', 'I servizi inclusi', 'Il percorso', 'Partiamo insieme'];
-    const visual = role => `<div class="service-scene-art item-master-art" aria-hidden="true"><img ${bundleImageAttrs(item.id, role)}></div>`;
+    const visual = role => { const picture = `<img ${bundleImageAttrs(item.id, role)}>`; return `<div class="service-scene-art item-master-art" aria-hidden="true">${picture}</div>${titleVeil(picture)}`; };
     const heading = (lines, units, first = false) => `<${first ? 'h2' : 'h3'} class="item-master-title" style="--title-units:${units}" ${first ? 'id="detail-title"' : ''} tabindex="-1"><span class="item-master-gradient">${lines.map(line => `<span class="item-master-title-line">${esc(line)} </span>`).join('')}</span></${first ? 'h2' : 'h3'}>`;
     const copy = lines => `<p>${lines.map(line => `<span class="item-master-copy-line">${esc(line)}</span>`).join(' ')}</p>`;
     const boards = [
@@ -264,6 +282,8 @@
   function openDetail(item, {fromBundle = null} = {}) {
     if (!item) return;
     rememberOrigin();
+    // Lock before showModal() can focus a control or change the viewport.
+    lockBody(true, false);
     if (lead.open) lead.close();
     serviceDeck?.destroy(); serviceDeck = null;
     currentDetail = item; parentBundle = fromBundle;
@@ -276,10 +296,14 @@
     serviceDeck = new MementoServiceDeck(detail.querySelector('.service-deck'));
     $('#detail-title').focus({preventScroll: true});
   }
-  function closeDetail(restore = true, updateRoute = true) { serviceDeck?.destroy(); serviceDeck = null; detail.close(); currentDetail = null; parentBundle = null; lockBody(); if (updateRoute) setHash(returnHash); if (restore) { window.scrollTo(0, returnScroll); restoreFocus(); } }
+  function closeDetail(restore = true, updateRoute = true) { serviceDeck?.destroy(); serviceDeck = null; detail.close(); currentDetail = null; parentBundle = null; lockBody(); if (updateRoute) setHash(returnHash); if (restore) { if (Math.abs(window.scrollY - returnScroll) > 1) window.scrollTo({top: returnScroll, behavior: 'instant'}); restoreFocus(); } }
   function openLead(context = '') {
     rememberOrigin();
-    if (detail.open) closeDetail(false, false);
+    lockBody(true, false);
+    if (detail.open) {
+      serviceDeck?.destroy(); serviceDeck = null; detail.close();
+      currentDetail = null; parentBundle = null;
+    }
     leadContext = context;
     $('#lead-context').hidden = !context; $('#lead-context').textContent = context ? `Ti interessa: ${context}` : '';
     $('#lead-form').hidden = false; $('#lead-result').hidden = true;

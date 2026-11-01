@@ -19,6 +19,7 @@ class MementoCarousel {
     this.compact = matchMedia('(max-width: 767px)');
     this.raf = this.autoTimer = 0;
     this.pointer = this.motion = this.wheelGesture = null;
+    this.suspended = false;
     this.autoEnabled = autoplay;
     this.inView = !('IntersectionObserver' in window);
     this.nearViewport = this.inView;
@@ -96,7 +97,16 @@ class MementoCarousel {
       else this.step(event.key === 'ArrowRight' ? 1 : -1);
     });
     this.listen(document, 'visibilitychange', () => this.refreshAutoplay());
-    this.listen(document, 'memento:overlay-change', () => this.refreshAutoplay());
+    this.listen(document, 'memento:overlay-change', () => {
+      this.suspended = !!document.querySelector('dialog[open]') && !this.element.closest('dialog');
+      if (this.suspended) {
+        cancelAnimationFrame(this.raf); this.raf = 0;
+        clearTimeout(this.autoTimer); this.autoTimer = 0;
+      } else {
+        this.refreshAutoplay();
+        if (this.motion && this.motion.kind !== 'auto') this.requestFrame();
+      }
+    });
     this.listen(this.reduced, 'change', () => {
       if (this.reduced.matches && this.motion) this.finish();
       this.refreshAutoplay();
@@ -158,7 +168,7 @@ class MementoCarousel {
     }
   }
   requestFrame() {
-    if (this.raf) return;
+    if (this.raf || this.suspended) return;
     this.element.classList.add('is-moving');
     this.previous = performance.now();
     this.raf = requestAnimationFrame(now => this.frame(now));
@@ -338,7 +348,7 @@ class MementoCarousel {
     this.settle(velocity);
   }
   canAutoplay() {
-    return this.autoEnabled && this.count > 1 && this.inView && !this.pointer && !this.hovered && !this.keyboardFocus && !this.reduced.matches && !document.hidden && !document.querySelector('dialog[open]');
+    return !this.suspended && this.autoEnabled && this.count > 1 && this.inView && !this.pointer && !this.hovered && !this.keyboardFocus && !this.reduced.matches && !document.hidden && !document.querySelector('dialog[open]');
   }
   scheduleAutoplay() {
     clearTimeout(this.autoTimer);

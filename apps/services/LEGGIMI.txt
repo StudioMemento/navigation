@@ -1,14 +1,26 @@
-MEMENTO — SERVIZI V35
+MEMENTO — SERVIZI V36
 44 servizi, 6 bundle, 200 tavole commerciali.
+
+DETTAGLI MOBILE V36
+- Apertura e chiusura senza spostare il body: la posizione del catalogo
+  viene conservata in una superficie grande quanto il viewport.
+- Sfocatura esplicita del catalogo di 16 px, anche dentro un iframe
+  trasparente, senza dipendere dal backdrop-filter del dialogo.
+- Nessuna dissolvenza del popup o del suo fondale su mobile; gli slider
+  sullo sfondo restano in pausa durante la consultazione dei dettagli.
+- Gradient blur sulla foto dietro ai titoli: sfocatura progressiva e
+  sfumatura al nero sul bordo inferiore, sia nelle cover sia nei dettagli.
+- Gli aggiornamenti del viewport sono coordinati con il rendering.
+- catalogo-mobile-v36.css viene caricato dopo catalogo-mobile-v35.css.
 
 MOBILE POLISH V35
 - Allineamento al logo e alla navbar Framer: area centrale mobile di 320 px.
   Un unico gutter governa titoli, catalogo, slider e CTA.
 - Card degli slider servizi, bundle e popup quadrate (1:1).
-- Immagini a filo del bordo inferiore, con sfumatura solo in alto al nero.
+- Immagini a filo del bordo inferiore, con sfumatura in alto al nero.
 - Copy e titoli dimensionati sulla card; contenuti popup lunghi scorribili.
 - In landscape basso il popup si riduce mantenendo proporzioni quadrate.
-- Stili dedicati entro 767 px in catalogo-mobile-v35.css, caricato per ultimo.
+- Stili dedicati entro 767 px in catalogo-mobile-v35.css.
 
 BASE V34 CONSERVATA
 - Immagini desktop a filo dei bordi superiore, inferiore e destro; nessun
@@ -46,9 +58,14 @@ Per riutilizzare il linguaggio visivo consultare MASTER_VISUAL.md.
 La Nav Framer live e le altre pagine non sono modificate dal pacchetto.
 
 VERIFICHE
-Misurazione della navbar e del logo Framer live a 320, 360, 390, 500,
-600 e 767 px; build statica, sintassi JavaScript, riferimenti alle risorse
-e integrità del pacchetto ZIP.
-La revisione V35 non ha una verifica visiva nel browser: l'anteprima locale
-non era raggiungibile dal browser connesso. Non è una certificazione su
-hardware fisico Mac/iPhone o su ogni motore browser.
+Controlli in Chromium headless: 320x740, 390x844, 500x870, 667x375 e
+1440x1000. A 390 e 500 px il catalogo gira in un iframe trasparente di prova.
+Menu digitale, Foto prodotti e Sito web: apertura, cambio slide e chiusura;
+posizione dello scroll e del catalogo costante nei frame di apertura,
+blur del fondale, titoli sopra il gradient blur e proporzioni 1:1.
+Verificato anche il percorso bundle > servizio > bundle > chiusura.
+Nessun errore JavaScript nei percorsi eseguiti. Revisione visiva degli
+screenshot mobile Menu digitale e Foto prodotti; build statica, sintassi
+JavaScript, risorse e contenuto dello ZIP controllati.
+Il contenitore di prova non sostituisce Framer in produzione. Nessuna
+certificazione su Safari/WebKit o su hardware iPhone fisico.

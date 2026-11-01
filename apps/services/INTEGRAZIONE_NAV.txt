@@ -1,4 +1,4 @@
-MEMENTO — INTEGRAZIONE SERVIZI V34 NELLA NAV
+MEMENTO — INTEGRAZIONE SERVIZI V36 NELLA NAV
 
 Il catalogo rileva automaticamente se si trova in un iframe e mantiene
 html, body e sezioni trasparenti. Aperto da solo usa un unico fondo scuro.
@@ -7,6 +7,10 @@ La dissolvenza inferiore in alpha riguarda solo le miniature del catalogo.
 Le estremita sinistra e destra dei viewport slider sfumano in alpha verso
 il fondale Nav. Il fade termina prima della tavola centrale, che resta opaca.
 Il margine iniziale dei bundle è 96–160 px, più la safe area del dispositivo.
+
+V36 applica il blur mobile direttamente al catalogo durante l'apertura
+dei dettagli. Questo effetto interno non richiede modifiche al contenitore
+Nav e non dipende dal supporto del backdrop-filter del dialogo.
 
 Per sfocare anche acqua/fog del contenitore, caricare il piccolo helper
 NEL DOCUMENTO MEMENTO NAV, esterno all'iframe (non dentro il catalogo):
@@ -42,11 +46,13 @@ progetto Nav. Non disabilitare la policy. Se l'iframe usa sandbox,
 mantenere le autorizzazioni necessarie per script e origine e verificare
 che le CTA possano navigare verso Start con attivazione dell'utente.
 
-L'integrazione è stata verificata nel contenitore di prova locale.
+Il catalogo V36 è stato verificato in un iframe trasparente di prova locale.
+L'helper esterno rimane invariato; il test V36 non certifica la sua
+installazione nel progetto Framer in produzione.
 Questo pacchetto non modifica automaticamente il codice di Memento Nav.
 
 V34: nessun gutter viene riservato dalla scrollbar interna. Il suo indicatore
 sottile si sovrappone al contenuto senza nasconderlo con un fondale opaco.
-Le immagini non hanno maschere di dissolvenza su alto, basso o destra;
-il solo blending sinistro sostiene la leggibilità del copy su desktop.
-Su mobile verticale le immagini sono prive di maschere e restano contenute.
+Su desktop il blending sinistro sostiene la leggibilità del copy.
+Su mobile le immagini sono ancorate in basso, sfumano al nero in alto e
+ricevono un gradient blur inferiore dietro ai titoli. Card sempre quadrate.
