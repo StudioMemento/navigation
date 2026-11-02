@@ -1,3 +1,5 @@
+import { portfolioStride, portfolioPose, portfolioEdge } from './portfolio-geometry.js';
+
 // Owns horizontal gestures and animation only. Content and routing are callbacks.
 export class Carousel {
   constructor(
@@ -26,7 +28,9 @@ export class Carousel {
       this.width = width;
       this.height = this.cards[0].offsetHeight || 1;
       this.wide = Number(getComputedStyle(element).getPropertyValue('--layout-wide')) || 0;
-      this.stride = width * (this.fan ? 0.78 - 0.14 * this.wide : 0.94 - 0.25 * this.wide);
+      this.stride = this.fan
+        ? width * (0.78 - 0.14 * this.wide)
+        : portfolioStride(element.clientWidth, width);
       this.perspective = 1100 + 900 * this.wide;
       this.reserveBleed();
       this.render();
@@ -105,6 +109,7 @@ export class Carousel {
     return this.mod(value + this.count / 2) - this.count / 2;
   }
   pose(distance) {
+    if (!this.fan) return portfolioPose(distance, this.stride, this.height);
     const amount = Math.abs(distance);
     const wide = this.wide;
     // Neighbours tuck behind at rest, then open around the layer handoff.
@@ -126,7 +131,7 @@ export class Carousel {
   reserveBleed() {
     // A CSS mask clips to its box. Reserve the projected envelope for every
     // visible swipe position, using the same pose as render (not a breakpoint).
-    const edge = Math.min(2.7, this.count / 2 - 0.06);
+    const edge = this.fan ? Math.min(2.7, this.count / 2 - 0.06) : portfolioEdge(this.count);
     let top = 0;
     let bottom = 0;
     for (let sample = 0; sample <= 80; sample++) {
@@ -149,8 +154,8 @@ export class Carousel {
   }
   render() {
     const active = this.mod(Math.round(this.current));
-    // Hide cards before they wrap, including the four-card VISUAL stack.
-    const edge = Math.min(2.7, this.count / 2 - 0.06);
+    // Hidden outer cards recycle beyond the faded reveal, never in the visible arc.
+    const edge = this.fan ? Math.min(2.7, this.count / 2 - 0.06) : portfolioEdge(this.count);
     this.cards.forEach((card, index) => {
       const distance = this.delta(index - this.current);
       const amount = Math.abs(distance);

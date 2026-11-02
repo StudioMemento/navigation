@@ -1,11 +1,12 @@
 export const START_URL = 'https://mementostudio.it/start';
 
 export const benefits = [
-  { id: 'immagine', title: ['Avere un’immagine', 'chiara.'], copy: 'Il valore del tuo lavoro, riconoscibile\nfin dal primo sguardo.', asset: 'assets/editorial/value.webp', alt: 'Libro di identità Memento e biglietti su un piano scuro' },
-  { id: 'comunicazione', title: ['Avere una comunicazione', 'coerente.'], copy: 'Parole, immagini e contenuti\nche raccontano la stessa storia.', asset: 'assets/editorial/identity.webp', alt: 'Packaging e shopper coordinati' },
-  { id: 'direzione', title: ['Avere vision e mission', 'chiare.'], copy: 'Sapere chi sei e dove vuoi arrivare.\nE renderlo visibile a chi ti sceglie.', asset: 'assets/editorial/website.webp', alt: 'Identità e sito Memento presentati insieme' },
-  { id: 'prodotto', title: ['Avere un prodotto', 'che si fa capire.'], copy: 'Dettagli da esplorare, qualità da vedere.\nAnche prima di averlo tra le mani.', asset: 'assets/heroes/productvis.webp', alt: 'Automobile in una scena di visualizzazione prodotto' },
-  { id: 'esperienza', title: ['Avere un’esperienza', 'che ti somiglia.'], copy: 'Un mondo digitale che parla di te.\nE invita le persone a scoprirti.', asset: 'assets/heroes/icecream.webp', alt: 'Il mondo sensoriale di IceCream' },
+  { id: 'web-design', domain: 'Web Design', title: ['Avere un sito che ti rappresenta.'], copy: 'Web design su misura per il tuo brand.\nChiaro da esplorare, semplice da usare.', asset: 'assets/v11/web-design.webp', alt: 'Piani di interfaccia astratti in grafite, organizzati in una struttura chiara' },
+  { id: '3d-design', domain: '3D Design', title: ['Avere idee da esplorare in 3D.'], copy: 'Modelli e configuratori da vivere.\nOgni dettaglio prende forma.', asset: 'assets/v11/3d-design.webp', alt: 'Un volume astratto si trasforma da reticolo poligonale a materia' },
+  { id: 'video', domain: 'Video', title: ['Avere una storia che si fa guardare.'], copy: 'Video e motion per raccontare chi sei.\nCon ritmo, carattere e una direzione.', asset: 'assets/v11/video.webp', alt: 'Una sequenza di fotogrammi scultorei suggerisce il movimento nel tempo' },
+  { id: 'visual', domain: 'Visual', title: ['Avere un’immagine che lascia il segno.'], copy: 'Visual che rendono riconoscibile il tuo mondo.\nLuce, composizione e dettagli che parlano di te.', asset: 'assets/v11/visual.webp', alt: 'Un prisma scuro trasforma luce e piani in una composizione visiva' },
+  { id: 'design', domain: 'Design', title: ['Avere un’idea che prende forma.'], copy: 'Dall’intuizione al design del tuo progetto.\nForme, materiali e funzione, insieme.', asset: 'assets/v11/design.webp', alt: 'Un segno progettuale si sviluppa in una struttura tridimensionale di grafite' },
+  { id: 'branding', domain: 'Branding', title: ['Avere un’identità riconoscibile.'], copy: 'Branding che tiene insieme immagine e voce.\nPer raccontare chi sei, ovunque.', asset: 'assets/v11/branding.webp', alt: 'Frammenti geometrici coordinati compongono un’identità astratta' },
 ];
 
 export const visions = [
@@ -15,9 +16,9 @@ export const visions = [
 ];
 
 export const steps = [
-  { number: '01', title: ['Raccontaci', 'la tua idea.'], copy: 'Da dove parti.\nCosa vorresti realizzare.', asset: 'assets/v09/step-idea.webp' },
-  { number: '02', title: ['Definiamo', 'il progetto.'], copy: 'Mettiamo a fuoco insieme\nobiettivi e direzione.', asset: 'assets/v09/step-project.webp' },
-  { number: '03', title: ['Ti presentiamo', 'l’offerta.'], copy: 'Attività, tempi e costi.\nTutto chiaro, fin dall’inizio.', asset: 'assets/v09/step-offer.webp' },
+  { number: '01', title: ['Capiamo il tuo', 'obiettivo.'], copy: 'Ci racconti da dove parti.\nMettiamo a fuoco cosa vuoi ottenere.', asset: 'assets/v09/step-idea.webp' },
+  { number: '02', title: ['Definiamo', 'il progetto.'], copy: 'Scegliamo insieme cosa realizzare.\nCon una direzione chiara e concreta.', asset: 'assets/v09/step-project.webp' },
+  { number: '03', title: ['Prepariamo', 'l’offerta.'], copy: 'Ricevi attività, tempi e costi.\nTutto chiaro, prima di partire.', asset: 'assets/v09/step-offer.webp' },
 ];
 
 // Public production aliases. No preview deployment URLs or legacy Memento routes.

@@ -1,6 +1,6 @@
-# Memento LevelUp · V10
+# Memento LevelUp · V11
 
-Landing aggiornata alle correzioni sulle cinque sezioni. Sorgenti HTML/CSS/JavaScript, immagini WebP locali, font Inter locale e build statica già inclusa in `dist/`. Non richiede dipendenze npm, backend o variabili d’ambiente.
+Landing con apertura astratta dedicata ai benefici dei sei servizi, portfolio continuo e confronti divisi in due pannelli responsive. Sorgenti HTML/CSS/JavaScript, immagini WebP locali, font Inter locale e build statica già inclusa in `dist/`. Non richiede dipendenze npm, backend o variabili d’ambiente.
 
 ## Avvio e build
 
@@ -28,19 +28,19 @@ Estrai lo ZIP. Usa la cartella che contiene `package.json` e `vercel.json` come 
 
 La configurazione è verificata sulla [documentazione ufficiale di vercel.json](https://vercel.com/docs/project-configuration/vercel-json). Per un progetto esistente, aggiorna i file nella sua root e avvia il normale deploy. Nessun deploy è stato eseguito durante questa consegna.
 
-## Cosa cambia
+## Cosa cambia nella V11
 
-- **Cosa ti rende speciale?** Titolo subito sopra alla tavola attiva. Titoli delle cinque card in basso a sinistra, con sfumatura ambra; copy in alto a sinistra. Nessuna CTA nelle tavole introduttive.
-- **Prova le nostre esperienze!** Carousel entro i padding. Card 16:9, con la stessa altezza della V09. Categoria in alto a sinistra, nome cliccabile in basso a sinistra, icona fullscreen in alto a destra. Nessun pulsante Apri/Espandi separato.
-- **Immagina applicato al tuo brand!** Tre tavole a tutta larghezza, impilate verticalmente anche su mobile. Copy in alto, titolo in basso, immagini abbinate con fade per la leggibilità. Chevron senza box, visibili solo con hover, focus da tastiera o interazione touch.
-- **Basta un’idea!** STEP 1, STEP 2, STEP 3, peso leggero e opacità 25%. Titoli con sfumatura ambra; immagini e testi mantenuti.
-- **Player** Il caricamento parte quando il carousel termina la selezione. Selezionare di nuovo la stessa demo non ricrea l’iframe. Il fullscreen e il dialog usano lo stesso nodo, senza spostarlo nel DOM. Il primo paint è coperto fino al caricamento; eventi obsoleti non possono chiudere il loader della demo corrente.
+- **Apertura:** sei visual astratti originali per Web Design, 3D Design, Video, Visual, Design e Branding. Tutti i titoli iniziano con “Avere”, in alto a sinistra; copy in basso a sinistra. Titoli su una riga da desktop. Tavole più cinematografiche, senza CTA. I prodotti restano nel portfolio e negli esempi applicativi.
+- **Portfolio:** sette card visibili sui desktop ampi, comprese le due anteprime esterne che sfumano ai bordi. La fascia riempie il wrapper. Movimento continuo senza l’allontanamento centrale della V10; il riciclo circolare avviene fuori dall’arco visibile. Le card restano 16:9.
+- **Vision:** ogni applicazione ha due frame distinti: testo a sinistra e confronto interattivo a destra. Su telefono si impilano. Il cursore agisce solo sulla foto; testo e interazione non si sovrappongono. Chevron senza box su hover, focus e trascinamento.
+- **Step:** “Capiamo il tuo obiettivo.”, “Definiamo il progetto.”, “Prepariamo l’offerta.” Titoli in alto a sinistra, copy in basso a sinistra. STEP 1 / 2 / 3 in alto a destra, opacità 25%; sculture in grafite mantenute.
+- **Demo:** conservato il player della V10: una sola istanza, caricamento alla conferma della selezione, stessa demo durante l’espansione e la chiusura, nessuna ricreazione se il progetto non cambia.
 
 ## Master Visual DNA
 
-La geometria segue il Master V40: `min(1720px, 100vw, max(320px, 100vw - 180px))`, safe area e allineamento condiviso tra titoli, card frontale, embed e griglie. Le tavole introduttive passano continuamente da quadrate a 2:1 fra 768 e 1024 px. Restano frame con tagli opposti, gradienti del master, foto sfumate, Inter e carousel senza autoplay.
+La geometria segue il Master V40: `min(1720px, 100vw, max(320px, 100vw - 180px))`, safe area e allineamento condiviso tra titoli, card frontale, embed e griglie. Il rapporto delle tavole introduttive passa da 1,2:1 a 2,7:1 fra 768 e 1024 px. È una variazione intenzionale richiesta per questa apertura cinematografica; struttura e gesti del carousel restano quelli Services. Restano frame con tagli opposti, gradienti del master, foto sfumate, Inter e carousel senza autoplay.
 
-Il selettore delle esperienze è un’eccezione intenzionale: rapporto 16:9, ad altezza compatta. Titolo, slide, punti ed embed occupano `100svh`, con un minimo di 680 px per mantenere usabile la demo su schermi molto bassi. Nessuno scroll verticale forzato. Sui telefoni i titoli lunghi vanno su due righe.
+Il selettore delle esperienze usa card 16:9 ad altezza compatta: 18svh, con limiti responsive. Sui desktop molto larghi e bassi, un minimo proporzionato alla larghezza evita vuoti tra le card. A 1363×844 px l’altezza resta 151,9 px come nella V10. Titolo, slide, punti ed embed occupano `100svh`, con un minimo di 680 px per mantenere usabile la demo su schermi molto bassi. Nessuno scroll verticale forzato. Sui telefoni i titoli lunghi vanno su due righe.
 
 In un iframe, `html`, `body` e sezioni sono trasparenti; le card mantengono il proprio fondo. Da solo, il sito usa `#0b0c0d`. Il bridge Tide v014 è preservato byte per byte. L’handshake opzionale `memento:levelup:surface` comunica l’apertura del dialog al parent, verificando origine e mittente.
 
@@ -80,12 +80,14 @@ Il browser cloud non dispone di WebGL: ProductVis mostra il proprio fallback sta
 - `src/content.js`: copy, step, immagini e demo.
 - `src/app.js`: rendering e interazioni.
 - `src/carousel.js`: gesti orizzontali, animazione del master e conferma della selezione.
+- `src/portfolio-geometry.js`: dimensionamento dell’arco e posizioni continue del portfolio.
 - `src/player.js`: caricamento unico, deduplicazione e gestione degli eventi asincroni.
 - `bootstrap.js`: geometria e superficie embedded.
 - `styles.css`: stile completo, senza override accumulati.
 - `public/assets/`: tutte le risorse locali usate dal progetto.
 - `vercel.json`: configurazione del deploy.
+- `visual-prompts.md`: prompt e mappa dei sei nuovi visual originali in `public/assets/v11/`.
 
 L’icona fullscreen è Lucide Maximize, con licenza inclusa in `public/assets/icons/LICENSE-lucide`.
 
-Le immagini di confronto e degli step sono visual illustrativi generati per questa pagina; non rappresentano risultati commerciali o casi cliente documentati. Nello ZIP sono incluse le versioni WebP ottimizzate, non i file temporanei o le schermate interne di collaudo.
+Le illustrazioni astratte, le immagini di confronto e gli step sono visual generati per questa pagina; non rappresentano risultati commerciali o casi cliente documentati. Nello ZIP sono incluse le versioni WebP ottimizzate, non i file temporanei o le schermate interne di collaudo.

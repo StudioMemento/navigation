@@ -6,11 +6,11 @@ import { DemoPlayer } from './player.js';
 const $ = selector => document.querySelector(selector);
 const escape = value => String(value).replace(/[&<>"']/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]));
 const lines = items => items.map(text => `<span>${escape(text)}</span>`).join(' ');
-const image = (item, eager = false) => `<img class="card-art" src="${item.asset}" srcset="${item.asset.replace('.webp','-640.webp')} 640w, ${item.asset} 1536w" sizes="(max-width:768px) 100vw, 80vw" alt="${escape(item.alt || '')}" width="1536" height="1024" loading="${eager ? 'eager' : 'lazy'}" decoding="async" ${eager ? 'fetchpriority="high"' : ''} draggable="false">`;
+const image = (item, eager = false) => `<img class="card-art" src="${item.asset}" srcset="${item.asset.replace('.webp','-640.webp')} 640w, ${item.asset} 1536w" sizes="${item.domain ? '(max-width:768px) 100vw, 80vw' : '(max-width:767px) 210px, 356px'}" alt="${escape(item.alt || '')}" width="1536" height="${item.domain ? 864 : 1024}" loading="${eager ? 'eager' : 'lazy'}" decoding="async" ${eager ? 'fetchpriority="high"' : ''} draggable="false">`;
 
 $('#benefits .carousel-stage').innerHTML = benefits.map((item,i) => `
   <article class="showcase-card cut-frame" data-slide="${i}" role="group" aria-roledescription="slide" aria-label="${i+1} di ${benefits.length}: ${escape(item.title.join(' '))}">
-    ${image(item,i===0)}<div class="benefit-veil" aria-hidden="true"><img src="${item.asset}" alt="" width="1536" height="1024" loading="lazy" decoding="async"></div><div class="benefit-copy"><h2 class="gradient-text">${lines(item.title)}</h2><p>${escape(item.copy)}</p></div>
+    ${image(item,i===0)}<div class="benefit-copy"><h2 class="gradient-text">${lines(item.title)}</h2><p>${escape(item.copy)}</p></div>
   </article>`).join('');
 $('#portfolio .carousel-stage').innerHTML = experiences.map((item,i) => `
   <article class="showcase-card cut-frame" data-slide="${i}" role="group" aria-roledescription="slide" aria-label="${escape(item.title)}, ${escape(item.category)}">
@@ -19,15 +19,15 @@ $('#portfolio .carousel-stage').innerHTML = experiences.map((item,i) => `
     <button class="project-expand" data-slide-control data-no-swipe type="button" data-expand="${i}" aria-controls="demo-panel" aria-haspopup="dialog" aria-label="Espandi ${escape(item.title)}"><img src="assets/icons/maximize.svg" alt="" width="24" height="24"></button>
   </article>`).join('');
 $('#vision-grid').innerHTML = visions.map(item => `
-  <article class="vision-card cut-frame" aria-labelledby="vision-${item.id}-title">
-    <div class="comparison" id="comparison-${item.id}">
+  <article class="vision-card" aria-labelledby="vision-${item.id}-title">
+    <div class="vision-info cut-frame"><div class="vision-copy"><h3 class="gradient-text" id="vision-${item.id}-title">${lines(item.title)}</h3><p>${escape(item.copy)}</p></div></div>
+    <div class="vision-art cut-frame"><div class="comparison" id="comparison-${item.id}">
       <img src="${item.after}" alt="${escape(item.alt)} con materiali e finiture" width="1122" height="1402" loading="lazy" decoding="async" draggable="false">
       <div class="comparison-before"><img src="${item.before}" alt="Lo stesso soggetto come modello neutro" width="1122" height="1402" loading="lazy" decoding="async" draggable="false"></div>
       <div class="comparison-divider" aria-hidden="true"><span><img src="assets/icons/caret-left.svg" alt=""><img src="assets/icons/caret-right.svg" alt=""></span></div>
       <label class="sr-only" for="range-${item.id}">Confronta ${escape(item.title.join(' '))} Trascina per confrontare modello e materiali.</label>
       <input id="range-${item.id}" type="range" min="0" max="100" value="50" aria-valuetext="50% modello neutro, 50% materiali e finiture">
-    </div>
-    <div class="vision-copy"><h3 class="gradient-text" id="vision-${item.id}-title">${lines(item.title)}</h3><p>${escape(item.copy)}</p></div>
+    </div></div>
   </article>`).join('');
 $('#steps-grid').innerHTML = steps.map((item,i) => `
   <li class="step-card cut-frame"><img class="step-art" src="${item.asset}" srcset="${item.asset.replace('.webp','-768.webp')} 768w, ${item.asset} 1536w" sizes="(max-width:900px) 90vw, 33vw" alt="" width="1536" height="1024" loading="lazy" decoding="async"><p>${escape(item.copy)}</p><span class="step-number" aria-hidden="true">STEP ${i+1}</span><h3 class="gradient-text">${lines(item.title)}</h3></li>`).join('');

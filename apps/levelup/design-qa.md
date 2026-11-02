@@ -1,37 +1,37 @@
-# LevelUp V10 — verifica grafica e funzionale
+# LevelUp V11 — verifica grafica e funzionale
 
-Revisione del 2 novembre 2026. Riferimenti: le nove immagini e le correzioni dell’ultimo messaggio, base V09 e geometria del Master Visual DNA V40. Nessun deploy eseguito.
+Revisione del 2 novembre 2026, sulla base V10 e sul Master Visual DNA V40. Riferimento: richiesta ef2a5b4a-8c5d-44ee-90ed-abfcc0733668 e cinque schermate allegate. Nessun deploy eseguito.
 
 ## Risultato visivo
 
-- Titolo iniziale immediatamente sopra la card attiva; spazio geometrico fra i box del titolo e della card di 6,5–11,8 px nei viewport misurati. La normale metrica del font aggiunge spazio visivo rispetto ai glifi.
-- Copy in alto a sinistra e titoli in basso a sinistra. La sfumatura ambra usa ora la larghezza del titolo, non quella dell’intero contenitore.
-- Portfolio allineato al wrapper V40: a 1363 px, strip e player da x=90 a x=1273. Card 270,08 × 151,91 px, rapporto 16:9, stessa altezza della versione precedente. Nome/link in basso, categoria in alto, icona Lucide Maximize in alto a destra.
-- Tre confronti a tutta larghezza, in verticale. A 1363 px ogni tavola misura 1183 × 591,5 px; a 390 px misura 320 × 320 px. Coppie originali registrate, senza ritaglio del soggetto. Fade laterale e verticale per fondere le immagini col fondo e mantenere leggibili i testi.
-- Chevron trasparenti, senza box: invisibili a riposo, visibili su hover/focus/interazione. Da tastiera i cursori hanno prodotto 0 / 100 / 50; un trascinamento reale ha portato il primo a 76 lasciando gli altri invariati.
-- STEP 1 / STEP 2 / STEP 3: opacità calcolata 0.25, font-weight 300. Nessuna sovrapposizione con il copy.
+Sei illustrazioni astratte originali: interfacce per Web Design, volume e reticolo per 3D Design, fotogrammi per Video, prisma e luce per Visual, forma progettata per Design, elementi coordinati per Branding. Palette nero/grafite/ambra, spazio negativo per copy HTML. WebP 1536 e 640 px, senza testo incorporato. Tutti i titoli iniziano con “Avere”.
+
+A 1363×844 px la tavola introduttiva misura 1183×438 px (2,7:1). Titolo in alto a sinistra su una riga, copy in basso a sinistra. Il titolo di sezione resta immediatamente sopra la tavola. Struttura a ventaglio e input del master Services conservati.
+
+Portfolio da x=90 a x=1273 sullo stesso viewport. Card 270,08×151,91 px (16:9); anteprime laterali estese fino ai fade. Eliminato il movimento che apriva un vuoto centrale. Test automatici delle proiezioni su larghezze da 320 a 2200 px, sei altezze e posizioni intermedie. Nel browser, campionati ProductVis→IceCream e il passaggio circolare VisualRef→Fashion: gap interno e margine scoperto entrambi 0 px nei campioni acquisiti. Il browser di collaudo ha frequenza di aggiornamento limitata: la verifica non certifica un frame rate su dispositivi reali.
+
+Ogni Vision è una coppia di box indipendenti. A 1363 px: testo 638,94×496,86 px, foto 522,78×496,86 px, gap 21,28 px. A 390 px: testo 320×210 px, foto 320×304 px, gap verticale 12 px. Le immagini prima/dopo restano registrate e senza deformazioni. I tre range da tastiera hanno prodotto 51%, 0%, 100%; trascinamento reale del primo al 90%, senza modificare gli altri. Chevron senza box, su hover/focus/interazione.
+
+Step con i tre titoli esatti richiesti in alto a sinistra e copy in basso a sinistra. STEP 1 / STEP 2 / STEP 3 in alto a destra, font 300, opacità 0,25. Nessuna collisione fra titolo, indicatore e copy nei viewport controllati.
 
 ## Responsive e trasparenza
 
-Misurati 320×740, 390×844, 768×1024, 1024×768, 1363×844, 1920×1080 e 844×390. Nessun overflow orizzontale della pagina o dei titoli. Strip esperienze e tavole Vision corrispondono alla larghezza del contenuto in tutti i casi. Copy e titolo delle tavole non si sovrappongono.
+Misurati in browser 320×740, 390×844, 768×1024, 1024×768, 1363×844, 1920×1080 e 844×390. Nessun overflow orizzontale della pagina o dei titoli; nessuna collisione di titolo/copy nelle sei tavole o nei tre step. Titoli delle sei tavole su una riga da 1024 px. Wrapper del portfolio e delle coppie Vision allineati al padding comune.
 
-Il viewport basso mantiene il minimo intenzionale di 680 px della sezione esperienze. HTML, body e sezioni dell’embed risultano rgba(0,0,0,0), verificati anche sullo sfondo a scacchi. Le card hanno fondo proprio. Il bridge Tide v014 è intatto; un selettore di blocco esplicito impedisce al bridge di navigare durante l’espansione.
+La sezione esperienze conserva il minimo intenzionale di 680 px sui viewport bassi. Su mobile Vision passa a una colonna. HTML, body e cinque sezioni risultano rgba(0,0,0,0) in modalità embedded; le card mantengono il proprio fondo. Bridge Tide v014 conservato byte per byte.
 
-## Player e controlli
+## Player e interazioni
 
-- Una sola istanza iframe alla volta; nessun caricamento sulle selezioni attraversate durante il movimento. Conferma della selezione solo a fine animazione.
-- Test Memento Food: 1 iframe creato / 1 evento load prima e dopo apertura/chiusura del dialog. La scelta English resta attiva. Sequenza rapida Fashion → IceCream → Food: contatori ancora 1 / 1.
-- Il fallback dialog conserva il suo nodo nella posizione originale. Nessun append/reparent del player, nessun backdrop blur o filtro su un antenato del frame. Il ritaglio statico dei due angoli appartiene al frame stesso; il bordo è una decorazione separata.
-- X ed Escape chiudono il dialog; focus e posizione della pagina sono ripristinati. Il nome Memento Food apre effettivamente https://mementofood.vercel.app/ in una nuova scheda.
-- Nessuna alternanza del loader o ricarica osservata durante il test stabile. Le animazioni interne delle demo non sono controllabili da questa landing.
-- Test automatico del player: selezioni duplicate, callback obsoleti, caricamento tardivo dopo timeout e retry esplicito. Quattro ulteriori contratti verificano demo, contatto, asset mancanti con controllo negativo e hash del bridge.
+La V11 non modifica il modulo del player né la sua espansione. Verifica di integrazione su Food: contatori 5 iframe creati / 5 load prima, durante e dopo l’espansione (includono le selezioni precedenti). Nessuna creazione o load aggiuntivi durante apertura/chiusura; English resta selezionato. Escape chiude il dialog e restituisce il focus a “Espandi Memento Food”.
+
+I test automatici coprono deduplicazione, callback obsoleti, timeout seguito da load tardivo e retry esplicito. I controlli categoria/nome/fullscreen rimangono nella slide attiva. I link pubblici e il contesto verso Start sono mantenuti. Start deve consumare i parametri `experience` e `idea` per un’eventuale precompilazione: la landing da sola non la garantisce.
 
 ## Build e confezionamento
 
-Build e cinque test automatici superati. Verifica delle risorse locali, inclusi gli SVG usati dal codice. Dieci demo e Start controllati tramite gli alias pubblici: HTML 200, nessun header di blocco frame rilevato per le demo. ZIP verificato tramite estrazione, nuova build e confronto degli hash dei file dist.
+Sette test automatici, verifica delle risorse locali e controllo negativo su un asset mancante. Pacchetto con sorgenti, build statica, asset WebP, font locale, licenza icona, configurazione Vercel, documentazione e prompt. Nessuna dipendenza npm o variabile d’ambiente necessaria. Estratto lo ZIP in una cartella pulita, ricostruito e confrontato il manifest SHA-256 di ogni file runtime.
 
-I file di QA, le schermate e i file temporanei non sono inclusi nel deploy. Il pacchetto comprende sorgenti, WebP, font locale, licenza dell’icona, configurazione Vercel e build pronta.
+Eseguito `npm run check:links`: le dieci demo e Start rispondono HTML 200; nessun header di blocco frame rilevato sulle demo. Questo controllo distingue risposte HTML e header di blocco dell’embed; non certifica le interazioni interne di ogni applicazione.
 
 ## Limiti della verifica
 
-Il browser di collaudo non dispone di WebGL e usa il dialog al posto del fullscreen nativo. ProductVis mostra il suo fallback dichiarato. Il fullscreen nativo, GPU reali, Safari iOS e Instagram su telefoni fisici restano da verificare su quei dispositivi. Non si dichiara eliminato un eventuale difetto interno di un’applicazione esterna. Le coppie di immagini sono render illustrativi visivamente allineati, non prove CAD o risultati commerciali.
+Il browser cloud non dispone di WebGL: ProductVis usa il proprio fallback statico dichiarato. Espansione verificata tramite dialog; fullscreen nativo, GPU reali, Safari iOS e browser Instagram su telefoni fisici restano da provare su quei dispositivi. Le immagini di confronto sono render illustrativi, non prove CAD o risultati commerciali documentati.
