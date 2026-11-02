@@ -1,0 +1,242 @@
+{
+  "revision": "Memento live V2 recovery 2026-11-02",
+  "applicationCodeChangedDuringRecovery": false,
+  "deployment": "not published; preview authorization blocked",
+  "files": [
+    {
+      "path": "GATES.md",
+      "bytes": 2262,
+      "sha256": "c3e95ff9a082365ea2d7a48f7582ec4e506f5ea805fe0a5274cedac7004b370f"
+    },
+    {
+      "path": "docs/INSTALLAZIONE_NAVBAR_V2.md",
+      "bytes": 4872,
+      "sha256": "b17df6eebcf5f6356c7dbc44ce4cdf4684e14b72888731a2cbc9fce43c437da4"
+    },
+    {
+      "path": "docs/LEGGIMI_V2.md",
+      "bytes": 4992,
+      "sha256": "ad4be37d4913a2b4a2965699a4b312f53e3f8025b0f1b98a66ff8816bf8de9e9"
+    },
+    {
+      "path": "docs/MEMENTO_PROMPT_CODEX_ASSET_3D_V2.md",
+      "bytes": 5873,
+      "sha256": "8f0a2176dac1ca983ee35e126627ea7af6a2bdc4b8361a6575791ea5e5a9c759"
+    },
+    {
+      "path": "hub/package-lock.json",
+      "bytes": 246,
+      "sha256": "08ae87803b4a209ba1cbf5072bdbf6f1124471b04772065ce92590448df207b4"
+    },
+    {
+      "path": "hub/package.json",
+      "bytes": 231,
+      "sha256": "81804dd435c719aa899f6592eb8080947283997ea71e8cc26655d80f998c9f32"
+    },
+    {
+      "path": "hub/public/assets/InterVariable.woff2",
+      "bytes": 352240,
+      "sha256": "693b77d4f32ee9b8bfc995589b5fad5e99adf2832738661f5402f9978429a8e3"
+    },
+    {
+      "path": "hub/public/assets/down.svg",
+      "bytes": 4984,
+      "sha256": "658ae035668910b542267e79ec8d9a401d02e569ecc9530e4e3dc79b2bb0cbff"
+    },
+    {
+      "path": "hub/public/assets/environment.hdr",
+      "bytes": 4563204,
+      "sha256": "273003109ca1cfb798ce6b96e09ac8440f763d0ef0c376bbe77492613540b4a3"
+    },
+    {
+      "path": "hub/public/assets/home.svg",
+      "bytes": 56737,
+      "sha256": "d4a4940c26da947449257a74e082902d2ce2b2403067defe43044c34a0e10118"
+    },
+    {
+      "path": "hub/public/assets/left.svg",
+      "bytes": 4967,
+      "sha256": "57b81ad534c1f6d736a943042786d4c6fdbbebc040a08336cd2f4f9b3ba81f7e"
+    },
+    {
+      "path": "hub/public/assets/right.svg",
+      "bytes": 4984,
+      "sha256": "c7d4642644d10b6f614d3d7857e003fcdada931c2420da170da3c4c5a47d19dd"
+    },
+    {
+      "path": "hub/public/assets/scene.json",
+      "bytes": 2343565,
+      "sha256": "00de3dd570c4ebeaeb82fc7d062cefef2980d08717f375dbb749f17e911b0db5"
+    },
+    {
+      "path": "hub/public/assets/world.glb",
+      "bytes": 7179812,
+      "sha256": "0d0a2a504da0f54722c2244d7a44bd13cb124475b39e3c01827ae5ecb888dd00"
+    },
+    {
+      "path": "hub/public/index.html",
+      "bytes": 3363,
+      "sha256": "59aff269bf040cee53ceebe30a794d98b34e49f18c01bb35bff3289f3e74f4b0"
+    },
+    {
+      "path": "hub/public/navigation/bootstrap.js",
+      "bytes": 557,
+      "sha256": "397b09e8f009a4bd32966a81a3b20c605a98d202d38ea977195300e6e87bf345"
+    },
+    {
+      "path": "hub/public/navigation/brand.mjs",
+      "bytes": 58718,
+      "sha256": "3ee9e8cb46abd463c498ad1a6a8b2c606a68355d038c3c5ae0d4be4b5d458d5a"
+    },
+    {
+      "path": "hub/public/navigation/child.mjs",
+      "bytes": 6506,
+      "sha256": "a324389e809e79115f747719d1df9f2a6b3bc65ae383cf042831fb48cfacaf15"
+    },
+    {
+      "path": "hub/public/navigation/core.mjs",
+      "bytes": 4263,
+      "sha256": "39e7591ec177cf07c6b1c19978e7169b0245fe3d8f627a9f3f13a0b8b1c74a7f"
+    },
+    {
+      "path": "hub/public/navigation/icons.mjs",
+      "bytes": 2705,
+      "sha256": "eb30b71db3b28b8e692712259ff8f425341029ba3701bfec80c73f9f678c951e"
+    },
+    {
+      "path": "hub/public/navigation/navbar.mjs",
+      "bytes": 4291,
+      "sha256": "dc40c0eecfa8acab7e6dcd86b9ca00d7d1495a959dff33b0f89a2188cc64c0ad"
+    },
+    {
+      "path": "hub/public/src/app.mjs",
+      "bytes": 7087,
+      "sha256": "0aae4051e519705437f509e46ed285bd6693a68a41727a3c27038627ee7bf333"
+    },
+    {
+      "path": "hub/public/src/atmosphere.mjs",
+      "bytes": 6954,
+      "sha256": "2c84e60660b25921d8d83b2720cc61dfb98b43b077b740b38bbc9705eff7fa2b"
+    },
+    {
+      "path": "hub/public/src/embeds.mjs",
+      "bytes": 3784,
+      "sha256": "f6cb057e4ff6d2283a012e17363890fc51e97ee45e255562492677c0e696a8e2"
+    },
+    {
+      "path": "hub/public/src/motion.mjs",
+      "bytes": 4684,
+      "sha256": "49c69d044c483d01d89ca7e3e6f2f266bc6c54e421c3c7843cea0dc0974ea72e"
+    },
+    {
+      "path": "hub/public/src/world.mjs",
+      "bytes": 7093,
+      "sha256": "fed2d02dfd348c10f8c224d774287fe26ed5ba30c71ca6791bd3e980d3d322a9"
+    },
+    {
+      "path": "hub/public/style.css",
+      "bytes": 3669,
+      "sha256": "c3a5c66878fc19a741e79aa954d5e7c876450c81a13ef4be4b5a94b2e1c70180"
+    },
+    {
+      "path": "hub/public/vendor/LICENSE-THREE.txt",
+      "bytes": 1081,
+      "sha256": "bfe119ea4fd413f5f7ca3fcd63adb0c4a073ed39daa2fe7d3e6b769e21272601"
+    },
+    {
+      "path": "hub/public/vendor/draco/draco_decoder.wasm",
+      "bytes": 192420,
+      "sha256": "a680d927bed9cb864ddbd63521868891af2bfbe755092761b4837487618df8ac"
+    },
+    {
+      "path": "hub/public/vendor/draco/draco_wasm_wrapper.js",
+      "bytes": 58456,
+      "sha256": "8bb2952d2ba7d67e1414f8df819410cb0434a666be53f671fff75f68843d76f6"
+    },
+    {
+      "path": "hub/public/vendor/lights/RectAreaLightTexturesLib.js",
+      "bytes": 314770,
+      "sha256": "8acc50043aebc3ff0f63e21607ef2394cda41d634f92093bcb7ad6f1d1e2eb11"
+    },
+    {
+      "path": "hub/public/vendor/lights/RectAreaLightUniformsLib.js",
+      "bytes": 1014,
+      "sha256": "494fef2d731ff1689050cc6040ad78d927c22b9125a12f532beb0374c2811c6e"
+    },
+    {
+      "path": "hub/public/vendor/loaders/DRACOLoader.js",
+      "bytes": 16781,
+      "sha256": "7a4a51c694a6c9f983be452cc82b365e69ce08424654e3f245b4115e6efef258"
+    },
+    {
+      "path": "hub/public/vendor/loaders/GLTFLoader.js",
+      "bytes": 114739,
+      "sha256": "67ac5551fdafa6e349bd80c8f8e5e39c136d6b2fb1ad647db9abb21dc86f9e4a"
+    },
+    {
+      "path": "hub/public/vendor/loaders/HDRLoader.js",
+      "bytes": 12456,
+      "sha256": "d7053cfc4019f520335ae07e0fe82b4ef5a66b6766e8b253d066616184995e89"
+    },
+    {
+      "path": "hub/public/vendor/three.core.js",
+      "bytes": 1403455,
+      "sha256": "eb077d2417f61d3e6d9264c317cabc4ea35769ed6b0ab533067292a550784c20"
+    },
+    {
+      "path": "hub/public/vendor/three.module.js",
+      "bytes": 603113,
+      "sha256": "c8211c69345d2e9949dc7a8ac969380497aa0600a5a8ac6a459c8cd02dd9cb8a"
+    },
+    {
+      "path": "hub/public/vendor/utils/BufferGeometryUtils.js",
+      "bytes": 35539,
+      "sha256": "fda7e946b8e0b5ab39b779206589e7a1079a22eb24efb89d7223e03fdfb1f751"
+    },
+    {
+      "path": "hub/scripts/build.mjs",
+      "bytes": 361,
+      "sha256": "d1d657b8457b2b4ed794ee278d1f972a1a0cc9ee3e66c3284607ad3914ee9ffe"
+    },
+    {
+      "path": "hub/scripts/serve.mjs",
+      "bytes": 1186,
+      "sha256": "72c8913031e402e8f5751c5c55ba75c77ae68fe0b17a3ea804f3c345820af823"
+    },
+    {
+      "path": "hub/vercel.json",
+      "bytes": 877,
+      "sha256": "72ca718cf4c130eabc587012aee6bde151f326f860e251876f3cde7c98cc0bd5"
+    },
+    {
+      "path": "qa/TEST_RESULTS.txt",
+      "bytes": 1212,
+      "sha256": "006fa7d401dd761194f42ea899689fa6f389e9ae1df96a5dde46a12c75ddb664"
+    },
+    {
+      "path": "qa/baseline.json",
+      "bytes": 222,
+      "sha256": "a909189236bdb3c1f80a1d54d320b9947730d353ebafaa2d0f1ef64121e5bafd"
+    },
+    {
+      "path": "scripts/verify-package.mjs",
+      "bytes": 1427,
+      "sha256": "5391e0e42aaf567933aeff5c29a9c791b0b1c0b54c172e956dd8c0544bbf69f5"
+    },
+    {
+      "path": "tests/embeds.test.mjs",
+      "bytes": 3109,
+      "sha256": "31ae6a437cb077c30d4fa69ce5ea87893189d853b8e424e1412375593ffe7080"
+    },
+    {
+      "path": "tests/motion.test.mjs",
+      "bytes": 1671,
+      "sha256": "18f9887b99012d6611262467460062513a9a140c73cf7c59883d8b78c7afdedd"
+    },
+    {
+      "path": "tests/navigation.test.mjs",
+      "bytes": 2739,
+      "sha256": "991bab9f8be17c91b303534fbc4a92b89c740943113335adb4bade9171b6c297"
+    }
+  ]
+}

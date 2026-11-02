@@ -1,8 +1,0 @@
-@import url("/src/page-embed.css");
-:root { --bg:#0c0f12; --tide-vh:1vh; }
-html,body { background:#0c0f12 !important; overscroll-behavior-y:contain; }
-.home-action,.checkpoint-rail { display:none !important; }
-.preview-exit { padding:80px 24px 100px; text-align:center; border-top:1px solid #ffffff25; }
-.preview-exit a { color:#f3f4f5; font-size:clamp(20px,4vw,46px); text-decoration:none; }
-.preview-exit span { margin-left:24px; color:#e68a42; }
-.preview-exit a:focus-visible { outline:2px solid #e68a42; outline-offset:12px; }

@@ -1,0 +1,21 @@
+✔ only one iframe is retained; remote page works without a bridge (5.273589ms)
+✔ new bridge routes authorized active CTA and ignores stale, forged or inactive messages (1.5205ms)
+✔ legacy bridge supports existing pages without overriding a v2 handshake (1.462693ms)
+✔ every station, including Memento, can descend and return (8.906003ms)
+✔ return during descent reverses the same camera path without a reset (0.539686ms)
+✔ latest station wins when several requests arrive during orbit (0.548701ms)
+✔ reduced motion skips orbit and completes descent in one tick (0.289039ms)
+✔ all five pages resolve to original live origins, including Memento (5.007878ms)
+✔ deep links retain allowlisted CTA context and safe hash through reload (1.570112ms)
+✔ world selection is distinct from opening a content page (0.288993ms)
+✔ cross-app CTA becomes a hub route, local gallery hash and external actions stay native (2.574385ms)
+✔ only trusted parent origins may initialize a child (0.643024ms)
+✔ postMessage requires correct origin, source, station, version and session (1.040186ms)
+ℹ tests 13
+ℹ suites 0
+ℹ pass 13
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 408.56705
