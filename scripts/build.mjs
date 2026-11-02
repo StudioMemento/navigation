@@ -1,30 +1,43 @@
-import {readFile,writeFile,mkdir,readdir,stat} from 'node:fs/promises';
-import path from 'node:path';
-import {fileURLToPath} from 'node:url';
-import {createHash} from 'node:crypto';
-const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..'),output=path.join(root,'public');
-const report={version:'v012',checks:[],errors:[],files:0,bytes:0};
-const check=(name,pass)=>{report.checks.push({name,pass});if(!pass)report.errors.push(name);};
-const text=file=>readFile(file,'utf8');
-async function walk(folder){const files=[];for(const entry of await readdir(folder,{withFileTypes:true})){if(entry.isSymbolicLink())throw Error('Unexpected symlink');const file=path.join(folder,entry.name);files.push(...entry.isDirectory()?await walk(file):[file]);}return files;}
-const files=await walk(output);
-for(const file of files){const bytes=await readFile(file);report.files++;report.bytes+=bytes.length;
-  if(file.endsWith('.json'))JSON.parse(bytes.toString());
-  if(file.endsWith('.glb'))check('Valid GLB '+path.relative(output,file),bytes.readUInt32LE(0)===0x46546c67&&bytes.readUInt32LE(4)===2&&bytes.readUInt32LE(8)===bytes.length);
+import { cp, mkdir, readdir, readFile, rm, stat } from 'node:fs/promises';
+import { dirname, join, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
+const source = join(root, 'public');
+const output = join(root, 'dist');
+const required = [
+  'index.html', 'style.css', 'src/app.mjs', 'src/motion.mjs',
+  'src/atmosphere.mjs', 'src/telemetry.mjs', 'src/page-bridge.js',
+  'src/page-embed.css', 'assets/world.glb', 'assets/scene.json',
+  'assets/environment.hdr', 'assets/InterVariable.woff2',
+  'assets/home.svg', 'assets/left.svg', 'assets/right.svg', 'assets/down.svg',
+  'vendor/three.module.js', 'vendor/three.core.js', 'vendor/LICENSE-THREE.txt',
+  'vendor/loaders/GLTFLoader.js', 'vendor/loaders/DRACOLoader.js',
+  'vendor/loaders/HDRLoader.js', 'vendor/draco/draco_wasm_wrapper.js',
+  'vendor/draco/draco_decoder.wasm', 'catalog/index.html', 'catalog/bridge.js',
+  'pages/projects/index.html', 'pages/levelup/index.html', 'pages/start/index.html'
+];
+for (const name of required) {
+  const info = await stat(join(source, name)).catch(() => null);
+  if (!info?.isFile() || !info.size) throw new Error(`Risorsa necessaria assente: public/${name}`);
 }
-const vendor=JSON.parse(await text(path.join(output,'vendor-lock.json')));
-for(const entry of vendor.files)check('Vendored '+entry.path,createHash('sha256').update(await readFile(path.join(output,entry.path))).digest('hex')===entry.sha256.toLowerCase());
-async function resolves(url,base='/index.html'){
-  if(!url||/^(?:https?:|data:|mailto:|#)/.test(url))return true;
-  const parsed=new URL(url,'https://tide.local'+base);let target=path.join(output,decodeURIComponent(parsed.pathname));
-  try{if((await stat(target)).isDirectory())target=path.join(target,'index.html');return(await stat(target)).isFile();}catch{return false;}
+const scene = JSON.parse(await readFile(join(source, 'assets/scene.json'), 'utf8'));
+if (!scene.nodes?.length || !scene.cameras?.orbit?.samples?.length) {
+  throw new Error('Il pacchetto non contiene geometrie e camere della scena.');
 }
-for(const match of (await text(path.join(output,'index.html'))).matchAll(/(?:src|href)="([^"]+)"/g))check('HTML reference '+match[1],await resolves(match[1]));
-for(const file of files.filter(f=>/\.m?js$/.test(f))){const relative='/'+path.relative(output,file);for(const match of (await text(file)).matchAll(/(?:from\s*|import\s*\()(['"])(\.{1,2}\/[^'"\n]+)\1/g))check('Module '+relative+' → '+match[2],await resolves(match[2],relative));}
-const nav=JSON.parse(await text(path.join(output,'data/navigation.json'))),config=JSON.parse(await text(path.join(root,'vercel.json')));
-check('Exactly five concept sections',nav.stages.map(s=>s.slug).join(',')==='memento,services,projects,levelup,start');
-for(const item of nav.stages){check('External embed '+item.slug,item.mode==='embed'&&new URL(item.href).protocol==='https:');check('Direct redirect '+item.slug,config.redirects.some(r=>r.source==='/'+item.slug&&r.destination===item.href));}
-check('No copied page content',!files.some(f=>f.includes('/services/')));
-check('Static Vercel output',config.framework===null&&config.outputDirectory==='public');
-await mkdir(path.join(root,'reports'),{recursive:true});await writeFile(path.join(root,'reports/build.json'),JSON.stringify(report,null,2)+'\n');
-console.log(JSON.stringify({checks:report.checks.length,files:report.files,bytes:report.bytes,errors:report.errors}));if(report.errors.length)process.exitCode=1;
+const config = JSON.parse(await readFile(join(root, 'vercel.json'), 'utf8'));
+if (config.outputDirectory !== 'dist') throw new Error('Output Vercel non allineato alla build.');
+await rm(output, { recursive: true, force: true });
+await mkdir(output, { recursive: true });
+await cp(source, output, { recursive: true });
+async function count(directory) {
+  let files = 0, bytes = 0;
+  for (const entry of await readdir(directory, { withFileTypes: true })) {
+    const path = join(directory, entry.name);
+    if (entry.isDirectory()) {
+      const child = await count(path); files += child.files; bytes += child.bytes;
+    } else { files++; bytes += (await stat(path)).size; }
+  }
+  return { files, bytes };
+}
+console.log(JSON.stringify({ status: 'ready', output: 'dist', ...await count(output), sceneNodes: scene.nodes.length }));

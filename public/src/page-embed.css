@@ -1,0 +1,7 @@
+html[data-preview=true]{color-scheme:dark}
+.preview-exit{padding:64px 24px;text-align:center}
+.preview-exit a{font:400 12px/1.5 Inter,sans-serif;letter-spacing:.08em;color:#bec4ca;text-decoration:none;display:inline-flex;align-items:center;gap:20px;padding:16px 24px;border:1px solid #ffffff20}
+.preview-exit a:hover{color:#fff;border-color:#e68a42}
+html[data-preview-active=false] *,html[data-preview-active=false] *:before,html[data-preview-active=false] *:after{animation-play-state:paused!important}
+.preview-demo-action{display:flex;position:absolute;inset:0;align-items:center;justify-content:center;z-index:5}
+.preview-demo-action button{font:400 14px Inter,sans-serif;color:#fff;background:#11171fdd;border:1px solid #ffffff66;padding:18px 24px;cursor:pointer;backdrop-filter:blur(8px)}

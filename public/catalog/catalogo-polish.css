@@ -1,0 +1,49 @@
+/* V16: a quiet opening, dimensional service boards, and visual reading rooms. */
+.macro-carousel .carousel-stage { transform-style: flat; isolation: isolate; }
+.hero-card { background: transparent; }
+.hero-visual, .hero-shade { opacity: var(--hero-image-alpha, 1); }
+.hero-copy { opacity: var(--hero-text-alpha, 1); transform: translateY(var(--hero-text-offset, 0)); }
+.hero-visual {
+  --hero-mask: linear-gradient(98deg, transparent, #0000000a 3%, #00000040 10%, #000000d6 23%, #000 34%, #000 68%, #000000f2 75%, #000000b3 83%, #00000059 90%, #00000014 96%, transparent), linear-gradient(0deg, transparent, #00000014 5%, #00000080 12%, #000000e8 24%, #000 34%);
+  -webkit-mask-image: var(--hero-mask); mask-image: var(--hero-mask);
+  -webkit-mask-composite: source-in; mask-composite: intersect;
+}
+/* Each card is its own perspective layer, so a neighbour cannot slice its frame. */
+.service-carousel .carousel-stage, .bundle-mini .carousel-stage { transform-style: flat; perspective: none; isolation: isolate; }
+.service-carousel { padding-block: 24px 32px; margin-block: -24px -32px; }
+.bundle-mini { padding-block: 12px 18px; margin-block: -12px -18px; }
+.category-heading { transform: translateY(-12px); }
+.showcase-card::before { z-index: 5; }
+
+/* The printed bundle proportions: generous image, compact left-hand story. */
+.bundle-layout { min-height: clamp(580px, 44vw, 740px); gap: 32px; }
+.bundle-copy { width: 44%; max-width: 610px; }
+.bundle-copy h3 { max-width: 12ch; font-size: clamp(42px, 4.2vw, 78px); }
+.bundle-copy h3 > span { display: block; }
+.bundle-copy > p { font-size: clamp(14px, 1.1vw, 18px); max-width: 36ch; }
+.bundle-visual { width: 78%; }
+.bundle-included { --slide-width: clamp(180px, 17vw, 270px); }
+.bundle-mini .carousel-stage { height: var(--slide-width); }
+.bundle-mini .showcase-card { aspect-ratio: 1; }
+.bundle-mini .slide-visual { inset: 0; width: 100%; height: 100%; -webkit-mask-image: none; mask-image: none; }
+.bundle-mini .slide-scrim { background: linear-gradient(180deg, #1010101a, transparent 38%, #10101033 55%, #101010b3 77%, #101010f5 96%, #101010); }
+.bundle-mini .slide-title { left: 16px; right: 16px; bottom: 18px; font-size: clamp(20px, 1.7vw, 29px); }
+.bundle-mini .slide-action { top: 12px; right: 12px; }
+.bundle-mini .slide-action .chevron { width: 20px; height: 20px; }
+
+.pacing-ready [data-catalogue-scroll], .pacing-ready [data-catalogue-scroll] * { touch-action: pinch-zoom; }
+
+@media (max-width: 767px) {
+  .hero-visual { --hero-mask: linear-gradient(180deg, transparent, #00000033 7%, #000000cc 18%, #000 30%, #000 72%, #00000066 90%, transparent), linear-gradient(98deg, #000 62%, #000000f2 72%, #00000099 83%, #00000033 93%, transparent); }
+  .category-heading { transform: translateY(-8px); }
+  .service-carousel { padding-block: 16px 24px; margin-block: -16px -24px; }
+  .bundle-layout { min-height: 0; gap: 32px; }
+  .bundle-copy { width: calc(100% - 32px); }
+  .bundle-copy h3 { font-size: clamp(28px, 7.5vw, 48px); }
+  .bundle-copy > p { font-size: 13px; }
+  .bundle-visual { width: 100%; top: 12%; height: 80%; }
+  .bundle-included { --slide-width: min(210px, 62cqw); }
+  .bundle-mini .slide-title { font-size: clamp(17px, 4.9vw, 23px); bottom: 14px; left: 14px; right: 12px; }
+  .bundle-mini .slide-action { right: 8px; top: 8px; }
+  .bundle-mini .slide-action .chevron { width: 17px; height: 17px; }
+}

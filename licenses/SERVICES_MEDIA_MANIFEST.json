@@ -1,0 +1,1220 @@
+{
+  "source": "https://mementoservizi.vercel.app/",
+  "date": "2026-10-28",
+  "method": "Exact static asset references from supplied Services source; no recursive site crawl",
+  "files": [
+    {
+      "path": "/services/assets/app-dedicata.webp",
+      "source": "https://mementoservizi.vercel.app/assets/app-dedicata.webp",
+      "bytes": 97000,
+      "sha256": "8adb0c87512d52e945a3e8fe366969111e2350a1adc3c911f7e2b1798f17b45b",
+      "contentType": "image/webp"
+    },
+    {
+      "path": "/services/assets/b-apertura.webp",
+      "source": "https://mementoservizi.vercel.app/assets/b-apertura.webp",
+      "bytes": 40714,
+      "sha256": "62a2613588bb70142c099a4438c2d03387e590db7f3a6d666150501c0a203960",
+      "contentType": "image/webp"
+    },
+    {
+      "path": "/services/assets/b-campagna.webp",
+      "source": "https://mementoservizi.vercel.app/assets/b-campagna.webp",
+      "bytes": 52738,
+      "sha256": "28dc5479c495cdbc9a5c6dca4c1d1ef603f31076ed67fd1cd4ca48eec671d246",
+      "contentType": "image/webp"
+    },
+    {
+      "path": "/services/assets/b-identita.webp",
+      "source": "https://mementoservizi.vercel.app/assets/b-identita.webp",
+      "bytes": 86336,
+      "sha256": "58b855569e92520bad3fcad66c0ced8db34dd271e5658d0733578768e644285a",
+      "contentType": "image/webp"
+    },
+    {
+      "path": "/services/assets/b-lancio.webp",
+      "source": "https://mementoservizi.vercel.app/assets/b-lancio.webp",
+      "bytes": 63998,
+      "sha256": "257fed769147555fcdf16a55ed0aa639c0070a3124465eb77747a75f4e8aa2e2",
+      "contentType": "image/webp"
+    },
+    {
+      "path": "/services/assets/b-online.webp",
+      "source": "https://mementoservizi.vercel.app/assets/b-online.webp",
+      "bytes": 61482,
+      "sha256": "b161799a512dd20f8dac12fbba933e1cd37d3cd35857fba1659cd47dc0f298b8",
+      "contentType": "image/webp"
+    },
+    {
+      "path": "/services/assets/b-social.webp",
+      "source": "https://mementoservizi.vercel.app/assets/b-social.webp",
+      "bytes": 72690,
+      "sha256": "ba870cd34637917bbaf15f4bf2ee40a3c8ff2ef3ec64bf2b18d9ec6aa304ef67",
+      "contentType": "image/webp"
+    },
+    {
+      "path": "/services/assets/biglietti.webp",
+      "source": "https://mementoservizi.vercel.app/assets/biglietti.webp",
+      "bytes": 32022,
+      "sha256": "d6e54b557a7f5b8d60f4474b86e110732da4b1ed42b6bd173ce2381b5a51bebc",
+      "contentType": "image/webp"
+    },
+    {
+      "path": "/services/assets/branding.webp",
+      "source": "https://mementoservizi.vercel.app/assets/branding.webp",
+      "bytes": 16988,
+      "sha256": "75a2318d4260d0aefdde85c47d9097edbd2ef696a0b4fa51aeda384c5d60bccf",
+      "contentType": "image/webp"
+    },
+    {
+      "path": "/services/assets/brochure.webp",
+      "source": "https://mementoservizi.vercel.app/assets/brochure.webp",
+      "bytes": 46730,
+      "sha256": "11e6113b7e70e09872a93ded939724b272a3cb5d6924aaa9e8b2793d7a507294",
+      "contentType": "image/webp"
+    },
+    {
+      "path": "/services/assets/carta.webp",
+      "source": "https://mementoservizi.vercel.app/assets/carta.webp",
+      "bytes": 20192,
+      "sha256": "494c9f2c4da339456f84da9ad976e442cda7831e5445a66374b4a176d2330913",
+      "contentType": "image/webp"
+    },
+    {
+      "path": "/services/assets/catalogo.webp",
+      "source": "https://mementoservizi.vercel.app/assets/catalogo.webp",
+      "bytes": 30924,
+      "sha256": "66b5137c1cf729aba70b7f734abd17f9baa87870a06ca11b8acaa0c727a34052",
+      "contentType": "image/webp"
+    },
+    {
+      "path": "/services/assets/configuratore.webp",
+      "source": "https://mementoservizi.vercel.app/assets/configuratore.webp",
+      "bytes": 49516,
+      "sha256": "5f35285fe6d5ba3cbceaf920f64c6297c0d457c23d672da4e5b34ab710dd301b",
+      "contentType": "image/webp"
+    },
+    {
+      "path": "/services/assets/ecommerce.webp",
+      "source": "https://mementoservizi.vercel.app/assets/ecommerce.webp",
+      "bytes": 23934,
+      "sha256": "d54a6e80549689b7c11bb7c9e26406120876b0a2186298cf1b9118cc6d2d4803",
+      "contentType": "image/webp"
+    },
+    {
+      "path": "/services/assets/esperienza-digitale.webp",
+      "source": "https://mementoservizi.vercel.app/assets/esperienza-digitale.webp",
+      "bytes": 36036,
+      "sha256": "4117d1ae0e8f11da252eb1dda19a23796f2f99f4164975130e16d8c06e28d980",
+      "contentType": "image/webp"
+    },
+    {
+      "path": "/services/assets/espositori.webp",
+      "source": "https://mementoservizi.vercel.app/assets/espositori.webp",
+      "bytes": 71996,
+      "sha256": "62a7d76b838cac02f046b2dd4b9eb9bf8d32abb267871fbbc8a7e200f3e17ff1",
+      "contentType": "image/webp"
+    },
+    {
+      "path": "/services/assets/etichette.webp",
+      "source": "https://mementoservizi.vercel.app/assets/etichette.webp",
+      "bytes": 33658,
+      "sha256": "27329181e4d8f18e32dd20eafe13c96bdbd5b8061519480bf8952729712dbbbe",
+      "contentType": "image/webp"
+    },
+    {
+      "path": "/services/assets/fonts/InterVariable.woff2",
+      "source": "https://mementoservizi.vercel.app/assets/fonts/InterVariable.woff2",
+      "bytes": 352240,
+      "sha256": "693b77d4f32ee9b8bfc995589b5fad5e99adf2832738661f5402f9978429a8e3",
+      "contentType": "font/woff2"
+    },
+    {
+      "path": "/services/assets/foto-emozionali.webp",
+      "source": "https://mementoservizi.vercel.app/assets/foto-emozionali.webp",
+      "bytes": 81332,
+      "sha256": "ddc23999865b5a995c131fc59b894bd6449af9d654410f6d7fa83526166a9287",
+      "contentType": "image/webp"
+    },
+    {
+      "path": "/services/assets/foto-food.webp",
+      "source": "https://mementoservizi.vercel.app/assets/foto-food.webp",
+      "bytes": 114902,
+      "sha256": "ca193f0a385f11240332aa44234c72f6c105406053394d0e36a383f3ed87d209",
+      "contentType": "image/webp"
+    },
+    {
+      "path": "/services/assets/foto-prodotti.webp",
+      "source": "https://mementoservizi.vercel.app/assets/foto-prodotti.webp",
+      "bytes": 46352,
+      "sha256": "53632b6df5e8998586de1b1bc1d6b1955af7682ea01c9913869757a70e019745",
+      "contentType": "image/webp"
+    },
+    {
+      "path": "/services/assets/foto-spazi.webp",
+      "source": "https://mementoservizi.vercel.app/assets/foto-spazi.webp",
+      "bytes": 70070,
+      "sha256": "cfddace562b2ebc8ce828dae6944c802f20874df185d9e5696a71fd4c0fbf418",
+      "contentType": "image/webp"
+    },
+    {
+      "path": "/services/assets/gadget.webp",
+      "source": "https://mementoservizi.vercel.app/assets/gadget.webp",
+      "bytes": 62406,
+      "sha256": "df8b2a40d1e9a69a84aa87b7e6f985166228f249789ac4f8cf5f6a673f72cd8a",
+      "contentType": "image/webp"
+    },
+    {
+      "path": "/services/assets/grafica-spazi.webp",
+      "source": "https://mementoservizi.vercel.app/assets/grafica-spazi.webp",
+      "bytes": 82758,
+      "sha256": "8b0684ac16350c4dc58b063693eb32e0c43ee4c54839d02e05b120e1581a7f05",
+      "contentType": "image/webp"
+    },
+    {
+      "path": "/services/assets/grafiche-pubblicitarie.webp",
+      "source": "https://mementoservizi.vercel.app/assets/grafiche-pubblicitarie.webp",
+      "bytes": 54788,
+      "sha256": "5c2c97abf45bbb4d3631915b5f6b8b85e29333c8bd3bbcc1114336cfbb6cabcc",
+      "contentType": "image/webp"
+    },
+    {
+      "path": "/services/assets/guida-brand.webp",
+      "source": "https://mementoservizi.vercel.app/assets/guida-brand.webp",
+      "bytes": 31726,
+      "sha256": "626e7e4fad23aa9c5c634f15f9f2193c4acf307cec5e4b38fe90089e685a3775",
+      "contentType": "image/webp"
+    },
+    {
+      "path": "/services/assets/hero-3d.webp",
+      "source": "https://mementoservizi.vercel.app/assets/hero-3d.webp",
+      "bytes": 169756,
+      "sha256": "41f7bce2726666d7f8adc610a11c86d1f49353ed356df4d88c7f61c92197faad",
+      "contentType": "image/webp"
+    },
+    {
+      "path": "/services/assets/hero-branding.webp",
+      "source": "https://mementoservizi.vercel.app/assets/hero-branding.webp",
+      "bytes": 134428,
+      "sha256": "8e5318794bf83869d0e7086ed5e7c9096a4a38e43293b4460a2f0f4d4cf5b017",
+      "contentType": "image/webp"
+    },
+    {
+      "path": "/services/assets/hero-fotografia.webp",
+      "source": "https://mementoservizi.vercel.app/assets/hero-fotografia.webp",
+      "bytes": 134826,
+      "sha256": "ed2399f41218a58185b551f1543166190ab64dd27a1ec44bfdfc5d1c6e04c4e2",
+      "contentType": "image/webp"
+    },
+    {
+      "path": "/services/assets/hero-stampa.webp",
+      "source": "https://mementoservizi.vercel.app/assets/hero-stampa.webp",
+      "bytes": 168004,
+      "sha256": "84b2ff2f23058df722511d58c27604410c22f4f6e8d233e906c386810f8901db",
+      "contentType": "image/webp"
+    },
+    {
+      "path": "/services/assets/hero-video.webp",
+      "source": "https://mementoservizi.vercel.app/assets/hero-video.webp",
+      "bytes": 140596,
+      "sha256": "9831aab07fe6c5cef41af374d72760540ed663573ed9c5be856fc135ee398328",
+      "contentType": "image/webp"
+    },
+    {
+      "path": "/services/assets/hero-web.webp",
+      "source": "https://mementoservizi.vercel.app/assets/hero-web.webp",
+      "bytes": 134396,
+      "sha256": "2d1e358c47b51c50329aa27898b754f89a5ef0627e551f8a2673954a4ea8f6ee",
+      "contentType": "image/webp"
+    },
+    {
+      "path": "/services/assets/icons/caret-left.svg",
+      "source": "https://mementoservizi.vercel.app/assets/icons/caret-left.svg",
+      "bytes": 200,
+      "sha256": "623bf248fe21a8170344e168aaac2e174119cea5d7c5d0fb0dc84f581009475f",
+      "contentType": "image/svg+xml"
+    },
+    {
+      "path": "/services/assets/icons/caret-right.svg",
+      "source": "https://mementoservizi.vercel.app/assets/icons/caret-right.svg",
+      "bytes": 219,
+      "sha256": "e6dec01e074807965b7f3146b976a9b5e82c31d9c2c88aeb52e77cc2ab16c1d7",
+      "contentType": "image/svg+xml"
+    },
+    {
+      "path": "/services/assets/icons/x.svg",
+      "source": "https://mementoservizi.vercel.app/assets/icons/x.svg",
+      "bytes": 284,
+      "sha256": "7397b15e1fa66eaf6ff9b59fe91d483cb5c3bcf75b2fe052097ab6f0593b513a",
+      "contentType": "image/svg+xml"
+    },
+    {
+      "path": "/services/assets/insegne.webp",
+      "source": "https://mementoservizi.vercel.app/assets/insegne.webp",
+      "bytes": 124986,
+      "sha256": "2c2a1eb2d845306a85cb2b87bce97be04f22fdc3327886ad22b176fcb30617f0",
+      "contentType": "image/webp"
+    },
+    {
+      "path": "/services/assets/landing.webp",
+      "source": "https://mementoservizi.vercel.app/assets/landing.webp",
+      "bytes": 40692,
+      "sha256": "3fe328936b82e3e6bac4af6745b26b7aacf2c8b561e29fc541353afd12d3741f",
+      "contentType": "image/webp"
+    },
+    {
+      "path": "/services/assets/logo-animato.webp",
+      "source": "https://mementoservizi.vercel.app/assets/logo-animato.webp",
+      "bytes": 22190,
+      "sha256": "e86b9726f45b742a312adb1794cbdb08e54cd90469abcc55d30ffa93f7941715",
+      "contentType": "image/webp"
+    },
+    {
+      "path": "/services/assets/menu-digitale.webp",
+      "source": "https://mementoservizi.vercel.app/assets/menu-digitale.webp",
+      "bytes": 51774,
+      "sha256": "416a4cf5d2467f94ce45859373e75965363fd20af503920a4cc8246dd9896879",
+      "contentType": "image/webp"
+    },
+    {
+      "path": "/services/assets/menu-listini.webp",
+      "source": "https://mementoservizi.vercel.app/assets/menu-listini.webp",
+      "bytes": 43326,
+      "sha256": "da2fb0f2acff1b18252386b744aee9c3169140f4a0cbb88d225e16c0dc64e356",
+      "contentType": "image/webp"
+    },
+    {
+      "path": "/services/assets/merchandising.webp",
+      "source": "https://mementoservizi.vercel.app/assets/merchandising.webp",
+      "bytes": 36482,
+      "sha256": "b913fd0210a5ba0ac2cb98862f35150564b19acf3b025b4992decd0bc967fb25",
+      "contentType": "image/webp"
+    },
+    {
+      "path": "/services/assets/modello-3d.webp",
+      "source": "https://mementoservizi.vercel.app/assets/modello-3d.webp",
+      "bytes": 43858,
+      "sha256": "721d873f7d539892ea5f3de28d95140f9def8ef9b7e73f0db0223ccb7cedddc2",
+      "contentType": "image/webp"
+    },
+    {
+      "path": "/services/assets/moduli.webp",
+      "source": "https://mementoservizi.vercel.app/assets/moduli.webp",
+      "bytes": 44678,
+      "sha256": "5a88482c5df683e6136e7e8fabc01305d6e0de6999567b5190ea3f332bbcd1ee",
+      "contentType": "image/webp"
+    },
+    {
+      "path": "/services/assets/motion.webp",
+      "source": "https://mementoservizi.vercel.app/assets/motion.webp",
+      "bytes": 30176,
+      "sha256": "5bbc8b1cbdc6dc6ac871888ad3822b2689cc97e7af5fc57d4b38209b7f7078f5",
+      "contentType": "image/webp"
+    },
+    {
+      "path": "/services/assets/presentazione.webp",
+      "source": "https://mementoservizi.vercel.app/assets/presentazione.webp",
+      "bytes": 68368,
+      "sha256": "cfee479e0a637e39a6992941ca3628d2b21820921fc51e3470f5bf52b4aef531",
+      "contentType": "image/webp"
+    },
+    {
+      "path": "/services/assets/realta-aumentata.webp",
+      "source": "https://mementoservizi.vercel.app/assets/realta-aumentata.webp",
+      "bytes": 30900,
+      "sha256": "1076b7156ec9bbeb73386b1a71a902b7326eb7aca1c55f8012c79c1e77b240a2",
+      "contentType": "image/webp"
+    },
+    {
+      "path": "/services/assets/render-animazione.webp",
+      "source": "https://mementoservizi.vercel.app/assets/render-animazione.webp",
+      "bytes": 36880,
+      "sha256": "c32e56d7399d60b18f5832feb3410bec2dcf275b7307ad6e917a97f97e53db1d",
+      "contentType": "image/webp"
+    },
+    {
+      "path": "/services/assets/responsive/app-dedicata-320.webp",
+      "source": "https://mementoservizi.vercel.app/assets/responsive/app-dedicata-320.webp",
+      "bytes": 7290,
+      "sha256": "03f87bc659c817d2dd707673973f4430d4eac943603ec726ad0ed30e0ffc0a68",
+      "contentType": "image/webp"
+    },
+    {
+      "path": "/services/assets/responsive/app-dedicata-640.webp",
+      "source": "https://mementoservizi.vercel.app/assets/responsive/app-dedicata-640.webp",
+      "bytes": 16918,
+      "sha256": "d6ea2e073ef6479341803901664c8bb9d8e95c39c1d4455ce61cec3303ee8662",
+      "contentType": "image/webp"
+    },
+    {
+      "path": "/services/assets/responsive/b-apertura-320.webp",
+      "source": "https://mementoservizi.vercel.app/assets/responsive/b-apertura-320.webp",
+      "bytes": 3404,
+      "sha256": "e6cfd495e36371bef981ee178d7a0859a13ba61e09c4a1a94617c7038ad670c4",
+      "contentType": "image/webp"
+    },
+    {
+      "path": "/services/assets/responsive/b-apertura-640.webp",
+      "source": "https://mementoservizi.vercel.app/assets/responsive/b-apertura-640.webp",
+      "bytes": 10652,
+      "sha256": "6f723a0284fe48f6a443b8ebaa9eab68c67e961d816096b70fa544b813507716",
+      "contentType": "image/webp"
+    },
+    {
+      "path": "/services/assets/responsive/b-campagna-320.webp",
+      "source": "https://mementoservizi.vercel.app/assets/responsive/b-campagna-320.webp",
+      "bytes": 5942,
+      "sha256": "bed94f4319ebe275a6fb80e7e7609b5e88aa13bf6ec028d04b8dcc856898b6ad",
+      "contentType": "image/webp"
+    },
+    {
+      "path": "/services/assets/responsive/b-campagna-640.webp",
+      "source": "https://mementoservizi.vercel.app/assets/responsive/b-campagna-640.webp",
+      "bytes": 17772,
+      "sha256": "90ad93dcf9f90765bf893271371044fa670374361ec1524567f594c33ac42ff5",
+      "contentType": "image/webp"
+    },
+    {
+      "path": "/services/assets/responsive/b-identita-320.webp",
+      "source": "https://mementoservizi.vercel.app/assets/responsive/b-identita-320.webp",
+      "bytes": 5920,
+      "sha256": "2ee197f8b2e4b2daf2022b5fd072ecf67bdd1c8045944a72751e90f814b5c00f",
+      "contentType": "image/webp"
+    },
+    {
+      "path": "/services/assets/responsive/b-identita-640.webp",
+      "source": "https://mementoservizi.vercel.app/assets/responsive/b-identita-640.webp",
+      "bytes": 21776,
+      "sha256": "c14aa492e6df6bf40aecb44dadb5f8f2528829ffbf52ef815a5ea0611e521c5d",
+      "contentType": "image/webp"
+    },
+    {
+      "path": "/services/assets/responsive/b-lancio-320.webp",
+      "source": "https://mementoservizi.vercel.app/assets/responsive/b-lancio-320.webp",
+      "bytes": 5824,
+      "sha256": "67767341bdcf192dd7ae485a72d497974e2eec6b67b8098468b20a0d4794ff05",
+      "contentType": "image/webp"
+    },
+    {
+      "path": "/services/assets/responsive/b-lancio-640.webp",
+      "source": "https://mementoservizi.vercel.app/assets/responsive/b-lancio-640.webp",
+      "bytes": 19546,
+      "sha256": "a4d648827419553cd5fb842ddead9ef1cae3a1f80474319657ab9648c10e795f",
+      "contentType": "image/webp"
+    },
+    {
+      "path": "/services/assets/responsive/b-online-320.webp",
+      "source": "https://mementoservizi.vercel.app/assets/responsive/b-online-320.webp",
+      "bytes": 5230,
+      "sha256": "217b51695154a9cbaa837baa98d6d8fe74daa04974cae1a92d6f4b4149020e53",
+      "contentType": "image/webp"
+    },
+    {
+      "path": "/services/assets/responsive/b-online-640.webp",
+      "source": "https://mementoservizi.vercel.app/assets/responsive/b-online-640.webp",
+      "bytes": 18188,
+      "sha256": "93dd1754556dd18ffc3bcfc30a9c83f281f8b97963948c2f864d34630d1319e1",
+      "contentType": "image/webp"
+    },
+    {
+      "path": "/services/assets/responsive/b-social-320.webp",
+      "source": "https://mementoservizi.vercel.app/assets/responsive/b-social-320.webp",
+      "bytes": 6826,
+      "sha256": "5dde4953c3fadf04bb8c8eb87e7d42cffde0333491cffc6051dc16bc5bfbd417",
+      "contentType": "image/webp"
+    },
+    {
+      "path": "/services/assets/responsive/b-social-640.webp",
+      "source": "https://mementoservizi.vercel.app/assets/responsive/b-social-640.webp",
+      "bytes": 22896,
+      "sha256": "aae2382fac4f452d3ea0a61c85922334d9dca6e3c8af601d0f100b0e12944cdd",
+      "contentType": "image/webp"
+    },
+    {
+      "path": "/services/assets/responsive/biglietti-320.webp",
+      "source": "https://mementoservizi.vercel.app/assets/responsive/biglietti-320.webp",
+      "bytes": 2206,
+      "sha256": "72f8a63c6a72dee7851a063719ce453a5b25508feed81825002da89eec722b71",
+      "contentType": "image/webp"
+    },
+    {
+      "path": "/services/assets/responsive/biglietti-640.webp",
+      "source": "https://mementoservizi.vercel.app/assets/responsive/biglietti-640.webp",
+      "bytes": 7092,
+      "sha256": "6920e402bad9860affcf43739f03d57d1a2608327e6e5e862af1c92d29a9097b",
+      "contentType": "image/webp"
+    },
+    {
+      "path": "/services/assets/responsive/branding-320.webp",
+      "source": "https://mementoservizi.vercel.app/assets/responsive/branding-320.webp",
+      "bytes": 2826,
+      "sha256": "69bf139fbe68d6883609f4382710cfc32c16cb748d8a0287503e673fd6eeffc0",
+      "contentType": "image/webp"
+    },
+    {
+      "path": "/services/assets/responsive/branding-640.webp",
+      "source": "https://mementoservizi.vercel.app/assets/responsive/branding-640.webp",
+      "bytes": 6824,
+      "sha256": "05cb6f7f165607d2e4f930094d41293e0ad937326bbedabc488fffc08147004c",
+      "contentType": "image/webp"
+    },
+    {
+      "path": "/services/assets/responsive/brochure-320.webp",
+      "source": "https://mementoservizi.vercel.app/assets/responsive/brochure-320.webp",
+      "bytes": 5776,
+      "sha256": "ee187faae94e7a5d1285f01617eaf88e5762ce3deb03e2b8faf3668137a524fb",
+      "contentType": "image/webp"
+    },
+    {
+      "path": "/services/assets/responsive/brochure-640.webp",
+      "source": "https://mementoservizi.vercel.app/assets/responsive/brochure-640.webp",
+      "bytes": 16562,
+      "sha256": "f17a1b58edd619bf325876b0ee360730e6ca6b7fd349213f7cff98acf607dedf",
+      "contentType": "image/webp"
+    },
+    {
+      "path": "/services/assets/responsive/carta-320.webp",
+      "source": "https://mementoservizi.vercel.app/assets/responsive/carta-320.webp",
+      "bytes": 3258,
+      "sha256": "041a93662a562a543978cd322d0c2ccebe6d589b11d01c28171536ad476eeaaa",
+      "contentType": "image/webp"
+    },
+    {
+      "path": "/services/assets/responsive/carta-640.webp",
+      "source": "https://mementoservizi.vercel.app/assets/responsive/carta-640.webp",
+      "bytes": 7866,
+      "sha256": "45de89b1dc8798cbedf30323a5c3cb75e1bc94c5222b6c65ee9dd7764e1169c3",
+      "contentType": "image/webp"
+    },
+    {
+      "path": "/services/assets/responsive/catalogo-320.webp",
+      "source": "https://mementoservizi.vercel.app/assets/responsive/catalogo-320.webp",
+      "bytes": 4252,
+      "sha256": "3c412ac1fc8914e794701c6f019457da7caafbf79684fc9555017693b8e63e05",
+      "contentType": "image/webp"
+    },
+    {
+      "path": "/services/assets/responsive/catalogo-640.webp",
+      "source": "https://mementoservizi.vercel.app/assets/responsive/catalogo-640.webp",
+      "bytes": 11982,
+      "sha256": "3bc0cbe59fa8f4483bf54a58d7d6d958f269edf5d395552bf2968e50d68b5453",
+      "contentType": "image/webp"
+    },
+    {
+      "path": "/services/assets/responsive/configuratore-320.webp",
+      "source": "https://mementoservizi.vercel.app/assets/responsive/configuratore-320.webp",
+      "bytes": 4722,
+      "sha256": "3cce3bb45601aeb9253b711a2cb1182063a2c0fc80910d3861370ceeaea2af7f",
+      "contentType": "image/webp"
+    },
+    {
+      "path": "/services/assets/responsive/configuratore-640.webp",
+      "source": "https://mementoservizi.vercel.app/assets/responsive/configuratore-640.webp",
+      "bytes": 14944,
+      "sha256": "55ce62ee9d0c898b0fd43e97941995e4f030d6d2d1b008333516310087d90b83",
+      "contentType": "image/webp"
+    },
+    {
+      "path": "/services/assets/responsive/ecommerce-320.webp",
+      "source": "https://mementoservizi.vercel.app/assets/responsive/ecommerce-320.webp",
+      "bytes": 3546,
+      "sha256": "0e1d7cd75bbb807ccf76ecde7d5408c90293fcc4e955550a5f08361818f9ef7e",
+      "contentType": "image/webp"
+    },
+    {
+      "path": "/services/assets/responsive/ecommerce-640.webp",
+      "source": "https://mementoservizi.vercel.app/assets/responsive/ecommerce-640.webp",
+      "bytes": 9490,
+      "sha256": "d0f360053f0928f8d542432df41d2e48348edfb284edf2432819a5f24610de5b",
+      "contentType": "image/webp"
+    },
+    {
+      "path": "/services/assets/responsive/esperienza-digitale-320.webp",
+      "source": "https://mementoservizi.vercel.app/assets/responsive/esperienza-digitale-320.webp",
+      "bytes": 4604,
+      "sha256": "35f4de8ba87bfc0e1cd171adb4a09e5634ac5a03553b9490d91ca9c677683899",
+      "contentType": "image/webp"
+    },
+    {
+      "path": "/services/assets/responsive/esperienza-digitale-640.webp",
+      "source": "https://mementoservizi.vercel.app/assets/responsive/esperienza-digitale-640.webp",
+      "bytes": 13206,
+      "sha256": "dca8efdb95fe1335316eee7855508706af09445241c4ed2e0fad777ee03e7224",
+      "contentType": "image/webp"
+    },
+    {
+      "path": "/services/assets/responsive/espositori-320.webp",
+      "source": "https://mementoservizi.vercel.app/assets/responsive/espositori-320.webp",
+      "bytes": 7780,
+      "sha256": "01a7d761604227ba14cf75640739b7471f3fd7d7b011aa962d569d9a5ae396e0",
+      "contentType": "image/webp"
+    },
+    {
+      "path": "/services/assets/responsive/espositori-640.webp",
+      "source": "https://mementoservizi.vercel.app/assets/responsive/espositori-640.webp",
+      "bytes": 23400,
+      "sha256": "fb24b52e3af0ec8826134fe26b7a26d753adc9caf22290b467549339be00014e",
+      "contentType": "image/webp"
+    },
+    {
+      "path": "/services/assets/responsive/etichette-320.webp",
+      "source": "https://mementoservizi.vercel.app/assets/responsive/etichette-320.webp",
+      "bytes": 2910,
+      "sha256": "71ab7e294a8eb9bea06fb6b9246a8ba9b6888e91cd7034ca659f1950a020ca09",
+      "contentType": "image/webp"
+    },
+    {
+      "path": "/services/assets/responsive/etichette-640.webp",
+      "source": "https://mementoservizi.vercel.app/assets/responsive/etichette-640.webp",
+      "bytes": 8750,
+      "sha256": "fd653808a3de255c5c4fd7c0c31b41b9deee0b8b341abff6dbe0c83e9e81c549",
+      "contentType": "image/webp"
+    },
+    {
+      "path": "/services/assets/responsive/foto-emozionali-320.webp",
+      "source": "https://mementoservizi.vercel.app/assets/responsive/foto-emozionali-320.webp",
+      "bytes": 8120,
+      "sha256": "40a6b9b8a019dfa3b867bf1c8b3fed40a79c6bef1c935c2bac3aafee5f876bca",
+      "contentType": "image/webp"
+    },
+    {
+      "path": "/services/assets/responsive/foto-emozionali-640.webp",
+      "source": "https://mementoservizi.vercel.app/assets/responsive/foto-emozionali-640.webp",
+      "bytes": 27634,
+      "sha256": "c8fbdbd6d044f286456d28c74b01ad8217aa05a8e50c8d4328d966e465e4b42b",
+      "contentType": "image/webp"
+    },
+    {
+      "path": "/services/assets/responsive/foto-food-320.webp",
+      "source": "https://mementoservizi.vercel.app/assets/responsive/foto-food-320.webp",
+      "bytes": 13856,
+      "sha256": "7caca31f11a4cde310aa6f15f557efdd5dec016f5e06d2151d8ce24f991cb467",
+      "contentType": "image/webp"
+    },
+    {
+      "path": "/services/assets/responsive/foto-food-640.webp",
+      "source": "https://mementoservizi.vercel.app/assets/responsive/foto-food-640.webp",
+      "bytes": 42214,
+      "sha256": "36a1248666333960e2df8af5956e584073e418f7dfb250d6ce27dd1fc6cd5db3",
+      "contentType": "image/webp"
+    },
+    {
+      "path": "/services/assets/responsive/foto-prodotti-320.webp",
+      "source": "https://mementoservizi.vercel.app/assets/responsive/foto-prodotti-320.webp",
+      "bytes": 4510,
+      "sha256": "e2ed2d61119afef1aa91a258c803bf724dbb22cd417359622c64f26ed01ee2b7",
+      "contentType": "image/webp"
+    },
+    {
+      "path": "/services/assets/responsive/foto-prodotti-640.webp",
+      "source": "https://mementoservizi.vercel.app/assets/responsive/foto-prodotti-640.webp",
+      "bytes": 14940,
+      "sha256": "cafd5c62b96fe0e6efd9a76defdfe3c854f3e5b12077fed3d57f8cd0f8ce7323",
+      "contentType": "image/webp"
+    },
+    {
+      "path": "/services/assets/responsive/foto-spazi-320.webp",
+      "source": "https://mementoservizi.vercel.app/assets/responsive/foto-spazi-320.webp",
+      "bytes": 4540,
+      "sha256": "7bd1408cb5de5eb85bb0edffd48873399c39e91c337c4e5845bdb72dcb14ca65",
+      "contentType": "image/webp"
+    },
+    {
+      "path": "/services/assets/responsive/foto-spazi-640.webp",
+      "source": "https://mementoservizi.vercel.app/assets/responsive/foto-spazi-640.webp",
+      "bytes": 17274,
+      "sha256": "23bef9a134d9d461ae351bd9ca0ec8823425332823649f36c7f686c060fa5f54",
+      "contentType": "image/webp"
+    },
+    {
+      "path": "/services/assets/responsive/gadget-320.webp",
+      "source": "https://mementoservizi.vercel.app/assets/responsive/gadget-320.webp",
+      "bytes": 3698,
+      "sha256": "d61e5d895ae8620a4af228c724b7feb62910d9ad53e9dea11caf1f8eac30af95",
+      "contentType": "image/webp"
+    },
+    {
+      "path": "/services/assets/responsive/gadget-640.webp",
+      "source": "https://mementoservizi.vercel.app/assets/responsive/gadget-640.webp",
+      "bytes": 11744,
+      "sha256": "139bce8381bcc66078aa319025eb7e04ae7af08e256f4d42b8e3f6c1818effe1",
+      "contentType": "image/webp"
+    },
+    {
+      "path": "/services/assets/responsive/grafica-spazi-320.webp",
+      "source": "https://mementoservizi.vercel.app/assets/responsive/grafica-spazi-320.webp",
+      "bytes": 6624,
+      "sha256": "489818193409604a5588f2d645e6148744dbd3e9717c9fece62c7fb2660929d3",
+      "contentType": "image/webp"
+    },
+    {
+      "path": "/services/assets/responsive/grafica-spazi-640.webp",
+      "source": "https://mementoservizi.vercel.app/assets/responsive/grafica-spazi-640.webp",
+      "bytes": 24190,
+      "sha256": "06c646d4710a40142067483873aaa50514cea7358a1f36dd224d3bfa0113a8a1",
+      "contentType": "image/webp"
+    },
+    {
+      "path": "/services/assets/responsive/grafiche-pubblicitarie-320.webp",
+      "source": "https://mementoservizi.vercel.app/assets/responsive/grafiche-pubblicitarie-320.webp",
+      "bytes": 6806,
+      "sha256": "fc36f0ca64867551e63d79faf698570cfd834c8604b657cc39de13d17a19a6d8",
+      "contentType": "image/webp"
+    },
+    {
+      "path": "/services/assets/responsive/grafiche-pubblicitarie-640.webp",
+      "source": "https://mementoservizi.vercel.app/assets/responsive/grafiche-pubblicitarie-640.webp",
+      "bytes": 19938,
+      "sha256": "09e1fadbfa4ce6142cb443d2f99534ab979dffb3603d532ec33607569542ed32",
+      "contentType": "image/webp"
+    },
+    {
+      "path": "/services/assets/responsive/guida-brand-320.webp",
+      "source": "https://mementoservizi.vercel.app/assets/responsive/guida-brand-320.webp",
+      "bytes": 4798,
+      "sha256": "48101840b509c46def3ae22444af8cfce562d68fc4f32e3e63a94ef32a6caec5",
+      "contentType": "image/webp"
+    },
+    {
+      "path": "/services/assets/responsive/guida-brand-640.webp",
+      "source": "https://mementoservizi.vercel.app/assets/responsive/guida-brand-640.webp",
+      "bytes": 12802,
+      "sha256": "f23b81a41209faab026213901b4b8866643d3a25af8336456b1eb2b7c9ec1e66",
+      "contentType": "image/webp"
+    },
+    {
+      "path": "/services/assets/responsive/hero-3d-1152.webp",
+      "source": "https://mementoservizi.vercel.app/assets/responsive/hero-3d-1152.webp",
+      "bytes": 51702,
+      "sha256": "932ab11f942be23275812330bbc16ce7bcc6b602741c58765f37f543f341a441",
+      "contentType": "image/webp"
+    },
+    {
+      "path": "/services/assets/responsive/hero-3d-768.webp",
+      "source": "https://mementoservizi.vercel.app/assets/responsive/hero-3d-768.webp",
+      "bytes": 21398,
+      "sha256": "ad91d2831da069811842ad92873bfed004038eabd38912136720a17e7c338fd5",
+      "contentType": "image/webp"
+    },
+    {
+      "path": "/services/assets/responsive/hero-branding-1152.webp",
+      "source": "https://mementoservizi.vercel.app/assets/responsive/hero-branding-1152.webp",
+      "bytes": 24174,
+      "sha256": "5e2963fed6ae89c7efe08c16faf7fb0fd79f1006f8390be59bc8fbf545725128",
+      "contentType": "image/webp"
+    },
+    {
+      "path": "/services/assets/responsive/hero-branding-768.webp",
+      "source": "https://mementoservizi.vercel.app/assets/responsive/hero-branding-768.webp",
+      "bytes": 10642,
+      "sha256": "abae423f2f2d5ac614d6880e1949501219fdc2af6a3312f0847d114f063e601f",
+      "contentType": "image/webp"
+    },
+    {
+      "path": "/services/assets/responsive/hero-fotografia-1152.webp",
+      "source": "https://mementoservizi.vercel.app/assets/responsive/hero-fotografia-1152.webp",
+      "bytes": 49466,
+      "sha256": "3af0b0433eab9c69198d67159c777d634980687bd15410519744f762f368a019",
+      "contentType": "image/webp"
+    },
+    {
+      "path": "/services/assets/responsive/hero-fotografia-768.webp",
+      "source": "https://mementoservizi.vercel.app/assets/responsive/hero-fotografia-768.webp",
+      "bytes": 27078,
+      "sha256": "280c4bd9a3e8f957644d7860cd4535363bbd3e0050e39dd87159ddceeb1bfcd4",
+      "contentType": "image/webp"
+    },
+    {
+      "path": "/services/assets/responsive/hero-stampa-1152.webp",
+      "source": "https://mementoservizi.vercel.app/assets/responsive/hero-stampa-1152.webp",
+      "bytes": 44344,
+      "sha256": "72d82f2339f3a1222c62d0bb7064993ddecb985de2b8b212b5248af773986abe",
+      "contentType": "image/webp"
+    },
+    {
+      "path": "/services/assets/responsive/hero-stampa-768.webp",
+      "source": "https://mementoservizi.vercel.app/assets/responsive/hero-stampa-768.webp",
+      "bytes": 23736,
+      "sha256": "b2b55ea568e0dc90a9d013fa753d3907575931f0c2979b0a5fcde242f61bc842",
+      "contentType": "image/webp"
+    },
+    {
+      "path": "/services/assets/responsive/hero-video-1152.webp",
+      "source": "https://mementoservizi.vercel.app/assets/responsive/hero-video-1152.webp",
+      "bytes": 46072,
+      "sha256": "1f6698605a0cd8f87be024235393a05f6d38b526321f6d535d9a146f0b7bb370",
+      "contentType": "image/webp"
+    },
+    {
+      "path": "/services/assets/responsive/hero-video-768.webp",
+      "source": "https://mementoservizi.vercel.app/assets/responsive/hero-video-768.webp",
+      "bytes": 23480,
+      "sha256": "993d00502952f440b28b23dcce065b15671452c6fabfdea5acdf5a35389c637d",
+      "contentType": "image/webp"
+    },
+    {
+      "path": "/services/assets/responsive/hero-web-1152.webp",
+      "source": "https://mementoservizi.vercel.app/assets/responsive/hero-web-1152.webp",
+      "bytes": 51646,
+      "sha256": "f9ae6b63ca6c2fee59eb3862a4a74565370e56bb7adb13d2a9b7d663c05c0f7a",
+      "contentType": "image/webp"
+    },
+    {
+      "path": "/services/assets/responsive/hero-web-768.webp",
+      "source": "https://mementoservizi.vercel.app/assets/responsive/hero-web-768.webp",
+      "bytes": 29594,
+      "sha256": "ab54ed1249886058856f71637da82d9561c3186c5cfda9f514f873c741c84375",
+      "contentType": "image/webp"
+    },
+    {
+      "path": "/services/assets/responsive/insegne-320.webp",
+      "source": "https://mementoservizi.vercel.app/assets/responsive/insegne-320.webp",
+      "bytes": 5676,
+      "sha256": "af0b3899657a5b21c2f0dacafc086ec0e217323315ece2fe2885bbc74a939c40",
+      "contentType": "image/webp"
+    },
+    {
+      "path": "/services/assets/responsive/insegne-640.webp",
+      "source": "https://mementoservizi.vercel.app/assets/responsive/insegne-640.webp",
+      "bytes": 30198,
+      "sha256": "90e60a9e47a4f0a4a807a65301946679bf76506f96e52501fbdbb042b5b74ef8",
+      "contentType": "image/webp"
+    },
+    {
+      "path": "/services/assets/responsive/landing-320.webp",
+      "source": "https://mementoservizi.vercel.app/assets/responsive/landing-320.webp",
+      "bytes": 4914,
+      "sha256": "ada9aaeb0922266a083fae85b8e187c581e5bf36a62883c33b360327fd88a809",
+      "contentType": "image/webp"
+    },
+    {
+      "path": "/services/assets/responsive/landing-640.webp",
+      "source": "https://mementoservizi.vercel.app/assets/responsive/landing-640.webp",
+      "bytes": 14684,
+      "sha256": "f821d862571685f9f6b158f84d27b589c5f41631af25b9d26aeae631776dedb8",
+      "contentType": "image/webp"
+    },
+    {
+      "path": "/services/assets/responsive/logo-animato-320.webp",
+      "source": "https://mementoservizi.vercel.app/assets/responsive/logo-animato-320.webp",
+      "bytes": 2456,
+      "sha256": "f5305b55436af40436ecf86a7c15c7cee0065273b2290104ec6292833def1e8c",
+      "contentType": "image/webp"
+    },
+    {
+      "path": "/services/assets/responsive/logo-animato-640.webp",
+      "source": "https://mementoservizi.vercel.app/assets/responsive/logo-animato-640.webp",
+      "bytes": 7184,
+      "sha256": "56cd071cbae59876caea0cf111b323ecbf68bee075aed9e3ae15b1b2855a132a",
+      "contentType": "image/webp"
+    },
+    {
+      "path": "/services/assets/responsive/menu-digitale-320.webp",
+      "source": "https://mementoservizi.vercel.app/assets/responsive/menu-digitale-320.webp",
+      "bytes": 6648,
+      "sha256": "d279a2ce60e7b278a11d2a697751ae2a98ce493fd7eab35007c3f24842af2b10",
+      "contentType": "image/webp"
+    },
+    {
+      "path": "/services/assets/responsive/menu-digitale-640.webp",
+      "source": "https://mementoservizi.vercel.app/assets/responsive/menu-digitale-640.webp",
+      "bytes": 19400,
+      "sha256": "54a7043d5d5889145e9d7ca543dcb2d4f62bd3298993bdce2748f3a5d5368bd7",
+      "contentType": "image/webp"
+    },
+    {
+      "path": "/services/assets/responsive/menu-listini-320.webp",
+      "source": "https://mementoservizi.vercel.app/assets/responsive/menu-listini-320.webp",
+      "bytes": 5292,
+      "sha256": "fe7e521ad577edace90997f370838c010568b44bd75546a5c58685cb543ba7bc",
+      "contentType": "image/webp"
+    },
+    {
+      "path": "/services/assets/responsive/menu-listini-640.webp",
+      "source": "https://mementoservizi.vercel.app/assets/responsive/menu-listini-640.webp",
+      "bytes": 15994,
+      "sha256": "d41ca2dd7ec94b0b2e6caaff0fa2a9e189f76e497e83e63605f82de6f3994ffd",
+      "contentType": "image/webp"
+    },
+    {
+      "path": "/services/assets/responsive/merchandising-320.webp",
+      "source": "https://mementoservizi.vercel.app/assets/responsive/merchandising-320.webp",
+      "bytes": 2894,
+      "sha256": "f069faaf0308cb28bb676fd3fcd6a7276b1dac4f8bcade8ccfe12de1de467f2d",
+      "contentType": "image/webp"
+    },
+    {
+      "path": "/services/assets/responsive/merchandising-640.webp",
+      "source": "https://mementoservizi.vercel.app/assets/responsive/merchandising-640.webp",
+      "bytes": 8662,
+      "sha256": "940c0f7531650d03f36fe28b7a01897f4ed510a3e7b2015c17a6d46613e903e8",
+      "contentType": "image/webp"
+    },
+    {
+      "path": "/services/assets/responsive/modello-3d-320.webp",
+      "source": "https://mementoservizi.vercel.app/assets/responsive/modello-3d-320.webp",
+      "bytes": 4300,
+      "sha256": "92ac9faa53c3ff3076b0cb1884d1a4dee1519154265f94e1c0570f8920ca6360",
+      "contentType": "image/webp"
+    },
+    {
+      "path": "/services/assets/responsive/modello-3d-640.webp",
+      "source": "https://mementoservizi.vercel.app/assets/responsive/modello-3d-640.webp",
+      "bytes": 14082,
+      "sha256": "c875f71f43dc0294e70678191807339d7200706da5287d54c6aab4d3eac7dcd5",
+      "contentType": "image/webp"
+    },
+    {
+      "path": "/services/assets/responsive/moduli-320.webp",
+      "source": "https://mementoservizi.vercel.app/assets/responsive/moduli-320.webp",
+      "bytes": 5496,
+      "sha256": "79b15e93b72aad6d8c7ee19a303d01edbfc6144023a6f24488fd4b9f389aabd2",
+      "contentType": "image/webp"
+    },
+    {
+      "path": "/services/assets/responsive/moduli-640.webp",
+      "source": "https://mementoservizi.vercel.app/assets/responsive/moduli-640.webp",
+      "bytes": 16018,
+      "sha256": "87dbac11ebc8479e05ac8bc21749c8aa9b1e782af8e96672f01e0f9e2b3dc673",
+      "contentType": "image/webp"
+    },
+    {
+      "path": "/services/assets/responsive/motion-320.webp",
+      "source": "https://mementoservizi.vercel.app/assets/responsive/motion-320.webp",
+      "bytes": 3712,
+      "sha256": "dfc34d80a2018e3bb61b0c6e5121a2cea2c088b43d40278644cd5ace61302fc8",
+      "contentType": "image/webp"
+    },
+    {
+      "path": "/services/assets/responsive/motion-640.webp",
+      "source": "https://mementoservizi.vercel.app/assets/responsive/motion-640.webp",
+      "bytes": 10290,
+      "sha256": "4d54e38a362efd69b9f82a7be73ff952b9b39c098a6783f0133949d46eb781d4",
+      "contentType": "image/webp"
+    },
+    {
+      "path": "/services/assets/responsive/presentazione-320.webp",
+      "source": "https://mementoservizi.vercel.app/assets/responsive/presentazione-320.webp",
+      "bytes": 7248,
+      "sha256": "963224b1f95872557e7783a108fab46faee76c0f401bdaf9e7e32cf7c473f525",
+      "contentType": "image/webp"
+    },
+    {
+      "path": "/services/assets/responsive/presentazione-640.webp",
+      "source": "https://mementoservizi.vercel.app/assets/responsive/presentazione-640.webp",
+      "bytes": 21500,
+      "sha256": "d74c904e0f9327d999c10ef08d85eb5ee7aa01a9a3327367bd3215a412e00f57",
+      "contentType": "image/webp"
+    },
+    {
+      "path": "/services/assets/responsive/realta-aumentata-320.webp",
+      "source": "https://mementoservizi.vercel.app/assets/responsive/realta-aumentata-320.webp",
+      "bytes": 3544,
+      "sha256": "f87705a3084a68590dd103b3b1648786c9aa7e96c53472d434462b22b96bf1b6",
+      "contentType": "image/webp"
+    },
+    {
+      "path": "/services/assets/responsive/realta-aumentata-640.webp",
+      "source": "https://mementoservizi.vercel.app/assets/responsive/realta-aumentata-640.webp",
+      "bytes": 9224,
+      "sha256": "b998cc00a714d08d02bb5511114d33d3f16291daaf5772b2ebc46556b17637cc",
+      "contentType": "image/webp"
+    },
+    {
+      "path": "/services/assets/responsive/render-animazione-320.webp",
+      "source": "https://mementoservizi.vercel.app/assets/responsive/render-animazione-320.webp",
+      "bytes": 4066,
+      "sha256": "330dc1e63458c9d2ce88dfcc946dcb2c439b671a49aa394d8d3b973ff2e49e2f",
+      "contentType": "image/webp"
+    },
+    {
+      "path": "/services/assets/responsive/render-animazione-640.webp",
+      "source": "https://mementoservizi.vercel.app/assets/responsive/render-animazione-640.webp",
+      "bytes": 12192,
+      "sha256": "d055b74386becd61e677f7cbbbe250cdbc7ebca73d3bc42406543d13f0e51913",
+      "contentType": "image/webp"
+    },
+    {
+      "path": "/services/assets/responsive/scatole-320.webp",
+      "source": "https://mementoservizi.vercel.app/assets/responsive/scatole-320.webp",
+      "bytes": 2826,
+      "sha256": "9f30a9f86eec89df7667988ed34425b148c27c7263f99d284a2fc5ccadb5b760",
+      "contentType": "image/webp"
+    },
+    {
+      "path": "/services/assets/responsive/scatole-640.webp",
+      "source": "https://mementoservizi.vercel.app/assets/responsive/scatole-640.webp",
+      "bytes": 9538,
+      "sha256": "47f0ac60d77a6c9f7c859334bf2611e86a66589167a27baecb83d5bf45afc30f",
+      "contentType": "image/webp"
+    },
+    {
+      "path": "/services/assets/responsive/shopper-320.webp",
+      "source": "https://mementoservizi.vercel.app/assets/responsive/shopper-320.webp",
+      "bytes": 3238,
+      "sha256": "c40403b954e6bf4bb2019c34ab8288d9af9b2a238a234c5e01e21735774baeff",
+      "contentType": "image/webp"
+    },
+    {
+      "path": "/services/assets/responsive/shopper-640.webp",
+      "source": "https://mementoservizi.vercel.app/assets/responsive/shopper-640.webp",
+      "bytes": 10472,
+      "sha256": "ca6875f30253f1e79a6aa7d2f6cc2c71b0a3570ee6d20c515f96d7fa7a1aeda8",
+      "contentType": "image/webp"
+    },
+    {
+      "path": "/services/assets/responsive/showroom-320.webp",
+      "source": "https://mementoservizi.vercel.app/assets/responsive/showroom-320.webp",
+      "bytes": 5104,
+      "sha256": "ad0367bc409067312fb76786f7b8e0e0c73b606dae3d2a1006b7f44cf34a4407",
+      "contentType": "image/webp"
+    },
+    {
+      "path": "/services/assets/responsive/showroom-640.webp",
+      "source": "https://mementoservizi.vercel.app/assets/responsive/showroom-640.webp",
+      "bytes": 14868,
+      "sha256": "415b9c7371b9a5e976a553e227656b6cd54d5318c3354a67fc6c403b1f3a3d80",
+      "contentType": "image/webp"
+    },
+    {
+      "path": "/services/assets/responsive/sito-320.webp",
+      "source": "https://mementoservizi.vercel.app/assets/responsive/sito-320.webp",
+      "bytes": 4656,
+      "sha256": "39212c94e8f480b6ad814e8190f7f5658f53621d66a9fbe4881a8b3d2ba9db26",
+      "contentType": "image/webp"
+    },
+    {
+      "path": "/services/assets/responsive/sito-640.webp",
+      "source": "https://mementoservizi.vercel.app/assets/responsive/sito-640.webp",
+      "bytes": 13022,
+      "sha256": "22e1b4642f0d464ffab55cb0a703527b64442abb65d12b86ba651a5b057e0f43",
+      "contentType": "image/webp"
+    },
+    {
+      "path": "/services/assets/responsive/teaser-320.webp",
+      "source": "https://mementoservizi.vercel.app/assets/responsive/teaser-320.webp",
+      "bytes": 3948,
+      "sha256": "84fbbd5a07f76320287141b65de36978809ecf67372a5cb8ced5cf35c56ca672",
+      "contentType": "image/webp"
+    },
+    {
+      "path": "/services/assets/responsive/teaser-640.webp",
+      "source": "https://mementoservizi.vercel.app/assets/responsive/teaser-640.webp",
+      "bytes": 11402,
+      "sha256": "59c6e1141965e302964139695f5ffb458952c85f0ddecc6e5fbee6f3e8720747",
+      "contentType": "image/webp"
+    },
+    {
+      "path": "/services/assets/responsive/template-social-320.webp",
+      "source": "https://mementoservizi.vercel.app/assets/responsive/template-social-320.webp",
+      "bytes": 5432,
+      "sha256": "d15a790feb8b446b30b843b1fef8cb57dc452514a980c481e6c5948759685d19",
+      "contentType": "image/webp"
+    },
+    {
+      "path": "/services/assets/responsive/template-social-640.webp",
+      "source": "https://mementoservizi.vercel.app/assets/responsive/template-social-640.webp",
+      "bytes": 16480,
+      "sha256": "2d3453f5666cfa2a1baa0135a181868e3c94f183e11bd761952bb54edb4e27a9",
+      "contentType": "image/webp"
+    },
+    {
+      "path": "/services/assets/responsive/tessere-320.webp",
+      "source": "https://mementoservizi.vercel.app/assets/responsive/tessere-320.webp",
+      "bytes": 3594,
+      "sha256": "c56de0f557a47d336c51b5056a4c859d5066bb0ee31557bf440e2fb25a9339d9",
+      "contentType": "image/webp"
+    },
+    {
+      "path": "/services/assets/responsive/tessere-640.webp",
+      "source": "https://mementoservizi.vercel.app/assets/responsive/tessere-640.webp",
+      "bytes": 10784,
+      "sha256": "cfe01afc72f7b5067dc198e3485c3b87d86bdc4f04b07a7f6f2c571480f85cb2",
+      "contentType": "image/webp"
+    },
+    {
+      "path": "/services/assets/responsive/trailer-320.webp",
+      "source": "https://mementoservizi.vercel.app/assets/responsive/trailer-320.webp",
+      "bytes": 3536,
+      "sha256": "0325f9cdf8afb6ef9777acd442fa2bf15d046156f2f4b512aaa4b3656b795444",
+      "contentType": "image/webp"
+    },
+    {
+      "path": "/services/assets/responsive/trailer-640.webp",
+      "source": "https://mementoservizi.vercel.app/assets/responsive/trailer-640.webp",
+      "bytes": 10084,
+      "sha256": "22f3b31c4ae73ad2e48006847f372ab6329ca34ca87e0c127cb3b56b7e9e96ba",
+      "contentType": "image/webp"
+    },
+    {
+      "path": "/services/assets/responsive/vetrina-320.webp",
+      "source": "https://mementoservizi.vercel.app/assets/responsive/vetrina-320.webp",
+      "bytes": 3994,
+      "sha256": "ab7b30054b81705f86f669a2cf5c1f2bf51f3405b4ee400c97b578f6d0a555af",
+      "contentType": "image/webp"
+    },
+    {
+      "path": "/services/assets/responsive/vetrina-640.webp",
+      "source": "https://mementoservizi.vercel.app/assets/responsive/vetrina-640.webp",
+      "bytes": 11466,
+      "sha256": "192fa11395f230e1c1103b6656d75ae18d549ce8c773e547c8ce9f117fb6a5e0",
+      "contentType": "image/webp"
+    },
+    {
+      "path": "/services/assets/responsive/video-aziendali-320.webp",
+      "source": "https://mementoservizi.vercel.app/assets/responsive/video-aziendali-320.webp",
+      "bytes": 5216,
+      "sha256": "946c9a75c68f22944eee82e7f91d09b0c91bb932967d211af328078d525caa27",
+      "contentType": "image/webp"
+    },
+    {
+      "path": "/services/assets/responsive/video-aziendali-640.webp",
+      "source": "https://mementoservizi.vercel.app/assets/responsive/video-aziendali-640.webp",
+      "bytes": 13412,
+      "sha256": "cf2414dd34af52cab3417be28978ebbbf2746a8c1d3f989d56537c932f48f3eb",
+      "contentType": "image/webp"
+    },
+    {
+      "path": "/services/assets/responsive/video-esplicativi-320.webp",
+      "source": "https://mementoservizi.vercel.app/assets/responsive/video-esplicativi-320.webp",
+      "bytes": 3290,
+      "sha256": "faee9d045b3eac32d45d534e09f36a517aab9d328e606627b61184c728d0335a",
+      "contentType": "image/webp"
+    },
+    {
+      "path": "/services/assets/responsive/video-esplicativi-640.webp",
+      "source": "https://mementoservizi.vercel.app/assets/responsive/video-esplicativi-640.webp",
+      "bytes": 9136,
+      "sha256": "3471123ab2331fd67c74230d5f14728276173850b8bcd9eb3e57df8ff62193d3",
+      "contentType": "image/webp"
+    },
+    {
+      "path": "/services/assets/responsive/video-lancio-320.webp",
+      "source": "https://mementoservizi.vercel.app/assets/responsive/video-lancio-320.webp",
+      "bytes": 4636,
+      "sha256": "2832769ece89fb626bda8808105193f9025062a0519e66b3fa0ffab321cac70f",
+      "contentType": "image/webp"
+    },
+    {
+      "path": "/services/assets/responsive/video-lancio-640.webp",
+      "source": "https://mementoservizi.vercel.app/assets/responsive/video-lancio-640.webp",
+      "bytes": 14790,
+      "sha256": "0eccfa171a7b0a60caaab966009045704099d24e2316707e68df73835d17784d",
+      "contentType": "image/webp"
+    },
+    {
+      "path": "/services/assets/responsive/video-social-320.webp",
+      "source": "https://mementoservizi.vercel.app/assets/responsive/video-social-320.webp",
+      "bytes": 3686,
+      "sha256": "fa0232ea240007c327b73a503946a80fb07f56fb52a6092905e070d02053c155",
+      "contentType": "image/webp"
+    },
+    {
+      "path": "/services/assets/responsive/video-social-640.webp",
+      "source": "https://mementoservizi.vercel.app/assets/responsive/video-social-640.webp",
+      "bytes": 11270,
+      "sha256": "cef1fcb6c7b9f5016c4ed6c8497790269fe703ec1213166662725e9ea9c87e35",
+      "contentType": "image/webp"
+    },
+    {
+      "path": "/services/assets/scatole.webp",
+      "source": "https://mementoservizi.vercel.app/assets/scatole.webp",
+      "bytes": 40098,
+      "sha256": "acded433ec3ac123c7196ec4cdee4c652448788ffcc8dbfa2e83eb8d8f6ad293",
+      "contentType": "image/webp"
+    },
+    {
+      "path": "/services/assets/shopper.webp",
+      "source": "https://mementoservizi.vercel.app/assets/shopper.webp",
+      "bytes": 50892,
+      "sha256": "7265b1f7b06d874cc382f5181ce9e9791700a78a479270630ac5f0530863d37d",
+      "contentType": "image/webp"
+    },
+    {
+      "path": "/services/assets/showroom.webp",
+      "source": "https://mementoservizi.vercel.app/assets/showroom.webp",
+      "bytes": 46138,
+      "sha256": "330b8a8b2d9b63c77380fcae6c9d183944ac92dcc3e740329228de93bbb0af3b",
+      "contentType": "image/webp"
+    },
+    {
+      "path": "/services/assets/sito.webp",
+      "source": "https://mementoservizi.vercel.app/assets/sito.webp",
+      "bytes": 34676,
+      "sha256": "c19e074fef8af2fa8ae11abe1a2b623f479a00d914b18a793d621dc4b6c22ae2",
+      "contentType": "image/webp"
+    },
+    {
+      "path": "/services/assets/teaser.webp",
+      "source": "https://mementoservizi.vercel.app/assets/teaser.webp",
+      "bytes": 36332,
+      "sha256": "ed36b528bdb5a76ec7b467a14b5048634c4ac6653a5905b2712d60cdf713297a",
+      "contentType": "image/webp"
+    },
+    {
+      "path": "/services/assets/template-social.webp",
+      "source": "https://mementoservizi.vercel.app/assets/template-social.webp",
+      "bytes": 43572,
+      "sha256": "10b5adec8b3703c52e738eadc3255a2e0b34cf011fc70b6f58b880d499bf074d",
+      "contentType": "image/webp"
+    },
+    {
+      "path": "/services/assets/tessere.webp",
+      "source": "https://mementoservizi.vercel.app/assets/tessere.webp",
+      "bytes": 38172,
+      "sha256": "2f0a068192ff8c75ee3f6f3b5cb612fa7054fadf4c8fb6f5302ad840bb8f10ed",
+      "contentType": "image/webp"
+    },
+    {
+      "path": "/services/assets/textures/dither.svg",
+      "source": "https://mementoservizi.vercel.app/assets/textures/dither.svg",
+      "bytes": 318,
+      "sha256": "d21557a086208d3bb2f2af68a72dcb071285abe8aae87eb8584c997c3e0f009b",
+      "contentType": "image/svg+xml"
+    },
+    {
+      "path": "/services/assets/trailer.webp",
+      "source": "https://mementoservizi.vercel.app/assets/trailer.webp",
+      "bytes": 28896,
+      "sha256": "03224d5ba6566149a2f178745781957f1a4dba4accfa0ab2d455cc2c7fe81634",
+      "contentType": "image/webp"
+    },
+    {
+      "path": "/services/assets/vetrina.webp",
+      "source": "https://mementoservizi.vercel.app/assets/vetrina.webp",
+      "bytes": 29740,
+      "sha256": "b5a8d42bd74fb100fc6584d7feb17f4acdc647598a90bb5526c6e788dadeb333",
+      "contentType": "image/webp"
+    },
+    {
+      "path": "/services/assets/video-aziendali.webp",
+      "source": "https://mementoservizi.vercel.app/assets/video-aziendali.webp",
+      "bytes": 35974,
+      "sha256": "ed4d92e5f6bf75eba3d1119c752c06dbdfdda01b0c575837c7e7132bd92bcd2a",
+      "contentType": "image/webp"
+    },
+    {
+      "path": "/services/assets/video-esplicativi.webp",
+      "source": "https://mementoservizi.vercel.app/assets/video-esplicativi.webp",
+      "bytes": 27022,
+      "sha256": "81e286826189ecaa0808999c08e08a13f3e758a00bc4bfbb433e176d213e26f4",
+      "contentType": "image/webp"
+    },
+    {
+      "path": "/services/assets/video-lancio.webp",
+      "source": "https://mementoservizi.vercel.app/assets/video-lancio.webp",
+      "bytes": 43942,
+      "sha256": "a10e609fecbd95ba2db95881493c8a6e2e375fa5178e10b4f7ffc75c11890e1e",
+      "contentType": "image/webp"
+    },
+    {
+      "path": "/services/assets/video-social.webp",
+      "source": "https://mementoservizi.vercel.app/assets/video-social.webp",
+      "bytes": 37472,
+      "sha256": "8699cab51920801589d11f8cdaf375330713f88c4ae6c0a19d92502f923a0775",
+      "contentType": "image/webp"
+    }
+  ],
+  "errors": [],
+  "totalBytes": 5086545
+}

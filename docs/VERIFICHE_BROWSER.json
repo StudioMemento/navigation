@@ -1,0 +1,261 @@
+{
+  "date": "2026-11-02T13:22:10.727Z",
+  "renderer": "Chromium headless / SwiftShader; no device-performance claim",
+  "checks": [
+    {
+      "name": "HTTP production paths",
+      "count": 25
+    },
+    {
+      "name": "used configuration properties validated against official Vercel schema"
+    },
+    {
+      "name": "world loaded",
+      "nodes": 682,
+      "profile": "desktop"
+    },
+    {
+      "name": "embedded services",
+      "title": "Servizi — Memento Design Studio",
+      "width": 1280,
+      "scrollWidth": 1270,
+      "broken": [],
+      "bodyInert": false
+    },
+    {
+      "name": "return services"
+    },
+    {
+      "name": "embedded projects",
+      "title": "Portfolio — Memento",
+      "width": 1280,
+      "scrollWidth": 1280,
+      "broken": [],
+      "bodyInert": false
+    },
+    {
+      "name": "return projects"
+    },
+    {
+      "name": "embedded levelup",
+      "title": "LevelUp — Memento Design Studio",
+      "width": 1280,
+      "scrollWidth": 1280,
+      "broken": [],
+      "bodyInert": false
+    },
+    {
+      "name": "return levelup"
+    },
+    {
+      "name": "embedded start",
+      "title": "Start — Memento Design Studio",
+      "width": 1280,
+      "scrollWidth": 1280,
+      "broken": [],
+      "bodyInert": false
+    },
+    {
+      "name": "return start"
+    },
+    {
+      "name": "mobile framing",
+      "width": 390,
+      "scrollWidth": 390,
+      "profile": "mobile"
+    },
+    {
+      "name": "embedded services",
+      "title": "Servizi — Memento Design Studio",
+      "width": 390,
+      "scrollWidth": 380,
+      "broken": [],
+      "bodyInert": false
+    },
+    {
+      "name": "embedded projects",
+      "title": "Portfolio — Memento",
+      "width": 390,
+      "scrollWidth": 390,
+      "broken": [],
+      "bodyInert": false
+    },
+    {
+      "name": "embedded levelup",
+      "title": "LevelUp — Memento Design Studio",
+      "width": 390,
+      "scrollWidth": 390,
+      "broken": [],
+      "bodyInert": false
+    },
+    {
+      "name": "embedded start",
+      "title": "Start — Memento Design Studio",
+      "width": 390,
+      "scrollWidth": 390,
+      "broken": [],
+      "bodyInert": false
+    },
+    {
+      "name": "embedded services",
+      "title": "Servizi — Memento Design Studio",
+      "width": 390,
+      "scrollWidth": 380,
+      "broken": [],
+      "bodyInert": false
+    },
+    {
+      "name": "direct URL reload services"
+    },
+    {
+      "name": "embedded projects",
+      "title": "Portfolio — Memento",
+      "width": 390,
+      "scrollWidth": 390,
+      "broken": [],
+      "bodyInert": false
+    },
+    {
+      "name": "direct URL reload projects"
+    },
+    {
+      "name": "embedded levelup",
+      "title": "LevelUp — Memento Design Studio",
+      "width": 390,
+      "scrollWidth": 390,
+      "broken": [],
+      "bodyInert": false
+    },
+    {
+      "name": "direct URL reload levelup"
+    },
+    {
+      "name": "embedded start",
+      "title": "Start — Memento Design Studio",
+      "width": 390,
+      "scrollWidth": 390,
+      "broken": [],
+      "bodyInert": false
+    },
+    {
+      "name": "direct URL reload start"
+    },
+    {
+      "name": "animated Services entry and return"
+    }
+  ],
+  "pageErrors": [],
+  "httpErrors": [],
+  "externalRequests": [],
+  "http": {
+    "pass": true,
+    "checks": [
+      {
+        "path": "/",
+        "status": 200
+      },
+      {
+        "path": "/services/",
+        "status": 200
+      },
+      {
+        "path": "/projects/",
+        "status": 200
+      },
+      {
+        "path": "/levelup/",
+        "status": 200
+      },
+      {
+        "path": "/start/",
+        "status": 200
+      },
+      {
+        "path": "/catalog/",
+        "status": 200
+      },
+      {
+        "path": "/pages/projects/",
+        "status": 200
+      },
+      {
+        "path": "/pages/levelup/",
+        "status": 200
+      },
+      {
+        "path": "/pages/start/",
+        "status": 200
+      },
+      {
+        "path": "/src/app.mjs",
+        "status": 200
+      },
+      {
+        "path": "/src/page-bridge.js",
+        "status": 200
+      },
+      {
+        "path": "/assets/world.glb",
+        "status": 200
+      },
+      {
+        "path": "/assets/scene.json",
+        "status": 200
+      },
+      {
+        "path": "/assets/environment.hdr",
+        "status": 200
+      },
+      {
+        "path": "/vendor/draco/draco_wasm_wrapper.js",
+        "status": 200
+      },
+      {
+        "path": "/vendor/draco/draco_decoder.wasm",
+        "status": 200
+      },
+      {
+        "path": "/services",
+        "status": 308,
+        "deepLink": true
+      },
+      {
+        "path": "/projects",
+        "status": 308,
+        "deepLink": true
+      },
+      {
+        "path": "/levelup",
+        "status": 308,
+        "deepLink": true
+      },
+      {
+        "path": "/start",
+        "status": 308,
+        "deepLink": true
+      },
+      {
+        "path": "/src/missing.mjs",
+        "status": 404
+      },
+      {
+        "path": "/assets/missing.glb",
+        "status": 404
+      },
+      {
+        "path": "/package.json",
+        "status": 404
+      },
+      {
+        "path": "/docs/VERIFICHE_ORIGINALI.md",
+        "status": 404
+      },
+      {
+        "path": "/assets/world.glb",
+        "range": true,
+        "status": 206
+      }
+    ]
+  },
+  "pass": true
+}

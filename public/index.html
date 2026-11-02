@@ -1,27 +1,45 @@
 <!doctype html>
 <html lang="it">
 <head>
-  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-  <meta name="description" content="Studio di design & esperienze digitali. Esplora Memento, Services, Projects, Levelup e Start.">
-  <meta name="theme-color" content="#080a0b"><title>Memento — Tide</title>
-  <link rel="icon" href="data:,"><link rel="stylesheet" href="/style.css">
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0c0f12"><meta name="robots" content="noindex, nofollow">
+  <meta name="description" content="Memento — Studio di design &amp; esperienze digitali. Esplora servizi, progetti e nuove possibilità in un unico mondo.">
+  <title>Memento — Studio di design &amp; esperienze digitali</title><link rel="icon" type="image/svg+xml" href="/assets/home.svg">
+  <link rel="preload" as="font" href="/assets/InterVariable.woff2" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="/style.css">
   <script type="importmap">{"imports":{"three":"/vendor/three.module.js"}}</script>
+  <script type="module" src="/src/app.mjs"></script>
 </head>
-<body data-state="BOOT">
-  <section id="scene-layer" aria-label="Navigazione 3D Memento">
-    <canvas id="tide" aria-label="Trascina a destra o sinistra per scegliere una sezione; scorri in basso per esplorarla" tabindex="0"></canvas>
-    <div id="stage-targets"></div>
-    <p id="loading" class="sr-only" role="status">Caricamento della scena…</p>
-    <div id="scene-ui" hidden><h1 id="caption"><a id="stage-title" href="https://mementostudio.vercel.app/">MEMENTO</a></h1></div>
-  </section>
-  <main id="page-layer" hidden inert aria-label="Pagina selezionata">
-    <div id="frame-host"></div>
-    <div id="page-loading" role="status">Apertura della pagina…</div>
-    <aside id="embed-notice" hidden>La pagina sta impiegando più tempo del previsto. <a id="retry-direct" href="https://mementostudio.vercel.app/" target="_blank" rel="noopener">Aprila direttamente ↗</a></aside>
+<body>
+  <a class="skip" href="/services/">Vai direttamente ai servizi</a>
+  <main id="world" aria-label="Mondo Memento" aria-busy="true">
+    <canvas id="canvas" aria-label="Le cinque torri Memento. Usa i pulsanti delle stazioni per navigare."></canvas>
+    <img id="poster" src="/assets/reference/memento.png" alt="" aria-hidden="true">
+    <div id="loader" role="status"><span class="load-word">MEMENTO</span><span id="load-copy">Caricamento del mondo</span><span class="load-line"></span></div>
+    <div id="world-hud" hidden>
+      <svg class="diamond" viewBox="0 0 100 100" aria-hidden="true"><polygon points="50,0 100,50 50,100 0,50"/></svg>
+      <button class="vertex home" id="home" aria-label="Torna a Memento"><img src="/assets/home.svg" alt=""></button>
+      <button class="vertex left" id="previous" aria-label="Stazione precedente"><img src="/assets/left.svg" alt=""></button>
+      <button class="vertex right" id="next" aria-label="Stazione successiva"><img src="/assets/right.svg" alt=""></button>
+      <button class="vertex down" id="enter" aria-label="Entra nella sezione"><img src="/assets/down.svg" alt=""></button>
+    </div>
+    <div class="world-footer" id="world-footer" hidden>
+      <span class="preview-mark">MEMENTO DESIGN STUDIO</span>
+      <nav class="station-nav" aria-label="Stazioni">
+        <button data-station="0" aria-current="true">Memento</button><button data-station="1">Services</button><button data-station="2">Projects</button><button data-station="3">LevelUp</button><button data-station="4">Start</button>
+      </nav>
+      <button id="pause" class="motion-control" aria-label="Ferma animazione ambiente" aria-pressed="false"><span aria-hidden="true">Ⅱ</span></button>
+    </div>
+    <p id="hint" aria-hidden="true"></p>
+    <p class="sr-only" id="status" aria-live="polite"></p>
   </main>
-  <p id="status" class="sr-only" aria-live="polite" aria-atomic="true"></p>
-  <aside id="fallback" hidden><p>La scena 3D non è disponibile. Puoi continuare da qui.</p><nav aria-label="Collegamenti diretti"><a href="https://mementostudio.vercel.app/">Memento</a><a href="https://mementoservizi.vercel.app/">Services</a><a href="https://mementoportfolio.vercel.app/">Projects</a><a href="https://mementolevelup.vercel.app/">Levelup</a><a href="https://mementostart.vercel.app/">Start</a></nav><button type="button" onclick="location.reload()">Riprova</button></aside>
-  <noscript><nav class="noscript"><a href="https://mementostudio.vercel.app/">Memento</a><a href="https://mementoservizi.vercel.app/">Services</a><a href="https://mementoportfolio.vercel.app/">Projects</a><a href="https://mementolevelup.vercel.app/">Levelup</a><a href="https://mementostart.vercel.app/">Start</a></nav></noscript>
-  <script type="module">import('/src/app.js').catch(error=>{console.error(error);document.querySelector('#loading').hidden=true;document.querySelector('#fallback').hidden=false;});</script>
+  <div id="page-shell" hidden>
+    <header class="page-header"><button id="return"><img src="/assets/left.svg" alt="">Torna alle torri</button><span id="page-label">SERVICES</span><span class="page-preview">MEMENTO</span></header>
+    <div id="page-frame-wrap"></div>
+  </div>
+  <div id="transition" aria-hidden="true"><span id="transition-label"></span></div>
+  <section id="page-error" hidden role="alert"><p>La pagina sta impiegando più del previsto.</p><button id="retry-page">Riprova</button><button id="cancel-page">Torna alle torri</button></section>
+  <section id="error" hidden role="alert"><h1>Il mondo non è disponibile.</h1><p id="error-copy"></p><button id="retry">Riprova</button><a href="/catalog/">Apri i servizi</a></section>
+  <details id="qa" hidden><summary>Verifiche della preview</summary><div class="qa-actions"><button id="measure">Misura 12 secondi</button><button id="qa-orbit">Misura navigazione</button><button id="qa-services">Misura ingresso Services</button><button id="qa-frozen">Ferma al frame sorgente</button><label><input type="checkbox" id="qa-reduced"> Movimento ridotto</label></div><pre id="diagnostics"></pre></details>
 </body>
 </html>

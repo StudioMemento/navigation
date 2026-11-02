@@ -1,0 +1,2322 @@
+[
+  {
+    "id": "auren",
+    "title": "Auren",
+    "cover": "assets/covers-landscape/auren.webp",
+    "thumbnail": "assets/covers-landscape/auren-thumb.webp",
+    "hero": "assets/auren-01.webp",
+    "layout": "wide",
+    "domains": [
+      "web",
+      "design"
+    ],
+    "modules": [
+      {
+        "id": "visual",
+        "title": "Visual",
+        "items": [
+          {
+            "type": "image",
+            "src": "assets/auren-01.webp",
+            "thumb": "assets/auren-01-thumb.webp",
+            "alt": "Il flacone"
+          },
+          {
+            "type": "image",
+            "src": "assets/auren-02.webp",
+            "thumb": "assets/auren-02-thumb.webp",
+            "alt": "Iris"
+          },
+          {
+            "type": "image",
+            "src": "assets/auren-03.webp",
+            "thumb": "assets/auren-03-thumb.webp",
+            "alt": "L’aura"
+          }
+        ]
+      }
+    ],
+    "experience": {
+      "type": "web",
+      "url": "https://memento-auren.mementoxdesign.chatgpt.site"
+    },
+    "overview": [
+      {
+        "type": "image",
+        "src": "assets/covers-landscape/auren.webp",
+        "thumb": "assets/covers-landscape/auren-thumb.webp",
+        "alt": "Auren"
+      },
+      {
+        "type": "image",
+        "src": "assets/auren-01.webp",
+        "thumb": "assets/auren-01-thumb.webp",
+        "alt": "Il flacone"
+      }
+    ]
+  },
+  {
+    "id": "hyperknife-epic",
+    "title": "HyperKnife",
+    "cover": "assets/hyperknife/hyperknife-lvl1-epic-sculpture__1600w.webp",
+    "thumbnail": "assets/hyperknife/hyperknife-lvl1-epic-sculpture__960w.webp",
+    "hero": "assets/hyperknife/hyperknife-lvl1-epic-sculpture__1600w.webp",
+    "layout": "square",
+    "domains": [
+      "3d",
+      "video",
+      "design"
+    ],
+    "modules": [
+      {
+        "id": "render",
+        "title": "Render",
+        "items": [
+          {
+            "type": "image",
+            "src": "assets/hyperknife/hyperknife-lvl1-epic-sculpture__1600w.webp",
+            "thumb": "assets/hyperknife/hyperknife-lvl1-epic-sculpture__960w.webp",
+            "alt": "La forma"
+          },
+          {
+            "type": "image",
+            "src": "assets/hyperknife/hyperknife-lvl1-epic-profile__1600w.webp",
+            "thumb": "assets/hyperknife/hyperknife-lvl1-epic-profile__960w.webp",
+            "alt": "Il profilo"
+          },
+          {
+            "type": "image",
+            "src": "assets/hyperknife/hyperknife-lvl1-epic-diagonal__1600w.webp",
+            "thumb": "assets/hyperknife/hyperknife-lvl1-epic-diagonal__960w.webp",
+            "alt": "La prospettiva"
+          },
+          {
+            "type": "image",
+            "src": "assets/hyperknife/hyperknife-lvl1-epic-exploded__1600w.webp",
+            "thumb": "assets/hyperknife/hyperknife-lvl1-epic-exploded__960w.webp",
+            "alt": "Ogni componente"
+          }
+        ]
+      },
+      {
+        "id": "sketch",
+        "title": "Sketch",
+        "items": [
+          {
+            "type": "image",
+            "src": "assets/hyperknife-concept/01-1600.webp",
+            "thumb": "assets/hyperknife-concept/01-640.webp",
+            "alt": "HyperKnife Concept — tavola 1"
+          },
+          {
+            "type": "image",
+            "src": "assets/hyperknife-concept/02-1600.webp",
+            "thumb": "assets/hyperknife-concept/02-640.webp",
+            "alt": "HyperKnife Concept — tavola 2"
+          },
+          {
+            "type": "image",
+            "src": "assets/hyperknife-concept/03-1600.webp",
+            "thumb": "assets/hyperknife-concept/03-640.webp",
+            "alt": "HyperKnife Concept — tavola 3"
+          },
+          {
+            "type": "image",
+            "src": "assets/hyperknife-concept/04-1600.webp",
+            "thumb": "assets/hyperknife-concept/04-640.webp",
+            "alt": "HyperKnife Concept — tavola 4"
+          },
+          {
+            "type": "image",
+            "src": "assets/hyperknife-concept/05-1600.webp",
+            "thumb": "assets/hyperknife-concept/05-640.webp",
+            "alt": "HyperKnife Concept — tavola 5"
+          },
+          {
+            "type": "image",
+            "src": "assets/hyperknife-concept/06-1600.webp",
+            "thumb": "assets/hyperknife-concept/06-640.webp",
+            "alt": "HyperKnife Concept — tavola 6"
+          },
+          {
+            "type": "image",
+            "src": "assets/hyperknife-concept/07-1600.webp",
+            "thumb": "assets/hyperknife-concept/07-640.webp",
+            "alt": "HyperKnife Concept — tavola 7"
+          },
+          {
+            "type": "image",
+            "src": "assets/hyperknife-concept/08-1600.webp",
+            "thumb": "assets/hyperknife-concept/08-640.webp",
+            "alt": "HyperKnife Concept — tavola 8"
+          },
+          {
+            "type": "image",
+            "src": "assets/hyperknife-concept/09-1600.webp",
+            "thumb": "assets/hyperknife-concept/09-640.webp",
+            "alt": "HyperKnife Concept — tavola 9"
+          },
+          {
+            "type": "image",
+            "src": "assets/hyperknife-concept/10-1600.webp",
+            "thumb": "assets/hyperknife-concept/10-640.webp",
+            "alt": "HyperKnife Concept — tavola 10"
+          }
+        ]
+      },
+      {
+        "id": "development",
+        "title": "Development",
+        "items": [
+          {
+            "type": "image",
+            "src": "assets/hyperknife-modeling/01-1600.webp",
+            "thumb": "assets/hyperknife-modeling/01-640.webp",
+            "alt": "HyperKnife Modello — tavola 1"
+          },
+          {
+            "type": "image",
+            "src": "assets/hyperknife-modeling/02-1600.webp",
+            "thumb": "assets/hyperknife-modeling/02-640.webp",
+            "alt": "HyperKnife Modello — tavola 2"
+          },
+          {
+            "type": "image",
+            "src": "assets/hyperknife-modeling/03-1600.webp",
+            "thumb": "assets/hyperknife-modeling/03-640.webp",
+            "alt": "HyperKnife Modello — tavola 3"
+          },
+          {
+            "type": "image",
+            "src": "assets/hyperknife-modeling/04-1600.webp",
+            "thumb": "assets/hyperknife-modeling/04-640.webp",
+            "alt": "HyperKnife Modello — tavola 4"
+          },
+          {
+            "type": "image",
+            "src": "assets/hyperknife-modeling/05-1600.webp",
+            "thumb": "assets/hyperknife-modeling/05-640.webp",
+            "alt": "HyperKnife Modello — tavola 5"
+          },
+          {
+            "type": "image",
+            "src": "assets/hyperknife-modeling/06-1600.webp",
+            "thumb": "assets/hyperknife-modeling/06-640.webp",
+            "alt": "HyperKnife Modello — tavola 6"
+          },
+          {
+            "type": "image",
+            "src": "assets/hyperknife-modeling/07-1600.webp",
+            "thumb": "assets/hyperknife-modeling/07-640.webp",
+            "alt": "HyperKnife Modello — tavola 7"
+          }
+        ]
+      }
+    ],
+    "family": "hyperknife",
+    "variant": "Epic",
+    "overview": [
+      {
+        "type": "image",
+        "src": "assets/hyperknife/hyperknife-lvl1-epic-sculpture__1600w.webp",
+        "thumb": "assets/hyperknife/hyperknife-lvl1-epic-sculpture__960w.webp",
+        "alt": "La forma"
+      },
+      {
+        "type": "image",
+        "src": "assets/hyperknife/hyperknife-lvl1-epic-profile__1600w.webp",
+        "thumb": "assets/hyperknife/hyperknife-lvl1-epic-profile__960w.webp",
+        "alt": "Il profilo"
+      }
+    ]
+  },
+  {
+    "id": "hyperknife-sleek",
+    "title": "HyperKnife",
+    "cover": "assets/hyperknife/hyperknife-lvl1-sleek-sculpture__1600w.webp",
+    "thumbnail": "assets/hyperknife/hyperknife-lvl1-sleek-sculpture__960w.webp",
+    "hero": "assets/hyperknife/hyperknife-lvl1-sleek-sculpture__1600w.webp",
+    "layout": "square",
+    "domains": [
+      "3d",
+      "video",
+      "design"
+    ],
+    "modules": [
+      {
+        "id": "render",
+        "title": "Render",
+        "items": [
+          {
+            "type": "image",
+            "src": "assets/hyperknife/hyperknife-lvl1-sleek-sculpture__1600w.webp",
+            "thumb": "assets/hyperknife/hyperknife-lvl1-sleek-sculpture__960w.webp",
+            "alt": "La forma"
+          },
+          {
+            "type": "image",
+            "src": "assets/hyperknife/hyperknife-lvl1-sleek-profile__1600w.webp",
+            "thumb": "assets/hyperknife/hyperknife-lvl1-sleek-profile__960w.webp",
+            "alt": "Il profilo"
+          },
+          {
+            "type": "image",
+            "src": "assets/hyperknife/hyperknife-lvl1-sleek-diagonal__1600w.webp",
+            "thumb": "assets/hyperknife/hyperknife-lvl1-sleek-diagonal__960w.webp",
+            "alt": "La prospettiva"
+          },
+          {
+            "type": "image",
+            "src": "assets/hyperknife/hyperknife-lvl1-sleek-exploded__1600w.webp",
+            "thumb": "assets/hyperknife/hyperknife-lvl1-sleek-exploded__960w.webp",
+            "alt": "Ogni componente"
+          }
+        ]
+      },
+      {
+        "id": "sketch",
+        "title": "Sketch",
+        "items": [
+          {
+            "type": "image",
+            "src": "assets/hyperknife-concept/01-1600.webp",
+            "thumb": "assets/hyperknife-concept/01-640.webp",
+            "alt": "HyperKnife Concept — tavola 1"
+          },
+          {
+            "type": "image",
+            "src": "assets/hyperknife-concept/02-1600.webp",
+            "thumb": "assets/hyperknife-concept/02-640.webp",
+            "alt": "HyperKnife Concept — tavola 2"
+          },
+          {
+            "type": "image",
+            "src": "assets/hyperknife-concept/03-1600.webp",
+            "thumb": "assets/hyperknife-concept/03-640.webp",
+            "alt": "HyperKnife Concept — tavola 3"
+          },
+          {
+            "type": "image",
+            "src": "assets/hyperknife-concept/04-1600.webp",
+            "thumb": "assets/hyperknife-concept/04-640.webp",
+            "alt": "HyperKnife Concept — tavola 4"
+          },
+          {
+            "type": "image",
+            "src": "assets/hyperknife-concept/05-1600.webp",
+            "thumb": "assets/hyperknife-concept/05-640.webp",
+            "alt": "HyperKnife Concept — tavola 5"
+          },
+          {
+            "type": "image",
+            "src": "assets/hyperknife-concept/06-1600.webp",
+            "thumb": "assets/hyperknife-concept/06-640.webp",
+            "alt": "HyperKnife Concept — tavola 6"
+          },
+          {
+            "type": "image",
+            "src": "assets/hyperknife-concept/07-1600.webp",
+            "thumb": "assets/hyperknife-concept/07-640.webp",
+            "alt": "HyperKnife Concept — tavola 7"
+          },
+          {
+            "type": "image",
+            "src": "assets/hyperknife-concept/08-1600.webp",
+            "thumb": "assets/hyperknife-concept/08-640.webp",
+            "alt": "HyperKnife Concept — tavola 8"
+          },
+          {
+            "type": "image",
+            "src": "assets/hyperknife-concept/09-1600.webp",
+            "thumb": "assets/hyperknife-concept/09-640.webp",
+            "alt": "HyperKnife Concept — tavola 9"
+          },
+          {
+            "type": "image",
+            "src": "assets/hyperknife-concept/10-1600.webp",
+            "thumb": "assets/hyperknife-concept/10-640.webp",
+            "alt": "HyperKnife Concept — tavola 10"
+          }
+        ]
+      },
+      {
+        "id": "development",
+        "title": "Development",
+        "items": [
+          {
+            "type": "image",
+            "src": "assets/hyperknife-modeling/01-1600.webp",
+            "thumb": "assets/hyperknife-modeling/01-640.webp",
+            "alt": "HyperKnife Modello — tavola 1"
+          },
+          {
+            "type": "image",
+            "src": "assets/hyperknife-modeling/02-1600.webp",
+            "thumb": "assets/hyperknife-modeling/02-640.webp",
+            "alt": "HyperKnife Modello — tavola 2"
+          },
+          {
+            "type": "image",
+            "src": "assets/hyperknife-modeling/03-1600.webp",
+            "thumb": "assets/hyperknife-modeling/03-640.webp",
+            "alt": "HyperKnife Modello — tavola 3"
+          },
+          {
+            "type": "image",
+            "src": "assets/hyperknife-modeling/04-1600.webp",
+            "thumb": "assets/hyperknife-modeling/04-640.webp",
+            "alt": "HyperKnife Modello — tavola 4"
+          },
+          {
+            "type": "image",
+            "src": "assets/hyperknife-modeling/05-1600.webp",
+            "thumb": "assets/hyperknife-modeling/05-640.webp",
+            "alt": "HyperKnife Modello — tavola 5"
+          },
+          {
+            "type": "image",
+            "src": "assets/hyperknife-modeling/06-1600.webp",
+            "thumb": "assets/hyperknife-modeling/06-640.webp",
+            "alt": "HyperKnife Modello — tavola 6"
+          },
+          {
+            "type": "image",
+            "src": "assets/hyperknife-modeling/07-1600.webp",
+            "thumb": "assets/hyperknife-modeling/07-640.webp",
+            "alt": "HyperKnife Modello — tavola 7"
+          }
+        ]
+      }
+    ],
+    "family": "hyperknife",
+    "variant": "Sleek",
+    "overview": [
+      {
+        "type": "image",
+        "src": "assets/hyperknife/hyperknife-lvl1-sleek-sculpture__1600w.webp",
+        "thumb": "assets/hyperknife/hyperknife-lvl1-sleek-sculpture__960w.webp",
+        "alt": "La forma"
+      },
+      {
+        "type": "image",
+        "src": "assets/hyperknife/hyperknife-lvl1-sleek-profile__1600w.webp",
+        "thumb": "assets/hyperknife/hyperknife-lvl1-sleek-profile__960w.webp",
+        "alt": "Il profilo"
+      }
+    ]
+  },
+  {
+    "id": "hyperknife-arctic",
+    "title": "HyperKnife",
+    "cover": "assets/hyperknife/hyperknife-lvl2-arctic-sculpture__1600w.webp",
+    "thumbnail": "assets/hyperknife/hyperknife-lvl2-arctic-sculpture__960w.webp",
+    "hero": "assets/hyperknife/hyperknife-lvl2-arctic-sculpture__1600w.webp",
+    "layout": "square",
+    "domains": [
+      "3d",
+      "video",
+      "design"
+    ],
+    "modules": [
+      {
+        "id": "render",
+        "title": "Render",
+        "items": [
+          {
+            "type": "image",
+            "src": "assets/hyperknife/hyperknife-lvl2-arctic-sculpture__1600w.webp",
+            "thumb": "assets/hyperknife/hyperknife-lvl2-arctic-sculpture__960w.webp",
+            "alt": "La forma"
+          },
+          {
+            "type": "image",
+            "src": "assets/hyperknife/hyperknife-lvl2-arctic-profile__1600w.webp",
+            "thumb": "assets/hyperknife/hyperknife-lvl2-arctic-profile__960w.webp",
+            "alt": "Il profilo"
+          },
+          {
+            "type": "image",
+            "src": "assets/hyperknife/hyperknife-lvl2-arctic-macro__1600w.webp",
+            "thumb": "assets/hyperknife/hyperknife-lvl2-arctic-macro__960w.webp",
+            "alt": "La materia"
+          },
+          {
+            "type": "image",
+            "src": "assets/hyperknife/hyperknife-lvl2-arctic-exploded__1600w.webp",
+            "thumb": "assets/hyperknife/hyperknife-lvl2-arctic-exploded__960w.webp",
+            "alt": "Ogni componente"
+          }
+        ]
+      },
+      {
+        "id": "sketch",
+        "title": "Sketch",
+        "items": [
+          {
+            "type": "image",
+            "src": "assets/hyperknife-concept/01-1600.webp",
+            "thumb": "assets/hyperknife-concept/01-640.webp",
+            "alt": "HyperKnife Concept — tavola 1"
+          },
+          {
+            "type": "image",
+            "src": "assets/hyperknife-concept/02-1600.webp",
+            "thumb": "assets/hyperknife-concept/02-640.webp",
+            "alt": "HyperKnife Concept — tavola 2"
+          },
+          {
+            "type": "image",
+            "src": "assets/hyperknife-concept/03-1600.webp",
+            "thumb": "assets/hyperknife-concept/03-640.webp",
+            "alt": "HyperKnife Concept — tavola 3"
+          },
+          {
+            "type": "image",
+            "src": "assets/hyperknife-concept/04-1600.webp",
+            "thumb": "assets/hyperknife-concept/04-640.webp",
+            "alt": "HyperKnife Concept — tavola 4"
+          },
+          {
+            "type": "image",
+            "src": "assets/hyperknife-concept/05-1600.webp",
+            "thumb": "assets/hyperknife-concept/05-640.webp",
+            "alt": "HyperKnife Concept — tavola 5"
+          },
+          {
+            "type": "image",
+            "src": "assets/hyperknife-concept/06-1600.webp",
+            "thumb": "assets/hyperknife-concept/06-640.webp",
+            "alt": "HyperKnife Concept — tavola 6"
+          },
+          {
+            "type": "image",
+            "src": "assets/hyperknife-concept/07-1600.webp",
+            "thumb": "assets/hyperknife-concept/07-640.webp",
+            "alt": "HyperKnife Concept — tavola 7"
+          },
+          {
+            "type": "image",
+            "src": "assets/hyperknife-concept/08-1600.webp",
+            "thumb": "assets/hyperknife-concept/08-640.webp",
+            "alt": "HyperKnife Concept — tavola 8"
+          },
+          {
+            "type": "image",
+            "src": "assets/hyperknife-concept/09-1600.webp",
+            "thumb": "assets/hyperknife-concept/09-640.webp",
+            "alt": "HyperKnife Concept — tavola 9"
+          },
+          {
+            "type": "image",
+            "src": "assets/hyperknife-concept/10-1600.webp",
+            "thumb": "assets/hyperknife-concept/10-640.webp",
+            "alt": "HyperKnife Concept — tavola 10"
+          }
+        ]
+      },
+      {
+        "id": "development",
+        "title": "Development",
+        "items": [
+          {
+            "type": "image",
+            "src": "assets/hyperknife-modeling/01-1600.webp",
+            "thumb": "assets/hyperknife-modeling/01-640.webp",
+            "alt": "HyperKnife Modello — tavola 1"
+          },
+          {
+            "type": "image",
+            "src": "assets/hyperknife-modeling/02-1600.webp",
+            "thumb": "assets/hyperknife-modeling/02-640.webp",
+            "alt": "HyperKnife Modello — tavola 2"
+          },
+          {
+            "type": "image",
+            "src": "assets/hyperknife-modeling/03-1600.webp",
+            "thumb": "assets/hyperknife-modeling/03-640.webp",
+            "alt": "HyperKnife Modello — tavola 3"
+          },
+          {
+            "type": "image",
+            "src": "assets/hyperknife-modeling/04-1600.webp",
+            "thumb": "assets/hyperknife-modeling/04-640.webp",
+            "alt": "HyperKnife Modello — tavola 4"
+          },
+          {
+            "type": "image",
+            "src": "assets/hyperknife-modeling/05-1600.webp",
+            "thumb": "assets/hyperknife-modeling/05-640.webp",
+            "alt": "HyperKnife Modello — tavola 5"
+          },
+          {
+            "type": "image",
+            "src": "assets/hyperknife-modeling/06-1600.webp",
+            "thumb": "assets/hyperknife-modeling/06-640.webp",
+            "alt": "HyperKnife Modello — tavola 6"
+          },
+          {
+            "type": "image",
+            "src": "assets/hyperknife-modeling/07-1600.webp",
+            "thumb": "assets/hyperknife-modeling/07-640.webp",
+            "alt": "HyperKnife Modello — tavola 7"
+          }
+        ]
+      }
+    ],
+    "family": "hyperknife",
+    "variant": "Arctic",
+    "overview": [
+      {
+        "type": "image",
+        "src": "assets/hyperknife/hyperknife-lvl2-arctic-sculpture__1600w.webp",
+        "thumb": "assets/hyperknife/hyperknife-lvl2-arctic-sculpture__960w.webp",
+        "alt": "La forma"
+      },
+      {
+        "type": "image",
+        "src": "assets/hyperknife/hyperknife-lvl2-arctic-profile__1600w.webp",
+        "thumb": "assets/hyperknife/hyperknife-lvl2-arctic-profile__960w.webp",
+        "alt": "Il profilo"
+      }
+    ]
+  },
+  {
+    "id": "hyperknife-chaos",
+    "title": "HyperKnife",
+    "cover": "assets/hyperknife/hyperknife-lvl3-chaos-profile__1600w.webp",
+    "thumbnail": "assets/hyperknife/hyperknife-lvl3-chaos-profile__960w.webp",
+    "hero": "assets/hyperknife/hyperknife-lvl3-chaos-profile__1600w.webp",
+    "layout": "square",
+    "domains": [
+      "3d",
+      "video",
+      "design"
+    ],
+    "modules": [
+      {
+        "id": "render",
+        "title": "Render",
+        "items": [
+          {
+            "type": "image",
+            "src": "assets/hyperknife/hyperknife-lvl3-chaos-profile__1600w.webp",
+            "thumb": "assets/hyperknife/hyperknife-lvl3-chaos-profile__960w.webp",
+            "alt": "Il profilo"
+          },
+          {
+            "type": "image",
+            "src": "assets/hyperknife/hyperknife-lvl3-chaos-diagonal__1600w.webp",
+            "thumb": "assets/hyperknife/hyperknife-lvl3-chaos-diagonal__960w.webp",
+            "alt": "La prospettiva"
+          },
+          {
+            "type": "image",
+            "src": "assets/hyperknife/hyperknife-lvl3-chaos-environment__1600w.webp",
+            "thumb": "assets/hyperknife/hyperknife-lvl3-chaos-environment__960w.webp",
+            "alt": "La scena"
+          },
+          {
+            "type": "image",
+            "src": "assets/hyperknife/hyperknife-lvl3-chaos-exploded__1600w.webp",
+            "thumb": "assets/hyperknife/hyperknife-lvl3-chaos-exploded__960w.webp",
+            "alt": "Ogni componente"
+          }
+        ]
+      },
+      {
+        "id": "sketch",
+        "title": "Sketch",
+        "items": [
+          {
+            "type": "image",
+            "src": "assets/hyperknife-concept/01-1600.webp",
+            "thumb": "assets/hyperknife-concept/01-640.webp",
+            "alt": "HyperKnife Concept — tavola 1"
+          },
+          {
+            "type": "image",
+            "src": "assets/hyperknife-concept/02-1600.webp",
+            "thumb": "assets/hyperknife-concept/02-640.webp",
+            "alt": "HyperKnife Concept — tavola 2"
+          },
+          {
+            "type": "image",
+            "src": "assets/hyperknife-concept/03-1600.webp",
+            "thumb": "assets/hyperknife-concept/03-640.webp",
+            "alt": "HyperKnife Concept — tavola 3"
+          },
+          {
+            "type": "image",
+            "src": "assets/hyperknife-concept/04-1600.webp",
+            "thumb": "assets/hyperknife-concept/04-640.webp",
+            "alt": "HyperKnife Concept — tavola 4"
+          },
+          {
+            "type": "image",
+            "src": "assets/hyperknife-concept/05-1600.webp",
+            "thumb": "assets/hyperknife-concept/05-640.webp",
+            "alt": "HyperKnife Concept — tavola 5"
+          },
+          {
+            "type": "image",
+            "src": "assets/hyperknife-concept/06-1600.webp",
+            "thumb": "assets/hyperknife-concept/06-640.webp",
+            "alt": "HyperKnife Concept — tavola 6"
+          },
+          {
+            "type": "image",
+            "src": "assets/hyperknife-concept/07-1600.webp",
+            "thumb": "assets/hyperknife-concept/07-640.webp",
+            "alt": "HyperKnife Concept — tavola 7"
+          },
+          {
+            "type": "image",
+            "src": "assets/hyperknife-concept/08-1600.webp",
+            "thumb": "assets/hyperknife-concept/08-640.webp",
+            "alt": "HyperKnife Concept — tavola 8"
+          },
+          {
+            "type": "image",
+            "src": "assets/hyperknife-concept/09-1600.webp",
+            "thumb": "assets/hyperknife-concept/09-640.webp",
+            "alt": "HyperKnife Concept — tavola 9"
+          },
+          {
+            "type": "image",
+            "src": "assets/hyperknife-concept/10-1600.webp",
+            "thumb": "assets/hyperknife-concept/10-640.webp",
+            "alt": "HyperKnife Concept — tavola 10"
+          }
+        ]
+      },
+      {
+        "id": "development",
+        "title": "Development",
+        "items": [
+          {
+            "type": "image",
+            "src": "assets/hyperknife-modeling/01-1600.webp",
+            "thumb": "assets/hyperknife-modeling/01-640.webp",
+            "alt": "HyperKnife Modello — tavola 1"
+          },
+          {
+            "type": "image",
+            "src": "assets/hyperknife-modeling/02-1600.webp",
+            "thumb": "assets/hyperknife-modeling/02-640.webp",
+            "alt": "HyperKnife Modello — tavola 2"
+          },
+          {
+            "type": "image",
+            "src": "assets/hyperknife-modeling/03-1600.webp",
+            "thumb": "assets/hyperknife-modeling/03-640.webp",
+            "alt": "HyperKnife Modello — tavola 3"
+          },
+          {
+            "type": "image",
+            "src": "assets/hyperknife-modeling/04-1600.webp",
+            "thumb": "assets/hyperknife-modeling/04-640.webp",
+            "alt": "HyperKnife Modello — tavola 4"
+          },
+          {
+            "type": "image",
+            "src": "assets/hyperknife-modeling/05-1600.webp",
+            "thumb": "assets/hyperknife-modeling/05-640.webp",
+            "alt": "HyperKnife Modello — tavola 5"
+          },
+          {
+            "type": "image",
+            "src": "assets/hyperknife-modeling/06-1600.webp",
+            "thumb": "assets/hyperknife-modeling/06-640.webp",
+            "alt": "HyperKnife Modello — tavola 6"
+          },
+          {
+            "type": "image",
+            "src": "assets/hyperknife-modeling/07-1600.webp",
+            "thumb": "assets/hyperknife-modeling/07-640.webp",
+            "alt": "HyperKnife Modello — tavola 7"
+          }
+        ]
+      }
+    ],
+    "family": "hyperknife",
+    "variant": "Chaos",
+    "overview": [
+      {
+        "type": "image",
+        "src": "assets/hyperknife/hyperknife-lvl3-chaos-profile__1600w.webp",
+        "thumb": "assets/hyperknife/hyperknife-lvl3-chaos-profile__960w.webp",
+        "alt": "Il profilo"
+      },
+      {
+        "type": "image",
+        "src": "assets/hyperknife/hyperknife-lvl3-chaos-diagonal__1600w.webp",
+        "thumb": "assets/hyperknife/hyperknife-lvl3-chaos-diagonal__960w.webp",
+        "alt": "La prospettiva"
+      }
+    ]
+  },
+  {
+    "id": "food",
+    "title": "Food",
+    "cover": "assets/covers-landscape/food.webp",
+    "thumbnail": "assets/covers-landscape/food-thumb.webp",
+    "hero": "assets/food-01.webp",
+    "layout": "square",
+    "domains": [
+      "web",
+      "design"
+    ],
+    "modules": [
+      {
+        "id": "visual",
+        "title": "Visual",
+        "items": [
+          {
+            "type": "image",
+            "src": "assets/food-01.webp",
+            "thumb": "assets/food-01-thumb.webp",
+            "alt": "Affumicato"
+          },
+          {
+            "type": "image",
+            "src": "assets/food-02.webp",
+            "thumb": "assets/food-02-thumb.webp",
+            "alt": "Gli ingredienti"
+          },
+          {
+            "type": "image",
+            "src": "assets/food-03.webp",
+            "thumb": "assets/food-03-thumb.webp",
+            "alt": "La cucina"
+          }
+        ]
+      }
+    ],
+    "experience": {
+      "type": "web",
+      "url": "https://mementofood.vercel.app/"
+    },
+    "overview": [
+      {
+        "type": "image",
+        "src": "assets/covers-landscape/food.webp",
+        "thumb": "assets/covers-landscape/food-thumb.webp",
+        "alt": "Food"
+      },
+      {
+        "type": "image",
+        "src": "assets/food-01.webp",
+        "thumb": "assets/food-01-thumb.webp",
+        "alt": "Affumicato"
+      }
+    ]
+  },
+  {
+    "id": "elite",
+    "title": "Elite",
+    "cover": "assets/covers-landscape/elite.webp",
+    "thumbnail": "assets/covers-landscape/elite-thumb.webp",
+    "hero": "assets/elite-01.webp",
+    "layout": "square",
+    "domains": [
+      "web",
+      "design"
+    ],
+    "modules": [
+      {
+        "id": "visual",
+        "title": "Visual",
+        "items": [
+          {
+            "type": "image",
+            "src": "assets/elite-01.webp",
+            "thumb": "assets/elite-01-thumb.webp",
+            "alt": "Il luogo"
+          },
+          {
+            "type": "image",
+            "src": "assets/elite-02.webp",
+            "thumb": "assets/elite-02-thumb.webp",
+            "alt": "La cucina"
+          },
+          {
+            "type": "image",
+            "src": "assets/elite-03.webp",
+            "thumb": "assets/elite-03-thumb.webp",
+            "alt": "La tavola"
+          }
+        ]
+      }
+    ],
+    "experience": {
+      "type": "web",
+      "url": "https://memento-elite.memento-studio.chatgpt.site"
+    },
+    "overview": [
+      {
+        "type": "image",
+        "src": "assets/covers-landscape/elite.webp",
+        "thumb": "assets/covers-landscape/elite-thumb.webp",
+        "alt": "Elite"
+      },
+      {
+        "type": "image",
+        "src": "assets/elite-01.webp",
+        "thumb": "assets/elite-01-thumb.webp",
+        "alt": "Il luogo"
+      }
+    ]
+  },
+  {
+    "id": "coricama-dark",
+    "title": "Coricama",
+    "cover": "assets/coricama/coricama-dark-upright__1600w.webp",
+    "thumbnail": "assets/coricama/coricama-dark-upright__960w.webp",
+    "hero": "assets/coricama/coricama-dark-upright__1600w.webp",
+    "layout": "square",
+    "domains": [
+      "3d",
+      "video"
+    ],
+    "modules": [
+      {
+        "id": "render",
+        "title": "Render",
+        "items": [
+          {
+            "type": "image",
+            "src": "assets/coricama/coricama-dark-profile__1600w.webp",
+            "thumb": "assets/coricama/coricama-dark-profile__960w.webp",
+            "alt": "Lo strumento"
+          },
+          {
+            "type": "image",
+            "src": "assets/coricama/coricama-dark-macro__1600w.webp",
+            "thumb": "assets/coricama/coricama-dark-macro__960w.webp",
+            "alt": "La precisione"
+          },
+          {
+            "type": "image",
+            "src": "assets/coricama/coricama-dark-branding__1600w.webp",
+            "thumb": "assets/coricama/coricama-dark-branding__960w.webp",
+            "alt": "Il dettaglio"
+          },
+          {
+            "type": "image",
+            "src": "assets/coricama/coricama-dark-upright__1600w.webp",
+            "thumb": "assets/coricama/coricama-dark-upright__960w.webp",
+            "alt": "La forma"
+          }
+        ]
+      }
+    ],
+    "family": "coricama",
+    "variant": "Dark",
+    "overview": [
+      {
+        "type": "image",
+        "src": "assets/coricama/coricama-dark-upright__1600w.webp",
+        "thumb": "assets/coricama/coricama-dark-upright__960w.webp",
+        "alt": "La forma"
+      },
+      {
+        "type": "image",
+        "src": "assets/coricama/coricama-dark-profile__1600w.webp",
+        "thumb": "assets/coricama/coricama-dark-profile__960w.webp",
+        "alt": "Lo strumento"
+      }
+    ]
+  },
+  {
+    "id": "coricama-light",
+    "title": "Coricama",
+    "cover": "assets/coricama/coricama-light-upright__1600w.webp",
+    "thumbnail": "assets/coricama/coricama-light-upright__960w.webp",
+    "hero": "assets/coricama/coricama-light-upright__1600w.webp",
+    "layout": "square",
+    "domains": [
+      "3d",
+      "video"
+    ],
+    "modules": [
+      {
+        "id": "render",
+        "title": "Render",
+        "items": [
+          {
+            "type": "image",
+            "src": "assets/coricama/coricama-light-profile__1600w.webp",
+            "thumb": "assets/coricama/coricama-light-profile__960w.webp",
+            "alt": "Lo strumento"
+          },
+          {
+            "type": "image",
+            "src": "assets/coricama/coricama-light-macro__1600w.webp",
+            "thumb": "assets/coricama/coricama-light-macro__960w.webp",
+            "alt": "La precisione"
+          },
+          {
+            "type": "image",
+            "src": "assets/coricama/coricama-light-branding__1600w.webp",
+            "thumb": "assets/coricama/coricama-light-branding__960w.webp",
+            "alt": "Il dettaglio"
+          },
+          {
+            "type": "image",
+            "src": "assets/coricama/coricama-light-upright__1600w.webp",
+            "thumb": "assets/coricama/coricama-light-upright__960w.webp",
+            "alt": "La forma"
+          }
+        ]
+      }
+    ],
+    "family": "coricama",
+    "variant": "Light",
+    "overview": [
+      {
+        "type": "image",
+        "src": "assets/coricama/coricama-light-upright__1600w.webp",
+        "thumb": "assets/coricama/coricama-light-upright__960w.webp",
+        "alt": "La forma"
+      },
+      {
+        "type": "image",
+        "src": "assets/coricama/coricama-light-profile__1600w.webp",
+        "thumb": "assets/coricama/coricama-light-profile__960w.webp",
+        "alt": "Lo strumento"
+      }
+    ]
+  },
+  {
+    "id": "footwear-hyper",
+    "title": "HYPER",
+    "cover": "assets/covers-landscape/footwear-hyper.webp",
+    "thumbnail": "assets/covers-landscape/footwear-hyper-thumb.webp",
+    "hero": "assets/footwear-hyper/footwear-hyper-wide__1672w.webp",
+    "layout": "square",
+    "domains": [
+      "3d",
+      "design"
+    ],
+    "modules": [
+      {
+        "id": "render",
+        "title": "Render",
+        "items": [
+          {
+            "type": "image",
+            "src": "assets/footwear-hyper/hyper-archive-01__1600w.webp",
+            "thumb": "assets/footwear-hyper/hyper-archive-01__960w.webp",
+            "alt": "HYPER — tavola 1"
+          },
+          {
+            "type": "image",
+            "src": "assets/footwear-hyper/hyper-archive-02__1600w.webp",
+            "thumb": "assets/footwear-hyper/hyper-archive-02__960w.webp",
+            "alt": "HYPER — tavola 2"
+          },
+          {
+            "type": "image",
+            "src": "assets/footwear-hyper/hyper-archive-03__1600w.webp",
+            "thumb": "assets/footwear-hyper/hyper-archive-03__960w.webp",
+            "alt": "HYPER — tavola 3"
+          },
+          {
+            "type": "image",
+            "src": "assets/footwear-hyper/hyper-archive-04__1600w.webp",
+            "thumb": "assets/footwear-hyper/hyper-archive-04__960w.webp",
+            "alt": "HYPER — tavola 4"
+          },
+          {
+            "type": "image",
+            "src": "assets/footwear-hyper/hyper-archive-05__1600w.webp",
+            "thumb": "assets/footwear-hyper/hyper-archive-05__960w.webp",
+            "alt": "HYPER — tavola 5"
+          },
+          {
+            "type": "image",
+            "src": "assets/footwear-hyper/hyper-archive-06__1600w.webp",
+            "thumb": "assets/footwear-hyper/hyper-archive-06__960w.webp",
+            "alt": "HYPER — tavola 6"
+          },
+          {
+            "type": "image",
+            "src": "assets/footwear-hyper/hyper-archive-07__1600w.webp",
+            "thumb": "assets/footwear-hyper/hyper-archive-07__960w.webp",
+            "alt": "HYPER — tavola 7"
+          }
+        ]
+      }
+    ],
+    "overview": [
+      {
+        "type": "image",
+        "src": "assets/covers-landscape/footwear-hyper.webp",
+        "thumb": "assets/covers-landscape/footwear-hyper-thumb.webp",
+        "alt": "HYPER"
+      },
+      {
+        "type": "image",
+        "src": "assets/footwear-hyper/hyper-archive-01__1600w.webp",
+        "thumb": "assets/footwear-hyper/hyper-archive-01__960w.webp",
+        "alt": "HYPER — tavola 1"
+      }
+    ]
+  },
+  {
+    "id": "ice-cream",
+    "title": "Ice Cream",
+    "cover": "assets/covers-landscape/ice-cream.webp",
+    "thumbnail": "assets/covers-landscape/ice-cream-thumb.webp",
+    "hero": "assets/ice-cream-01.webp",
+    "layout": "square",
+    "domains": [
+      "web",
+      "3d"
+    ],
+    "modules": [
+      {
+        "id": "render",
+        "title": "Render",
+        "items": [
+          {
+            "type": "image",
+            "src": "assets/ice-cream-01.webp",
+            "thumb": "assets/ice-cream-01-thumb.webp",
+            "alt": "Chocofragoloso"
+          },
+          {
+            "type": "image",
+            "src": "assets/ice-cream-02.webp",
+            "thumb": "assets/ice-cream-02-thumb.webp",
+            "alt": "Charameloso"
+          }
+        ]
+      }
+    ],
+    "experience": {
+      "type": "web",
+      "url": "https://mementoicecream.vercel.app/"
+    },
+    "overview": [
+      {
+        "type": "image",
+        "src": "assets/covers-landscape/ice-cream.webp",
+        "thumb": "assets/covers-landscape/ice-cream-thumb.webp",
+        "alt": "Ice Cream"
+      },
+      {
+        "type": "image",
+        "src": "assets/ice-cream-01.webp",
+        "thumb": "assets/ice-cream-01-thumb.webp",
+        "alt": "Chocofragoloso"
+      }
+    ]
+  },
+  {
+    "id": "hypercity",
+    "title": "HyperCity",
+    "cover": "assets/covers-landscape/hypercity.webp",
+    "thumbnail": "assets/covers-landscape/hypercity-thumb.webp",
+    "hero": "assets/hypercity/hypercity-wide__1672w.webp",
+    "layout": "wide",
+    "domains": [
+      "3d",
+      "video"
+    ],
+    "modules": [
+      {
+        "id": "render",
+        "title": "Render",
+        "items": [
+          {
+            "type": "image",
+            "src": "assets/hypercity/hypercity-original-1600.webp",
+            "thumb": "assets/hypercity/hypercity-original-640.webp",
+            "alt": "HyperCity — tavola originale"
+          },
+          {
+            "type": "image",
+            "src": "assets/hypercity/hypercity-wide__1672w.webp",
+            "thumb": "assets/hypercity/hypercity-wide__1672w.webp",
+            "alt": "Panorama — visual di presentazione"
+          },
+          {
+            "type": "image",
+            "src": "assets/hypercity/hypercity-square__1254w.webp",
+            "thumb": "assets/hypercity/hypercity-square__1254w.webp",
+            "alt": "La piazza — visual di presentazione"
+          },
+          {
+            "type": "image",
+            "src": "assets/hypercity/hypercity-portrait__941w.webp",
+            "thumb": "assets/hypercity/hypercity-portrait__941w.webp",
+            "alt": "La prospettiva — visual di presentazione"
+          }
+        ]
+      },
+      {
+        "id": "video",
+        "title": "Video",
+        "items": [
+          {
+            "type": "video",
+            "embed": "https://www.youtube-nocookie.com/embed/KESFumDZFjY?rel=0",
+            "url": "https://www.youtube.com/watch?v=KESFumDZFjY",
+            "poster": "assets/covers-landscape/hypercity.webp",
+            "alt": "HyperCity"
+          }
+        ]
+      }
+    ],
+    "experience": {
+      "type": "video",
+      "url": "https://www.youtube.com/watch?v=KESFumDZFjY",
+      "embed": "https://www.youtube-nocookie.com/embed/KESFumDZFjY?rel=0"
+    },
+    "overview": [
+      {
+        "type": "image",
+        "src": "assets/covers-landscape/hypercity.webp",
+        "thumb": "assets/covers-landscape/hypercity-thumb.webp",
+        "alt": "HyperCity"
+      },
+      {
+        "type": "image",
+        "src": "assets/hypercity/hypercity-original-1600.webp",
+        "thumb": "assets/hypercity/hypercity-original-640.webp",
+        "alt": "HyperCity — tavola originale"
+      }
+    ]
+  },
+  {
+    "id": "mementosl",
+    "title": "MementoSL",
+    "cover": "assets/covers-landscape/mementosl.webp",
+    "thumbnail": "assets/covers-landscape/mementosl-thumb.webp",
+    "hero": "assets/mementosl-01.webp",
+    "layout": "tall",
+    "domains": [
+      "web",
+      "3d"
+    ],
+    "modules": [
+      {
+        "id": "render",
+        "title": "Render",
+        "items": [
+          {
+            "type": "image",
+            "src": "assets/mementosl-01.webp",
+            "thumb": "assets/mementosl-01-thumb.webp",
+            "alt": "Clothwear"
+          },
+          {
+            "type": "image",
+            "src": "assets/mementosl-02.webp",
+            "thumb": "assets/mementosl-02-thumb.webp",
+            "alt": "Footwear"
+          },
+          {
+            "type": "image",
+            "src": "assets/mementosl-03.webp",
+            "thumb": "assets/mementosl-03-thumb.webp",
+            "alt": "Lo showroom"
+          }
+        ]
+      }
+    ],
+    "experience": {
+      "type": "web",
+      "url": "https://mementosl.vercel.app/"
+    },
+    "overview": [
+      {
+        "type": "image",
+        "src": "assets/covers-landscape/mementosl.webp",
+        "thumb": "assets/covers-landscape/mementosl-thumb.webp",
+        "alt": "MementoSL"
+      },
+      {
+        "type": "image",
+        "src": "assets/mementosl-01.webp",
+        "thumb": "assets/mementosl-01-thumb.webp",
+        "alt": "Clothwear"
+      }
+    ]
+  },
+  {
+    "id": "knives",
+    "title": "Knives",
+    "cover": "assets/covers-landscape/knives.webp",
+    "thumbnail": "assets/covers-landscape/knives-thumb.webp",
+    "hero": "assets/knives-01.webp",
+    "layout": "square",
+    "domains": [
+      "web",
+      "3d"
+    ],
+    "modules": [
+      {
+        "id": "render",
+        "title": "Render",
+        "items": [
+          {
+            "type": "image",
+            "src": "assets/knives-01.webp",
+            "thumb": "assets/knives-01-thumb.webp",
+            "alt": "Lo showroom"
+          },
+          {
+            "type": "image",
+            "src": "assets/knives-02.webp",
+            "thumb": "assets/knives-02-thumb.webp",
+            "alt": "La collezione"
+          }
+        ]
+      }
+    ],
+    "experience": {
+      "type": "web",
+      "url": "https://knives.vercel.app/"
+    },
+    "overview": [
+      {
+        "type": "image",
+        "src": "assets/covers-landscape/knives.webp",
+        "thumb": "assets/covers-landscape/knives-thumb.webp",
+        "alt": "Knives"
+      },
+      {
+        "type": "image",
+        "src": "assets/knives-01.webp",
+        "thumb": "assets/knives-01-thumb.webp",
+        "alt": "Lo showroom"
+      }
+    ]
+  },
+  {
+    "id": "eurobeer",
+    "title": "New Eurobeer",
+    "cover": "assets/covers-landscape/eurobeer.webp",
+    "thumbnail": "assets/covers-landscape/eurobeer-thumb.webp",
+    "hero": "assets/eurobeer-01.webp",
+    "layout": "wide",
+    "domains": [
+      "web",
+      "design"
+    ],
+    "modules": [
+      {
+        "id": "visual",
+        "title": "Visual",
+        "items": [
+          {
+            "type": "image",
+            "src": "assets/eurobeer-01.webp",
+            "thumb": "assets/eurobeer-01-thumb.webp",
+            "alt": "New Euro Burger"
+          },
+          {
+            "type": "image",
+            "src": "assets/eurobeer-02.webp",
+            "thumb": "assets/eurobeer-02-thumb.webp",
+            "alt": "Dentro il burger"
+          },
+          {
+            "type": "image",
+            "src": "assets/eurobeer-03.webp",
+            "thumb": "assets/eurobeer-03-thumb.webp",
+            "alt": "L’atmosfera"
+          }
+        ]
+      }
+    ],
+    "experience": {
+      "type": "web",
+      "url": "https://new-eurobeer-menu.mementoxdesign.chatgpt.site"
+    },
+    "overview": [
+      {
+        "type": "image",
+        "src": "assets/covers-landscape/eurobeer.webp",
+        "thumb": "assets/covers-landscape/eurobeer-thumb.webp",
+        "alt": "New Eurobeer"
+      },
+      {
+        "type": "image",
+        "src": "assets/eurobeer-01.webp",
+        "thumb": "assets/eurobeer-01-thumb.webp",
+        "alt": "New Euro Burger"
+      }
+    ]
+  },
+  {
+    "id": "via-roma",
+    "title": "Via Roma",
+    "cover": "assets/covers-landscape/via-roma.webp",
+    "thumbnail": "assets/covers-landscape/via-roma-thumb.webp",
+    "hero": "assets/via-roma-01.webp",
+    "layout": "square",
+    "domains": [
+      "web",
+      "design"
+    ],
+    "modules": [
+      {
+        "id": "visual",
+        "title": "Visual",
+        "items": [
+          {
+            "type": "image",
+            "src": "assets/via-roma-01.webp",
+            "thumb": "assets/via-roma-01-thumb.webp",
+            "alt": "Via Roma"
+          },
+          {
+            "type": "image",
+            "src": "assets/via-roma-02.webp",
+            "thumb": "assets/via-roma-02-thumb.webp",
+            "alt": "La sala"
+          },
+          {
+            "type": "image",
+            "src": "assets/via-roma-03.webp",
+            "thumb": "assets/via-roma-03-thumb.webp",
+            "alt": "L’ingresso"
+          }
+        ]
+      }
+    ],
+    "experience": {
+      "type": "web",
+      "url": "https://pizzeriaviaroma.vercel.app/"
+    },
+    "overview": [
+      {
+        "type": "image",
+        "src": "assets/covers-landscape/via-roma.webp",
+        "thumb": "assets/covers-landscape/via-roma-thumb.webp",
+        "alt": "Via Roma"
+      },
+      {
+        "type": "image",
+        "src": "assets/via-roma-01.webp",
+        "thumb": "assets/via-roma-01-thumb.webp",
+        "alt": "Via Roma"
+      }
+    ]
+  },
+  {
+    "id": "techref",
+    "title": "TechRef",
+    "cover": "assets/covers-landscape/techref.webp",
+    "thumbnail": "assets/covers-landscape/techref-thumb.webp",
+    "hero": "assets/techref-01.webp",
+    "layout": "square",
+    "domains": [
+      "web"
+    ],
+    "modules": [
+      {
+        "id": "visual",
+        "title": "Visual",
+        "items": [
+          {
+            "type": "image",
+            "src": "assets/techref-01.webp",
+            "thumb": "assets/techref-01-thumb.webp",
+            "alt": "GPU"
+          },
+          {
+            "type": "image",
+            "src": "assets/techref-02.webp",
+            "thumb": "assets/techref-02-thumb.webp",
+            "alt": "Smartphone"
+          },
+          {
+            "type": "image",
+            "src": "assets/techref-03.webp",
+            "thumb": "assets/techref-03-thumb.webp",
+            "alt": "Console"
+          }
+        ]
+      }
+    ],
+    "experience": {
+      "type": "web",
+      "url": "https://techref.vercel.app/"
+    },
+    "overview": [
+      {
+        "type": "image",
+        "src": "assets/covers-landscape/techref.webp",
+        "thumb": "assets/covers-landscape/techref-thumb.webp",
+        "alt": "TechRef"
+      },
+      {
+        "type": "image",
+        "src": "assets/techref-01.webp",
+        "thumb": "assets/techref-01-thumb.webp",
+        "alt": "GPU"
+      }
+    ]
+  },
+  {
+    "id": "productvis",
+    "title": "ProductVis",
+    "cover": "assets/covers-landscape/productvis.webp",
+    "thumbnail": "assets/covers-landscape/productvis-thumb.webp",
+    "hero": "assets/productvis-01.webp",
+    "layout": "square",
+    "domains": [
+      "web",
+      "3d"
+    ],
+    "modules": [
+      {
+        "id": "render",
+        "title": "Render",
+        "items": [
+          {
+            "type": "image",
+            "src": "assets/productvis-01.webp",
+            "thumb": "assets/productvis-01-thumb.webp",
+            "alt": "Lo studio"
+          },
+          {
+            "type": "image",
+            "src": "assets/productvis-02.webp",
+            "thumb": "assets/productvis-02-thumb.webp",
+            "alt": "La scena"
+          }
+        ]
+      }
+    ],
+    "experience": {
+      "type": "web",
+      "url": "https://productvis.vercel.app/"
+    },
+    "overview": [
+      {
+        "type": "image",
+        "src": "assets/covers-landscape/productvis.webp",
+        "thumb": "assets/covers-landscape/productvis-thumb.webp",
+        "alt": "ProductVis"
+      },
+      {
+        "type": "image",
+        "src": "assets/productvis-01.webp",
+        "thumb": "assets/productvis-01-thumb.webp",
+        "alt": "Lo studio"
+      }
+    ]
+  },
+  {
+    "id": "visualref",
+    "title": "VisualRef",
+    "cover": "assets/covers-landscape/visualref.webp",
+    "thumbnail": "assets/covers-landscape/visualref-thumb.webp",
+    "hero": "assets/visualref-01.webp",
+    "layout": "wide",
+    "domains": [
+      "web",
+      "3d"
+    ],
+    "modules": [
+      {
+        "id": "render",
+        "title": "Render",
+        "items": [
+          {
+            "type": "image",
+            "src": "assets/visualref-01.webp",
+            "thumb": "assets/visualref-01-thumb.webp",
+            "alt": "L’inquadratura"
+          },
+          {
+            "type": "image",
+            "src": "assets/visualref-02.webp",
+            "thumb": "assets/visualref-02-thumb.webp",
+            "alt": "La sequenza"
+          }
+        ]
+      }
+    ],
+    "experience": {
+      "type": "web",
+      "url": "https://visualref.vercel.app/"
+    },
+    "overview": [
+      {
+        "type": "image",
+        "src": "assets/covers-landscape/visualref.webp",
+        "thumb": "assets/covers-landscape/visualref-thumb.webp",
+        "alt": "VisualRef"
+      },
+      {
+        "type": "image",
+        "src": "assets/visualref-01.webp",
+        "thumb": "assets/visualref-01-thumb.webp",
+        "alt": "L’inquadratura"
+      }
+    ]
+  },
+  {
+    "id": "footwear-hyqos",
+    "title": "HYQOS",
+    "cover": "assets/covers-landscape/footwear-hyqos.webp",
+    "thumbnail": "assets/covers-landscape/footwear-hyqos-thumb.webp",
+    "hero": "assets/footwear-hyqos/08-1600.webp",
+    "layout": "tall",
+    "domains": [
+      "3d",
+      "design"
+    ],
+    "modules": [
+      {
+        "id": "render",
+        "title": "Render",
+        "items": [
+          {
+            "type": "image",
+            "src": "assets/footwear-hyqos/01-1600.webp",
+            "thumb": "assets/footwear-hyqos/01-640.webp",
+            "alt": "HYQOS — tavola 1"
+          },
+          {
+            "type": "image",
+            "src": "assets/footwear-hyqos/02-1600.webp",
+            "thumb": "assets/footwear-hyqos/02-640.webp",
+            "alt": "HYQOS — tavola 2"
+          },
+          {
+            "type": "image",
+            "src": "assets/footwear-hyqos/03-1600.webp",
+            "thumb": "assets/footwear-hyqos/03-640.webp",
+            "alt": "HYQOS — tavola 3"
+          },
+          {
+            "type": "image",
+            "src": "assets/footwear-hyqos/04-1600.webp",
+            "thumb": "assets/footwear-hyqos/04-640.webp",
+            "alt": "HYQOS — tavola 4"
+          },
+          {
+            "type": "image",
+            "src": "assets/footwear-hyqos/05-1600.webp",
+            "thumb": "assets/footwear-hyqos/05-640.webp",
+            "alt": "HYQOS — tavola 5"
+          },
+          {
+            "type": "image",
+            "src": "assets/footwear-hyqos/06-1600.webp",
+            "thumb": "assets/footwear-hyqos/06-640.webp",
+            "alt": "HYQOS — tavola 6"
+          },
+          {
+            "type": "image",
+            "src": "assets/footwear-hyqos/07-1600.webp",
+            "thumb": "assets/footwear-hyqos/07-640.webp",
+            "alt": "HYQOS — tavola 7"
+          },
+          {
+            "type": "image",
+            "src": "assets/footwear-hyqos/08-1600.webp",
+            "thumb": "assets/footwear-hyqos/08-640.webp",
+            "alt": "HYQOS — tavola 8"
+          }
+        ]
+      }
+    ],
+    "overview": [
+      {
+        "type": "image",
+        "src": "assets/covers-landscape/footwear-hyqos.webp",
+        "thumb": "assets/covers-landscape/footwear-hyqos-thumb.webp",
+        "alt": "HYQOS"
+      },
+      {
+        "type": "image",
+        "src": "assets/footwear-hyqos/01-1600.webp",
+        "thumb": "assets/footwear-hyqos/01-640.webp",
+        "alt": "HYQOS — tavola 1"
+      }
+    ]
+  },
+  {
+    "id": "footwear-neo",
+    "title": "NEO",
+    "cover": "assets/covers-landscape/footwear-neo.webp",
+    "thumbnail": "assets/covers-landscape/footwear-neo-thumb.webp",
+    "hero": "assets/footwear-neo/08-1600.webp",
+    "layout": "square",
+    "domains": [
+      "3d",
+      "design"
+    ],
+    "modules": [
+      {
+        "id": "render",
+        "title": "Render",
+        "items": [
+          {
+            "type": "image",
+            "src": "assets/footwear-neo/01-1600.webp",
+            "thumb": "assets/footwear-neo/01-640.webp",
+            "alt": "NEO — tavola 1"
+          },
+          {
+            "type": "image",
+            "src": "assets/footwear-neo/02-1600.webp",
+            "thumb": "assets/footwear-neo/02-640.webp",
+            "alt": "NEO — tavola 2"
+          },
+          {
+            "type": "image",
+            "src": "assets/footwear-neo/03-1600.webp",
+            "thumb": "assets/footwear-neo/03-640.webp",
+            "alt": "NEO — tavola 3"
+          },
+          {
+            "type": "image",
+            "src": "assets/footwear-neo/04-1600.webp",
+            "thumb": "assets/footwear-neo/04-640.webp",
+            "alt": "NEO — tavola 4"
+          },
+          {
+            "type": "image",
+            "src": "assets/footwear-neo/05-1600.webp",
+            "thumb": "assets/footwear-neo/05-640.webp",
+            "alt": "NEO — tavola 5"
+          },
+          {
+            "type": "image",
+            "src": "assets/footwear-neo/06-1600.webp",
+            "thumb": "assets/footwear-neo/06-640.webp",
+            "alt": "NEO — tavola 6"
+          },
+          {
+            "type": "image",
+            "src": "assets/footwear-neo/07-1600.webp",
+            "thumb": "assets/footwear-neo/07-640.webp",
+            "alt": "NEO — tavola 7"
+          },
+          {
+            "type": "image",
+            "src": "assets/footwear-neo/08-1600.webp",
+            "thumb": "assets/footwear-neo/08-640.webp",
+            "alt": "NEO — tavola 8"
+          }
+        ]
+      }
+    ],
+    "overview": [
+      {
+        "type": "image",
+        "src": "assets/covers-landscape/footwear-neo.webp",
+        "thumb": "assets/covers-landscape/footwear-neo-thumb.webp",
+        "alt": "NEO"
+      },
+      {
+        "type": "image",
+        "src": "assets/footwear-neo/01-1600.webp",
+        "thumb": "assets/footwear-neo/01-640.webp",
+        "alt": "NEO — tavola 1"
+      }
+    ]
+  },
+  {
+    "id": "footwear-phonk",
+    "title": "PHONK",
+    "cover": "assets/covers-landscape/footwear-phonk.webp",
+    "thumbnail": "assets/covers-landscape/footwear-phonk-thumb.webp",
+    "hero": "assets/footwear-phonk/02-1600.webp",
+    "layout": "square",
+    "domains": [
+      "3d",
+      "design"
+    ],
+    "modules": [
+      {
+        "id": "render",
+        "title": "Render",
+        "items": [
+          {
+            "type": "image",
+            "src": "assets/footwear-phonk/01-1600.webp",
+            "thumb": "assets/footwear-phonk/01-640.webp",
+            "alt": "PHONK — tavola 1"
+          },
+          {
+            "type": "image",
+            "src": "assets/footwear-phonk/02-1600.webp",
+            "thumb": "assets/footwear-phonk/02-640.webp",
+            "alt": "PHONK — tavola 2"
+          },
+          {
+            "type": "image",
+            "src": "assets/footwear-phonk/03-1600.webp",
+            "thumb": "assets/footwear-phonk/03-640.webp",
+            "alt": "PHONK — tavola 3"
+          },
+          {
+            "type": "image",
+            "src": "assets/footwear-phonk/04-1600.webp",
+            "thumb": "assets/footwear-phonk/04-640.webp",
+            "alt": "PHONK — tavola 4"
+          },
+          {
+            "type": "image",
+            "src": "assets/footwear-phonk/05-1600.webp",
+            "thumb": "assets/footwear-phonk/05-640.webp",
+            "alt": "PHONK — tavola 5"
+          },
+          {
+            "type": "image",
+            "src": "assets/footwear-phonk/06-1600.webp",
+            "thumb": "assets/footwear-phonk/06-640.webp",
+            "alt": "PHONK — tavola 6"
+          },
+          {
+            "type": "image",
+            "src": "assets/footwear-phonk/07-1600.webp",
+            "thumb": "assets/footwear-phonk/07-640.webp",
+            "alt": "PHONK — tavola 7"
+          },
+          {
+            "type": "image",
+            "src": "assets/footwear-phonk/08-1600.webp",
+            "thumb": "assets/footwear-phonk/08-640.webp",
+            "alt": "PHONK — tavola 8"
+          }
+        ]
+      }
+    ],
+    "overview": [
+      {
+        "type": "image",
+        "src": "assets/covers-landscape/footwear-phonk.webp",
+        "thumb": "assets/covers-landscape/footwear-phonk-thumb.webp",
+        "alt": "PHONK"
+      },
+      {
+        "type": "image",
+        "src": "assets/footwear-phonk/01-1600.webp",
+        "thumb": "assets/footwear-phonk/01-640.webp",
+        "alt": "PHONK — tavola 1"
+      }
+    ]
+  },
+  {
+    "id": "footwear-x3reme",
+    "title": "X3REME",
+    "cover": "assets/covers-landscape/footwear-x3reme.webp",
+    "thumbnail": "assets/covers-landscape/footwear-x3reme-thumb.webp",
+    "hero": "assets/footwear-x3reme/02-1600.webp",
+    "layout": "square",
+    "domains": [
+      "3d",
+      "design"
+    ],
+    "modules": [
+      {
+        "id": "render",
+        "title": "Render",
+        "items": [
+          {
+            "type": "image",
+            "src": "assets/footwear-x3reme/01-1600.webp",
+            "thumb": "assets/footwear-x3reme/01-640.webp",
+            "alt": "X3REME — tavola 1"
+          },
+          {
+            "type": "image",
+            "src": "assets/footwear-x3reme/02-1600.webp",
+            "thumb": "assets/footwear-x3reme/02-640.webp",
+            "alt": "X3REME — tavola 2"
+          },
+          {
+            "type": "image",
+            "src": "assets/footwear-x3reme/03-1600.webp",
+            "thumb": "assets/footwear-x3reme/03-640.webp",
+            "alt": "X3REME — tavola 3"
+          },
+          {
+            "type": "image",
+            "src": "assets/footwear-x3reme/04-1600.webp",
+            "thumb": "assets/footwear-x3reme/04-640.webp",
+            "alt": "X3REME — tavola 4"
+          },
+          {
+            "type": "image",
+            "src": "assets/footwear-x3reme/05-1600.webp",
+            "thumb": "assets/footwear-x3reme/05-640.webp",
+            "alt": "X3REME — tavola 5"
+          },
+          {
+            "type": "image",
+            "src": "assets/footwear-x3reme/06-1600.webp",
+            "thumb": "assets/footwear-x3reme/06-640.webp",
+            "alt": "X3REME — tavola 6"
+          },
+          {
+            "type": "image",
+            "src": "assets/footwear-x3reme/07-1600.webp",
+            "thumb": "assets/footwear-x3reme/07-640.webp",
+            "alt": "X3REME — tavola 7"
+          },
+          {
+            "type": "image",
+            "src": "assets/footwear-x3reme/08-1600.webp",
+            "thumb": "assets/footwear-x3reme/08-640.webp",
+            "alt": "X3REME — tavola 8"
+          }
+        ]
+      }
+    ],
+    "overview": [
+      {
+        "type": "image",
+        "src": "assets/covers-landscape/footwear-x3reme.webp",
+        "thumb": "assets/covers-landscape/footwear-x3reme-thumb.webp",
+        "alt": "X3REME"
+      },
+      {
+        "type": "image",
+        "src": "assets/footwear-x3reme/01-1600.webp",
+        "thumb": "assets/footwear-x3reme/01-640.webp",
+        "alt": "X3REME — tavola 1"
+      }
+    ]
+  },
+  {
+    "id": "hyperknife-print",
+    "title": "HyperKnife Print",
+    "cover": "assets/covers-landscape/hyperknife-print.webp",
+    "thumbnail": "assets/covers-landscape/hyperknife-print-thumb.webp",
+    "hero": "assets/hyperknife-print/02-1600.webp",
+    "layout": "wide",
+    "domains": [
+      "design",
+      "branding",
+      "visual"
+    ],
+    "modules": [
+      {
+        "id": "print",
+        "title": "Print",
+        "items": [
+          {
+            "type": "image",
+            "src": "assets/hyperknife-print/01-1600.webp",
+            "thumb": "assets/hyperknife-print/01-640.webp",
+            "alt": "HyperKnife Print — tavola 1"
+          },
+          {
+            "type": "image",
+            "src": "assets/hyperknife-print/02-1600.webp",
+            "thumb": "assets/hyperknife-print/02-640.webp",
+            "alt": "HyperKnife Print — tavola 2"
+          },
+          {
+            "type": "image",
+            "src": "assets/hyperknife-print/03-1600.webp",
+            "thumb": "assets/hyperknife-print/03-640.webp",
+            "alt": "HyperKnife Print — tavola 3"
+          },
+          {
+            "type": "image",
+            "src": "assets/hyperknife-print/04-1600.webp",
+            "thumb": "assets/hyperknife-print/04-640.webp",
+            "alt": "HyperKnife Print — tavola 4"
+          },
+          {
+            "type": "image",
+            "src": "assets/hyperknife-print/05-1600.webp",
+            "thumb": "assets/hyperknife-print/05-640.webp",
+            "alt": "HyperKnife Print — tavola 5"
+          },
+          {
+            "type": "image",
+            "src": "assets/hyperknife-print/06-1600.webp",
+            "thumb": "assets/hyperknife-print/06-640.webp",
+            "alt": "HyperKnife Print — tavola 6"
+          },
+          {
+            "type": "image",
+            "src": "assets/hyperknife-print/07-1600.webp",
+            "thumb": "assets/hyperknife-print/07-640.webp",
+            "alt": "HyperKnife Print — tavola 7"
+          },
+          {
+            "type": "image",
+            "src": "assets/hyperknife-print/08-1600.webp",
+            "thumb": "assets/hyperknife-print/08-640.webp",
+            "alt": "HyperKnife Print — tavola 8"
+          },
+          {
+            "type": "image",
+            "src": "assets/hyperknife-print/09-1600.webp",
+            "thumb": "assets/hyperknife-print/09-640.webp",
+            "alt": "HyperKnife Print — tavola 9"
+          }
+        ]
+      }
+    ],
+    "overview": [
+      {
+        "type": "image",
+        "src": "assets/covers-landscape/hyperknife-print.webp",
+        "thumb": "assets/covers-landscape/hyperknife-print-thumb.webp",
+        "alt": "HyperKnife Print"
+      },
+      {
+        "type": "image",
+        "src": "assets/hyperknife-print/01-1600.webp",
+        "thumb": "assets/hyperknife-print/01-640.webp",
+        "alt": "HyperKnife Print — tavola 1"
+      }
+    ]
+  },
+  {
+    "id": "desk",
+    "title": "Desk",
+    "cover": "assets/covers-landscape/desk.webp",
+    "thumbnail": "assets/covers-landscape/desk-thumb.webp",
+    "hero": "assets/desk/02-1600.webp",
+    "layout": "square",
+    "domains": [
+      "3d",
+      "design"
+    ],
+    "modules": [
+      {
+        "id": "render",
+        "title": "Render",
+        "items": [
+          {
+            "type": "image",
+            "src": "assets/desk/01-1600.webp",
+            "thumb": "assets/desk/01-640.webp",
+            "alt": "Desk — tavola 1"
+          },
+          {
+            "type": "image",
+            "src": "assets/desk/02-1600.webp",
+            "thumb": "assets/desk/02-640.webp",
+            "alt": "Desk — tavola 2"
+          },
+          {
+            "type": "image",
+            "src": "assets/desk/03-1600.webp",
+            "thumb": "assets/desk/03-640.webp",
+            "alt": "Desk — tavola 3"
+          },
+          {
+            "type": "image",
+            "src": "assets/desk/04-1600.webp",
+            "thumb": "assets/desk/04-640.webp",
+            "alt": "Desk — tavola 4"
+          },
+          {
+            "type": "image",
+            "src": "assets/desk/05-1600.webp",
+            "thumb": "assets/desk/05-640.webp",
+            "alt": "Desk — tavola 5"
+          },
+          {
+            "type": "image",
+            "src": "assets/desk/06-1600.webp",
+            "thumb": "assets/desk/06-640.webp",
+            "alt": "Desk — tavola 6"
+          },
+          {
+            "type": "image",
+            "src": "assets/desk/07-1600.webp",
+            "thumb": "assets/desk/07-640.webp",
+            "alt": "Desk — tavola 7"
+          },
+          {
+            "type": "image",
+            "src": "assets/desk/08-1600.webp",
+            "thumb": "assets/desk/08-640.webp",
+            "alt": "Desk — tavola 8"
+          },
+          {
+            "type": "image",
+            "src": "assets/desk/09-1600.webp",
+            "thumb": "assets/desk/09-640.webp",
+            "alt": "Desk — tavola 9"
+          },
+          {
+            "type": "image",
+            "src": "assets/desk/10-1600.webp",
+            "thumb": "assets/desk/10-640.webp",
+            "alt": "Desk — tavola 10"
+          },
+          {
+            "type": "image",
+            "src": "assets/desk/11-1600.webp",
+            "thumb": "assets/desk/11-640.webp",
+            "alt": "Desk — tavola 11"
+          },
+          {
+            "type": "image",
+            "src": "assets/desk/12-1600.webp",
+            "thumb": "assets/desk/12-640.webp",
+            "alt": "Desk — tavola 12"
+          },
+          {
+            "type": "image",
+            "src": "assets/desk/13-1600.webp",
+            "thumb": "assets/desk/13-640.webp",
+            "alt": "Desk — tavola 13"
+          },
+          {
+            "type": "image",
+            "src": "assets/desk/14-1600.webp",
+            "thumb": "assets/desk/14-640.webp",
+            "alt": "Desk — tavola 14"
+          },
+          {
+            "type": "image",
+            "src": "assets/desk/15-1600.webp",
+            "thumb": "assets/desk/15-640.webp",
+            "alt": "Desk — tavola 15"
+          },
+          {
+            "type": "image",
+            "src": "assets/desk/16-1600.webp",
+            "thumb": "assets/desk/16-640.webp",
+            "alt": "Desk — tavola 16"
+          },
+          {
+            "type": "image",
+            "src": "assets/desk/17-1600.webp",
+            "thumb": "assets/desk/17-640.webp",
+            "alt": "Desk — tavola 17"
+          },
+          {
+            "type": "image",
+            "src": "assets/desk/18-1600.webp",
+            "thumb": "assets/desk/18-640.webp",
+            "alt": "Desk — tavola 18"
+          },
+          {
+            "type": "image",
+            "src": "assets/desk/19-1600.webp",
+            "thumb": "assets/desk/19-640.webp",
+            "alt": "Desk — tavola 19"
+          },
+          {
+            "type": "image",
+            "src": "assets/desk/20-1600.webp",
+            "thumb": "assets/desk/20-640.webp",
+            "alt": "Desk — tavola 20"
+          }
+        ]
+      }
+    ],
+    "overview": [
+      {
+        "type": "image",
+        "src": "assets/covers-landscape/desk.webp",
+        "thumb": "assets/covers-landscape/desk-thumb.webp",
+        "alt": "Desk"
+      },
+      {
+        "type": "image",
+        "src": "assets/desk/01-1600.webp",
+        "thumb": "assets/desk/01-640.webp",
+        "alt": "Desk — tavola 1"
+      }
+    ]
+  },
+  {
+    "id": "studio",
+    "title": "Memento Studio",
+    "cover": "assets/covers-landscape/studio.webp",
+    "thumbnail": "assets/covers-landscape/studio-thumb.webp",
+    "hero": "assets/studio/16-1600.webp",
+    "layout": "wide",
+    "domains": [
+      "visual"
+    ],
+    "modules": [
+      {
+        "id": "foto",
+        "title": "Foto",
+        "items": [
+          {
+            "type": "image",
+            "src": "assets/studio/01-1600.webp",
+            "thumb": "assets/studio/01-640.webp",
+            "alt": "Memento Studio — tavola 1"
+          },
+          {
+            "type": "image",
+            "src": "assets/studio/02-1600.webp",
+            "thumb": "assets/studio/02-640.webp",
+            "alt": "Memento Studio — tavola 2"
+          },
+          {
+            "type": "image",
+            "src": "assets/studio/03-1600.webp",
+            "thumb": "assets/studio/03-640.webp",
+            "alt": "Memento Studio — tavola 3"
+          },
+          {
+            "type": "image",
+            "src": "assets/studio/04-1600.webp",
+            "thumb": "assets/studio/04-640.webp",
+            "alt": "Memento Studio — tavola 4"
+          },
+          {
+            "type": "image",
+            "src": "assets/studio/05-1600.webp",
+            "thumb": "assets/studio/05-640.webp",
+            "alt": "Memento Studio — tavola 5"
+          },
+          {
+            "type": "image",
+            "src": "assets/studio/06-1600.webp",
+            "thumb": "assets/studio/06-640.webp",
+            "alt": "Memento Studio — tavola 6"
+          },
+          {
+            "type": "image",
+            "src": "assets/studio/07-1600.webp",
+            "thumb": "assets/studio/07-640.webp",
+            "alt": "Memento Studio — tavola 7"
+          },
+          {
+            "type": "image",
+            "src": "assets/studio/08-1600.webp",
+            "thumb": "assets/studio/08-640.webp",
+            "alt": "Memento Studio — tavola 8"
+          },
+          {
+            "type": "image",
+            "src": "assets/studio/09-1600.webp",
+            "thumb": "assets/studio/09-640.webp",
+            "alt": "Memento Studio — tavola 9"
+          },
+          {
+            "type": "image",
+            "src": "assets/studio/10-1600.webp",
+            "thumb": "assets/studio/10-640.webp",
+            "alt": "Memento Studio — tavola 10"
+          },
+          {
+            "type": "image",
+            "src": "assets/studio/11-1600.webp",
+            "thumb": "assets/studio/11-640.webp",
+            "alt": "Memento Studio — tavola 11"
+          },
+          {
+            "type": "image",
+            "src": "assets/studio/12-1600.webp",
+            "thumb": "assets/studio/12-640.webp",
+            "alt": "Memento Studio — tavola 12"
+          },
+          {
+            "type": "image",
+            "src": "assets/studio/13-1600.webp",
+            "thumb": "assets/studio/13-640.webp",
+            "alt": "Memento Studio — tavola 13"
+          },
+          {
+            "type": "image",
+            "src": "assets/studio/14-1600.webp",
+            "thumb": "assets/studio/14-640.webp",
+            "alt": "Memento Studio — tavola 14"
+          },
+          {
+            "type": "image",
+            "src": "assets/studio/15-1600.webp",
+            "thumb": "assets/studio/15-640.webp",
+            "alt": "Memento Studio — tavola 15"
+          },
+          {
+            "type": "image",
+            "src": "assets/studio/16-1600.webp",
+            "thumb": "assets/studio/16-640.webp",
+            "alt": "Memento Studio — tavola 16"
+          },
+          {
+            "type": "image",
+            "src": "assets/studio/17-1600.webp",
+            "thumb": "assets/studio/17-640.webp",
+            "alt": "Memento Studio — tavola 17"
+          },
+          {
+            "type": "image",
+            "src": "assets/studio/18-1600.webp",
+            "thumb": "assets/studio/18-640.webp",
+            "alt": "Memento Studio — tavola 18"
+          },
+          {
+            "type": "image",
+            "src": "assets/studio/19-1600.webp",
+            "thumb": "assets/studio/19-640.webp",
+            "alt": "Memento Studio — tavola 19"
+          }
+        ]
+      }
+    ],
+    "overview": [
+      {
+        "type": "image",
+        "src": "assets/covers-landscape/studio.webp",
+        "thumb": "assets/covers-landscape/studio-thumb.webp",
+        "alt": "Memento Studio"
+      },
+      {
+        "type": "image",
+        "src": "assets/studio/01-1600.webp",
+        "thumb": "assets/studio/01-640.webp",
+        "alt": "Memento Studio — tavola 1"
+      }
+    ]
+  },
+  {
+    "id": "graphite",
+    "title": "Graphite",
+    "cover": "assets/covers-landscape/graphite.webp",
+    "thumbnail": "assets/covers-landscape/graphite-thumb.webp",
+    "hero": "assets/graphite/01-1600.webp",
+    "layout": "square",
+    "domains": [
+      "3d"
+    ],
+    "modules": [
+      {
+        "id": "render",
+        "title": "Render",
+        "items": [
+          {
+            "type": "image",
+            "src": "assets/graphite/01-1600.webp",
+            "thumb": "assets/graphite/01-640.webp",
+            "alt": "Graphite — tavola 1"
+          }
+        ]
+      }
+    ],
+    "overview": [
+      {
+        "type": "image",
+        "src": "assets/covers-landscape/graphite.webp",
+        "thumb": "assets/covers-landscape/graphite-thumb.webp",
+        "alt": "Graphite"
+      },
+      {
+        "type": "image",
+        "src": "assets/graphite/01-1600.webp",
+        "thumb": "assets/graphite/01-640.webp",
+        "alt": "Graphite — tavola 1"
+      }
+    ]
+  }
+]

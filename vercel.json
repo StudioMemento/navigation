@@ -1,81 +1,34 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "framework": null,
+  "installCommand": "npm ci --ignore-scripts --no-audit --no-fund",
   "buildCommand": "npm run build",
-  "installCommand": "node --version",
-  "outputDirectory": "public",
-  "redirects": [
-    {
-      "source": "/memento",
-      "destination": "https://mementostudio.vercel.app/",
-      "permanent": false
-    },
-    {
-      "source": "/services",
-      "destination": "https://mementoservizi.vercel.app/",
-      "permanent": false
-    },
-    {
-      "source": "/projects",
-      "destination": "https://mementoportfolio.vercel.app/",
-      "permanent": false
-    },
-    {
-      "source": "/levelup",
-      "destination": "https://mementolevelup.vercel.app/",
-      "permanent": false
-    },
-    {
-      "source": "/start",
-      "destination": "https://mementostart.vercel.app/",
-      "permanent": false
-    },
-    {
-      "source": "/studio",
-      "destination": "https://mementostudio.vercel.app/",
-      "permanent": false
-    }
+  "outputDirectory": "dist",
+  "cleanUrls": false,
+  "trailingSlash": true,
+  "rewrites": [
+    { "source": "/services/", "destination": "/index.html" },
+    { "source": "/projects/", "destination": "/index.html" },
+    { "source": "/levelup/", "destination": "/index.html" },
+    { "source": "/start/", "destination": "/index.html" }
   ],
   "headers": [
     {
       "source": "/(.*)",
       "headers": [
-        {
-          "key": "X-Content-Type-Options",
-          "value": "nosniff"
-        },
-        {
-          "key": "Referrer-Policy",
-          "value": "strict-origin-when-cross-origin"
-        }
+        { "key": "X-Content-Type-Options", "value": "nosniff" },
+        { "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" },
+        { "key": "Cache-Control", "value": "public, max-age=0, must-revalidate" },
+        { "key": "X-Robots-Tag", "value": "noindex, nofollow" }
       ]
     },
     {
-      "source": "/family_v007/(.*)",
-      "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "public, max-age=31536000, immutable"
-        }
-      ]
+      "source": "/vendor/draco/draco_decoder.wasm",
+      "headers": [{ "key": "Content-Type", "value": "application/wasm" }]
     },
     {
-      "source": "/world_v008/(.*)",
-      "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "public, max-age=31536000, immutable"
-        }
-      ]
-    },
-    {
-      "source": "/data/(.*)",
-      "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "public, max-age=0, must-revalidate"
-        }
-      ]
+      "source": "/assets/world.glb",
+      "headers": [{ "key": "Content-Type", "value": "model/gltf-binary" }]
     }
   ]
 }
