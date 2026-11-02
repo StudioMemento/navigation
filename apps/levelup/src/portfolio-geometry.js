@@ -1,17 +1,16 @@
-// Compact cards keep their 16:9 height. The visible arc expands to the safe width.
+// Large coverflow frames, with distant neighbours compressed into depth.
 export function portfolioStride(viewport, width) {
-  const neighbours = Math.max(1, Math.min(3, Math.round(viewport / width * .7)));
-  return (viewport - width * .6) / (2 * neighbours);
+  return width * .60;
 }
 
 export function portfolioPose(distance, stride, height) {
   const amount = Math.abs(distance);
   return {
-    // Linear travel avoids the former outward bow at the centre handoff.
-    x: distance * stride,
-    y: height * .012 * Math.min(amount, 4),
-    scale: .94 ** amount,
-    yaw: -Math.sign(distance) * Math.min(24, amount * 9.5),
+    // Monotonic travel avoids outward bows; compression keeps the arc connected.
+    x: Math.sign(distance) * stride * (1 - .76 ** amount) / (1 - .76),
+    y: height * .025 * Math.min(amount, 3),
+    scale: .82 ** amount,
+    yaw: -Math.sign(distance) * Math.min(42, amount * 26),
   };
 }
 

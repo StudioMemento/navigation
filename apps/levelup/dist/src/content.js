@@ -1,24 +1,27 @@
 export const START_URL = 'https://mementostudio.it/start';
+export const SERVICES_URL = 'https://mementoservizi.vercel.app/';
 
 export const benefits = [
-  { id: 'web-design', domain: 'Web Design', title: ['Avere un sito che ti rappresenta.'], copy: 'Web design su misura per il tuo brand.\nChiaro da esplorare, semplice da usare.', asset: 'assets/v11/web-design.webp', alt: 'Piani di interfaccia astratti in grafite, organizzati in una struttura chiara' },
-  { id: '3d-design', domain: '3D Design', title: ['Avere idee da esplorare in 3D.'], copy: 'Modelli e configuratori da vivere.\nOgni dettaglio prende forma.', asset: 'assets/v11/3d-design.webp', alt: 'Un volume astratto si trasforma da reticolo poligonale a materia' },
-  { id: 'video', domain: 'Video', title: ['Avere una storia che si fa guardare.'], copy: 'Video e motion per raccontare chi sei.\nCon ritmo, carattere e una direzione.', asset: 'assets/v11/video.webp', alt: 'Una sequenza di fotogrammi scultorei suggerisce il movimento nel tempo' },
-  { id: 'visual', domain: 'Visual', title: ['Avere un’immagine che lascia il segno.'], copy: 'Visual che rendono riconoscibile il tuo mondo.\nLuce, composizione e dettagli che parlano di te.', asset: 'assets/v11/visual.webp', alt: 'Un prisma scuro trasforma luce e piani in una composizione visiva' },
-  { id: 'design', domain: 'Design', title: ['Avere un’idea che prende forma.'], copy: 'Dall’intuizione al design del tuo progetto.\nForme, materiali e funzione, insieme.', asset: 'assets/v11/design.webp', alt: 'Un segno progettuale si sviluppa in una struttura tridimensionale di grafite' },
-  { id: 'branding', domain: 'Branding', title: ['Avere un’identità riconoscibile.'], copy: 'Branding che tiene insieme immagine e voce.\nPer raccontare chi sei, ovunque.', asset: 'assets/v11/branding.webp', alt: 'Frammenti geometrici coordinati compongono un’identità astratta' },
+  { id: 'web', domain: 'WEB', title: ['Un sito che parla di te.'], copy: 'Racconta ciò che fai.\nRendi semplice il prossimo passo.', asset: 'assets/v12/web.webp', alt: 'Piani incompleti di grafite emergono da scie di particelle, con luce ambra da destra' },
+  { id: '3d', domain: '3D', title: ['Ogni dettaglio, da esplorare.'], copy: 'Dai forma ai tuoi prodotti.\nLasciali scoprire, ruotare, personalizzare.', asset: 'assets/v12/3d.webp', alt: 'Un volume astratto sospeso tra materia, reticolo e polvere di carbone' },
+  { id: 'video', domain: 'VIDEO', title: ['La tua storia, in movimento.'], copy: 'Dai ritmo al tuo messaggio.\nDal primo sguardo all’ultimo frame.', asset: 'assets/v12/video.webp', alt: 'Frammenti scuri e scie di polvere suggeriscono una sequenza in movimento' },
+  { id: 'visual', domain: 'VISUAL', title: ['Immagini che parlano per te.'], copy: 'Mostra ciò che ti distingue.\nCon luce, atmosfera e dettagli.', asset: 'assets/v12/visual.webp', alt: 'Luce ambra attraversa una forma indefinita di grafite e vetro scuro' },
+  { id: 'design', domain: 'DESIGN', title: ['Il tuo messaggio prende forma.'], copy: 'Dai ordine alle tue idee.\nGrafiche chiare, dal digitale alla stampa.', asset: 'assets/v12/design.webp', alt: 'Superfici astratte e frammenti di carbone compongono una forma in divenire' },
+  { id: 'branding', domain: 'BRANDING', title: ['Un’identità che si riconosce.'], copy: 'Esprimi il carattere del tuo brand.\nCon coerenza, in ogni incontro.', asset: 'assets/v12/branding.webp', alt: 'Tracce intrecciate di grafite si raccolgono in un’identità astratta' },
 ];
 
+export const serviceUrl = item => `${SERVICES_URL}#${item.id}`;
+
 export const visions = [
-  { id: 'product', title: ['Il tuo prodotto,', 'protagonista.'], copy: 'Materiali, luce e dettagli.\nLa qualità prende forma.', alt: 'Flacone di profumo senza marchio', before: 'assets/v09/product-before.webp', after: 'assets/v09/product-after.webp' },
-  { id: 'brand', title: ['Il tuo brand,', 'ovunque.'], copy: 'Dal packaging al digitale.\nLa stessa identità, in ogni incontro.', alt: 'Shopper, confezione, biglietti e smartphone coordinati', before: 'assets/v09/brand-before.webp', after: 'assets/v09/brand-after.webp' },
-  { id: 'collection', title: ['La tua collezione,', 'online.'], copy: 'Il tuo catalogo prende vita.\nOgni dettaglio, a portata di mano.', alt: 'Poltrona e tablet con il suo catalogo', before: 'assets/v09/collection-before.webp', after: 'assets/v09/collection-after.webp' },
+  { id: 'product', title: ['Il tuo prodotto, protagonista.'], copy: 'Materiali e dettagli che raccontano il suo valore.', alt: 'Flacone di profumo', before: 'assets/v12/product-before.webp', after: 'assets/v12/product-after.webp' },
+  { id: 'brand', title: ['La tua identità, ovunque.'], copy: 'Dal packaging allo schermo. Lo stesso carattere.', alt: 'Shopper, confezione, biglietti e smartphone coordinati', before: 'assets/v12/brand-before.webp', after: 'assets/v12/brand-after.webp' },
+  { id: 'collection', title: ['La tua collezione, da scoprire.'], copy: 'Prodotti da esplorare, anche prima di averli davanti.', alt: 'Poltrona e tablet con il suo catalogo', before: 'assets/v12/collection-before.webp', after: 'assets/v12/collection-after.webp' },
 ];
 
 export const steps = [
-  { number: '01', title: ['Capiamo il tuo', 'obiettivo.'], copy: 'Ci racconti da dove parti.\nMettiamo a fuoco cosa vuoi ottenere.', asset: 'assets/v09/step-idea.webp' },
-  { number: '02', title: ['Definiamo', 'il progetto.'], copy: 'Scegliamo insieme cosa realizzare.\nCon una direzione chiara e concreta.', asset: 'assets/v09/step-project.webp' },
-  { number: '03', title: ['Prepariamo', 'l’offerta.'], copy: 'Ricevi attività, tempi e costi.\nTutto chiaro, prima di partire.', asset: 'assets/v09/step-offer.webp' },
+  { number: '01', title: ['Capiamo', 'il tuo obiettivo.'], copy: 'Da dove parti, dove vuoi arrivare.\nCominciamo da qui.', asset: 'assets/v09/step-idea.webp' },
+  { number: '02', title: ['Definiamo', 'il progetto.'], copy: 'Scegliamo insieme cosa realizzare.\nE come farlo funzionare per te.', asset: 'assets/v09/step-project.webp' },
+  { number: '03', title: ['Prepariamo', 'l’offerta.'], copy: 'Attività, tempi e costi.\nTutto chiaro, prima di iniziare.', asset: 'assets/v09/step-offer.webp' },
 ];
 
 // Public production aliases. No preview deployment URLs or legacy Memento routes.

@@ -71,6 +71,7 @@ export class Carousel {
       }
       if (e.target.closest('[data-no-swipe]')) return;
       const index = Number(card.dataset.slide);
+      if (e.target.closest('[data-domain-link]') && Math.abs(this.delta(index - this.current)) <= 0.025) return;
       if (interactiveContents && Math.abs(this.delta(index - this.current)) <= 0.025) return;
       e.preventDefault();
       e.stopPropagation();

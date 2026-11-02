@@ -1,4 +1,4 @@
-import { benefits, experiences, visions, steps, contactUrl } from './content.js';
+import { benefits, experiences, visions, steps, contactUrl, serviceUrl } from './content.js';
 import { Carousel } from './carousel.js';
 import { enhanceVisuals } from './visuals.js';
 import { DemoPlayer } from './player.js';
@@ -11,6 +11,7 @@ const image = (item, eager = false) => `<img class="card-art" src="${item.asset}
 $('#benefits .carousel-stage').innerHTML = benefits.map((item,i) => `
   <article class="showcase-card cut-frame" data-slide="${i}" role="group" aria-roledescription="slide" aria-label="${i+1} di ${benefits.length}: ${escape(item.title.join(' '))}">
     ${image(item,i===0)}<div class="benefit-copy"><h2 class="gradient-text">${lines(item.title)}</h2><p>${escape(item.copy)}</p></div>
+    <a class="domain-link" data-domain-link data-slide-control href="${serviceUrl(item)}" target="_top" aria-label="Esplora i servizi ${item.domain}"><span>${item.domain}</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 19 19 5M5 5h14v14"/></svg></a>
   </article>`).join('');
 $('#portfolio .carousel-stage').innerHTML = experiences.map((item,i) => `
   <article class="showcase-card cut-frame" data-slide="${i}" role="group" aria-roledescription="slide" aria-label="${escape(item.title)}, ${escape(item.category)}">
@@ -19,13 +20,14 @@ $('#portfolio .carousel-stage').innerHTML = experiences.map((item,i) => `
     <button class="project-expand" data-slide-control data-no-swipe type="button" data-expand="${i}" aria-controls="demo-panel" aria-haspopup="dialog" aria-label="Espandi ${escape(item.title)}"><img src="assets/icons/maximize.svg" alt="" width="24" height="24"></button>
   </article>`).join('');
 $('#vision-grid').innerHTML = visions.map(item => `
-  <article class="vision-card" aria-labelledby="vision-${item.id}-title">
-    <div class="vision-info cut-frame"><div class="vision-copy"><h3 class="gradient-text" id="vision-${item.id}-title">${lines(item.title)}</h3><p>${escape(item.copy)}</p></div></div>
-    <div class="vision-art cut-frame"><div class="comparison" id="comparison-${item.id}">
-      <img src="${item.after}" alt="${escape(item.alt)} con materiali e finiture" width="1122" height="1402" loading="lazy" decoding="async" draggable="false">
-      <div class="comparison-before"><img src="${item.before}" alt="Lo stesso soggetto come modello neutro" width="1122" height="1402" loading="lazy" decoding="async" draggable="false"></div>
+  <article class="vision-card cut-frame" aria-labelledby="vision-${item.id}-title">
+    <div class="vision-copy"><h3 class="gradient-text" id="vision-${item.id}-title">${lines(item.title)}</h3><p>${escape(item.copy)}</p></div>
+    <div class="vision-art"><div class="comparison" id="comparison-${item.id}">
+      <img src="${item.after}" alt="${escape(item.alt)} con materiali e finiture" width="1800" height="600" loading="lazy" decoding="async" draggable="false">
+      <div class="comparison-before"><img src="${item.before}" alt="Lo stesso soggetto come modello neutro" width="1800" height="600" loading="lazy" decoding="async" draggable="false"></div>
       <div class="comparison-divider" aria-hidden="true"><span><img src="assets/icons/caret-left.svg" alt=""><img src="assets/icons/caret-right.svg" alt=""></span></div>
-      <label class="sr-only" for="range-${item.id}">Confronta ${escape(item.title.join(' '))} Trascina per confrontare modello e materiali.</label>
+      <div class="comparison-labels" aria-hidden="true"><span>Neutro</span><span>Brandizzato</span></div>
+      <label class="sr-only" for="range-${item.id}">Confronta ${escape(item.title.join(' '))} Trascina da neutro a brandizzato.</label>
       <input id="range-${item.id}" type="range" min="0" max="100" value="50" aria-valuetext="50% modello neutro, 50% materiali e finiture">
     </div></div>
   </article>`).join('');
@@ -46,9 +48,14 @@ function pagination(root, items, label, select) {
 function mark(root,index) { [...root.children].forEach((button,i) => button.setAttribute('aria-current',String(i===index))); }
 let benefitsCarousel;
 pagination($('#benefit-dots'),benefits,item=>item.title.join(' '),index=>benefitsCarousel.select(index));
-benefitsCarousel = new Carousel($('#benefits'),{onSettle:index=>{
+benefitsCarousel = new Carousel($('#benefits'),{onOpen:index=>{window.open(serviceUrl(benefits[index]),'_top');},onSettle:index=>{
   mark($('#benefit-dots'),index); $('#announcement').textContent=benefits[index].title.join(' ');
 }});
+$('#benefits').addEventListener('keydown',event=>{
+  if((event.key==='Enter'||event.key===' ') && event.target.matches('.showcase-card[data-active=true]')) {
+    event.preventDefault(); window.open(serviceUrl(benefits[benefitsCarousel.active]),'_top');
+  }
+});
 
 let selected=experiences.findIndex(item=>item.id==='productvis'), visible=false, engaged=null, portfolio;
 const panel=$('#demo-panel'), dialog=$('#demo-dialog'), slot=$('#demo-slot');
@@ -136,10 +143,11 @@ for(const comparison of document.querySelectorAll('.comparison')) {
   const range=comparison.querySelector('input');
   const update=()=>{
     const value=Number(range.value);
-    comparison.style.setProperty('--split',value+'%');
-    range.setAttribute('aria-valuetext',`${value}% modello neutro, ${100-value}% materiali e finiture`);
+    const start=Number(getComputedStyle(comparison).getPropertyValue('--range-start'));
+    comparison.style.setProperty('--split',(start + value*(100-start)/100)+'%');
+    range.setAttribute('aria-valuetext',`${value}% neutro, ${100-value}% brandizzato`);
   };
-  range.addEventListener('input',update); update();
+  range.addEventListener('input',update); new ResizeObserver(update).observe(comparison); update();
 }
 
 // Fit real local-font metrics to the V40 wrapper. Long phone headings use two lines.

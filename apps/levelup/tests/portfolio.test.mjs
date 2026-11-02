@@ -6,16 +6,13 @@ import { portfolioStride, portfolioPose, portfolioEdge } from '../src/portfolio-
 // the useful part of the strip. Sampling between slides catches the old bow gap.
 const cases = [];
 for(let viewport=320;viewport<=2200;viewport+=20) {
-  const content=Math.min(1720,viewport,Math.max(320,viewport-180));
-  for(const viewportHeight of [390,600,740,844,1080,1440]) {
-    const cardHeight=Math.min(200,Math.max(118,viewportHeight*.18,content/9),content/3);
-    cases.push([content,cardHeight,viewport]);
-  }
+  const width=viewport<=767?viewport*.76:Math.min(700,Math.max(300,viewport*.38));
+  cases.push([viewport,width*.5625,viewport]);
 }
 test('Portfolio stays filled inside the edge fade during fractional handoffs', () => {
   for (const [viewport,height,pageWidth] of cases) {
     const width=height*16/9, stride=portfolioStride(viewport,width);
-    const safe=viewport/2-Math.min(48,Math.max(12,pageWidth*.03));
+    const safe=viewport/2-Math.min(80,Math.max(16,pageWidth*.04));
     for(let phase=0;phase<=1;phase+=.01) {
       const intervals=[];
       for(let index=-5;index<=5;index++) {
@@ -39,10 +36,12 @@ test('Portfolio stays filled inside the edge fade during fractional handoffs', (
   }
 });
 
-test('Outer cards recycle only when invisible; seven neighbours reach the desktop reveal', () => {
-  const edge=portfolioEdge(10), height=194.4, width=height*16/9;
+test('The centre dominates and outer cards reset out of sight', () => {
+  const edge=portfolioEdge(10);
   assert(edge<5,'The ring reset at half the item count must be hidden');
-  assert(edge>3.5,'Both outer reveal neighbours need a complete transition');
-  const p=portfolioPose(3,portfolioStride(1720,width),height);
-  assert(p.x<860 && p.x+width*p.scale/2>812,'Outer card reaches the padding fade');
+  assert(edge>3.5,'Outer neighbours remain present during the transition');
+  const centre=portfolioPose(0,300,300), near=portfolioPose(1,300,300), far=portfolioPose(2,300,300);
+  assert.equal(centre.scale,1);
+  assert(centre.scale>near.scale*1.2,'Centre must dominate the adjacent card');
+  assert(near.scale>far.scale && Math.abs(near.yaw)<Math.abs(far.yaw));
 });

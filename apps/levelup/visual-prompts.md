@@ -1,39 +1,28 @@
-# LevelUp V11 — illustrazioni astratte
+# LevelUp V12 — direzione delle immagini
 
-Sei asset originali generati con il tool integrato OpenAI imagegen. PNG di origine conservati nel workspace; nel progetto sono inclusi WebP a 1536 e 640 px. Nessun testo è incorporato nei visual: titoli e copy restano HTML accessibile.
+Asset originali creati con OpenAI imagegen e ottimizzati in WebP. Le indicazioni seguenti descrivono la direzione usata; non sono una trascrizione dei singoli prompt.
 
-## web-design
+## Domini
 
-Asset: `public/assets/v11/web-design.webp`
+Direzione comune: composizione cinematografica astratta, nero su nero, superfici di grafite dai contorni incompleti che si dissolvono in particelle. Bagliore ambra controllato dall’alto a destra, nessun oggetto commerciale riconoscibile, nessun testo o logo. Soggetto sulla destra e spazio nero a sinistra per titoli e copy HTML. Una famiglia coerente di immagini, con una struttura distinta per ogni dominio.
 
-Use case: stylized-concept. Create one premium editorial CGI illustration asset for Memento Design Studio's LevelUp landing page, a visual metaphor for a service, NOT a product photograph, NOT a website screenshot or UI mockup. Landscape panoramic 16:9 composition. Matte black carbon, smoked graphite and restrained ivory edge highlights, one subtle amber rim light from upper right, fine dark particulate trails, sophisticated physical materials, restrained contrast, clean cinematic atmosphere. Pure black seamless background, no horizon, no frame, no captions, no writing, no letters, no logos, no humans. Main sculptural subject centered at x=70%, y=58%, occupying the middle-right 55% of the picture; generous empty black left 40% for HTML copy, dark clear top margin for a single headline. Strong readable silhouette, 1 principal composition, not visual clutter. No white fog, no generic glowing orange ribbons, no phones or consumer devices, no real branded products. WEB DESIGN: An abstract sculptural browser interface made of three thin smoked-glass rectangular planes with precise graphite grid modules, a few tiny ivory content blocks and a single amber path connecting the aligned layers. Show purposeful hierarchy and intuitive navigation. Plates overlap in deep perspective, with one tiny cursor-like angular notch, no text. Architectural web interface as a tactile black sculpture.
+| Dominio | Interpretazione | File |
+| --- | --- | --- |
+| WEB | Piani sospesi e flussi che suggeriscono connessioni | `web.webp` |
+| 3D | Volume irregolare che emerge da una nube particellare | `3d.webp` |
+| VIDEO | Membrane e scie consecutive che suggeriscono movimento | `video.webp` |
+| VISUAL | Superfici ottiche frammentate attraversate dalla luce | `visual.webp` |
+| DESIGN | Pieghe e piani in formazione | `design.webp` |
+| BRANDING | Forme intrecciate che convergono in un insieme | `branding.webp` |
 
-## 3d-design
+Percorso: `public/assets/v12/`. Ogni immagine ha una variante `-640.webp` per schermi piccoli, oltre alla versione larga da 1536 px.
 
-Asset: `public/assets/v11/3d-design.webp`
+## Confronti neutro/brandizzato
 
-Use case: stylized-concept. Create one premium editorial CGI illustration asset for Memento Design Studio's LevelUp landing page, a visual metaphor for a service, NOT a product photograph, NOT a website screenshot or UI mockup. Landscape panoramic 16:9 composition. Matte black carbon, smoked graphite and restrained ivory edge highlights, one subtle amber rim light from upper right, fine dark particulate trails, sophisticated physical materials, restrained contrast, clean cinematic atmosphere. Pure black seamless background, no horizon, no frame, no captions, no writing, no letters, no logos, no humans. Main sculptural subject centered at x=70%, y=58%, occupying the middle-right 55% of the picture; generous empty black left 40% for HTML copy, dark clear top margin for a single headline. Strong readable silhouette, 1 principal composition, not visual clutter. No white fog, no generic glowing orange ribbons, no phones or consumer devices, no real branded products. 3D DESIGN: A bold faceted irregular polyhedron progressively transforming from a fine graphite polygon-wire lattice on its left into a finely machined solid charcoal surface on its right. A few separated geometric facets subtly reveal its volume. Warm amber light grazes 2-3 edges, thin black particulate eddies. Beautiful spatial topology sculpture, no car, bottle, shoe or recognizable product.
+Tre scene panoramiche 3:1, soggetti raggruppati a destra e fondo nero che sfuma verso sinistra. Prima viene creata la versione con materiali e identità; la stessa immagine viene poi modificata per ottenere un modello neutro grigio, preservando inquadratura, contorni e disposizione.
 
-## video
+- **Prodotto:** flacone AUREN e confezione, vetro ambrato e finiture scure; versione neutra senza etichetta o materiali finali.
+- **Identità:** shopper, scatola, biglietti e smartphone coordinati; versione neutra con identica composizione.
+- **Collezione:** poltrona in pelle calda e tablet con catalogo; versione neutra grigia, con schermo senza identità.
 
-Asset: `public/assets/v11/video.webp`
-
-Use case: stylized-concept. Create one premium editorial CGI illustration asset for Memento Design Studio's LevelUp landing page, a visual metaphor for a service, NOT a product photograph, NOT a website screenshot or UI mockup. Landscape panoramic 16:9 composition. Matte black carbon, smoked graphite and restrained ivory edge highlights, one subtle amber rim light from upper right, fine dark particulate trails, sophisticated physical materials, restrained contrast, clean cinematic atmosphere. Pure black seamless background, no horizon, no frame, no captions, no writing, no letters, no logos, no humans. Main sculptural subject centered at x=70%, y=58%, occupying the middle-right 55% of the picture; generous empty black left 40% for HTML copy, dark clear top margin for a single headline. Strong readable silhouette, 1 principal composition, not visual clutter. No white fog, no generic glowing orange ribbons, no phones or consumer devices, no real branded products. VIDEO: A flowing, restrained sequence of five ultra-thin rectangular cinematic frames arranged along one elegant shallow arc in perspective. In their centers a simple angular charcoal form shifts position and rotates across successive frames, suggesting consecutive moments of motion. Narrow amber edge reflections travel along the last frame. Sculptural representation of a story unfolding through time, no movie camera, no clapperboard, no reels, no readable screen content.
-
-## visual
-
-Asset: `public/assets/v11/visual.webp`
-
-Use case: stylized-concept. Create one premium editorial CGI illustration asset for Memento Design Studio's LevelUp landing page, a visual metaphor for a service, NOT a product photograph, NOT a website screenshot or UI mockup. Landscape panoramic 16:9 composition. Matte black carbon, smoked graphite and restrained ivory edge highlights, one subtle amber rim light from upper right, fine dark particulate trails, sophisticated physical materials, restrained contrast, clean cinematic atmosphere. Pure black seamless background, no horizon, no frame, no captions, no writing, no letters, no logos, no humans. Main sculptural subject centered at x=70%, y=58%, occupying the middle-right 55% of the picture; generous empty black left 40% for HTML copy, dark clear top margin for a single headline. Strong readable silhouette, 1 principal composition, not visual clutter. No white fog, no generic glowing orange ribbons, no phones or consumer devices, no real branded products. VISUAL: One dark angular optical prism intersected by two thin translucent graphite image planes, a soft amber sliver of light refracts into a beautifully composed rectangular field of subtle ivory and charcoal tonal fragments. Light, composition and texture becoming a memorable image. Strong sculptural silhouette, black-on-black precision, no rainbow, no camera, no products, no floating UI elements.
-
-## design
-
-Asset: `public/assets/v11/design.webp`
-
-Use case: stylized-concept. Create one premium editorial CGI illustration asset for Memento Design Studio's LevelUp landing page, a visual metaphor for a service, NOT a product photograph, NOT a website screenshot or UI mockup. Landscape panoramic 16:9 composition. Matte black carbon, smoked graphite and restrained ivory edge highlights, one subtle amber rim light from upper right, fine dark particulate trails, sophisticated physical materials, restrained contrast, clean cinematic atmosphere. Pure black seamless background, no horizon, no frame, no captions, no writing, no letters, no logos, no humans. Main sculptural subject centered at x=70%, y=58%, occupying the middle-right 55% of the picture; generous empty black left 40% for HTML copy, dark clear top margin for a single headline. Strong readable silhouette, 1 principal composition, not visual clutter. No white fog, no generic glowing orange ribbons, no phones or consumer devices, no real branded products. DESIGN: A precise folded sheet of black graphite grows from fine white-gray drafting contour lines into a refined three-dimensional angular structure. One part remains a sparse construction sketch, the other part becomes tactile folded solid carbon, all one continuous abstract silhouette. A very restrained amber highlight follows one fold. A visual metaphor for turning an idea into an intentional designed form. No tools, no furniture, no products, no ruler labels.
-
-## branding
-
-Asset: `public/assets/v11/branding.webp`
-
-Use case: stylized-concept. Create one premium editorial CGI illustration asset for Memento Design Studio's LevelUp landing page, a visual metaphor for a service, NOT a product photograph, NOT a website screenshot or UI mockup. Landscape panoramic 16:9 composition. Matte black carbon, smoked graphite and restrained ivory edge highlights, one subtle amber rim light from upper right, fine dark particulate trails, sophisticated physical materials, restrained contrast, clean cinematic atmosphere. Pure black seamless background, no horizon, no frame, no captions, no writing, no letters, no logos, no humans. Main sculptural subject centered at x=70%, y=58%, occupying the middle-right 55% of the picture; generous empty black left 40% for HTML copy, dark clear top margin for a single headline. Strong readable silhouette, 1 principal composition, not visual clutter. No white fog, no generic glowing orange ribbons, no phones or consumer devices, no real branded products. BRANDING: Several differently sized angular black fragments align into a single distinctive interlocking abstract emblem, with two quieter matching embossed forms behind it, communicating a coherent identity across expressions. Emblem is sculptural and non-typographic, asymmetrical but balanced, no actual letters and no recognizable existing brand mark. Fine carbon dust settles around the assembled geometry; narrow warm amber light defines one upper-right edge.
+File: `product-before/after.webp`, `brand-before/after.webp`, `collection-before/after.webp`, tutti a 1800×600 px. Il ritaglio e il confronto sono realizzati nel browser, senza deformare le immagini.

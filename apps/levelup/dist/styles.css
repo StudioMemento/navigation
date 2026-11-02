@@ -49,7 +49,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,[tabindex]:focus-visibl
 .carousel-stage{height:var(--board-height);position:relative;isolation:isolate;overflow:visible}
 .showcase-card{position:absolute;top:0;left:50%;width:var(--slide-width);height:var(--board-height);background:#000;transform-origin:center;cursor:grab;filter:grayscale(calc(1 - clamp(0,(var(--slide-focus,1) - .5)*2,1)));will-change:transform;overflow:hidden}
 .showcase-card:active{cursor:grabbing}.showcase-card::before{opacity:calc(.22 + .78*var(--slide-focus,1))}
-.card-art{position:absolute;inset:0;width:100%;height:100%;max-width:none;object-fit:contain;object-position:right center;opacity:calc(.52 + .48*var(--slide-focus,1));pointer-events:none}
+.card-art{position:absolute;inset:0;width:100%;height:100%;max-width:none;object-fit:contain;object-position:right center;opacity:calc(.55 + .45*var(--slide-focus,1));pointer-events:none}
 .benefit-copy{position:absolute;z-index:3;inset:var(--card-inset);pointer-events:none;opacity:clamp(0,(var(--slide-focus,1) - .18)/.82,1)}
 .benefit-copy h2{position:absolute;top:0;left:0;width:fit-content;font-size:clamp(28px,calc(var(--slide-width)*.043),74px);font-weight:380;line-height:1.1;letter-spacing:-.055em;max-width:100%}
 .benefit-copy h2 span,.vision-copy h3 span,.step-card h3 span{display:block}
@@ -61,24 +61,23 @@ button:focus-visible,a:focus-visible,input:focus-visible,[tabindex]:focus-visibl
 .carousel-controls button[aria-current=true] span{background:#f2a10a;opacity:1;transform:scale(1.65);box-shadow:0 0 13px #d8994f45}
 .carousel-controls button:hover span{opacity:1}
 
-/* Compact 16:9 selector above a roomy live embed, within the same safe gutters.
-   A short landscape viewport may grow naturally; vertical scrolling is never snapped. */
-.experiences-section{height:max(680px,100svh);padding-block:24px;display:grid;grid-template-rows:auto auto 44px minmax(0,1fr);row-gap:8px;align-content:stretch;scroll-margin-top:0}
-.experiences-section .section-heading{margin-bottom:0}
-.portfolio-carousel{--board-height:min(clamp(118px,max(18svh,calc(var(--page-content)/9)),200px),calc(var(--page-content)/3));--slide-width:calc(var(--board-height)*16/9);--card-inset:clamp(12px,1.1vw,18px);--side-fade:clamp(12px,3vw,48px);width:var(--page-content);margin-left:var(--safe-left);margin-right:var(--safe-right)}
+/* Cinematic coverflow: a dominant central frame with four perspective neighbours. */
+.experiences-section{padding-block:clamp(36px,5vw,80px);display:block;scroll-margin-top:24px}
+.experiences-section .section-heading{margin-bottom:clamp(20px,2vw,32px)}
+.portfolio-carousel{--slide-width:clamp(300px,38vw,700px);--board-height:calc(var(--slide-width)*.5625);--card-inset:clamp(18px,1.8vw,30px);--side-fade:clamp(16px,4vw,80px);width:100%;margin:0;--corner-cut:clamp(12px,1.2vw,20px)}
 .portfolio-carousel .card-art{object-fit:cover;object-position:center 46%}
 .portfolio-carousel .showcase-card{cursor:pointer;filter:grayscale(calc(1 - var(--slide-focus,1)))}.portfolio-carousel .showcase-card[data-active=true]{cursor:grab}
 .portfolio-carousel .showcase-card:after{content:'';position:absolute;inset:0;z-index:1;background:linear-gradient(0deg,#000e,transparent 62%,#0009);pointer-events:none}
 .project-category,.project-name,.project-expand{position:absolute;z-index:3;opacity:clamp(0,(var(--slide-focus,1) - .18)/.82,1)}
-.project-category{top:var(--card-inset);left:var(--card-inset);max-width:calc(100% - 2*var(--card-inset) - 32px);font-size:clamp(10px,.8vw,12px);line-height:1.35;color:#ded8ce;text-shadow:0 1px 8px #000;pointer-events:none}
-.project-name{bottom:var(--card-inset);left:var(--card-inset);right:var(--card-inset);font-size:clamp(20px,2vw,28px);font-weight:380;line-height:1.1;letter-spacing:-.045em}
+.project-category{top:var(--card-inset);left:var(--card-inset);max-width:calc(100% - 2*var(--card-inset) - 32px);font-size:clamp(11px,.9vw,14px);line-height:1.35;color:#ded8ce;text-shadow:0 1px 8px #000;pointer-events:none}
+.project-name{bottom:var(--card-inset);left:var(--card-inset);right:var(--card-inset);font-size:clamp(28px,3vw,48px);font-weight:380;line-height:1.1;letter-spacing:-.045em}
 .project-name a{display:inline-block;width:fit-content;max-width:100%;min-height:28px;cursor:pointer;transition:filter .2s}
 .project-name a:hover{filter:brightness(1.2)}
-.project-expand{top:4px;right:4px;display:grid;place-items:center;width:44px;height:44px;padding:12px;background:none;border:0;cursor:pointer}
+.project-expand{top:calc(var(--card-inset) - 10px);right:calc(var(--card-inset) - 10px);display:grid;place-items:center;width:44px;height:44px;padding:12px;background:none;border:0;cursor:pointer}
 .project-expand img{width:20px;height:20px;filter:invert(1);opacity:.85;transition:opacity .2s,transform .2s}
 .project-expand:hover img{opacity:1;transform:scale(1.1)}
-#portfolio-dots{margin:0 auto}
-#demo-slot{min-height:0;height:100%}
+#portfolio-dots{margin:10px auto 28px}
+#demo-slot{height:clamp(440px,64svh,760px);min-height:0}
 .demo-panel{position:relative;width:100%;height:100%;background:transparent;scroll-margin-top:24px;isolation:isolate}
 /* No clip-path, masks, filters or opacity on ancestors of the live frame.
    The notched ring is a separate decorative layer, so WebGL has a stable surface. */
@@ -104,25 +103,27 @@ button:focus-visible,a:focus-visible,input:focus-visible,[tabindex]:focus-visibl
 html[data-demo-expanded=true]{overflow:hidden}
 .demo-panel:fullscreen{width:100%;height:100%;background:#000}.demo-panel:fullscreen::backdrop{background:#000}
 
-/* Each study separates its editorial text from its independently draggable art. */
-.vision-grid{display:grid;grid-template-columns:1fr;gap:clamp(24px,3cqw,48px)}
-.vision-card{display:grid;grid-template-columns:1.1fr .9fr;gap:clamp(16px,1.8cqw,28px);height:clamp(340px,42cqw,640px);--vision-inset:clamp(24px,3.8cqw,58px)}
-.vision-info,.vision-art{min-width:0;position:relative;background:#000;overflow:hidden}
-.vision-info{background:radial-gradient(ellipse at 100% 100%,#221b111f,transparent 70%),#000}
-.vision-art{container-type:size}
-.comparison{--split:50%;position:absolute;inset:0 auto 0 50%;transform:translateX(-50%);width:min(100%,calc(100cqh*1122/1402));overflow:hidden;user-select:none;mask-image:linear-gradient(90deg,transparent,#000 16%,#000 84%,transparent)}
-.comparison>img,.comparison-before>img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;object-position:center;max-width:none;pointer-events:none}
+/* Three compact, full-width studies share a single viewport. */
+.vision-section{height:max(660px,100svh);max-height:1120px;padding-block:clamp(32px,4svh,56px);display:grid;grid-template-rows:auto minmax(0,1fr);row-gap:24px}
+.vision-section .section-heading{margin-bottom:0}
+.vision-grid{display:grid;grid-template-columns:1fr;grid-template-rows:repeat(3,minmax(0,1fr));gap:14px;min-height:0}
+.vision-card{position:relative;min-width:0;min-height:0;background:#000;overflow:hidden;--vision-inset:clamp(22px,3.2cqw,48px)}
+.vision-art{position:absolute;inset:0;background:#000}
+.comparison{--range-start:65;--split:82.5%;position:absolute;inset:0;overflow:hidden;user-select:none}
+.comparison>img,.comparison-before>img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;object-position:right center;max-width:none;pointer-events:none}
 .comparison-before{position:absolute;inset:0;clip-path:inset(0 calc(100% - var(--split)) 0 0)}
-.comparison-divider{position:absolute;z-index:3;inset:12px 0;pointer-events:none}
-.comparison-divider:before{content:'';position:absolute;inset:0 auto 0 var(--split);width:1px;background:linear-gradient(transparent,#f5f3ef66 16%,#f5f3ef66 84%,transparent)}
-.comparison-divider>span{position:absolute;top:50%;left:clamp(21px,var(--split),calc(100% - 21px));transform:translate(-50%,-50%);width:42px;height:42px;display:flex;align-items:center;justify-content:center;gap:2px;opacity:0;transition:opacity .2s;filter:drop-shadow(0 1px 4px #000)}
-.comparison-divider img{width:16px;height:16px;filter:invert(1)}
-.comparison input{position:absolute;inset:0;margin:0;width:100%;height:100%;opacity:0;z-index:5;cursor:ew-resize;touch-action:pan-y pinch-zoom}
-.comparison:is(:hover,:focus-within,:active) .comparison-divider>span{opacity:1}
+.vision-art:after{content:'';position:absolute;inset:0;z-index:3;pointer-events:none;background:linear-gradient(90deg,#000 0%,#000 30%,#000000d9 42%,#0005 53%,transparent 64%)}
+.comparison-divider{position:absolute;z-index:4;inset:14px 0;pointer-events:none}
+.comparison-divider:before{content:'';position:absolute;inset:0 auto 0 var(--split);width:1px;background:linear-gradient(transparent,#e7ddcc80 18%,#e7ddcc80 82%,transparent)}
+.comparison-divider>span{position:absolute;top:50%;left:clamp(22px,var(--split),calc(100% - 22px));transform:translate(-50%,-50%);width:38px;height:38px;display:flex;align-items:center;justify-content:center;gap:0;background:#0c0d0ecc;border:1px solid #eee2cc5c;border-radius:50%;transition:background .2s;filter:drop-shadow(0 1px 4px #000)}
+.comparison-divider img{width:13px;height:13px;filter:invert(1)}
+.comparison input{position:absolute;inset:0 0 0 calc(var(--range-start)*1%);margin:0;width:calc((100 - var(--range-start))*1%);height:100%;opacity:0;z-index:5;cursor:ew-resize;touch-action:pan-y pinch-zoom}
+.comparison:is(:hover,:focus-within) .comparison-divider>span{background:#332617;border-color:var(--amber)}
 .comparison:focus-within .comparison-divider:before{background:linear-gradient(transparent,var(--amber) 20%,var(--amber) 80%,transparent)}
-.vision-copy{position:absolute;z-index:4;inset:var(--vision-inset);pointer-events:none}
-.vision-copy h3{position:absolute;bottom:0;left:0;width:fit-content;max-width:100%;font-weight:380;font-size:clamp(28px,4.3cqw,74px);line-height:1.1;letter-spacing:-.055em}
-.vision-copy p{position:absolute;top:0;left:0;color:#c6c2bc;font-size:clamp(14px,1.5cqw,24px);line-height:1.4;white-space:pre-line}
+.comparison-labels{position:absolute;z-index:4;bottom:16px;left:calc(var(--range-start)*1% + 2%);right:var(--vision-inset);display:flex;justify-content:space-between;gap:8px;color:#d3cfc8;font-size:10px;letter-spacing:.09em;pointer-events:none;text-shadow:0 1px 8px #000}
+.vision-copy{position:absolute;z-index:4;inset:var(--vision-inset) auto var(--vision-inset) var(--vision-inset);width:43%;pointer-events:none;text-shadow:0 1px 12px #000;display:flex;flex-direction:column;justify-content:center;gap:12px}
+.vision-copy h3{width:fit-content;font-weight:380;font-size:clamp(25px,3cqw,48px);line-height:1.08;letter-spacing:-.055em;text-wrap:balance}
+.vision-copy p{color:#c6c2bc;font-size:clamp(13px,1.1cqw,18px);line-height:1.45;white-space:pre-line;max-width:32ch;text-wrap:pretty}
 
 /* Start-inspired graphite sculptures, copy left and numbering top right. */
 .steps-grid{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(16px,1.8cqw,28px)}
@@ -167,14 +168,22 @@ html[data-demo-expanded=true]{overflow:hidden}
   .benefit-copy h2{font-size:clamp(28px,calc(var(--slide-width)*.065),38px)}
   .benefit-carousel .card-art{height:84%;top:9%;object-position:right center}
   .benefit-copy p{font-size:clamp(13px,calc(var(--slide-width)*.038),17px);letter-spacing:-.018em;line-height:1.35}
-  .experiences-section{height:max(680px,100svh);padding-block:16px;row-gap:4px;grid-template-rows:auto auto 40px minmax(0,1fr)}
+  .experiences-section{padding-block:32px}.portfolio-carousel{--slide-width:76vw;--board-height:calc(var(--slide-width)*.66);--card-inset:18px;--side-fade:12px}.portfolio-carousel .project-name{font-size:28px} #demo-slot{height:72svh;min-height:400px}
   .project-name{font-size:20px}.project-category{font-size:10px}
   .carousel-controls button{width:32px;flex-basis:32px;height:40px}
   .demo-fallback{inset:auto 12px 12px;padding:16px}.demo-loading{font-size:14px}
-  .vision-section,.steps-section{padding-block:44px}.section-heading{margin-bottom:24px}
-  .vision-card{grid-template-columns:1fr;height:auto;gap:12px;--vision-inset:24px}
-  .vision-info{min-height:clamp(210px,55cqw,300px)}.vision-art{height:clamp(300px,95cqw,480px)}
-  .vision-copy h3{font-size:clamp(30px,7.9cqw,43px)}.vision-copy p{font-size:14px}
+  .steps-section{padding-block:44px}.section-heading{margin-bottom:24px}
+  .vision-section{height:auto;max-height:none;min-height:100svh;padding-block:32px;gap:24px}
+  .vision-grid{grid-template-rows:repeat(3,clamp(210px,58cqw,270px));gap:14px}
+  .vision-card{--vision-inset:18px}
+  .vision-copy{inset:22px auto 26px 20px;width:47%;justify-content:space-between;gap:10px}
+  .vision-copy h3{font-size:clamp(23px,6.3cqw,32px);line-height:1.1}
+  .vision-copy p{font-size:13px;line-height:1.4;max-width:20ch}
+  .comparison>img,.comparison-before>img{object-fit:cover;object-position:85% center}
+  .vision-art:after{background:linear-gradient(90deg,#000 0%,#000000f0 22%,#000000b0 40%,transparent 68%)}
+  .comparison{--range-start:45}
+  .comparison-labels{left:52%;right:14px;bottom:12px;font-size:8px;letter-spacing:.02em}
+  .comparison-divider>span{width:32px;height:32px}
   .step-card{aspect-ratio:1.1}.step-card p{font-size:14px}.step-card h3{font-size:clamp(28px,9cqw,40px)}
   .step-art{inset:23% -10% auto auto;width:120%;height:62%}
   .contact-section{padding-top:44px}.start-action{min-height:480px;--corner-cut:16px}
@@ -192,3 +201,16 @@ html[data-overlay-scrollbar=true]{scrollbar-width:none}html[data-overlay-scrollb
 .memento-scrollbar:is(:hover,:focus-visible,.is-scrolling,.is-dragging) .memento-scrollbar-thumb{width:3px;opacity:.85;background:#e0b57d}
 @media(max-width:767px){.memento-scrollbar{width:12px}.memento-scrollbar-thumb{right:2px}}
 @media(forced-colors:active){html[data-overlay-scrollbar=true]{scrollbar-width:auto}.memento-scrollbar{display:none}}
+
+/* Domain boards remain draggable, with a real link covering the active board. */
+.domain-link{position:absolute;inset:0;z-index:5;display:flex;align-items:flex-end;justify-content:flex-end;gap:12px;padding:var(--card-inset);font-size:11px;letter-spacing:.14em;color:#e4ded3;cursor:pointer;opacity:var(--slide-focus,1)}
+.domain-link svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.3;transition:transform .3s var(--ease)}
+.domain-link:hover{color:var(--amber)}.domain-link:hover svg{transform:translate(2px,-2px)}
+.benefit-carousel .card-art{object-fit:cover}
+.benefit-carousel .showcase-card:after{background:linear-gradient(90deg,#000000b3 0%,#0002 48%,transparent 72%)}
+.benefit-copy h2{max-width:90%}.benefit-copy p{max-width:65%}
+.step-card h3{max-width:calc(100% - 2*var(--step-inset));font-size:clamp(24px,7.5cqw,40px)}
+.step-number{font-size:11px;top:calc(var(--step-inset) + 2px)}
+.start-copy h2{white-space:nowrap;font-size:clamp(32px,8.5cqw,145px);letter-spacing:.025em}
+@media(max-width:767px){.domain-link{padding:var(--card-inset);font-size:9px;gap:6px}.domain-link svg{width:12px;height:12px}.benefit-copy p{max-width:75%;font-size:14px}.benefit-carousel .card-art{height:100%;top:0;object-fit:cover;object-position:65% center}.benefit-copy h2{max-width:100%}.step-card h3{font-size:clamp(26px,8cqw,40px)}.start-copy h2{font-size:clamp(26px,8.2cqw,60px)}}
+@media(max-width:500px){:root{--content-width:calc(100vw - 40px)}}
