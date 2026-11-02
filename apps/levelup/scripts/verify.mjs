@@ -7,6 +7,8 @@ const root=resolve(dirname(fileURLToPath(import.meta.url)),'..'),dist=join(root,
 export async function verifyAssets(base){
  const html=await readFile(join(base,'index.html'),'utf8'),css=await readFile(join(base,'styles.css'),'utf8');
  const refs=[...html.matchAll(/(?:src|href)="([^"#]+)"/g)].map(m=>m[1]).filter(s=>!s.startsWith('https:'));
+ const app=await readFile(join(base,'src/app.js'),'utf8');
+ refs.push(...[...app.matchAll(/src="(assets\/[^"$]+)"/g)].map(m=>m[1]));
  refs.push(...[...css.matchAll(/url\(['"]?([^)'" ]+)/g)].map(m=>m[1]));
  for(const item of [...benefits,...experiences])refs.push(item.asset,item.asset.replace('.webp','-640.webp'));
  for(const item of visions)refs.push(item.before,item.after);

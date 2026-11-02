@@ -28,7 +28,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,[tabindex]:focus-visibl
 .fitted-heading{width:100%;font-weight:350;letter-spacing:-.055em;line-height:1.11;font-size:clamp(28px,7vw,150px)}
 .fit-line{display:block;white-space:nowrap}
 .opening{padding-top:calc(clamp(72px,8vw,160px) + env(safe-area-inset-top));padding-bottom:clamp(50px,6vw,96px)}
-.opening-heading{margin-bottom:clamp(30px,4vw,68px)}
+.opening-heading{position:relative;z-index:2;margin-bottom:calc(clamp(20px,2vw,32px) - var(--carousel-bleed-top,12px))}
 .section-heading{margin-bottom:clamp(24px,3vw,48px)}
 .vision-section,.steps-section{padding-block:clamp(58px,7vw,120px)}
 
@@ -58,9 +58,9 @@ button:focus-visible,a:focus-visible,input:focus-visible,[tabindex]:focus-visibl
 .benefit-veil img{position:absolute;inset:auto 0 0 auto;width:var(--photo-width);height:var(--photo-height);object-fit:cover;object-position:center bottom;filter:blur(10px)}
 .benefit-veil:after{content:'';position:absolute;inset:60% 0 0;background:linear-gradient(0deg,#000e,transparent)}
 .benefit-copy{position:absolute;z-index:3;inset:var(--card-inset);pointer-events:none;opacity:clamp(0,(var(--slide-focus,1) - .18)/.82,1)}
-.benefit-copy h2{font-size:clamp(28px,calc(var(--slide-width)*.051),88px);font-weight:420;line-height:1.1;letter-spacing:-.055em;max-width:85%}
+.benefit-copy h2{position:absolute;bottom:0;left:0;width:fit-content;font-size:clamp(28px,calc(var(--slide-width)*.051),88px);font-weight:420;line-height:1.1;letter-spacing:-.055em;max-width:85%}
 .benefit-copy h2 span,.vision-copy h3 span,.step-card h3 span{display:block}
-.benefit-copy p{position:absolute;bottom:0;left:0;font-size:clamp(14px,calc(var(--slide-width)*.017),25px);line-height:1.4;color:#c6c2bc;white-space:pre-line;max-width:60%;text-shadow:0 2px 18px #000}
+.benefit-copy p{position:absolute;top:0;left:0;font-size:clamp(14px,calc(var(--slide-width)*.017),25px);line-height:1.4;color:#c6c2bc;white-space:pre-line;max-width:60%;text-shadow:0 2px 18px #000}
 .benefit-carousel .showcase-card:after{content:'';position:absolute;inset:60% 0 0;background:linear-gradient(0deg,#000b,transparent);pointer-events:none}
 .carousel-controls{display:flex;justify-content:center;align-items:center;gap:0;height:44px;margin:12px auto 0;width:min(100% - 16px,640px)}
 .carousel-controls button{width:44px;height:44px;display:grid;place-items:center;padding:0;flex:0 1 44px;min-width:26px}
@@ -68,61 +68,74 @@ button:focus-visible,a:focus-visible,input:focus-visible,[tabindex]:focus-visibl
 .carousel-controls button[aria-current=true] span{background:#f2a10a;opacity:1;transform:scale(1.65);box-shadow:0 0 13px #d8994f45}
 .carousel-controls button:hover span{opacity:1}
 
-/* Intentional V09 exception: a cinematic selector above a roomy live embed.
+/* Compact 16:9 selector above a roomy live embed, within the same safe gutters.
    A short landscape viewport may grow naturally; vertical scrolling is never snapped. */
 .experiences-section{height:max(680px,100svh);padding-block:24px;display:grid;grid-template-rows:auto auto 44px minmax(0,1fr);row-gap:8px;align-content:stretch;scroll-margin-top:0}
 .experiences-section .section-heading{margin-bottom:0}
-.portfolio-carousel{--slide-width:min(var(--page-content),calc(clamp(118px,18svh,200px)*3));--board-height:calc(var(--slide-width)/3);--card-inset:clamp(16px,1.5vw,24px);--side-fade:6vw}
+.portfolio-carousel{--board-height:min(clamp(118px,18svh,200px),calc(var(--page-content)/3));--slide-width:calc(var(--board-height)*16/9);--card-inset:clamp(12px,1.1vw,18px);--side-fade:clamp(12px,3vw,48px);width:var(--page-content);margin-left:var(--safe-left);margin-right:var(--safe-right)}
 .portfolio-carousel .card-art{inset:0;width:100%;height:100%;mask:none;object-position:center 46%}
 .portfolio-carousel .showcase-card{cursor:pointer}.portfolio-carousel .showcase-card[data-active=true]{cursor:grab}
-.project-caption{opacity:clamp(0,(var(--slide-focus,1) - .18)/.82,1);position:absolute;inset:auto 0 0;padding:42px var(--card-inset) 17px;background:linear-gradient(0deg,#000f,#000b 45%,transparent);text-align:left;z-index:3;pointer-events:none}
-.project-caption h3{max-width:58%;font-size:clamp(20px,2vw,28px);font-weight:380;line-height:1.1;letter-spacing:-.045em}
-.project-caption p{margin-top:5px;font-size:clamp(10px,.8vw,12px);color:#c6c2bc}
-.project-actions{position:absolute;bottom:13px;right:var(--card-inset);z-index:5;display:flex;gap:5px;opacity:0;pointer-events:none}
-.showcase-card[data-active=true] .project-actions{opacity:1;pointer-events:auto}
-.slide-action{display:inline-flex;align-items:center;justify-content:center;gap:3px;min-height:44px;padding:8px 11px;background:#090909a6;font-size:11px;letter-spacing:0;border:1px solid #ffffff30;clip-path:polygon(6px 0,100% 0,100% calc(100% - 6px),calc(100% - 6px) 100%,0 100%,0 6px);transition:border-color .25s,color .25s}
-.slide-action:hover{border-color:var(--amber);color:var(--amber)}.slide-action img{width:14px;height:14px;filter:invert(1)}.diagonal-arrow{transform:rotate(-45deg)}
+.portfolio-carousel .showcase-card:after{content:'';position:absolute;inset:0;z-index:1;background:linear-gradient(0deg,#000e,transparent 62%,#0009);pointer-events:none}
+.project-category,.project-name,.project-expand{position:absolute;z-index:3;opacity:clamp(0,(var(--slide-focus,1) - .18)/.82,1)}
+.project-category{top:var(--card-inset);left:var(--card-inset);max-width:calc(100% - 2*var(--card-inset) - 32px);font-size:clamp(10px,.8vw,12px);line-height:1.35;color:#ded8ce;text-shadow:0 1px 8px #000;pointer-events:none}
+.project-name{bottom:var(--card-inset);left:var(--card-inset);right:var(--card-inset);font-size:clamp(20px,2vw,28px);font-weight:380;line-height:1.1;letter-spacing:-.045em}
+.project-name a{display:inline-block;width:fit-content;max-width:100%;min-height:28px;cursor:pointer;transition:filter .2s}
+.project-name a:hover{filter:brightness(1.2)}
+.project-expand{top:4px;right:4px;display:grid;place-items:center;width:44px;height:44px;padding:12px;background:none;border:0;cursor:pointer}
+.project-expand img{width:20px;height:20px;filter:invert(1);opacity:.85;transition:opacity .2s,transform .2s}
+.project-expand:hover img{opacity:1;transform:scale(1.1)}
 #portfolio-dots{margin:0 auto}
 #demo-slot{min-height:0;height:100%}
-.demo-panel{height:100%;background:#000;scroll-margin-top:24px}
-.demo-viewport{position:relative;height:100%;overflow:hidden;background:#050608}
+.demo-panel{position:relative;width:100%;height:100%;background:transparent;scroll-margin-top:24px;isolation:isolate}
+/* No clip-path, masks, filters or opacity on ancestors of the live frame.
+   The notched ring is a separate decorative layer, so WebGL has a stable surface. */
+.demo-border{position:absolute;inset:0;z-index:8;pointer-events:none;background:none}
+.demo-viewport{position:relative;height:100%;overflow:hidden;background:transparent}
 #demo-poster{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.45}
-#frame-mount{position:absolute;inset:0;z-index:2}#frame-mount iframe{display:block;border:0;width:100%;height:100%;background:#07090a}
-.demo-loading{position:absolute;inset:0;z-index:3;display:grid;place-items:center;background:#0009;color:var(--ink);font-size:15px;pointer-events:none}
+#frame-mount{position:absolute;inset:1px;z-index:2;background:transparent}
+#frame-mount iframe{display:block;border:0;width:100%;height:100%;background:#07090a;visibility:hidden}
+#frame-mount iframe[data-loaded=true]{visibility:visible}
+#frame-mount iframe,#demo-poster,.demo-loading{clip-path:polygon(var(--corner-cut) 0,100% 0,100% calc(100% - var(--corner-cut)),calc(100% - var(--corner-cut)) 100%,0 100%,0 var(--corner-cut))}
+.demo-loading{position:absolute;inset:0;z-index:3;display:grid;place-items:center;background:#07090a;color:var(--ink);font-size:15px}
 .demo-fallback{position:absolute;z-index:4;left:20px;right:20px;bottom:20px;padding:24px;background:#07090af5;border:1px solid #aaa28f66}
 .demo-fallback p{font-size:15px;line-height:1.45;margin-bottom:16px}.demo-fallback>div{display:flex;gap:12px;flex-wrap:wrap}
 .cut-button{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:10px 20px;background:#151310;color:var(--ink);border:1px solid #c4955655;clip-path:polygon(8px 0,100% 0,100% calc(100% - 8px),calc(100% - 8px) 100%,0 100%,0 8px)}.cut-button:hover{border-color:var(--amber)}
 .icon-button{display:grid;place-items:center;width:44px;height:44px;background:#090909e6;border:1px solid #ffffff36;cursor:pointer}.icon-button img{width:24px;height:24px;filter:invert(1)}
 .close-demo{position:absolute;right:16px;top:16px;z-index:10}
-#demo-dialog{padding:0;border:0;width:100vw;max-width:none;height:100dvh;max-height:none;background:transparent;color:var(--ink);overflow:hidden}
-#demo-dialog[open]{display:grid;place-items:center}#demo-dialog::backdrop{background:#04060735;backdrop-filter:blur(18px)}
-#demo-dialog .demo-panel{width:min(94vw,1720px);height:92dvh}html:has(#demo-dialog[open]){overflow:hidden}
-.demo-panel:fullscreen{width:100%;height:100%;clip-path:none;background:#000}.demo-panel:fullscreen::backdrop{background:#000}
+/* The dialog stays in this slot for its entire lifetime. CSS renders the
+   closed, non-modal group inline; showModal promotes the same subtree in place. */
+#demo-dialog{display:block;position:relative;inset:auto;margin:0;padding:0;border:0;width:100%;max-width:none;height:100%;max-height:none;background:transparent;color:var(--ink);overflow:visible}
+#demo-dialog[open]{position:fixed;inset:0;width:100vw;height:100dvh;display:grid;place-items:center;overflow:hidden}
+#demo-dialog::backdrop{background:#040607ed}
+#demo-dialog[open] .demo-panel{width:min(94vw,1720px);height:92dvh}
+html[data-demo-expanded=true]{overflow:hidden}
+.demo-panel:fullscreen{width:100%;height:100%;background:#000}.demo-panel:fullscreen::backdrop{background:#000}
 
-/* Three matched-camera studies. Only the visual area owns the range gesture. */
-.vision-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(16px,1.8cqw,28px)}
-.vision-card{aspect-ratio:4/5.3;background:#000;overflow:hidden;container-type:inline-size}
-.comparison{--split:50%;position:absolute;inset:0;overflow:hidden;user-select:none}
-.comparison>img,.comparison-before>img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center top;max-width:none;pointer-events:none}
+/* Three full-width matched-camera studies. The native range owns the art. */
+.vision-grid{display:grid;grid-template-columns:1fr;gap:clamp(24px,3cqw,48px)}
+.vision-card{aspect-ratio:var(--board-ratio);background:#000;overflow:hidden;container-type:inline-size;--vision-inset:clamp(20px,4.4cqw,66px)}
+.comparison{--split:50%;position:absolute;inset:0 calc(6%*var(--layout-wide)) 0 auto;width:min(100%,calc(100cqw/var(--board-ratio)*1122/1402));overflow:hidden;user-select:none;mask-image:linear-gradient(90deg,transparent,#000 16%,#000 84%,transparent)}
+.comparison>img,.comparison-before>img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;object-position:center;max-width:none;pointer-events:none}
 .comparison-before{position:absolute;inset:0;clip-path:inset(0 calc(100% - var(--split)) 0 0)}
-.comparison-divider{position:absolute;z-index:3;inset:12px 0 29%;pointer-events:none}
-.comparison-divider:before{content:'';position:absolute;inset:0 auto 0 var(--split);width:1px;background:linear-gradient(transparent,#f5f3efb3 16%,#f5f3efb3 84%,transparent)}
-.comparison-divider>span{position:absolute;top:55%;left:clamp(21px,var(--split),calc(100% - 21px));transform:translate(-50%,-50%);width:42px;height:42px;display:flex;align-items:center;justify-content:center;background:#080a0cde;border:1px solid #b3a58b99;backdrop-filter:blur(8px)}
+.comparison-divider{position:absolute;z-index:3;inset:12px 0;pointer-events:none}
+.comparison-divider:before{content:'';position:absolute;inset:0 auto 0 var(--split);width:1px;background:linear-gradient(transparent,#f5f3ef66 16%,#f5f3ef66 84%,transparent)}
+.comparison-divider>span{position:absolute;top:50%;left:clamp(21px,var(--split),calc(100% - 21px));transform:translate(-50%,-50%);width:42px;height:42px;display:flex;align-items:center;justify-content:center;gap:2px;opacity:0;transition:opacity .2s;filter:drop-shadow(0 1px 4px #000)}
 .comparison-divider img{width:16px;height:16px;filter:invert(1)}
-.comparison input{position:absolute;inset:0 0 29%;margin:0;width:100%;height:71%;opacity:0;z-index:5;cursor:ew-resize;touch-action:pan-y pinch-zoom}
-.comparison:focus-within .comparison-divider>span{outline:2px solid var(--amber);outline-offset:2px}
-.vision-card:after{content:'';position:absolute;inset:62% 0 0;pointer-events:none;background:linear-gradient(180deg,transparent,#000c 40%,#000 82%);z-index:2}
-.vision-copy{position:absolute;z-index:4;inset:auto clamp(20px,6.5cqw,30px) clamp(24px,7cqw,34px);pointer-events:none}
-.vision-copy h3{font-weight:380;font-size:clamp(25px,8.7cqw,43px);line-height:1.12;letter-spacing:-.05em}
-.vision-copy p{margin-top:14px;color:#b7b2ab;font-size:clamp(13px,3.6cqw,17px);line-height:1.45;letter-spacing:-.01em;white-space:pre-line}
+.comparison input{position:absolute;inset:0;margin:0;width:100%;height:100%;opacity:0;z-index:5;cursor:ew-resize;touch-action:pan-y pinch-zoom}
+.comparison:is(:hover,:focus-within,:active) .comparison-divider>span{opacity:1}
+.comparison:focus-within .comparison-divider:before{background:linear-gradient(transparent,var(--amber) 20%,var(--amber) 80%,transparent)}
+.vision-card:after{content:'';position:absolute;inset:0;pointer-events:none;background:linear-gradient(90deg,#000d,transparent 62%),linear-gradient(0deg,#000b,transparent 38%,transparent 68%,#0007);z-index:2}
+.vision-copy{position:absolute;z-index:4;inset:var(--vision-inset);pointer-events:none}
+.vision-copy h3{position:absolute;bottom:0;left:0;width:fit-content;max-width:90%;font-weight:380;font-size:clamp(28px,5.1cqw,88px);line-height:1.1;letter-spacing:-.055em}
+.vision-copy p{position:absolute;top:0;left:0;color:#c6c2bc;font-size:clamp(14px,1.7cqw,25px);line-height:1.4;white-space:pre-line;text-shadow:0 2px 18px #000}
 
 /* Start-inspired graphite sculptures, copy left and numbering top right. */
 .steps-grid{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(16px,1.8cqw,28px)}
 .step-card{container-type:inline-size;background:#000;aspect-ratio:1.12;overflow:hidden;--step-inset:clamp(22px,6.5cqw,34px)}
 .step-art{position:absolute;inset:14% -6% auto auto;width:112%;height:72%;max-width:none;object-fit:cover;object-position:center;opacity:.68;pointer-events:none;mask-image:linear-gradient(180deg,transparent,#000 15%,#000 77%,transparent)}
-.step-card p{position:absolute;z-index:3;top:var(--step-inset);left:var(--step-inset);font-size:clamp(13px,3.7cqw,18px);line-height:1.45;white-space:pre-line;color:#b7b2ab;max-width:73%}
-.step-number{position:absolute;z-index:3;top:var(--step-inset);right:var(--step-inset);font-size:clamp(20px,6cqw,32px);line-height:1;font-weight:350;color:#aaa69f;letter-spacing:-.055em}
-.step-card h3{position:absolute;z-index:3;bottom:var(--step-inset);left:var(--step-inset);right:var(--step-inset);font-weight:380;font-size:clamp(26px,9cqw,45px);line-height:1.1;letter-spacing:-.05em}
+.step-card p{position:absolute;z-index:3;top:var(--step-inset);left:var(--step-inset);font-size:clamp(13px,3.7cqw,18px);line-height:1.45;white-space:pre-line;color:#b7b2ab;max-width:calc(100% - 2*var(--step-inset) - 58px)}
+.step-number{position:absolute;z-index:3;top:var(--step-inset);right:var(--step-inset);font-size:clamp(12px,3.5cqw,18px);line-height:1.4;font-weight:300;color:var(--ink);opacity:.25;letter-spacing:.015em}
+.step-card h3{position:absolute;z-index:3;bottom:var(--step-inset);left:var(--step-inset);width:fit-content;max-width:calc(100% - 2*var(--step-inset));font-weight:380;font-size:clamp(26px,9cqw,45px);line-height:1.1;letter-spacing:-.05em}
 
 /* Existing Start conversion card and perimeter-light interaction. */
 .contact-section{padding-block:clamp(48px,6vw,100px) max(90px,env(safe-area-inset-bottom))}
@@ -145,35 +158,26 @@ button:focus-visible,a:focus-visible,input:focus-visible,[tabindex]:focus-visibl
   .benefit-copy h2{max-width:100%;font-size:clamp(28px,calc(var(--slide-width)*.055),56px)}
   .benefit-copy p{max-width:100%;font-size:clamp(14px,calc(var(--slide-width)*.024),20px)}
   .step-card{aspect-ratio:.88}.step-card h3{font-size:clamp(22px,9cqw,34px)}
-  .step-card p{font-size:clamp(12px,4cqw,16px);max-width:70%}.step-number{font-size:22px}
-}
-@media(min-width:901px) and (max-width:1199px){
-  .vision-card{aspect-ratio:2/3}
-  .comparison>img,.comparison-before>img{height:auto;object-fit:contain}
+  .step-card p{font-size:clamp(12px,4cqw,16px)}
 }
 @media(max-width:900px){
-  .vision-grid{display:flex;overflow-x:auto;scroll-snap-type:x proximity;scrollbar-width:thin;scrollbar-color:#7e6e54 transparent;padding-bottom:14px;gap:16px}
-  .vision-card{flex:0 0 86%;min-width:0;max-width:460px;scroll-snap-align:start;aspect-ratio:4/5}
   .steps-grid{grid-template-columns:1fr;gap:18px}.step-card{aspect-ratio:1.5;--step-inset:clamp(22px,5.5cqw,34px)}
   .step-card h3{font-size:clamp(30px,7.5cqw,46px)}.step-card p{font-size:clamp(14px,3.5cqw,19px)}
   .step-art{height:95%;width:100%;inset:0 -4% auto auto;opacity:.65}
 }
 @media(max-width:767px){
   :root{--corner-cut:16px}
-  .opening{padding-top:calc(64px + env(safe-area-inset-top));padding-bottom:44px}.opening-heading{margin-bottom:24px}
+  .opening{padding-top:calc(64px + env(safe-area-inset-top));padding-bottom:44px}.opening-heading{margin-bottom:calc(20px - var(--carousel-bleed-top,12px))}
   .benefit-copy h2{max-width:100%;font-size:clamp(28px,calc(var(--slide-width)*.079),43px)}
   .benefit-copy p{font-size:clamp(13px,calc(var(--slide-width)*.038),17px);letter-spacing:-.018em;line-height:1.35}
   .experiences-section{height:max(680px,100svh);padding-block:16px;row-gap:4px;grid-template-rows:auto auto 40px minmax(0,1fr)}
-  .portfolio-carousel{--side-fade:calc((100vw - var(--slide-width))*.43);--card-inset:16px}
-  .project-caption{padding:32px 16px 14px}.project-caption h3{font-size:21px}.project-caption p{font-size:10px}
-  .project-actions{bottom:9px;gap:3px}.slide-action{padding:6px 7px;font-size:10px}.slide-action img{width:12px;height:12px}
+  .project-name{font-size:20px}.project-category{font-size:10px}
   .carousel-controls button{width:32px;flex-basis:32px;height:40px}
   .demo-fallback{inset:auto 12px 12px;padding:16px}.demo-loading{font-size:14px}
   .vision-section,.steps-section{padding-block:44px}.section-heading{margin-bottom:24px}
-  .vision-card{aspect-ratio:2/3}
-  .comparison>img,.comparison-before>img{height:auto;object-fit:contain}
-  .vision-copy{inset:auto 22px 26px}.vision-copy h3{font-size:clamp(27px,9.2cqw,40px)}.vision-copy p{font-size:14px;white-space:normal}
-  .step-card{aspect-ratio:1.1}.step-card p{font-size:14px;max-width:73%}.step-card h3{font-size:clamp(28px,9cqw,40px)}.step-number{font-size:24px}
+  .vision-copy h3{font-size:clamp(28px,7.9cqw,43px)}.vision-copy p{font-size:14px}
+  .vision-card:after{background:linear-gradient(0deg,#000e,transparent 58%,#000b)}
+  .step-card{aspect-ratio:1.1}.step-card p{font-size:14px}.step-card h3{font-size:clamp(28px,9cqw,40px)}
   .step-art{inset:13% -10% auto auto;width:120%;height:73%}
   .contact-section{padding-top:44px}.start-action{min-height:480px;--corner-cut:16px}
   .start-sculpture{top:-12%;right:-6%;width:105%;height:78%;mask-image:linear-gradient(0deg,transparent,#000 30%)}

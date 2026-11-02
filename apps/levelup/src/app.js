@@ -1,6 +1,7 @@
 import { benefits, experiences, visions, steps, contactUrl } from './content.js';
 import { Carousel } from './carousel.js';
 import { enhanceVisuals } from './visuals.js';
+import { DemoPlayer } from './player.js';
 
 const $ = selector => document.querySelector(selector);
 const escape = value => String(value).replace(/[&<>"']/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]));
@@ -13,11 +14,9 @@ $('#benefits .carousel-stage').innerHTML = benefits.map((item,i) => `
   </article>`).join('');
 $('#portfolio .carousel-stage').innerHTML = experiences.map((item,i) => `
   <article class="showcase-card cut-frame" data-slide="${i}" role="group" aria-roledescription="slide" aria-label="${escape(item.title)}, ${escape(item.category)}">
-    ${image(item)}<div class="project-caption"><h3>${escape(item.title)}</h3><p>${escape(item.category)}</p></div>
-    <div class="project-actions" data-no-swipe>
-      <a class="slide-action" href="${escape(item.url)}" target="_blank" rel="noopener noreferrer" aria-label="Apri ${escape(item.title)} in una nuova scheda">Apri<img src="assets/icons/caret-right.svg" class="diagonal-arrow" alt=""></a>
-      <button class="slide-action" type="button" data-expand="${i}" aria-controls="demo-panel" aria-haspopup="dialog" aria-label="Espandi ${escape(item.title)}">Espandi</button>
-    </div>
+    ${image(item)}<p class="project-category">${escape(item.category)}</p>
+    <h3 class="project-name" data-slide-control data-no-swipe><a class="gradient-text" href="${escape(item.url)}" target="_blank" rel="noopener noreferrer" aria-label="Apri ${escape(item.title)} in una nuova scheda">${escape(item.title)}</a></h3>
+    <button class="project-expand" data-slide-control data-no-swipe type="button" data-expand="${i}" aria-controls="demo-panel" aria-haspopup="dialog" aria-label="Espandi ${escape(item.title)}"><img src="assets/icons/maximize.svg" alt="" width="24" height="24"></button>
   </article>`).join('');
 $('#vision-grid').innerHTML = visions.map(item => `
   <article class="vision-card cut-frame" aria-labelledby="vision-${item.id}-title">
@@ -30,8 +29,8 @@ $('#vision-grid').innerHTML = visions.map(item => `
     </div>
     <div class="vision-copy"><h3 class="gradient-text" id="vision-${item.id}-title">${lines(item.title)}</h3><p>${escape(item.copy)}</p></div>
   </article>`).join('');
-$('#steps-grid').innerHTML = steps.map(item => `
-  <li class="step-card cut-frame"><img class="step-art" src="${item.asset}" srcset="${item.asset.replace('.webp','-768.webp')} 768w, ${item.asset} 1536w" sizes="(max-width:900px) 90vw, 33vw" alt="" width="1536" height="1024" loading="lazy" decoding="async"><p>${escape(item.copy)}</p><span class="step-number" aria-hidden="true">${item.number}</span><h3 class="gradient-text">${lines(item.title)}</h3></li>`).join('');
+$('#steps-grid').innerHTML = steps.map((item,i) => `
+  <li class="step-card cut-frame"><img class="step-art" src="${item.asset}" srcset="${item.asset.replace('.webp','-768.webp')} 768w, ${item.asset} 1536w" sizes="(max-width:900px) 90vw, 33vw" alt="" width="1536" height="1024" loading="lazy" decoding="async"><p>${escape(item.copy)}</p><span class="step-number" aria-hidden="true">STEP ${i+1}</span><h3 class="gradient-text">${lines(item.title)}</h3></li>`).join('');
 
 function pagination(root, items, label, select) {
   root.innerHTML = items.map((item,i) => `<button type="button" aria-label="${escape(label(item))}" aria-current="${i===0}" data-index="${i}"><span></span></button>`).join('');
@@ -51,63 +50,30 @@ benefitsCarousel = new Carousel($('#benefits'),{onSettle:index=>{
   mark($('#benefit-dots'),index); $('#announcement').textContent=benefits[index].title.join(' ');
 }});
 
-let selected=experiences.findIndex(item=>item.id==='productvis'), visible=false, mountedId=null;
-let loadTimer=0, settleTimer=0, generation=0, engaged=null, portfolio;
+let selected=experiences.findIndex(item=>item.id==='productvis'), visible=false, engaged=null, portfolio;
 const panel=$('#demo-panel'), dialog=$('#demo-dialog'), slot=$('#demo-slot');
+const player = new DemoPlayer({mount:$('#frame-mount'),loading:$('#demo-loading'),fallback:$('#demo-fallback'),poster:$('#demo-poster'),link:$('#fallback-link'),panel});
 pagination($('#portfolio-dots'),experiences,item=>'Prova '+item.title,index=>portfolio.select(index));
 const selectedExperience = () => experiences[selected];
 function updateSelection(index,announce=true) {
   selected=index;
   const item=selectedExperience();
   mark($('#portfolio-dots'),index);
-  panel.setAttribute('aria-label',item.title+' — demo interattiva');
-  $('#fallback-link').href=item.url;
-  $('#demo-poster').src=item.asset;
-  $('#demo-loading').textContent='Caricamento '+item.title+'…';
-  if (visible && mountedId!==item.id) $('#demo-loading').hidden=false;
   if(announce) {
     engaged=item;
     $('#announcement').textContent=item.title+'. Demo selezionata sotto il portfolio.';
     $('#contact-link').href=contactUrl(item);
   }
-  clearTimeout(settleTimer);
-  if(visible)settleTimer=setTimeout(()=>loadDemo(),320);
 }
-function loadDemo(force=false) {
-  const item=selectedExperience();
-  if(!visible || (!force && mountedId===item.id)) {
-    if(mountedId===item.id && $('#frame-mount iframe')?.dataset.loaded==='true')$('#demo-loading').hidden=true;
-    return;
-  }
-  const token=++generation;
-  clearTimeout(loadTimer); mountedId=item.id;
-  $('#demo-loading').hidden=false; $('#demo-fallback').hidden=true;
-  const frame=document.createElement('iframe');
-  frame.title=item.title+' — demo interattiva';
-  frame.referrerPolicy='strict-origin-when-cross-origin';
-  frame.allow='fullscreen; autoplay; xr-spatial-tracking'; frame.allowFullscreen=true;
-  frame.setAttribute('sandbox','allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox allow-pointer-lock allow-downloads');
-  frame.addEventListener('load',()=>{
-    frame.dataset.loaded='true';
-    if(token!==generation || selectedExperience().id!==item.id)return;
-    clearTimeout(loadTimer); $('#demo-loading').hidden=true;
-  });
-  frame.addEventListener('error',()=>{
-    if(token!==generation || selectedExperience().id!==item.id)return;
-    clearTimeout(loadTimer); $('#demo-loading').hidden=true; $('#demo-fallback').hidden=false;
-  });
-  frame.src=item.url; $('#frame-mount').replaceChildren(frame);
-  loadTimer=setTimeout(()=>{
-    if(token!==generation || selectedExperience().id!==item.id)return;
-    $('#demo-loading').hidden=true; $('#demo-fallback').hidden=false;
-  },16000);
+function commitSelection(index) {
+  updateSelection(index,false);
+  if(visible)player.load(selectedExperience());
 }
 function reachDemo() {
-  visible=true; loadDemo();
-  // The section is already one viewport. Focus without detaching the visual selector.
+  visible=true; player.load(selectedExperience());
   panel.focus({preventScroll:true});
 }
-portfolio=new Carousel($('#portfolio'),{onSettle:index=>updateSelection(index),onOpen:reachDemo});
+portfolio=new Carousel($('#portfolio'),{onSettle:index=>updateSelection(index),onCommit:commitSelection,onOpen:reachDemo});
 portfolio.current=portfolio.target=portfolio.active=selected;
 portfolio.render(); updateSelection(selected,false);
 $('#portfolio').addEventListener('keydown',event=>{
@@ -116,30 +82,37 @@ $('#portfolio').addEventListener('keydown',event=>{
   }
 });
 const observer=new IntersectionObserver(entries=>{
-  if(entries.some(entry=>entry.isIntersecting)){ visible=true; loadDemo(); observer.disconnect(); }
+  if(entries.some(entry=>entry.isIntersecting)){
+    visible=true;
+    if(!portfolio.motion && !portfolio.pointer)player.load(selectedExperience());
+    observer.disconnect();
+  }
 },{rootMargin:'200px 0px'});
 observer.observe(slot);
-$('#retry-demo').addEventListener('click',()=>loadDemo(true));
+$('#retry-demo').addEventListener('click',()=>player.load(selectedExperience(),true));
 
-let savedScroll=0, opener=null, nativeFull=false;
+let savedScroll=0, opener=null, nativeFull=false, expanding=false;
 function surface(open) {
   document.documentElement.dataset.demoExpanded=String(open);
   document.dispatchEvent(new CustomEvent('memento:overlay-change'));
 }
 async function expand(button) {
-  opener=button; savedScroll=window.scrollY; visible=true; loadDemo();
+  if(expanding || nativeFull || dialog.open)return;
+  expanding=true; opener=button; savedScroll=window.scrollY;
+  // Commit only the named card before opening; never detach the live iframe.
+  const index=Number(button.dataset.expand);
+  portfolio.target=index; portfolio.finish(); visible=true; player.load(selectedExperience());
   engaged=selectedExperience(); $('#contact-link').href=contactUrl(engaged);
   $('#close-demo').hidden=false;
-  // Native fullscreen retains the cross-origin demo's WebGL state.
   if(panel.requestFullscreen && document.fullscreenEnabled) {
-    try { await panel.requestFullscreen(); nativeFull=true; surface(true); $('#close-demo').focus(); return; }
-    catch { /* Hosts that disallow fullscreen receive an accessible dialog. */ }
+    try { await panel.requestFullscreen(); nativeFull=true; surface(true); $('#close-demo').focus(); expanding=false; return; }
+    catch { /* The permanent dialog is the in-place fallback for embedded browsers. */ }
   }
-  dialog.append(panel); dialog.showModal(); surface(true); $('#close-demo').focus();
+  dialog.setAttribute('role','dialog');
+  dialog.showModal(); surface(true); $('#close-demo').focus(); expanding=false;
 }
 function restore() {
-  if(panel.parentElement===dialog)slot.append(panel);
-  nativeFull=false; $('#close-demo').hidden=true; surface(false);
+  nativeFull=false; $('#close-demo').hidden=true; dialog.setAttribute('role','group'); surface(false);
   window.scrollTo({top:savedScroll,behavior:'instant'}); opener?.focus({preventScroll:true});
 }
 $('#portfolio').addEventListener('click',event=>{
@@ -154,7 +127,7 @@ dialog.addEventListener('close',restore);
 let backdropDown=null;
 dialog.addEventListener('pointerdown',event=>{backdropDown=event.target===dialog?{x:event.clientX,y:event.clientY}:null;});
 dialog.addEventListener('click',event=>{
-  if(event.target===dialog&&backdropDown&&Math.hypot(event.clientX-backdropDown.x,event.clientY-backdropDown.y)<8)dialog.close();
+  if(dialog.open && event.target===dialog&&backdropDown&&Math.hypot(event.clientX-backdropDown.x,event.clientY-backdropDown.y)<8)dialog.close();
   backdropDown=null;
 });
 

@@ -2,7 +2,7 @@
 export class Carousel {
   constructor(
     element,
-    { onSettle = () => {}, onOpen = () => {}, interactiveContents = false } = {},
+    { onSettle = () => {}, onCommit = () => {}, onOpen = () => {}, interactiveContents = false } = {},
   ) {
     this.element = element;
     this.interactiveContents = interactiveContents;
@@ -16,6 +16,7 @@ export class Carousel {
     this.pointer = this.motion = this.wheelGesture = null;
     this.suspended = this.suppressClick = false;
     this.onSettle = onSettle;
+    this.onCommit = onCommit;
     this.onOpen = onOpen;
     this.reduced = matchMedia('(prefers-reduced-motion: reduce)');
     this.measure = () => {
@@ -193,8 +194,7 @@ export class Carousel {
       card.dataset.active = String(isActive);
       card.tabIndex = isActive ? 0 : -1;
       card.setAttribute('aria-hidden', String(!isActive));
-      const actions = card.querySelector('.project-actions');
-      if (actions) actions.inert = !isActive;
+      card.querySelectorAll('[data-slide-control]').forEach(control => { control.inert = !isActive; });
       if (this.interactiveContents)
         (card.querySelector('.popup-card-scroll') || card).inert = !isActive;
       card.style.pointerEvents = amount >= edge ? 'none' : 'auto';
@@ -247,6 +247,7 @@ export class Carousel {
     this.render();
     this.motion = null;
     this.element.classList.remove('is-moving');
+    this.onCommit(this.active);
     if (this.focusAfterSettle) {
       this.cards[this.active].focus({ preventScroll: true });
       this.focusAfterSettle = false;
