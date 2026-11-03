@@ -69,7 +69,8 @@ button:focus-visible,a:focus-visible,input:focus-visible,[tabindex]:focus-visibl
 .portfolio-carousel .showcase-card{cursor:pointer;filter:grayscale(calc(1 - var(--slide-focus,1)))}.portfolio-carousel .showcase-card[data-active=true]{cursor:grab}
 .portfolio-carousel .showcase-card:after{content:'';position:absolute;inset:0;z-index:1;background:linear-gradient(0deg,#000e,transparent 62%,#0009);pointer-events:none}
 .project-category,.project-name,.project-expand{position:absolute;z-index:3;opacity:clamp(0,(var(--slide-focus,1) - .18)/.82,1)}
-.project-category{top:var(--card-inset);left:var(--card-inset);max-width:calc(100% - 2*var(--card-inset) - 32px);font-size:clamp(11px,.9vw,14px);line-height:1.35;color:#ded8ce;text-shadow:0 1px 8px #000;pointer-events:none}
+.project-category{top:var(--card-inset);left:var(--card-inset);max-width:calc(100% - 2*var(--card-inset) - 26px);margin:0;padding:0;list-style:none;display:grid;gap:2px;font-size:clamp(11px,.9vw,14px);line-height:1.35;color:#ded8ce;text-shadow:0 1px 8px #000;pointer-events:none}
+.project-category li{display:grid;grid-template-columns:8px 1fr;gap:5px;align-items:baseline}.project-category li:before{content:'–';color:#c5b294}
 .project-name{bottom:var(--card-inset);left:var(--card-inset);right:var(--card-inset);font-size:clamp(24px,2.5vw,40px);font-weight:380;line-height:1.1;letter-spacing:-.045em}
 .project-name a{display:inline-block;width:fit-content;max-width:100%;min-height:28px;cursor:pointer;transition:filter .2s}
 .project-name a:hover{filter:brightness(1.2)}
@@ -88,7 +89,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,[tabindex]:focus-visibl
 #frame-mount iframe{display:block;border:0;width:100%;height:100%;background:#07090a;visibility:hidden}
 #frame-mount iframe[data-loaded=true]{visibility:visible}
 #frame-mount iframe,#demo-poster,.demo-loading{clip-path:polygon(var(--corner-cut) 0,100% 0,100% calc(100% - var(--corner-cut)),calc(100% - var(--corner-cut)) 100%,0 100%,0 var(--corner-cut))}
-.demo-loading{position:absolute;inset:0;z-index:3;display:grid;place-items:center;background:#07090a;color:var(--ink);font-size:15px}
+.demo-loading{position:absolute;inset:0;z-index:3;display:grid;place-items:center;background:linear-gradient(0deg,#07090aeb,#07090a88);color:var(--ink);font-size:15px;text-shadow:0 1px 10px #000}
 .demo-fallback{position:absolute;z-index:4;left:20px;right:20px;bottom:20px;padding:24px;background:#07090af5;border:1px solid #aaa28f66}
 .demo-fallback p{font-size:15px;line-height:1.45;margin-bottom:16px}.demo-fallback>div{display:flex;gap:12px;flex-wrap:wrap}
 .cut-button{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:10px 20px;background:#151310;color:var(--ink);border:1px solid #c4955655;clip-path:polygon(8px 0,100% 0,100% calc(100% - 8px),calc(100% - 8px) 100%,0 100%,0 8px)}.cut-button:hover{border-color:var(--amber)}
@@ -108,7 +109,7 @@ html[data-demo-expanded=true]{overflow:hidden}
 .vision-section .section-heading{margin-bottom:0}
 .vision-grid{display:grid;grid-template-columns:1fr;grid-template-rows:repeat(3,minmax(0,1fr));gap:14px;min-height:0}
 .vision-card{position:relative;min-width:0;min-height:0;background:#000;overflow:hidden;--vision-inset:clamp(20px,2.6cqw,44px);--image-zoom:1.85;--image-shift:.18}
-.vision-product{--image-zoom:2.15}.vision-brand{--image-zoom:1.75}.vision-collection{--image-shift:.1}
+.vision-product{--image-zoom:1.7;--image-shift:.14}.vision-brand{--image-zoom:1.65;--image-shift:.07}.vision-collection{--image-zoom:1.55;--image-shift:.1}
 .vision-art{position:absolute;inset:0 0 0 40%;background:#000;container-type:size}
 .comparison{--image-size:min(115cqw,calc(100cqh * var(--image-zoom)));--control-left:max(0px,calc(100% - var(--image-size)*(.86 - var(--image-shift))));--control-right:max(10px,calc(var(--image-size)*.02));--split:calc(var(--control-left) + (100% - var(--control-left) - var(--control-right))*var(--reveal,.5));position:absolute;inset:0;overflow:hidden;user-select:none}
 .comparison>img,.comparison-before>img{position:absolute;top:50%;right:calc(var(--image-size)*var(--image-shift)*-1);width:var(--image-size);height:var(--image-size);max-width:none;object-fit:contain;transform:translateY(-50%);pointer-events:none}

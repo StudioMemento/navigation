@@ -4,7 +4,7 @@ import { portfolioStride, portfolioPose, portfolioEdge } from './portfolio-geome
 export class Carousel {
   constructor(
     element,
-    { onSettle = () => {}, onCommit = () => {}, onOpen = () => {}, interactiveContents = false } = {},
+    { onSelect = () => {}, onSettle = () => {}, onCommit = () => {}, onOpen = () => {}, interactiveContents = false } = {},
   ) {
     this.element = element;
     this.interactiveContents = interactiveContents;
@@ -18,6 +18,7 @@ export class Carousel {
     this.pointer = this.motion = this.wheelGesture = null;
     this.suspended = this.suppressClick = false;
     this.onSettle = onSettle;
+    this.onSelect = onSelect;
     this.onCommit = onCommit;
     this.onOpen = onOpen;
     this.reduced = matchMedia('(prefers-reduced-motion: reduce)');
@@ -262,6 +263,9 @@ export class Carousel {
     }
   }
   settle(velocity = 0) {
+    // The destination is now intentional (click, key, wheel or released swipe).
+    // Consumers can start loading it while the visual spring is still moving.
+    this.onSelect(this.mod(Math.round(this.target)));
     const gap = this.target - this.current;
     this.velocity =
       Math.sign(gap) === Math.sign(velocity)

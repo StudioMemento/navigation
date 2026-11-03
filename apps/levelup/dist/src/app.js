@@ -14,8 +14,8 @@ $('#benefits .carousel-stage').innerHTML = benefits.map((item,i) => `
     <a class="domain-link" data-domain-link data-slide-control href="${serviceUrl(item)}" target="_top" aria-label="Esplora i servizi ${item.domain}"><span>${item.domain}</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 5 7 7-7 7"/></svg></a>
   </article>`).join('');
 $('#portfolio .carousel-stage').innerHTML = experiences.map((item,i) => `
-  <article class="showcase-card cut-frame" data-slide="${i}" role="group" aria-roledescription="slide" aria-label="${escape(item.title)}, ${escape(item.category)}">
-    ${image(item)}<p class="project-category">${escape(item.category)}</p>
+  <article class="showcase-card cut-frame" data-slide="${i}" role="group" aria-roledescription="slide" aria-label="${escape(item.title)}, ${escape(item.categories.join(', '))}">
+    ${image(item)}<ul class="project-category" role="list">${item.categories.map(category=>`<li>${escape(category)}</li>`).join('')}</ul>
     <h3 class="project-name" data-slide-control data-no-swipe><a class="gradient-text" href="${escape(item.url)}" target="_blank" rel="noopener noreferrer" aria-label="Apri ${escape(item.title)} in una nuova scheda">${escape(item.title)}</a></h3>
     <button class="project-expand" data-slide-control data-no-swipe type="button" data-expand="${i}" aria-controls="demo-panel" aria-haspopup="dialog" aria-label="Espandi ${escape(item.title)}"><img src="assets/icons/maximize.svg" alt="" width="24" height="24"></button>
   </article>`).join('');
@@ -23,7 +23,7 @@ $('#vision-grid').innerHTML = visions.map(item => `
   <article class="vision-card cut-frame vision-${item.id}" aria-labelledby="vision-${item.id}-title">
     <div class="vision-copy"><h3 class="gradient-text" id="vision-${item.id}-title">${lines(item.title)}</h3><p>${escape(item.copy)}</p></div>
     <div class="vision-art"><div class="comparison" id="comparison-${item.id}">
-      <img src="${item.after}" srcset="${item.after.replace('.webp','-640.webp')} 640w, ${item.after} 1280w" sizes="(max-width:767px) 75vw, 600px" alt="${escape(item.alt)} con materiali e finiture" width="1280" height="1280" loading="lazy" decoding="async" draggable="false">
+      <img src="${item.after}" srcset="${item.after.replace('.webp','-640.webp')} 640w, ${item.after} 1280w" sizes="(max-width:767px) 75vw, 600px" alt="${escape(item.alt)}" width="1280" height="1280" loading="lazy" decoding="async" draggable="false">
       <div class="comparison-before"><img src="${item.before}" srcset="${item.before.replace('.webp','-640.webp')} 640w, ${item.before} 1280w" sizes="(max-width:767px) 75vw, 600px" alt="Lo stesso soggetto come modello di base" width="1280" height="1280" loading="lazy" decoding="async" draggable="false"></div>
       <div class="comparison-divider" aria-hidden="true"><span><img src="assets/icons/caret-left.svg" alt=""><img src="assets/icons/caret-right.svg" alt=""></span></div>
       <label class="sr-only" for="range-${item.id}">Confronta ${escape(item.title.join(' '))} Trascina per cambiare materiali e finiture.</label>
@@ -56,8 +56,8 @@ $('#benefits').addEventListener('keydown',event=>{
   }
 });
 
-let selected=experiences.findIndex(item=>item.id==='productvis'), visible=false, engaged=null, portfolio;
-const panel=$('#demo-panel'), dialog=$('#demo-dialog'), slot=$('#demo-slot');
+let selected=0, visible=false, engaged=null, portfolio;
+const panel=$('#demo-panel'), dialog=$('#demo-dialog');
 const player = new DemoPlayer({mount:$('#frame-mount'),loading:$('#demo-loading'),fallback:$('#demo-fallback'),poster:$('#demo-poster'),link:$('#fallback-link'),panel});
 pagination($('#portfolio-dots'),experiences,item=>'Prova '+item.title,index=>portfolio.select(index));
 const selectedExperience = () => experiences[selected];
@@ -75,11 +75,16 @@ function commitSelection(index) {
   updateSelection(index,false);
   if(visible)player.load(selectedExperience());
 }
+function selectExperience(index) {
+  updateSelection(index);
+  visible=true;
+  player.load(selectedExperience());
+}
 function reachDemo() {
   visible=true; player.load(selectedExperience());
   panel.focus({preventScroll:true});
 }
-portfolio=new Carousel($('#portfolio'),{onSettle:index=>updateSelection(index),onCommit:commitSelection,onOpen:reachDemo});
+portfolio=new Carousel($('#portfolio'),{onSelect:selectExperience,onCommit:commitSelection,onOpen:reachDemo});
 portfolio.current=portfolio.target=portfolio.active=selected;
 portfolio.render(); updateSelection(selected,false);
 $('#portfolio').addEventListener('keydown',event=>{
@@ -94,7 +99,8 @@ const observer=new IntersectionObserver(entries=>{
     observer.disconnect();
   }
 },{rootMargin:'200px 0px'});
-observer.observe(slot);
+// Warm the initial demo as its selector approaches, before the player enters view.
+observer.observe($('#portfolio'));
 $('#retry-demo').addEventListener('click',()=>player.load(selectedExperience(),true));
 
 let savedScroll=0, opener=null, nativeFull=false, expanding=false;

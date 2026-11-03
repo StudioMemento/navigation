@@ -1,4 +1,4 @@
-// A single persistent frame. Selection is committed only after the carousel rests.
+// One mounted frame. Explicit selection starts navigation before the carousel rests.
 // Loading veil hides first paint; fullscreen changes presentation, never DOM parentage.
 export class DemoPlayer {
   constructor({mount,loading,fallback,poster,link,panel}) {
@@ -17,6 +17,7 @@ export class DemoPlayer {
     this.loading.hidden=false; this.fallback.hidden=true;
     this.panel.setAttribute('aria-busy','true');
     const frame=document.createElement('iframe');
+    frame.loading='eager';
     frame.title=item.title+' — demo interattiva';
     frame.dataset.experience=item.id;
     frame.referrerPolicy='strict-origin-when-cross-origin';
