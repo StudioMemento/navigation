@@ -6,12 +6,12 @@ import { DemoPlayer } from './player.js';
 const $ = selector => document.querySelector(selector);
 const escape = value => String(value).replace(/[&<>"']/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]));
 const lines = items => items.map(text => `<span>${escape(text)}</span>`).join(' ');
-const image = (item, eager = false) => `<img class="card-art" src="${item.asset}" srcset="${item.asset.replace('.webp','-640.webp')} 640w, ${item.asset} 1536w" sizes="${item.domain ? '(max-width:768px) 100vw, 80vw' : '(max-width:767px) 210px, 356px'}" alt="${escape(item.alt || '')}" width="1536" height="${item.domain ? 864 : 1024}" loading="${eager ? 'eager' : 'lazy'}" decoding="async" ${eager ? 'fetchpriority="high"' : ''} draggable="false">`;
+const image = (item, eager = false) => `<img class="card-art" src="${item.asset}" srcset="${item.asset.replace('.webp','-640.webp')} 640w, ${item.asset} ${item.domain ? 1280 : 1536}w" sizes="${item.domain ? '(max-width:767px) 90vw, 60vw' : '(max-width:767px) 70vw, 40vw'}" alt="${escape(item.alt || '')}" width="${item.domain ? 1280 : 1536}" height="${item.domain ? 1280 : 1024}" loading="${eager ? 'eager' : 'lazy'}" decoding="async" ${eager ? 'fetchpriority="high"' : ''} draggable="false">`;
 
 $('#benefits .carousel-stage').innerHTML = benefits.map((item,i) => `
   <article class="showcase-card cut-frame" data-slide="${i}" role="group" aria-roledescription="slide" aria-label="${i+1} di ${benefits.length}: ${escape(item.title.join(' '))}">
     ${image(item,i===0)}<div class="benefit-copy"><h2 class="gradient-text">${lines(item.title)}</h2><p>${escape(item.copy)}</p></div>
-    <a class="domain-link" data-domain-link data-slide-control href="${serviceUrl(item)}" target="_top" aria-label="Esplora i servizi ${item.domain}"><span>${item.domain}</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 19 19 5M5 5h14v14"/></svg></a>
+    <a class="domain-link" data-domain-link data-slide-control href="${serviceUrl(item)}" target="_top" aria-label="Esplora i servizi ${item.domain}"><span>${item.domain}</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 5 7 7-7 7"/></svg></a>
   </article>`).join('');
 $('#portfolio .carousel-stage').innerHTML = experiences.map((item,i) => `
   <article class="showcase-card cut-frame" data-slide="${i}" role="group" aria-roledescription="slide" aria-label="${escape(item.title)}, ${escape(item.category)}">
@@ -20,15 +20,14 @@ $('#portfolio .carousel-stage').innerHTML = experiences.map((item,i) => `
     <button class="project-expand" data-slide-control data-no-swipe type="button" data-expand="${i}" aria-controls="demo-panel" aria-haspopup="dialog" aria-label="Espandi ${escape(item.title)}"><img src="assets/icons/maximize.svg" alt="" width="24" height="24"></button>
   </article>`).join('');
 $('#vision-grid').innerHTML = visions.map(item => `
-  <article class="vision-card cut-frame" aria-labelledby="vision-${item.id}-title">
+  <article class="vision-card cut-frame vision-${item.id}" aria-labelledby="vision-${item.id}-title">
     <div class="vision-copy"><h3 class="gradient-text" id="vision-${item.id}-title">${lines(item.title)}</h3><p>${escape(item.copy)}</p></div>
     <div class="vision-art"><div class="comparison" id="comparison-${item.id}">
-      <img src="${item.after}" alt="${escape(item.alt)} con materiali e finiture" width="1800" height="600" loading="lazy" decoding="async" draggable="false">
-      <div class="comparison-before"><img src="${item.before}" alt="Lo stesso soggetto come modello neutro" width="1800" height="600" loading="lazy" decoding="async" draggable="false"></div>
+      <img src="${item.after}" srcset="${item.after.replace('.webp','-640.webp')} 640w, ${item.after} 1280w" sizes="(max-width:767px) 75vw, 600px" alt="${escape(item.alt)} con materiali e finiture" width="1280" height="1280" loading="lazy" decoding="async" draggable="false">
+      <div class="comparison-before"><img src="${item.before}" srcset="${item.before.replace('.webp','-640.webp')} 640w, ${item.before} 1280w" sizes="(max-width:767px) 75vw, 600px" alt="Lo stesso soggetto come modello di base" width="1280" height="1280" loading="lazy" decoding="async" draggable="false"></div>
       <div class="comparison-divider" aria-hidden="true"><span><img src="assets/icons/caret-left.svg" alt=""><img src="assets/icons/caret-right.svg" alt=""></span></div>
-      <div class="comparison-labels" aria-hidden="true"><span>Neutro</span><span>Brandizzato</span></div>
-      <label class="sr-only" for="range-${item.id}">Confronta ${escape(item.title.join(' '))} Trascina da neutro a brandizzato.</label>
-      <input id="range-${item.id}" type="range" min="0" max="100" value="50" aria-valuetext="50% modello neutro, 50% materiali e finiture">
+      <label class="sr-only" for="range-${item.id}">Confronta ${escape(item.title.join(' '))} Trascina per cambiare materiali e finiture.</label>
+      <input id="range-${item.id}" type="range" min="0" max="100" value="50" aria-valuetext="50% modello di base, 50% materiali e finiture">
     </div></div>
   </article>`).join('');
 $('#steps-grid').innerHTML = steps.map((item,i) => `
@@ -143,9 +142,8 @@ for(const comparison of document.querySelectorAll('.comparison')) {
   const range=comparison.querySelector('input');
   const update=()=>{
     const value=Number(range.value);
-    const start=Number(getComputedStyle(comparison).getPropertyValue('--range-start'));
-    comparison.style.setProperty('--split',(start + value*(100-start)/100)+'%');
-    range.setAttribute('aria-valuetext',`${value}% neutro, ${100-value}% brandizzato`);
+    comparison.style.setProperty('--reveal',value / 100);
+    range.setAttribute('aria-valuetext',`${value}% modello di base, ${100-value}% materiali e finiture`);
   };
   range.addEventListener('input',update); new ResizeObserver(update).observe(comparison); update();
 }

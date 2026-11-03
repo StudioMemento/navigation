@@ -28,10 +28,11 @@ export class Carousel {
       this.width = width;
       this.height = this.cards[0].offsetHeight || 1;
       this.wide = Number(getComputedStyle(element).getPropertyValue('--layout-wide')) || 0;
+      this.perspective = 1100 + 900 * this.wide;
+      const contentWidth = element.closest('section')?.querySelector('.page-width')?.clientWidth || element.clientWidth;
       this.stride = this.fan
         ? width * (0.78 - 0.14 * this.wide)
-        : portfolioStride(element.clientWidth, width);
-      this.perspective = 1100 + 900 * this.wide;
+        : portfolioStride(element.clientWidth, width, contentWidth, this.perspective);
       this.reserveBleed();
       this.render();
     };
@@ -193,7 +194,8 @@ export class Carousel {
       // Light and text follow distance continuously, including both sides of a swipe.
       const fade = Math.min(1, amount);
       card.style.setProperty('--slide-focus', (1 - fade * fade * (3 - 2 * fade)).toFixed(4));
-      card.style.opacity = Math.max(0, Math.min(1, (edge - amount) / 0.6)).toFixed(4);
+      const outerFade = this.fan ? 1 : Math.pow(.25, Math.max(0, amount - 1));
+      card.style.opacity = (outerFade * Math.max(0, Math.min(1, (edge - amount) / 0.6))).toFixed(4);
       card.style.visibility = amount >= edge ? 'hidden' : 'visible';
       card.style.zIndex = String(100 - Math.round(amount * 20));
       const isActive = index === active;

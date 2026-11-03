@@ -2,20 +2,20 @@ export const START_URL = 'https://mementostudio.it/start';
 export const SERVICES_URL = 'https://mementoservizi.vercel.app/';
 
 export const benefits = [
-  { id: 'web', domain: 'WEB', title: ['Un sito che parla di te.'], copy: 'Racconta ciò che fai.\nRendi semplice il prossimo passo.', asset: 'assets/v12/web.webp', alt: 'Piani incompleti di grafite emergono da scie di particelle, con luce ambra da destra' },
-  { id: '3d', domain: '3D', title: ['Ogni dettaglio, da esplorare.'], copy: 'Dai forma ai tuoi prodotti.\nLasciali scoprire, ruotare, personalizzare.', asset: 'assets/v12/3d.webp', alt: 'Un volume astratto sospeso tra materia, reticolo e polvere di carbone' },
-  { id: 'video', domain: 'VIDEO', title: ['La tua storia, in movimento.'], copy: 'Dai ritmo al tuo messaggio.\nDal primo sguardo all’ultimo frame.', asset: 'assets/v12/video.webp', alt: 'Frammenti scuri e scie di polvere suggeriscono una sequenza in movimento' },
-  { id: 'visual', domain: 'VISUAL', title: ['Immagini che parlano per te.'], copy: 'Mostra ciò che ti distingue.\nCon luce, atmosfera e dettagli.', asset: 'assets/v12/visual.webp', alt: 'Luce ambra attraversa una forma indefinita di grafite e vetro scuro' },
-  { id: 'design', domain: 'DESIGN', title: ['Il tuo messaggio prende forma.'], copy: 'Dai ordine alle tue idee.\nGrafiche chiare, dal digitale alla stampa.', asset: 'assets/v12/design.webp', alt: 'Superfici astratte e frammenti di carbone compongono una forma in divenire' },
-  { id: 'branding', domain: 'BRANDING', title: ['Un’identità che si riconosce.'], copy: 'Esprimi il carattere del tuo brand.\nCon coerenza, in ogni incontro.', asset: 'assets/v12/branding.webp', alt: 'Tracce intrecciate di grafite si raccolgono in un’identità astratta' },
+  { id: 'web', domain: 'WEB DESIGN', title: ['Un sito che parla di te.'], copy: 'Racconta ciò che fai.\nRendi semplice il prossimo passo.', asset: 'assets/v13/web.webp', alt: 'Monitor e smartphone con un sito responsive, superfici di grafite e particelle illuminate da destra' },
+  { id: '3d', domain: '3D DESIGN', title: ['Ogni dettaglio, da esplorare.'], copy: 'Dai forma ai tuoi prodotti.\nLasciali scoprire, ruotare, personalizzare.', asset: 'assets/v13/3d.webp', alt: 'Sfera e cubo di modellazione 3D, con superfici in grafite, reticolo e vertici visibili' },
+  { id: 'video', domain: 'VIDEO', title: ['La tua storia, in movimento.'], copy: 'Dai ritmo al tuo messaggio.\nDal primo sguardo all’ultimo frame.', asset: 'assets/v13/video.webp', alt: 'Videocamera cinematografica in grafite con obiettivo, monitor e scie di particelle' },
+  { id: 'visual', domain: 'VISUAL', title: ['Immagini che parlano per te.'], copy: 'Mostra ciò che ti distingue.\nCon luce, atmosfera e dettagli.', asset: 'assets/v13/visual.webp', alt: 'Set fotografico con flacone, obiettivo e pannello luce, tra grafite e particelle' },
+  { id: 'design', domain: 'DESIGN', title: ['Il tuo messaggio prende forma.'], copy: 'Dai ordine alle tue idee.\nGrafiche chiare, dal digitale alla stampa.', asset: 'assets/v13/design.webp', alt: 'Matita e tavole grafiche con griglia editoriale, texture di carta e particelle' },
+  { id: 'branding', domain: 'BRANDING', title: ['Un’identità che si riconosce.'], copy: 'Esprimi il carattere del tuo brand.\nCon coerenza, in ogni incontro.', asset: 'assets/v13/branding.webp', alt: 'Shopper, packaging e biglietto coordinati con lo stesso marchio e dettagli ambra' },
 ];
 
 export const serviceUrl = item => `${SERVICES_URL}#${item.id}`;
 
 export const visions = [
-  { id: 'product', title: ['Il tuo prodotto, protagonista.'], copy: 'Materiali e dettagli che raccontano il suo valore.', alt: 'Flacone di profumo', before: 'assets/v12/product-before.webp', after: 'assets/v12/product-after.webp' },
-  { id: 'brand', title: ['La tua identità, ovunque.'], copy: 'Dal packaging allo schermo. Lo stesso carattere.', alt: 'Shopper, confezione, biglietti e smartphone coordinati', before: 'assets/v12/brand-before.webp', after: 'assets/v12/brand-after.webp' },
-  { id: 'collection', title: ['La tua collezione, da scoprire.'], copy: 'Prodotti da esplorare, anche prima di averli davanti.', alt: 'Poltrona e tablet con il suo catalogo', before: 'assets/v12/collection-before.webp', after: 'assets/v12/collection-after.webp' },
+  { id: 'product', title: ['Il tuo prodotto, protagonista.'], copy: 'Materiali e dettagli che raccontano\nil\u00a0suo\u00a0valore.', alt: 'Flacone di profumo', before: 'assets/v13/product-before.webp', after: 'assets/v13/product-after.webp' },
+  { id: 'brand', title: ['La tua identità, ovunque.'], copy: 'Dal packaging allo schermo.\nLo\u00a0stesso\u00a0carattere.', alt: 'Shopper, confezione, biglietti e smartphone coordinati', before: 'assets/v13/brand-before.webp', after: 'assets/v13/brand-after.webp' },
+  { id: 'collection', title: ['La tua collezione, da scoprire.'], copy: 'Prodotti da esplorare,\nanche\u00a0prima\u00a0di averli davanti.', alt: 'Poltrona e tablet con il suo catalogo', before: 'assets/v13/collection-before.webp', after: 'assets/v13/collection-after.webp' },
 ];
 
 export const steps = [
