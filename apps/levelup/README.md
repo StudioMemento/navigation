@@ -1,8 +1,15 @@
-# Memento LevelUp · V15
+# Memento LevelUp · V16
 
-Pacchetto completo per Vercel, basato sulla V14 attualmente pubblicata. Include sorgenti, asset locali, font Inter e build pronta in `dist/`. Non richiede dipendenze npm o variabili d’ambiente.
+Pacchetto completo per Vercel, basato sulla V15. Include sorgenti, asset locali, font Inter e build pronta in `dist/`. Non richiede dipendenze npm o variabili d’ambiente.
 
-## Modifiche
+## Modifiche V16
+
+- Ready to start cinematico integrato come modulo locale indipendente. La sezione è alta `100svh` (fallback `100vh`), con padding e safe area inclusi nell’altezza. La tab riempie lo spazio interno e condivide i margini orizzontali `.page-width` di LevelUp.
+- Logo e dock hanno spazio dedicato all’interno della viewport. Sparkle, ambiente, typo e interazioni provengono dal pacchetto cinematico fornito.
+- Renderer caricato solo in prossimità della CTA e fermato fuori schermo, con tab nascosta o demo espansa. Link Start disponibile anche senza JavaScript/WebGL; il contesto dell’esperienza selezionata è conservato.
+- File dell’effetto separati in `public/ready-to-start/`; adattatore e dimensioni in `src/ready-to-start.js` e `src/ready-to-start.css`. Procedura di aggiornamento in `READY_TO_START.md`.
+
+## Modifiche V15 conservate
 
 - Integrato l’overlay fornito in `NAV_OVERLAY.zip`, con LevelUp attivo. Logo, icone e blur originali del kit sono conservati. Le aree iniziale e finale hanno spazio per l’overlay; durante l’espansione della demo l’overlay viene nascosto.
 - Le immagini dei sei domini sono ancorate al margine destro delle tab, anche su mobile. Rimosso lo spostamento laterale negativo mobile e mantenuto il ritaglio degli angoli.

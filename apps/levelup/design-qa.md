@@ -35,3 +35,14 @@ Il pacchetto include sorgenti, documentazione, test, configurazione Vercel e dis
 ## Limiti
 
 Il controllo responsive usa viewport browser e non sostituisce una prova sui device fisici o nel browser Instagram. Il precaricamento anticipa l’avvio di Food; rete, risorse e inizializzazione delle applicazioni esterne determinano il tempo per renderle interattive.
+
+
+## V16 — Ready to start (2026-11-04)
+
+- Sezione `100svh`, padding incluso: 390 × 844, 768 × 1024, 1440 × 1000, 1920 × 1080 e landscape 844 × 390. Margini laterali: 20 / 90 / 90 / 100 / 90 px; nessun overflow orizzontale. Il browser di anteprima può arrotondare di 1 px le viewport scalate.
+- Tab: 700 px di altezza a 390 × 844; 844 px a 768 × 1024; 820 px a 1440 × 1000; 900 px a 1920 × 1080. Logo e dock restano separati dal titolo.
+- Stato iniziale `idle` / `running=false`; dopo ingresso nella viewport `ready` / `running=true`; dopo ritorno in alto `running=false`.
+- Selezionando Via Roma, il link Start conserva `experience=viaroma` e il testo dell’idea. Navigazione effettiva verificata verso `/start?from=levelup`; ritorno tramite Indietro ripristina la CTA attiva.
+- Interazione del puntatore verificata nel fallback tipografico (`--type-glow:0.900`).
+- Il browser locale di QA non espone WebGL: verificati il fallback visibile, il layout e il ciclo di vita. Sul deploy VisualFX fornito il renderer originale risulta `webgl`, `webglError=0`. La distribuzione integrata è identica byte per byte al pacchetto sorgente fornito. Questo non è un benchmark delle prestazioni GPU dell’integrazione: la misura finale resta da fare sui device reali.
+- Test automatici: build, risoluzione riferimenti del modulo cinematico, controllo negativo della dipendenza `camera.js`, test V15 conservati.

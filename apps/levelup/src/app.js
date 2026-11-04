@@ -2,6 +2,7 @@ import { benefits, experiences, visions, steps, contactUrl, serviceUrl } from '.
 import { Carousel } from './carousel.js';
 import { enhanceVisuals } from './visuals.js';
 import { DemoPlayer } from './player.js';
+import { mountStart } from './ready-to-start.js';
 
 const $ = selector => document.querySelector(selector);
 const escape = value => String(value).replace(/[&<>"']/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]));
@@ -169,3 +170,4 @@ for(const heading of document.querySelectorAll('[data-fit]')) {
 }
 $('#contact-link').addEventListener('click',()=>{if(engaged)$('#contact-link').href=contactUrl(engaged);});
 enhanceVisuals();
+mountStart();

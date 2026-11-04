@@ -15,6 +15,20 @@ export async function verifyAssets(base){
  for(const item of steps)refs.push(item.asset,item.asset.replace('.webp','-768.webp'));
  for(const ref of new Set(refs))await access(join(base,ref));
  for(const name of await readdir(join(base,'src'))){const text=await readFile(join(base,'src',name),'utf8');for(const m of text.matchAll(/from ['"](.+?)['"]/g))await access(resolve(base,'src',m[1]));}
+ // Walk the self-contained cinematic module: CSS textures, font, static/dynamic imports.
+ async function verifyModule(directory){
+  for(const entry of await readdir(directory,{withFileTypes:true})){
+   const file=join(directory,entry.name);
+   if(entry.isDirectory()){await verifyModule(file);continue;}
+   if(!/\.(js|mjs|css)$/.test(file))continue;
+   const text=await readFile(file,'utf8');
+   const paths=[...text.matchAll(/(?:from\s*|import\s*\(|new URL\()\s*['"](\.[^'"]+)['"]/g)].map(m=>m[1]);
+   if(file.endsWith('.css'))paths.push(...[...text.matchAll(/url\(['"]?([^)'" ]+)/g)].map(m=>m[1]));
+   for(const path of paths.filter(path=>!path.startsWith('data:')&&!path.startsWith('https:')))await access(resolve(directory,path));
+  }
+ }
+ await verifyModule(join(base,'ready-to-start'));
+ await verifyModule(join(base,'src'));
  return new Set(refs).size;
 }
 if(process.argv[1]&&resolve(process.argv[1])===fileURLToPath(import.meta.url)){

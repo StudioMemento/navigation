@@ -1,0 +1,61 @@
+{
+  "source": "MEMENTONAV_LIVE_V2_VERCEL.zip / hub/public/assets/world.glb",
+  "sha256": "0d0a2a504da0f54722c2244d7a44bd13cb124475b39e3c01827ae5ecb888dd00",
+  "nodes": [
+    "ICON_05_Start_Primary",
+    "ICON_05_Start_Satellite"
+  ],
+  "unit": 4.455502986907959,
+  "vertexCount": 2478,
+  "triangleCount": 826,
+  "parts": [
+    {
+      "name": "ICON_05_Start_Primary",
+      "material": "V2_IconGraphite",
+      "offset": 0,
+      "count": 210
+    },
+    {
+      "name": "ICON_05_Start_Primary",
+      "material": "MAT_IconDarkTitanium",
+      "offset": 210,
+      "count": 204
+    },
+    {
+      "name": "ICON_05_Start_Primary",
+      "material": "MAT_EdgeMetal",
+      "offset": 414,
+      "count": 684
+    },
+    {
+      "name": "ICON_05_Start_Primary",
+      "material": "MAT_Amber_STAGE_05",
+      "offset": 1098,
+      "count": 132
+    },
+    {
+      "name": "ICON_05_Start_Satellite",
+      "material": "V2_IconGraphite",
+      "offset": 1230,
+      "count": 186
+    },
+    {
+      "name": "ICON_05_Start_Satellite",
+      "material": "MAT_IconDarkTitanium",
+      "offset": 1416,
+      "count": 204
+    },
+    {
+      "name": "ICON_05_Start_Satellite",
+      "material": "MAT_EdgeMetal",
+      "offset": 1620,
+      "count": 726
+    },
+    {
+      "name": "ICON_05_Start_Satellite",
+      "material": "MAT_Amber_STAGE_05",
+      "offset": 2346,
+      "count": 132
+    }
+  ]
+}
