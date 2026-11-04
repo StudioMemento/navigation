@@ -17,10 +17,10 @@ export function meshMarkup(id,cell=21){
 export function cardEdgeMarkup(id){
   return `<svg class="slide-border" viewBox="0 0 600 338" preserveAspectRatio="none" aria-hidden="true"><path d="M20 .6H599.4V318L580 337.4H.6V20Z"/></svg><svg class="slide-fx" viewBox="0 0 600 338" preserveAspectRatio="none" aria-hidden="true"><defs>${meshMarkup(`edge-mesh-${id}`,13)}<mask id="edge-band-${id}"><path d="M20 0H600V318L580 338H0V20Z" style="fill:white;stroke:none"/><path d="M26 13H587V312L574 325H13V26Z" style="fill:black;stroke:none"/></mask></defs><g mask="url(#edge-band-${id})"><rect width="600" height="338" fill="url(#edge-mesh-${id})"/><path d="M20 1H599V318L580 337H1V20Z" style="fill:none;stroke:#ffbf80;stroke-width:1.5"/></g></svg>`;
 }
-export function createEffects({titleSVG, titleAccessible, cards, stage, dust}){
+export function createEffects({titleSVG, titleAccessible, cards, stage}){
   const controller=new AbortController(), {signal}=controller;
   const pointer={x:-1000,y:-1000,tx:-1000,ty:-1000,presence:0,target:0,touch:false};
-  let raf=0,last=0,titleWidth=1000,titleTracking=5,titleText='',field=null,glow=null,boxes=[],titleBox=null,invalid=true,shardRaf=0,enabled=new URLSearchParams(location.search).get('fx')!=='off',visible=true;
+  let raf=0,last=0,titleWidth=1000,titleTracking=5,titleText='',field=null,glow=null,boxes=[],titleBox=null,invalid=true,enabled=new URLSearchParams(location.search).get('fx')!=='off',visible=true;
   const ctx=document.createElement('canvas').getContext('2d');
   function syncEdges(){
     for(const card of cards){
@@ -74,29 +74,12 @@ export function createEffects({titleSVG, titleAccessible, cards, stage, dust}){
   window.addEventListener('pointerup',event=>{if(event.pointerType!=='mouse')leave();},{passive:true,signal});
   window.addEventListener('pointercancel',leave,{passive:true,signal});
   document.documentElement.addEventListener('pointerleave',leave,{signal});
-  document.querySelector('#frame-slot').addEventListener('pointerenter',leave,{signal});
   window.addEventListener('blur',leave,{signal});
   window.addEventListener('scroll',()=>{invalid=true;wake();},{passive:true,signal});
   window.addEventListener('resize',()=>{invalid=true;wake();},{passive:true,signal});
   document.addEventListener('visibilitychange',()=>{if(document.hidden){cancelAnimationFrame(raf);raf=0;leave();}else{invalid=true;wake();}},{signal});
   const observer=new IntersectionObserver(entries=>{visible=entries[0].isIntersecting;if(visible){invalid=true;wake();}else{cancelAnimationFrame(raf);raf=0;}});observer.observe(stage.closest('.hub'));
   const resize=new ResizeObserver(()=>{syncEdges();invalid=true;wake();});resize.observe(titleSVG);resize.observe(stage);resize.observe(cards[0]);syncEdges();
-  function burst(direction=1){
-    if(!enabled||reduced.matches||document.hidden)return;
-    cancelAnimationFrame(shardRaf);
-    const box=stage.getBoundingClientRect(),w=box.width,h=box.height,dpr=Math.min(devicePixelRatio,1.5),c=dust.getContext('2d');
-    dust.width=Math.round(w*dpr);dust.height=Math.round(h*dpr);c.setTransform(dpr,0,0,dpr,0,0);
-    const rng=random(40),shards=Array.from({length:26},()=>({x:rng(),y:rng(),s:1+rng()*3,a:.15+rng()*.45}));const start=performance.now();
-    function frame(now){
-      const t=(now-start)/950;c.clearRect(0,0,w,h);
-      if(t>=1){shardRaf=0;return;}
-      for(const p of shards){
-        const travel=(p.x*.65+t*.45),x=direction>0?w*(.15+travel*.7):w*(.85-travel*.7),y=h*(.86-travel*.7)+(p.y-.5)*30;
-        const opacity=Math.sin(Math.PI*t)*p.a;c.beginPath();c.moveTo(x,y-p.s);c.lineTo(x+p.s*.8,y+p.s*.5);c.lineTo(x-p.s*.8,y+p.s*.5);c.closePath();c.fillStyle=`rgba(239,170,99,${opacity})`;if(p.x>.65)c.fill();else{c.strokeStyle=c.fillStyle;c.lineWidth=.65;c.stroke();}
-      }
-      shardRaf=requestAnimationFrame(frame);
-    }shardRaf=requestAnimationFrame(frame);
-  }
   document.fonts.ready.then(()=>{if(titleText)setTitle(titleText);});
-  return {setTitle,burst,invalidate(){invalid=true;wake();},destroy(){controller.abort();observer.disconnect();resize.disconnect();cancelAnimationFrame(raf);cancelAnimationFrame(shardRaf);}};
+  return {setTitle,invalidate(){invalid=true;wake();},destroy(){controller.abort();observer.disconnect();resize.disconnect();cancelAnimationFrame(raf);}};
 }

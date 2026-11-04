@@ -1,14 +1,16 @@
 {
   "name": "memento-slider-nav",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "private": true,
   "type": "module",
-  "description": "Memento — cinematic navigation slider and live page viewer",
+  "description": "Memento \u2014 fullscreen navigation hub",
   "scripts": {
     "build": "node scripts/build.mjs",
     "test": "node --test scripts/logic.test.mjs",
     "check": "node scripts/verify.mjs",
     "dev": "node scripts/serve.mjs"
   },
-  "engines": {"node": ">=20"}
+  "engines": {
+    "node": "24.x"
+  }
 }

@@ -1,97 +1,60 @@
-# MEMENTO — NAV SLIDER V1
+# Memento — Hub fullscreen V2
 
-Hub temporaneo per **mementonav.vercel.app**, in attesa della navigazione 3D. Cinque tavole cinematografiche selezionano e caricano le pagine reali di Memento. I contenuti delle pagine rimangono esterni e aggiornabili in modo indipendente.
+Un solo header alto quanto il viewport: slider, nome della pagina, chevron verso il basso.
 
-## Pubblicare su Vercel
+## Navigazione
 
-1. Estrai lo ZIP e usa **il contenuto della cartella estratta come root del progetto**: `index.html`, `package.json` e `vercel.json` devono trovarsi nella root del repository collegato a `mementonav`.
-2. Sostituisci il precedente hub con questi sorgenti. Non annidare questo progetto dentro il vecchio `src` e non mantenere la vecchia configurazione di build.
-3. Il file `vercel.json` imposta già:
-
-   | Impostazione | Valore |
-   |---|---|
-   | Framework Preset | Other |
-   | Build Command | `npm run build` |
-   | Output Directory | `dist` |
-   | Install Command | automatico / `npm install` |
-   | Node | 20 o successivo |
-
-4. Se nelle impostazioni Vercel del progetto esistono override del vecchio framework, aggiornali con i valori sopra. Non servono variabili d’ambiente, API key o servizi aggiuntivi.
-5. Esegui il deploy nel progetto `mementonav` esistente, così l’indirizzo resta invariato.
-
-La consegna contiene uno ZIP pronto per il deploy; non effettua un deploy in produzione.
-
-## Interazioni
-
-- Drag, swipe orizzontale, frecce, cinque indicatori e dock selezionano la sezione. Loop in entrambe le direzioni.
-- Solo la tavola attiva è a colori. Le adiacenti sono in prospettiva e in bianco e nero.
-- Il cambio di selezione carica la pagina sotto lo slider. È presente **un solo iframe**, senza copie locali delle pagine né scene nascoste in esecuzione.
-- Click sulla tavola centrale o su **Esplora** porta all’anteprima. Lo scroll verticale rimane disponibile.
-- **Apri pagina** naviga all’indirizzo pubblico; **Nuova scheda** lo apre separatamente. Il link diretto rimane disponibile anche se l’embed non risponde.
-- L’icona di espansione apre una vista estesa nel viewport, senza ricreare l’iframe; chiudi con il controllo in alto. Escape funziona nel documento host e nelle pagine con bridge compatibile.
-- Home/End e frecce sinistra/destra operano quando il carosello ha il focus. Invio apre l’anteprima.
-- `/#studio`, `/#services`, `/#projects`, `/#levelup`, `/#start` selezionano la tavola; `/studio`, `/services`, `/projects`, `/levelup`, `/start` portano all’anteprima. Restano accettati gli hash legacy `#memento` e `#services-content`.
+- Trascina o scorri orizzontalmente per scegliere tra le cinque tavole; loop continuo.
+- Clicca una tavola laterale per selezionarla.
+- Clicca la tavola attiva, il titolo o il chevron per aprire la pagina canonica nella stessa finestra, anche quando l’hub è incorporato.
+- Uscita di 380 ms: dissolvenza e lieve movimento verticale. Con movimento ridotto, navigazione immediata.
+- Frecce sinistra/destra e Home/End selezionano; Invio apre. Link nativi per nuova scheda, tasto centrale e menu contestuale.
+- Indietro nel browser ripristina la selezione senza schermata nera.
 
 ## Destinazioni
 
-| Tavola | Link pubblico | Contenuto incorporato |
-|---|---|---|
-| Studio | https://mementostudio.it/studio | https://mementostudio.vercel.app/ |
-| Services | https://mementostudio.it/services | https://mementoservizi.vercel.app/ |
-| Projects | https://mementostudio.it/projects | https://mementoportfolio.vercel.app/ |
-| LevelUp | https://mementostudio.it/levelup | https://mementolevelup.vercel.app/ |
-| Start | https://mementostudio.it/start | https://mementostart.vercel.app/ |
-
-Le pagine pubbliche usano già questi contenuti incorporati. Caricarli direttamente evita un ulteriore iframe Framer. Tutti i link per uscire dall’hub mantengono il dominio pubblico richiesto.
-
-## Struttura e aggiornamenti
-
-| File/cartella | Contenuto |
+| Tavola | Pagina |
 |---|---|
-| `src/config.mjs` | Cinque pagine, copy, immagini, destinazioni e tempi |
-| `src/app.mjs` | Slider, gesture, history, tastiera e integrazione navbar |
-| `src/viewer.mjs` | Caricamento iframe, recovery, vista estesa e bridge |
-| `src/fx.mjs` | Tipografia SVG, mesh stabile, campo di prossimità e scia di entrata |
-| `src/styles.css` | Layout, responsive, palette, animazioni |
-| `navigation/` | Navbar V12 dell’allegato, adattata alla navigazione interna dell’hub |
-| `assets/images/` | 5 WebP desktop + 5 WebP ridotti per mobile |
-| `originals/` | 5 immagini PNG generate, a piena risoluzione |
-| `docs/image-prompts.md` | Prompt finali delle 5 cover |
-| `docs/VERIFICA.md` | Verifiche e limiti |
+| Studio | https://mementostudio.it/studio |
+| Services | https://mementostudio.it/services |
+| Projects | https://mementostudio.it/projects |
+| LevelUp | https://mementostudio.it/levelup |
+| Start | https://mementostudio.it/start |
 
-Le immagini originali e i documenti non vengono copiati in `dist`. Il runtime è statico e non ha dipendenze npm. Il font Inter è locale; la sua licenza è in `docs/Inter-OFL.txt`.
+Gli hash `/#studio`, `/#services`, `/#projects`, `/#levelup`, `/#start` selezionano la tavola. Compatibili anche gli hash precedenti e i percorsi `/services`, ecc. Il cambio di slide non carica la destinazione: l’apertura avviene al clic. Nessun iframe, navbar, footer, contatore o testo descrittivo nell’hub.
 
-## Effetti
+## Vercel
 
-Titoli con peso uniforme, tracking distribuito fino ai margini e gradiente unico bianco/avorio → ambra, dall’alto a sinistra verso il basso a destra. Il titolo è testo vettoriale reale, con H1 HTML accessibile. Edge glow, wireframe interno e facce illuminate condividono la stessa sagoma: nessuna deformazione dei caratteri.
+Usare i file dello ZIP alla root del repository del progetto `mementonav`.
 
-Un solo campo di prossimità illumina i caratteri e i perimetri vicini. La mesh non si rigenera durante il movimento. I bordi seguono i tagli in alto a sinistra e in basso a destra. Gli effetti non intercettano input. Quando il cursore si ferma, il rendering si ferma dopo l’assestamento; fuori viewport e in background è sospeso.
+| Impostazione | Valore |
+|---|---|
+| Root Directory | Vuota — root del repository; rimuovere il vecchio `hub` |
+| Framework Preset | Other |
+| Build Command | `npm run build` |
+| Output Directory | `dist` |
+| Node | 24.x |
 
-La scia triangolare è breve, all’ingresso e al cambio slide; non è un particellare permanente. `prefers-reduced-motion` disattiva scie e transizioni. Per confrontare il risultato senza FX, apri `/?fx=off`.
+`vercel.json` contiene la configurazione di build. Non servono dipendenze npm o variabili d’ambiente.
 
-La navbar mantiene il design dell’archivio allegato: logo superiore, dock inferiore e blur progressivo. I suoi thumbnail sono stati ridimensionati senza cambiare il disegno, per evitare di caricare immagini da 1254 px per icone da 34 px.
+## Sorgenti
 
-## Compatibilità delle pagine
+- `src/app.mjs`: slider, gesture, tastiera e uscita verso le pagine.
+- `src/config.mjs`: immagini, URL e tempi.
+- `src/fx.mjs`: titolo a tutta larghezza, gradiente ambra e glow locale sul testo e sui bordi.
+- `src/styles.css`: layout fullscreen responsive.
+- `assets/`: font locale e cinque immagini WebP, con versioni ridotte per mobile.
+- `originals/`: PNG delle cinque immagini generate; esclusi dalla build.
 
-Supporto al protocollo `memento:navigation` V2, con verifica di origine, sorgente iframe e sessione. Se manca il nuovo bridge, viene negoziato il bridge `memento:tide` V1 già presente in Studio/Projects. Il bridge moderno ha priorità; i due sistemi non vengono attivati contemporaneamente.
+L’effetto tipografico conserva la forma dei caratteri. Nessun particellare permanente o scena 3D. Il browser renderizza gli FX solo quando necessario. Le pagine destinazione mantengono il proprio aspetto e i propri tempi di caricamento.
 
-Le pagine senza bridge rimangono navigabili nell’iframe; i controlli dell’hub e i link diretti funzionano comunque. Il bridge legacy non viene inizializzato su un link con ancora, per non annullare la posizione richiesta. Per i ritorni da fondo pagina non supportati, usa **Slide** o il dock.
-
-Gli FX di questo progetto agiscono sullo slider e sul suo titolo. Gli interni delle pagine cross-origin conservano i propri effetti e componenti: per aggiornarli bisogna intervenire sui rispettivi progetti.
-
-## Sviluppo locale
-
-```sh
-npm install
-npm run dev
-```
-
-Apri `http://localhost:5173`. La porta può essere impostata con `--port` o `PORT`.
+## Verifica locale
 
 ```sh
 npm run check
 npm test
 npm run build
+npm run dev
 ```
 
-Le anteprime locali non appartengono agli origin di produzione già autorizzati dai bridge remoti: l’integrazione del nuovo bridge va verificata anche dopo il deploy su `mementonav.vercel.app`. Non sono stati ampliati gli origin consentiti delle pagine remote.
+Preview locale su `http://localhost:5173`. `scripts/qa.html` contiene il solo banco di verifica responsive e non viene pubblicato in `dist`.
