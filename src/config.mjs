@@ -1,0 +1,9 @@
+// Public URLs remain canonical. Embed URLs are the actual content already used by those pages.
+export const PAGES = Object.freeze([
+  {id:'memento', slug:'studio', title:'STUDIO', label:'Studio', eyebrow:'IDENTITÀ / VISIONE', copy:'Studio di design & esperienze digitali.', image:'studio', alt:'Monogramma M scolpito in metallo, illuminato da un bordo ambra.', publicURL:'https://mementostudio.it/studio', embedURL:'https://mementostudio.vercel.app/'},
+  {id:'services', slug:'services', title:'SERVICES', label:'Services', eyebrow:'IDEA / FORMA', copy:'Dal primo segno, a ogni esperienza.', image:'services', alt:'Anelli triangolari in metallo intrecciati su una base di ossidiana.', publicURL:'https://mementostudio.it/services', embedURL:'https://mementoservizi.vercel.app/'},
+  {id:'projects', slug:'projects', title:'PROJECTS', label:'Projects', eyebrow:'VISIONE / REALTÀ', copy:'Idee che hanno preso forma.', image:'projects', alt:'Folder scultoreo in metallo nero con pannelli e dettagli ambra.', publicURL:'https://mementostudio.it/projects', embedURL:'https://mementoportfolio.vercel.app/'},
+  {id:'levelup', slug:'levelup', title:'LEVELUP', label:'LevelUp', eyebrow:'POTENZIALE / POSSIBILITÀ', copy:'Immagina cosa può diventare il tuo brand.', image:'levelup', alt:'Un segno più monumentale con superfici metalliche sfaccettate.', publicURL:'https://mementostudio.it/levelup', embedURL:'https://mementolevelup.vercel.app/'},
+  {id:'start', slug:'start', title:'START', label:'Start', eyebrow:'UN’IDEA / UN INIZIO', copy:'Il prossimo progetto comincia qui.', image:'start', alt:'Sparkle a quattro punte in metallo e una piccola stella in alto a destra.', publicURL:'https://mementostudio.it/start', embedURL:'https://mementostart.vercel.app/'}
+]);
+export const SETTINGS = Object.freeze({settleMs:200, loadTimeoutMs:15000, desktopRadius:260, touchRadius:130, leaveMs:380, bridgeChannel:'memento:navigation', bridgeVersion:2});
