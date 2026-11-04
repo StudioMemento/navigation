@@ -1,41 +1,37 @@
-# LevelUp V14 — verifica grafica e funzionale
+# LevelUp V15 — verifica grafica e funzionale
 
-Revisione del 3 novembre 2026 sulla base V13. Sorgenti e build statica pronti per Vercel.
+Revisione del 4 novembre 2026. Base: MEMENTO_LEVELUP_V14_VERCEL.zip; l’HTML V14 coincide con quello pubblicato su mementolevelup.vercel.app al momento della verifica.
 
-## Immagini
+## Navbar
 
-Generate e ispezionate sei composizioni che uniscono materia astratta e richiami di dominio. L’interfaccia web mantiene griglia e margini; il 3D integra wireframe e vertici; video include framing e timeline; fotografia richiama ottica, diaframma ed esposizione; design include registro e strumenti editoriali; branding richiama il segno Memento esistente, coordinato e confezione.
+Integrato il kit navigation di NAV_OVERLAY.zip senza importare i contenuti della pagina Start. Nel browser, il solo link con aria-current="page" è LevelUp. Verificati logo, icone originali, blur, spazi di rispetto e nascondimento della navbar durante l’espansione del player. Il bridge Tide v014 rimane identico all’originale.
 
-I confronti sono nuove scene di cuffie, packaging da caffetteria con pagina mobile, e arredo con catalogo digitale. Non contengono marchi o loghi inventati. Ogni variante di base è generata usando la corrispondente scena finale come riferimento, conservando composizione e inquadratura. Dodici asset WebP da 1280×1280 px, ciascuno con variante da 640×640 px. Rimosse dal pacchetto le immagini V13 sostituite.
+## Immagini iniziali
 
-## Categorie e ordine
+Tutti e sei i visual hanno object-position: 100% 50% e right: 0px. Il precedente centraggio nella box sovradimensionata lasciava un margine interno a destra; su mobile era presente anche un offset negativo dell’8%. Entrambi sono corretti. Il ritaglio della card con angoli tagliati è mantenuto. Ispezionate le viste desktop, tablet e mobile.
 
-Nel DOM del browser sono state lette tutte le dieci liste: due voci singolari per esperienza e un trattino per ciascuna voce, in alto a sinistra. La sequenza è Fashion, Elite, Memento Food, Auren, IceCream, MementoSL, Knives, ProductVis, TechRef, VisualRef. Le coppie complete sono riportate nel README.
+## Esperienze
 
-Selezionare MementoSL aggiorna il titolo del player, il poster e l’URL a `https://mementosl.vercel.app/`. TechRef usa `https://techref.vercel.app/` senza percorso o hash mobile: nel browser si è aperta la navigazione iniziale con le categorie GPU, CPU, RAM, SSD, Mobile, Display e le altre aree.
+Ordine: Memento Food, Pizzeria Via Roma, Memento Elite, IceCream, Auren, Fashion, MementoSL, Knives, ProductVis, VisualRef, TechRef. Nessuna esperienza preesistente è stata rimossa.
 
-## Sincronizzazione del player
+Food è caricato immediatamente durante l’inizializzazione. Verifica browser al primo viewport, prima dello scroll: un solo iframe con URL https://mementofood.vercel.app/ e stato loaded=true. La scelta di Via Roma aggiorna titolo, categorie, thumbnail, iframe e contesto del link Start. Il player Via Roma è stato visualizzato; espansione e chiusura mantengono un solo iframe caricato.
 
-La scelta esplicita avvia il caricamento prima della conclusione dell’animazione. Nella misura browser a 1280 px, il clic su “Prova IceCream” è stato registrato a 15491,8 ms e il nuovo iframe a 15495,0 ms: 3,2 ms tra scelta e montaggio. Il carousel risultava ancora in movimento e il mount conteneva una sola istanza.
+La nuova thumbnail è generata, con luce ambra e fondo scuro coerenti con le altre cover. Fornite versioni WebP 1536×1024 e 640×427. Le categorie sono “Menù interattivo” e “Vetrina digitale”.
 
-Questo numero misura l’avvio della navigazione nell’ambiente di verifica, non il completamento del caricamento della demo esterna. Il player conserva il controllo degli eventi obsoleti, la deduplicazione e il recupero da timeout. Il nuovo test usa selezioni lontane, scelte rapide, avanzamento e rilascio di swipe: la destinazione parte subito e i passaggi intermedi non cambiano l’iframe.
+Il controllo HTTP ha restituito 200 e HTML per tutte le 11 esperienze e per Start, senza header X-Frame-Options o CSP frame-ancestors bloccanti rilevati. Questo controllo non certifica tutte le funzioni interne delle applicazioni esterne.
 
-Espansione IceCream in dialog e chiusura verificate: una sola istanza prima e dopo, dialog chiuso e focus restituito a “Espandi IceCream”.
+## Confronti e responsive
 
-## Responsive e confronti
+Tutti i range iniziano a 0 e mostrano il soggetto con materiali e finiture. Il limite sinistro è comune ai tre controlli e indipendente dalle diverse scale dei soggetti. I range sono stati provati con Home ed End, raggiungendo 0 e 100 senza alterare gli altri confronti.
 
-Verificati viewport incorporati da 320, 390, 768, 1024, 1280 e 1363 px, alti 900 px. Dopo l’aggiornamento del layout, `scrollWidth` e `clientWidth` del documento coincidono a tutte e sei le larghezze. Ispezionate le viste mobili, tablet e desktop: soggetti contenuti nei frame e nessun bordo rettangolare delle immagini esposto.
-
-A 320 px la card Fashion mantiene le due categorie sopra il titolo, con circa 31 px tra fondo della lista e inizio del titolo. Nei confronti i titoli restano in alto a sinistra, il copy in basso a sinistra; a 768 px i quattro inset misurati sono tutti 20 px. A 1280×900 px titolo e tre confronti entrano nello stesso viewport. Tutte le sei immagini dei confronti e le sei immagini di servizio sono risultate caricate durante il controllo.
-
-Range verificati con Home ed End: il primo passa da 0 a 100, gli altri due rimangono a 50. I chevron hanno opacità 0 a riposo e 1 al focus, con background trasparente e bordo da 0 px. Gli acapi prima di “il suo valore”, “Lo stesso carattere” e “anche prima di” sono conservati.
+Ispezione browser diretta desktop a 1363×936 e viewport incorporati di controllo mobile 390×844, tablet 768×1024 e desktop 1440×1000 / 1920×1080. Il pannello di verifica ridimensiona graficamente i viewport grandi per poterli ispezionare; possono comparire differenze subpixel nei rettangoli misurati. Nel controllo finale desktop da 1920 px, gli assi delle tre barre differiscono di meno di 0,03 px. Nessun overflow orizzontale del documento dopo l’assestamento responsive.
 
 ## Build e regressioni
 
-`npm run build` e `npm test` completati con esito positivo. Nove test coprono risorse, identità e categorie, collegamenti, contatto, bridge Tide, geometria del carousel e player. Il controllo negativo rimuove una risorsa da una copia temporanea della build e verifica che l’assenza venga rilevata. Il bridge Tide v014 mantiene il suo hash originale.
+12 test automatici: contratti dei contenuti, ordine completo e URL V15, bootstrap navbar unico con LevelUp attivo, dipendenze del kit nella build, poster Food e avvio immediato, risorse locali, contatto, integrità Tide, geometria carousel, cambi rapidi di selezione e recupero del player. Il controllo negativo degli asset verifica che una risorsa rimossa faccia fallire la validazione.
 
-Lo ZIP include sorgenti, documentazione, test, configurazione Vercel e output `dist/`. Esclude il pannello temporaneo di QA, i PNG originali e i file intermedi.
+Il pacchetto include sorgenti, documentazione, test, configurazione Vercel e dist. Esclude il pannello temporaneo di QA, screenshot del browser, cache e file intermedi.
 
 ## Limiti
 
-Il controllo browser usa viewport incorporati e non sostituisce una prova su dispositivi iOS o browser Instagram fisici. La verifica riguarda la landing, la selezione delle demo e il dialog di espansione; non certifica tutte le funzionalità interne delle dieci applicazioni esterne, il fullscreen nativo o il loro rendering GPU. Le demo possono richiedere ulteriore tempo per scaricare asset e inizializzare il proprio player.
+Il controllo responsive usa viewport browser e non sostituisce una prova sui device fisici o nel browser Instagram. Il precaricamento anticipa l’avvio di Food; rete, risorse e inizializzazione delle applicazioni esterne determinano il tempo per renderle interattive.

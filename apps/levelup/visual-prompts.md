@@ -56,3 +56,11 @@ Use case: precise-object-edit. Create the matching BEFORE image from this exact 
 
 Use case: precise-object-edit. Create the matching BEFORE image from this exact square reference for a comparison slider. Change ONLY surface materials to matte neutral medium-light grey clay. Preserve the exact canvas, camera, every object, all silhouettes and pixel positions, perspective, size, spacing, structural detail and generous black margins. The headphones or furniture retain their seams and construction; packaging retains its folds. Remove all color, printed graphics and material grain. Any device screen becomes plain dark grey without symbols or content. Keep lighting direction and contact shadows; a lamp may retain a soft neutral white light, no amber glow. Do not add, remove, move, crop or zoom anything. The background must remain pure seamless black. No new logo, icon, caption or text. Output one square image that aligns precisely with the supplied reference.
 
+
+## V15 — Pizzeria Via Roma
+
+Thumbnail generata con image generation integrato, poi codificata in WebP a 1536×1024 e 640×427. Illustrazione promozionale, non fotografia documentaria di una pizza servita dal locale.
+
+Prompt:
+
+> Generate a premium cinematic landscape experience thumbnail for Memento Design Studio's portfolio, showcasing Pizzeria Via Roma. Aspect ratio 3:2, 1536x1024. A single authentic artisan Italian margherita pizza with a puffy lightly charred golden crust, tomato sauce, melted mozzarella and fresh basil on a matte black ceramic plate resting on a dark charcoal stone tabletop. Low three-quarter close-up, pizza dominant slightly right of center, front crust in frame. Restrained warm amber rim light from upper right, subtle soft key light, deep black cinematic background, realistic food detail, sophisticated editorial photography. Keep upper left dark for category labels and lower left for a title overlaid in HTML. No floating ingredients, particles, type, logos, UI or frames. Match the existing cinematic hamburger thumbnail.

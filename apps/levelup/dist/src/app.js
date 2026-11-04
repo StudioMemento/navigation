@@ -27,7 +27,7 @@ $('#vision-grid').innerHTML = visions.map(item => `
       <div class="comparison-before"><img src="${item.before}" srcset="${item.before.replace('.webp','-640.webp')} 640w, ${item.before} 1280w" sizes="(max-width:767px) 75vw, 600px" alt="Lo stesso soggetto come modello di base" width="1280" height="1280" loading="lazy" decoding="async" draggable="false"></div>
       <div class="comparison-divider" aria-hidden="true"><span><img src="assets/icons/caret-left.svg" alt=""><img src="assets/icons/caret-right.svg" alt=""></span></div>
       <label class="sr-only" for="range-${item.id}">Confronta ${escape(item.title.join(' '))} Trascina per cambiare materiali e finiture.</label>
-      <input id="range-${item.id}" type="range" min="0" max="100" value="50" aria-valuetext="50% modello di base, 50% materiali e finiture">
+      <input id="range-${item.id}" type="range" min="0" max="100" value="0" aria-valuetext="0% modello di base, 100% materiali e finiture">
     </div></div>
   </article>`).join('');
 $('#steps-grid').innerHTML = steps.map((item,i) => `
@@ -56,7 +56,7 @@ $('#benefits').addEventListener('keydown',event=>{
   }
 });
 
-let selected=0, visible=false, engaged=null, portfolio;
+let selected=0, engaged=null, portfolio;
 const panel=$('#demo-panel'), dialog=$('#demo-dialog');
 const player = new DemoPlayer({mount:$('#frame-mount'),loading:$('#demo-loading'),fallback:$('#demo-fallback'),poster:$('#demo-poster'),link:$('#fallback-link'),panel});
 pagination($('#portfolio-dots'),experiences,item=>'Prova '+item.title,index=>portfolio.select(index));
@@ -73,34 +73,27 @@ function updateSelection(index,announce=true) {
 }
 function commitSelection(index) {
   updateSelection(index,false);
-  if(visible)player.load(selectedExperience());
+  player.load(selectedExperience());
 }
 function selectExperience(index) {
   updateSelection(index);
-  visible=true;
   player.load(selectedExperience());
 }
 function reachDemo() {
-  visible=true; player.load(selectedExperience());
+  player.load(selectedExperience());
   panel.focus({preventScroll:true});
 }
 portfolio=new Carousel($('#portfolio'),{onSelect:selectExperience,onCommit:commitSelection,onOpen:reachDemo});
 portfolio.current=portfolio.target=portfolio.active=selected;
 portfolio.render(); updateSelection(selected,false);
+// Food starts immediately, so it can finish loading while the opening is explored.
+// Keep the same iframe when the carousel settles or the player expands.
+player.load(selectedExperience());
 $('#portfolio').addEventListener('keydown',event=>{
   if((event.key==='Enter'||event.key===' ') && event.target.matches('.showcase-card[data-active=true]')) {
     event.preventDefault(); reachDemo();
   }
 });
-const observer=new IntersectionObserver(entries=>{
-  if(entries.some(entry=>entry.isIntersecting)){
-    visible=true;
-    if(!portfolio.motion && !portfolio.pointer)player.load(selectedExperience());
-    observer.disconnect();
-  }
-},{rootMargin:'200px 0px'});
-// Warm the initial demo as its selector approaches, before the player enters view.
-observer.observe($('#portfolio'));
 $('#retry-demo').addEventListener('click',()=>player.load(selectedExperience(),true));
 
 let savedScroll=0, opener=null, nativeFull=false, expanding=false;
@@ -113,7 +106,7 @@ async function expand(button) {
   expanding=true; opener=button; savedScroll=window.scrollY;
   // Commit only the named card before opening; never detach the live iframe.
   const index=Number(button.dataset.expand);
-  portfolio.target=index; portfolio.finish(); visible=true; player.load(selectedExperience());
+  portfolio.target=index; portfolio.finish(); player.load(selectedExperience());
   engaged=selectedExperience(); $('#contact-link').href=contactUrl(engaged);
   $('#close-demo').hidden=false;
   if(panel.requestFullscreen && document.fullscreenEnabled) {

@@ -26,16 +26,17 @@ export const steps = [
 
 // Public production aliases. No preview deployment URLs or legacy Memento routes.
 export const experiences = [
-  { id: 'fashion', title: 'Fashion', categories: ['Ecommerce', 'Vetrina digitale'], asset: 'assets/heroes/fashion.webp', url: 'https://mementofashion.vercel.app/' },
-  { id: 'elite', title: 'Elite', categories: ['Vetrina digitale', 'Landing page'], asset: 'assets/heroes/elite.webp', url: 'https://mementoelite.vercel.app/' },
   { id: 'food', title: 'Memento Food', categories: ['Vetrina digitale', 'Menù interattivo'], asset: 'assets/heroes/food.webp', url: 'https://mementofood.vercel.app/' },
+  { id: 'viaroma', title: 'Pizzeria Via Roma', categories: ['Menù interattivo', 'Vetrina digitale'], asset: 'assets/heroes/viaroma.webp', url: 'https://pizzeriaviaroma.vercel.app/' },
+  { id: 'elite', title: 'Memento Elite', categories: ['Vetrina digitale', 'Landing page'], asset: 'assets/heroes/elite.webp', url: 'https://mementoelite.vercel.app/' },
+  { id: 'icecream', title: 'IceCream', categories: ['Vetrina digitale', 'Showroom digitale'], asset: 'assets/heroes/icecream.webp', url: 'https://mementoicecream.vercel.app/' },
   { id: 'auren', title: 'Auren', categories: ['Esperienza digitale', 'Landing page'], asset: 'assets/heroes/auren.webp', url: 'https://mementoauren.vercel.app/' },
-  { id: 'icecream', title: 'IceCream', categories: ['Vetrina digitale', 'Showroom digitale'], asset: 'assets/heroes/icecream.webp', url: 'https://mementoicecream.vercel.app/?gusto=pistacchio' },
+  { id: 'fashion', title: 'Fashion', categories: ['Ecommerce', 'Vetrina digitale'], asset: 'assets/heroes/fashion.webp', url: 'https://mementofashion.vercel.app/' },
   { id: 'gamma', title: 'MementoSL', categories: ['Vetrina digitale', 'Showroom digitale'], asset: 'assets/heroes/gamma.webp', url: 'https://mementosl.vercel.app/' },
   { id: 'knives', title: 'Knives', categories: ['Showroom digitale', 'Configuratore 3D'], asset: 'assets/heroes/knives.webp', url: 'https://knives.vercel.app/' },
   { id: 'productvis', title: 'ProductVis', categories: ['Player 3D', 'Configuratore 3D'], asset: 'assets/heroes/productvis.webp', url: 'https://productvis.vercel.app/' },
-  { id: 'techref', title: 'TechRef', categories: ['Comparatore', 'Vetrina digitale'], asset: 'assets/heroes/techref.webp', url: 'https://techref.vercel.app/' },
   { id: 'visualref', title: 'VisualRef', categories: ['Editor 3D', 'DCC'], asset: 'assets/heroes/visualref.webp', url: 'https://visualref.vercel.app/' },
+  { id: 'techref', title: 'TechRef', categories: ['Comparatore', 'Vetrina digitale'], asset: 'assets/heroes/techref.webp', url: 'https://techref.vercel.app/' },
 ];
 
 export function contactUrl(experience) {

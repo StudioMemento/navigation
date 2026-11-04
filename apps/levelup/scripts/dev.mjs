@@ -7,7 +7,7 @@ const args=process.argv.slice(2); const port=Number(args[args.indexOf('--port')+
 const mime={'.html':'text/html','.css':'text/css','.js':'text/javascript','.mjs':'text/javascript','.json':'application/json','.png':'image/png','.jpg':'image/jpeg','.webp':'image/webp','.svg':'image/svg+xml','.woff2':'font/woff2'};
 http.createServer(async(req,res)=>{try{
  const path=decodeURIComponent(new URL(req.url,'http://local').pathname);
- const base=path.startsWith('/assets/')||path==='/tide-child-bridge.js'?resolve(root,'public'):root;
+ const base=path.startsWith('/assets/')||path.startsWith('/navigation/')||path==='/tide-child-bridge.js'?resolve(root,'public'):root;
  let file=resolve(base,'.'+(path==='/'?'/index.html':path));
  if(file!==base&&!file.startsWith(base+sep))throw Error('path');
  if(!(await stat(file)).isFile())throw Error('file');

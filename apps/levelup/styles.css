@@ -104,14 +104,14 @@ button:focus-visible,a:focus-visible,input:focus-visible,[tabindex]:focus-visibl
 html[data-demo-expanded=true]{overflow:hidden}
 .demo-panel:fullscreen{width:100%;height:100%;background:#000}.demo-panel:fullscreen::backdrop{background:#000}
 
-/* Square comparison pairs share the same size, anchor and reveal geometry. */
+/* Comparison artwork keeps its own zoom; all controls share one left anchor. */
 .vision-section{height:max(660px,100svh);max-height:1120px;padding-block:clamp(32px,4svh,56px);display:grid;grid-template-rows:auto minmax(0,1fr);row-gap:24px}
 .vision-section .section-heading{margin-bottom:0}
 .vision-grid{display:grid;grid-template-columns:1fr;grid-template-rows:repeat(3,minmax(0,1fr));gap:14px;min-height:0}
 .vision-card{position:relative;min-width:0;min-height:0;background:#000;overflow:hidden;--vision-inset:clamp(20px,2.6cqw,44px);--image-zoom:1.85;--image-shift:.18}
 .vision-product{--image-zoom:1.7;--image-shift:.14}.vision-brand{--image-zoom:1.65;--image-shift:.07}.vision-collection{--image-zoom:1.55;--image-shift:.1}
 .vision-art{position:absolute;inset:0 0 0 40%;background:#000;container-type:size}
-.comparison{--image-size:min(115cqw,calc(100cqh * var(--image-zoom)));--control-left:max(0px,calc(100% - var(--image-size)*(.86 - var(--image-shift))));--control-right:max(10px,calc(var(--image-size)*.02));--split:calc(var(--control-left) + (100% - var(--control-left) - var(--control-right))*var(--reveal,.5));position:absolute;inset:0;overflow:hidden;user-select:none}
+.comparison{--image-size:min(115cqw,calc(100cqh * var(--image-zoom)));--control-left:max(22px,calc(100% - min(115cqw,170cqh)*.8));--control-right:22px;--split:calc(var(--control-left) + (100% - var(--control-left) - var(--control-right))*var(--reveal,0));position:absolute;inset:0;overflow:hidden;user-select:none}
 .comparison>img,.comparison-before>img{position:absolute;top:50%;right:calc(var(--image-size)*var(--image-shift)*-1);width:var(--image-size);height:var(--image-size);max-width:none;object-fit:contain;transform:translateY(-50%);pointer-events:none}
 .comparison-before{position:absolute;inset:0;clip-path:inset(0 calc(100% - var(--split)) 0 0)}
 .vision-art:after{content:'';position:absolute;inset:0;z-index:3;pointer-events:none;background:linear-gradient(90deg,#000 0%,#000b 9%,transparent 26%)}
@@ -204,13 +204,19 @@ html[data-overlay-scrollbar=true]{scrollbar-width:none}html[data-overlay-scrollb
 .domain-link{position:absolute;inset:0;z-index:5;display:flex;align-items:flex-end;justify-content:flex-end;gap:12px;padding:var(--card-inset);font-size:clamp(12px,1.1vw,17px);letter-spacing:.1em;color:#e4ded3;cursor:pointer;opacity:var(--slide-focus,1)}
 .domain-link svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.3;transition:transform .3s var(--ease)}
 .domain-link:hover{color:var(--amber)}.domain-link:hover svg{transform:translateX(3px)}
-.benefit-carousel .card-art{inset:50% 0 auto auto;width:68%;height:160%;object-fit:contain;object-position:center;transform:translateY(-50%)}
+.benefit-carousel .card-art{inset:50% 0 auto auto;width:68%;height:160%;object-fit:contain;object-position:right center;transform:translateY(-50%)}
 .benefit-carousel .showcase-card:after{background:linear-gradient(90deg,#000 0%,#0009 30%,transparent 59%)}
 .benefit-copy h2{max-width:90%}.benefit-copy p{max-width:58%;padding-bottom:0}
 .step-card h3{max-width:calc(100% - 2*var(--step-inset));font-size:clamp(24px,7.5cqw,40px)}
 .step-number{font-size:11px;top:calc(var(--step-inset) + 2px)}
 .start-copy h2{white-space:nowrap;font-size:clamp(32px,8.5cqw,145px);letter-spacing:.025em}
-@media(max-width:767px){.domain-link{padding:var(--card-inset);font-size:11px;gap:6px}.domain-link svg{width:12px;height:12px}.benefit-copy p{max-width:100%;font-size:14px;padding-bottom:34px}.benefit-carousel .card-art{inset:50% -8% auto auto;width:100%;height:110%;object-fit:contain;object-position:center}.benefit-copy h2{max-width:100%}.step-card h3{font-size:clamp(26px,8cqw,40px)}.start-copy h2{font-size:clamp(26px,8.2cqw,60px)}}
+@media(max-width:767px){.domain-link{padding:var(--card-inset);font-size:11px;gap:6px}.domain-link svg{width:12px;height:12px}.benefit-copy p{max-width:100%;font-size:14px;padding-bottom:34px}.benefit-carousel .card-art{inset:50% 0 auto auto;width:100%;height:110%;object-fit:contain;object-position:right center}.benefit-copy h2{max-width:100%}.step-card h3{font-size:clamp(26px,8cqw,40px)}.start-copy h2{font-size:clamp(26px,8.2cqw,60px)}}
 @media(max-width:500px){:root{--content-width:calc(100vw - 40px)}}
 
 @media(min-width:768px) and (max-width:1023px){.vision-copy{width:53%}.vision-copy h3{font-size:clamp(25px,3.6cqw,32px)}.vision-copy p{font-size:14px}}
+
+/* V15: keep the supplied overlay clear of the opening and final CTA. */
+html[data-memento-navigation=standalone] .opening{padding-top:max(112px,22svh,calc(env(safe-area-inset-top,0px) + 64px))}
+html[data-memento-navigation=standalone] .contact-section{padding-bottom:max(96px,22svh,calc(env(safe-area-inset-bottom,0px) + 80px))}
+html[data-demo-expanded=true] memento-nav{visibility:hidden}
+.skip-link{z-index:1001}
