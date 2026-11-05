@@ -1,32 +1,22 @@
-# Memento — Hub fullscreen V4
+# Memento — Navigazione V5
 
-Header a cinque scene: tab attiva ampia, titolo spaziato all’interno in basso, frecce laterali e chevron d’ingresso. Navbar overlay V12 integrata, con logo superiore e dock inferiore.
+Hub fullscreen con slider nelle proporzioni della pagina Servizi: tavole 2:1 su desktop e 1:1 su mobile portrait. La larghezza arriva a 1720 px e si riduce per rispettare lo spazio disponibile nella viewport. Titolo in basso, padding relativo, spaziatura estesa.
 
-## Correzioni V4
+## Correzioni
 
-- Immagini esistenti conservate byte per byte. La build usa una cartella `assets/scenes-<hash>` calcolata sul contenuto delle 15 WebP, e aggiorna sia i preload sia i riferimenti dello slider. Le vecchie immagini memorizzate sotto `/assets/images/` non vengono più richieste.
-- Trascinamento su tutta la tavola, titolo compreso. Titolo e tavole seguono insieme il gesto; un drag non attiva il link al rilascio.
-- Gestione della cancellazione del puntatore, del cambio finestra e del ridimensionamento, senza lasciare lo slider bloccato.
-- Trackpad orizzontale gestito anche sopra il titolo. Lo scroll verticale e il pinch zoom restano disponibili.
-- Chevron inferiore molto più largo, con proporzioni dedicate a desktop, mobile e landscape; spaziatura separata dal dock.
-- HTML e moduli rivalidati; cache lunga solo sulle scene con URL legato al contenuto.
+- Chevron sinistra/destra ai lati della tavola attiva, centrati in altezza, con aree cliccabili di almeno 44 px.
+- Touch swipe, click-and-drag da immagine o titolo, trackpad orizzontale e tastiera. Riconosciuti sia trascinamenti lunghi sia brevi flick; lo scroll verticale non cambia sezione. Dopo un drag il link non si apre accidentalmente.
+- Chevron inferiore grande con vertice a 90°: bracci a ±45°, SVG proporzionale, nessuna deformazione non uniforme.
+- Testo di base HTML stabile e overlay SVG separato per glow/reticolo. Il cursore aggiorna soltanto l’overlay; nessuna dissolvenza o ricostruzione ripetuta delle lettere.
+- Immagini prese esclusivamente da `nav.zip`. Nessuna nuova immagine generata. Tutti i 12 PNG originali sono conservati in `originals/`; le tavole usano 15 derivati WebP ottimizzati.
+- Rimossa la seconda immagine sfocata dietro ogni tavola. Una sola immagine riempie la card con ritaglio `cover`, senza alterarne le proporzioni.
+- URL delle scene determinati dal loro contenuto per evitare il riutilizzo di vecchie copie in cache.
 
-## Composizione
+## Uso
 
-- Cinque ambienti: studio operativo, atelier, galleria, percorso ascendente e spazio d’incontro.
-- Cinque composizioni verticali dedicate per mantenere i soggetti interi su mobile e tablet portrait.
-- Immagine principale contenuta per intero e fondale sfocato coordinato.
-- Titolo all’interno della tab, con padding relativo e spaziatura a tutta larghezza.
-- Frecce laterali, trascinamento, trackpad orizzontale e loop sulle cinque sezioni.
-- Collegamenti coerenti su tavola, titolo, chevron e navbar; ripristino con Indietro.
+Le frecce laterali, il trascinamento e lo swipe selezionano le cinque sezioni in loop. Un clic su una tavola laterale la seleziona. Un clic sulla tavola attiva, sul titolo o sul chevron inferiore apre la pagina. La navbar apre direttamente la destinazione scelta. I link supportano anche tasto centrale e nuova scheda.
 
-## Navigazione
-
-Clicca una tavola laterale per selezionarla. Clicca la tavola attiva, il titolo o il chevron per aprire la pagina nella finestra superiore, anche quando l’hub è incorporato. La navbar apre direttamente la destinazione scelta; il logo porta alla home.
-
-Frecce sinistra/destra e Home/End selezionano; Invio sul carosello apre. I link nativi supportano nuova scheda, tasto centrale e menu contestuale. Uscita di 380 ms; con movimento ridotto la navigazione è immediata. Nessun autoplay.
-
-| Tavola | Destinazione |
+| Sezione | Destinazione |
 |---|---|
 | Studio | https://mementostudio.it/studio |
 | Services | https://mementostudio.it/services |
@@ -34,34 +24,21 @@ Frecce sinistra/destra e Home/End selezionano; Invio sul carosello apre. I link 
 | LevelUp | https://mementostudio.it/levelup |
 | Start | https://mementostudio.it/start |
 
-Gli hash `/#studio`, `/#services`, `/#projects`, `/#levelup`, `/#start` selezionano la tavola. Restano compatibili gli hash precedenti e i percorsi `/services`, ecc. Nessun iframe interno: le destinazioni restano progetti esterni.
+Frecce sinistra/destra, Home/End selezionano. Invio sul carosello apre la sezione. Indietro ripristina la selezione. L’uscita dura 380 ms; con movimento ridotto la navigazione è immediata.
 
-## Vercel
+## Aggiornamento Vercel
 
-Estrai il contenuto dello ZIP alla root del repository di `mementonav`. Il pacchetto contiene direttamente `package.json`, `index.html` e `vercel.json`, senza cartella contenitore.
+Estrai lo ZIP e sostituisci i file alla root del repository di `mementonav`.
 
 | Impostazione | Valore |
 |---|---|
-| Root Directory | Root del repository: lascia vuoto; rimuovi l’eventuale vecchio valore `hub` |
+| Root Directory | Root del repository, campo vuoto |
 | Framework Preset | Other |
 | Build Command | `npm run build` |
 | Output Directory | `dist` |
 | Node | 24.x |
 
-La configurazione è già in `vercel.json`. Non servono dipendenze npm né variabili d’ambiente. L’esportazione non modifica il deployment pubblico.
-
-## Sorgenti
-
-- `src/app.mjs`: selezione, gesture, tastiera, uscita e ripristino.
-- `src/config.mjs`: scene, URL e tempi.
-- `src/fx.mjs`: titolo SVG, gradiente ambra e reticolo locale su testo e bordi.
-- `src/styles.css`: layout responsive e composizione delle immagini.
-- `navigation/`: navbar overlay con asset locali.
-- `assets/`: Inter locale e WebP wide, ridotte e portrait.
-- `originals/`: dieci PNG delle scene generate, esclusi dalla build pubblica.
-- `docs/VERIFICA.md`: controlli effettuati e limiti della verifica.
-
-Le scene sono immagini raster; la profondità dello slider usa trasformazioni CSS. Il reticolo conserva la forma dei caratteri ed è aggiornato solo quando necessario.
+La configurazione è già inclusa in `vercel.json`. Non servono dipendenze npm o variabili d’ambiente. L’esportazione non aggiorna automaticamente il deployment pubblico.
 
 ## Verifica locale
 
@@ -72,6 +49,8 @@ npm run build
 npm run dev
 ```
 
-Preview su `http://localhost:5173`; banco responsive su `http://localhost:5173/scripts/qa.html`. La build pubblica include solo `index.html`, `src/`, `assets/` e `navigation/`.
+Preview sorgente: `http://localhost:5173`. Verifica responsive e monitor delle modifiche al titolo: `http://localhost:5173/scripts/qa.html`. Per servire la build: `node scripts/serve.mjs --dist --port 5174`.
 
-Per verificare gli stessi file pubblicati da Vercel: dopo la build, esegui `node scripts/serve.mjs --dist --port 5174` e apri `http://localhost:5174`.
+La build pubblica comprende solo `index.html`, `src/`, `assets/` e `navigation/`. Gli originali e il banco di prova restano esclusi dal deployment.
+
+La provenienza esatta delle immagini è in `docs/ASSET_MAPPING.json`; controlli effettuati e limiti sono in `docs/VERIFICA.md`.

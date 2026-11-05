@@ -1,0 +1,32 @@
+{
+  "studio": {
+    "wide": "Faceted Obsidian Design Studio-1.png",
+    "portrait": "Cinematic Faceted Twin Workstations-7.png",
+    "wide_sha256": "21b2fdab8b51194c09cf8f672f4afdec7084a713967fde51987cff52686908bd",
+    "portrait_sha256": "f0de4196772c9b4ef66cf9c5d8322fa80ba896f4172d0a9a950e5c7af4f68df0"
+  },
+  "services": {
+    "wide": "Faceted architectural atelier in amber light-3.png",
+    "portrait": "Amber-lit sculptural atelier-8.png",
+    "wide_sha256": "7169b9b3d02f28cbaa12cbc07777d3ed602e78673b781dbe159fa3731603c54b",
+    "portrait_sha256": "3933d3dc99bd84bd6367aadbd19b00ab5f156d6c6c8730ecdd61a7ab42939735"
+  },
+  "projects": {
+    "wide": "Low-poly sculptures in a charcoal cavern-2.png",
+    "portrait": "Faceted Amber Gallery with Three Sculptures-6.png",
+    "wide_sha256": "0439b1fbb7a8753414c631946d637f44f5743214f54d2096a89f9d27ad643936",
+    "portrait_sha256": "5bb173018f3daa681d593492c4c713d69dbdb222f5368062567e4c57ce27ee86"
+  },
+  "levelup": {
+    "wide": "Obsidian Staircase to an Amber Portal-5.png",
+    "portrait": "Glowing gateway and ascending platforms-9.png",
+    "wide_sha256": "724064f96fdcd7dbf92e8f23f24b765e4477f1bc316fac104e3b3c0fb1df303e",
+    "portrait_sha256": "7298b3dc5ffb6b6a619e3f3977292fb36dcc0ca6a84c27c852cdfbd89782fad4"
+  },
+  "start": {
+    "wide": "Faceted Lounge Under Amber Arches-4.png",
+    "portrait": "Faceted Sunset Conversation Lounge-10.png",
+    "wide_sha256": "e86fa51ef243534eb1e8c21bd2ab80a726e5b223007c06c43f54848028ad4559",
+    "portrait_sha256": "a6f723b5eea5abc1ba549c6d74b2dfda566af7d1ea0d298a1e58d5c748a9819a"
+  }
+}

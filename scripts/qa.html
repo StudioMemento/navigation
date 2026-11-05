@@ -1,5 +1,18 @@
-<!doctype html><html lang="it"><meta charset="utf-8"><title>Memento — verifica responsive</title><style>body{background:#242424;color:white;margin:0;font:12px Arial}header{height:48px;display:flex;align-items:center;gap:16px;padding:0 16px}a{color:#ffd09b}#frame-wrap{position:relative;margin:0 auto}iframe{display:block;border:0;transform-origin:top left;background:black}select{background:#222;color:white;padding:5px}</style><header>Viewport di verifica <select id="size"><option value="390,844">390 × 844</option><option value="360,800">360 × 800</option><option value="768,1024">768 × 1024</option><option value="1024,768">1024 × 768</option><option value="844,390">844 × 390</option><option value="2048,803">2048 × 803</option><option value="2560,1080">2560 × 1080</option></select><a href="/">Desktop</a><span id="metrics"></span></header><div id="frame-wrap"><iframe id="test-frame" title="Memento responsive" width="390" height="844" src="/"></iframe></div><script>
+<!doctype html><html lang="it"><meta charset="utf-8"><title>Memento — verifica responsive</title><style>body{background:#242424;color:white;margin:0;font:12px Arial}header{height:48px;display:flex;align-items:center;gap:16px;padding:0 16px}a{color:#ffd09b}#frame-wrap{position:relative;margin:0 auto}iframe{display:block;border:0;transform-origin:top left;background:black}select{background:#222;color:white;padding:5px}</style><header>Viewport di verifica <select id="size"><option value="1363,936">1363 × 936</option><option value="390,844">390 × 844</option><option value="360,800">360 × 800</option><option value="768,1024">768 × 1024</option><option value="1024,768">1024 × 768</option><option value="844,390">844 × 390</option><option value="2048,803">2048 × 803</option><option value="2560,1080">2560 × 1080</option></select><button id="watch-title" type="button">Controlla testo (8s)</button><output id="title-result"></output><a href="/">Desktop</a><span id="metrics"></span></header><div id="frame-wrap"><iframe id="test-frame" title="Memento responsive" width="390" height="844" src="/"></iframe></div><script>
 const f=document.querySelector('iframe'),wrap=document.querySelector('#frame-wrap'),sizes=document.querySelector('select');
 function resize(){const[w,h]=sizes.value.split(',').map(Number),s=Math.min(1,(innerWidth-24)/w,(innerHeight-60)/h);f.width=w;f.height=h;f.style.transform=`scale(${s})`;wrap.style.width=w*s+'px';wrap.style.height=h*s+'px';document.querySelector('#metrics').textContent=`${w} × ${h} · anteprima ${Math.round(s*100)}%`;}
 sizes.onchange=resize;window.onresize=resize;resize();
+
+let titleObserver=null;
+document.querySelector('#watch-title').onclick=async()=>{
+ const doc=f.contentDocument;await doc.fonts.ready;
+ const base=doc.querySelector('#title-base'),result=document.querySelector('#title-result');
+ if(!base){result.textContent='Titolo non disponibile';return;}
+ titleObserver?.disconnect();let changes=0,moves=0;
+ titleObserver=new MutationObserver(records=>{changes+=records.length});
+ titleObserver.observe(base,{attributes:true,childList:true,subtree:true,characterData:true});
+ const move=()=>{moves++};doc.addEventListener('pointermove',move);
+ result.textContent='Monitoraggio attivo: muovi il cursore sul titolo senza cambiare slide.';
+ setTimeout(()=>{titleObserver.disconnect();doc.removeEventListener('pointermove',move);result.textContent=`Titolo: ${changes} modifiche DOM · ${moves} movimenti puntatore`;},8000);
+};
 </script></html>

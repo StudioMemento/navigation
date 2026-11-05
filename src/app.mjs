@@ -1,6 +1,7 @@
 import {PAGES,SETTINGS} from './config.mjs';
 import {wrap,distance,readLocation,pageAddress} from './logic.mjs';
 import {createEffects,cardEdgeMarkup} from './fx.mjs';
+import {isHorizontalSwipe,swipeStep} from './gesture.mjs';
 import {mountNav} from '../navigation/navbar.mjs';
 const $=id=>document.getElementById(id);
 const hub=$('hub'),stage=$('slide-stage'),carousel=$('carousel');
@@ -12,12 +13,12 @@ let route=readLocation(location.href),active=route.index,gesture=null,suppressCl
 let leaving=false,passthrough=false,navigationTimer=0,recoveryTimer=0,fx;
 const nav=mountNav({active:PAGES[active].id});
 nav.setAttribute('target','_top');
-const picture=(page,i,backdrop=false)=>`<picture${backdrop?' class="slide-backdrop" aria-hidden="true"':''}><source srcset="/assets/images/${page.image}-portrait.webp" media="(max-aspect-ratio: 1/1)"><source srcset="/assets/images/${page.image}-small.webp" media="(max-width:1023px)"><img src="/assets/images/${page.image}.webp" width="1920" height="1080" alt="${backdrop?'':page.alt}" draggable="false" fetchpriority="${i===active&&!backdrop?'high':'low'}" decoding="async"></picture>`;
+const picture=(page,i)=>`<picture><source srcset="/assets/images/${page.image}-portrait.webp" media="(max-width:767px) and (orientation:portrait)"><source srcset="/assets/images/${page.image}-small.webp" media="(max-width:1023px)"><img src="/assets/images/${page.image}.webp" width="1672" height="941" alt="${page.alt}" draggable="false" fetchpriority="${i===active?'high':'low'}" decoding="async"></picture>`;
 const cards=PAGES.map((page,i)=>{
   const card=document.createElement('a');card.className='slide';card.dataset.index=String(i);
   card.href=page.publicURL;card.target='_top';card.draggable=false;
   card.setAttribute('aria-roledescription','slide');
-  card.innerHTML=`<span class="slide-surface">${picture(page,i,true)}${picture(page,i)}</span>${cardEdgeMarkup(page.id)}`;
+  card.innerHTML=`<span class="slide-surface">${picture(page,i)}</span>${cardEdgeMarkup(page.id)}`;
   card.addEventListener('click',event=>{
     if(passthrough||modified(event))return;
     if(performance.now()<suppressClickUntil||leaving){event.preventDefault();return;}
@@ -25,7 +26,7 @@ const cards=PAGES.map((page,i)=>{
   });
   stage.append(card);return card;
 });
-fx=createEffects({titleSVG:$('title-art'),titleAccessible:$('title-accessible'),cards,stage:carousel});
+fx=createEffects({titleSVG:$('title-art'),titleBase:$('title-base'),titleAccessible:$('title-accessible'),cards,stage:carousel});
 function modified(e){return e.button!==0||e.metaKey||e.ctrlKey||e.shiftKey||e.altKey;}
 function layout(){
   cards.forEach((card,i)=>{
@@ -99,20 +100,22 @@ hub.addEventListener('keydown',event=>{
 gestureArea.addEventListener('dragstart',event=>event.preventDefault());
 gestureArea.addEventListener('pointerdown',event=>{
   if(!event.isPrimary||event.button!==0||leaving||event.target.closest('button'))return;
-  gesture={x:event.clientX,y:event.clientY,id:event.pointerId,claimed:false};
+  gesture={x:event.clientX,y:event.clientY,id:event.pointerId,time:event.timeStamp,claimed:false};
 });
 gestureArea.addEventListener('pointermove',event=>{
   if(!gesture||event.pointerId!==gesture.id)return;
   const dx=event.clientX-gesture.x,dy=event.clientY-gesture.y;
-  if(!gesture.claimed&&Math.abs(dx)>10&&Math.abs(dx)>Math.abs(dy)*1.25){gesture.claimed=true;gestureArea.setPointerCapture(event.pointerId);gestureArea.classList.add('is-dragging');}
+  if(!gesture.claimed&&isHorizontalSwipe(dx,dy)){gesture.claimed=true;gestureArea.setPointerCapture(event.pointerId);gestureArea.classList.add('is-dragging');}
   if(gesture.claimed){
     stage.style.translate=caption.style.translate=`${Math.max(-65,Math.min(65,dx*.17))}px 0`;
+    fx.invalidate();
     suppressClickUntil=performance.now()+350;
   }
 });
 function clearGesture(){
   const g=gesture;gesture=null;
   stage.style.translate=caption.style.translate='';gestureArea.classList.remove('is-dragging');
+  fx?.invalidate();
   if(g&&gestureArea.hasPointerCapture(g.id))gestureArea.releasePointerCapture(g.id);
   return g;
 }
@@ -120,7 +123,8 @@ function cancelGesture(){const g=clearGesture();if(g?.claimed)suppressClickUntil
 function finish(event,canceled=false){
   if(!gesture||event.pointerId!==gesture.id)return;
   const g=clearGesture();
-  if(!canceled&&g.claimed&&Math.abs(event.clientX-g.x)>Math.min(55,innerWidth*.12))select(active+(event.clientX<g.x?1:-1));
+  const step=!canceled&&g.claimed?swipeStep(event.clientX-g.x,event.clientY-g.y,event.timeStamp-g.time,innerWidth):0;
+  if(step)select(active+step);
   if(g.claimed)suppressClickUntil=performance.now()+350;
 }
 gestureArea.addEventListener('pointerup',event=>finish(event));
