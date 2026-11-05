@@ -8,7 +8,8 @@
   <title>Memento — Design & esperienze digitali</title>
   <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
   <link rel="preload" as="font" type="font/woff2" href="/assets/fonts/InterVariable.woff2" crossorigin>
-  <link rel="preload" as="image" href="/assets/images/studio.webp">
+  <link rel="preload" as="image" href="/assets/images/studio.webp" media="(min-width:1024px) and (min-aspect-ratio:1/1)">
+  <link rel="preload" as="image" href="/assets/images/studio-portrait.webp" media="(max-aspect-ratio:1/1)">
   <link rel="preconnect" href="https://mementostudio.it">
   <link rel="stylesheet" href="/src/styles.css">
 </head>
@@ -19,12 +20,16 @@
         <div class="carousel" id="carousel" role="region" aria-roledescription="carosello" aria-label="Sezioni Memento. Usa le frecce sinistra e destra per scegliere, Invio per aprire." tabindex="0">
           <div class="slide-stage" id="slide-stage"></div>
         </div>
-        <h1 class="section-heading">
-          <a class="title-link" id="page-title" href="https://mementostudio.it/studio" target="_top">
-            <span class="sr-only" id="title-accessible">STUDIO</span>
-            <svg id="title-art" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg"></svg>
-          </a>
-        </h1>
+        <div class="active-caption">
+          <h1 class="section-heading">
+            <a class="title-link" id="page-title" href="https://mementostudio.it/studio" target="_top">
+              <span class="sr-only" id="title-accessible">STUDIO</span>
+              <svg id="title-art" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg"></svg>
+            </a>
+          </h1>
+        </div>
+        <button class="slide-arrow slide-arrow--prev" id="previous-slide" type="button" aria-label="Sezione precedente"><svg viewBox="0 0 28 48" aria-hidden="true"><path d="M23 5 5 24l18 19"/></svg></button>
+        <button class="slide-arrow slide-arrow--next" id="next-slide" type="button" aria-label="Sezione successiva"><svg viewBox="0 0 28 48" aria-hidden="true"><path d="m5 5 18 19L5 43"/></svg></button>
       </div>
       <a class="enter-link" id="enter-page" href="https://mementostudio.it/studio" target="_top" aria-label="Entra in Studio">
         <svg viewBox="0 0 48 28" aria-hidden="true"><path d="m5 5 19 18L43 5"/></svg>

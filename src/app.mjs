@@ -1,6 +1,7 @@
 import {PAGES,SETTINGS} from './config.mjs';
 import {wrap,distance,readLocation,pageAddress} from './logic.mjs';
 import {createEffects,cardEdgeMarkup} from './fx.mjs';
+import {mountNav} from '../navigation/navbar.mjs';
 const $=id=>document.getElementById(id);
 const hub=$('hub'),stage=$('slide-stage'),carousel=$('carousel');
 const title=$('page-title'),entry=$('enter-page');
@@ -8,11 +9,14 @@ const reduced=matchMedia('(prefers-reduced-motion: reduce)');
 const mobile=matchMedia('(max-width:767px) and (orientation:portrait)');
 let route=readLocation(location.href),active=route.index,gesture=null,suppressClickUntil=0;
 let leaving=false,passthrough=false,navigationTimer=0,recoveryTimer=0,fx;
+const nav=mountNav({active:PAGES[active].id});
+nav.setAttribute('target','_top');
+const picture=(page,i,backdrop=false)=>`<picture${backdrop?' class="slide-backdrop" aria-hidden="true"':''}><source srcset="/assets/images/${page.image}-portrait.webp" media="(max-aspect-ratio: 1/1)"><source srcset="/assets/images/${page.image}-small.webp" media="(max-width:1023px)"><img src="/assets/images/${page.image}.webp" width="1920" height="1080" alt="${backdrop?'':page.alt}" draggable="false" fetchpriority="${i===active&&!backdrop?'high':'low'}" decoding="async"></picture>`;
 const cards=PAGES.map((page,i)=>{
   const card=document.createElement('a');card.className='slide';card.dataset.index=String(i);
   card.href=page.publicURL;card.target='_top';card.draggable=false;
   card.setAttribute('aria-roledescription','slide');
-  card.innerHTML=`<span class="slide-surface"><picture><source srcset="/assets/images/${page.image}-small.webp" media="(max-width:767px)"><img src="/assets/images/${page.image}.webp" width="1672" height="941" alt="${page.alt}" draggable="false" fetchpriority="${i===active?'high':'low'}" decoding="async"></picture></span>${cardEdgeMarkup(page.id)}`;
+  card.innerHTML=`<span class="slide-surface">${picture(page,i,true)}${picture(page,i)}</span>${cardEdgeMarkup(page.id)}`;
   card.addEventListener('click',event=>{
     if(passthrough||modified(event))return;
     if(performance.now()<suppressClickUntil||leaving){event.preventDefault();return;}
@@ -25,9 +29,9 @@ function modified(e){return e.button!==0||e.metaKey||e.ctrlKey||e.shiftKey||e.al
 function layout(){
   cards.forEach((card,i)=>{
     const d=distance(i,active),abs=Math.abs(d);
-    const x=d===0?0:Math.sign(d)*(abs===1?(mobile.matches?82:62):(mobile.matches?139:101));
+    const x=d===0?0:Math.sign(d)*(abs===1?(mobile.matches?84:64):(mobile.matches?155:106));
     card.style.setProperty('--x',`${x}%`);
-    card.style.setProperty('--scale',String([1,.8,.6][abs]));
+    card.style.setProperty('--scale',String([1,.86,.7][abs]));
     card.style.setProperty('--rotate',`${-Math.sign(d)*(abs===1?22:30)}deg`);
     card.style.setProperty('--alpha',String([1,.74,.4][abs]));
     card.style.setProperty('--z',String(10-abs));
@@ -42,6 +46,9 @@ function update(){
   fx.setTitle(page.title);title.href=entry.href=cards[active].href=href;
   entry.setAttribute('aria-label',`Entra in ${page.label}`);
   document.title=`${page.label} — Memento`;
+  nav.setActive(page.id);
+  $('previous-slide').setAttribute('aria-label',`Sezione precedente: ${PAGES[wrap(active-1)].label}`);
+  $('next-slide').setAttribute('aria-label',`Sezione successiva: ${PAGES[wrap(active+1)].label}`);
   $('announcement').textContent=`${page.label}, sezione ${active+1} di 5.`;
 }
 function select(index,{history=true}={}){
@@ -59,6 +66,8 @@ function reset(){
 function leave(event,link){
   if(passthrough||modified(event))return;
   if(leaving){event.preventDefault();return;}
+  // Preserve query/anchor context and selection in the history entry restored by Back.
+  window.history.replaceState({...window.history.state,mementoPage:PAGES[active].id},'');
   if(reduced.matches)return; // Keep instant, native navigation for reduced motion.
   event.preventDefault();leaving=true;hub.classList.add('is-leaving');hub.setAttribute('aria-busy','true');
   navigationTimer=setTimeout(()=>{
@@ -68,6 +77,12 @@ function leave(event,link){
   },SETTINGS.leaveMs);
 }
 for(const link of [title,entry])link.addEventListener('click',event=>leave(event,link));
+$('previous-slide').addEventListener('click',()=>select(active-1));
+$('next-slide').addEventListener('click',()=>select(active+1));
+nav.shadowRoot.addEventListener('click',event=>{
+  const link=event.target.closest?.('a[href]');
+  if(link)leave(event,link);
+});
 hub.addEventListener('keydown',event=>{
   if(event.altKey||event.ctrlKey||event.metaKey||leaving)return;
   const key=event.key;
