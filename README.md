@@ -1,8 +1,17 @@
-# Memento — Hub fullscreen V3
+# Memento — Hub fullscreen V4
 
 Header a cinque scene: tab attiva ampia, titolo spaziato all’interno in basso, frecce laterali e chevron d’ingresso. Navbar overlay V12 integrata, con logo superiore e dock inferiore.
 
-## Novità V3
+## Correzioni V4
+
+- Immagini esistenti conservate byte per byte. La build usa una cartella `assets/scenes-<hash>` calcolata sul contenuto delle 15 WebP, e aggiorna sia i preload sia i riferimenti dello slider. Le vecchie immagini memorizzate sotto `/assets/images/` non vengono più richieste.
+- Trascinamento su tutta la tavola, titolo compreso. Titolo e tavole seguono insieme il gesto; un drag non attiva il link al rilascio.
+- Gestione della cancellazione del puntatore, del cambio finestra e del ridimensionamento, senza lasciare lo slider bloccato.
+- Trackpad orizzontale gestito anche sopra il titolo. Lo scroll verticale e il pinch zoom restano disponibili.
+- Chevron inferiore molto più largo, con proporzioni dedicate a desktop, mobile e landscape; spaziatura separata dal dock.
+- HTML e moduli rivalidati; cache lunga solo sulle scene con URL legato al contenuto.
+
+## Composizione
 
 - Cinque ambienti: studio operativo, atelier, galleria, percorso ascendente e spazio d’incontro.
 - Cinque composizioni verticali dedicate per mantenere i soggetti interi su mobile e tablet portrait.
@@ -64,3 +73,5 @@ npm run dev
 ```
 
 Preview su `http://localhost:5173`; banco responsive su `http://localhost:5173/scripts/qa.html`. La build pubblica include solo `index.html`, `src/`, `assets/` e `navigation/`.
+
+Per verificare gli stessi file pubblicati da Vercel: dopo la build, esegui `node scripts/serve.mjs --dist --port 5174` e apri `http://localhost:5174`.

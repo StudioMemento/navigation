@@ -4,6 +4,7 @@ import {createEffects,cardEdgeMarkup} from './fx.mjs';
 import {mountNav} from '../navigation/navbar.mjs';
 const $=id=>document.getElementById(id);
 const hub=$('hub'),stage=$('slide-stage'),carousel=$('carousel');
+const gestureArea=$('gesture-area'),caption=gestureArea.querySelector('.active-caption');
 const title=$('page-title'),entry=$('enter-page');
 const reduced=matchMedia('(prefers-reduced-motion: reduce)');
 const mobile=matchMedia('(max-width:767px) and (orientation:portrait)');
@@ -61,10 +62,12 @@ function select(index,{history=true}={}){
 }
 function reset(){
   clearTimeout(navigationTimer);clearTimeout(recoveryTimer);leaving=false;passthrough=false;
+  cancelGesture();suppressClickUntil=0;
   hub.classList.remove('is-leaving');hub.removeAttribute('aria-busy');
 }
 function leave(event,link){
   if(passthrough||modified(event))return;
+  if(performance.now()<suppressClickUntil){event.preventDefault();return;}
   if(leaving){event.preventDefault();return;}
   // Preserve query/anchor context and selection in the history entry restored by Back.
   window.history.replaceState({...window.history.state,mementoPage:PAGES[active].id},'');
@@ -93,35 +96,46 @@ hub.addEventListener('keydown',event=>{
   else if(key==='End')select(PAGES.length-1);
   else if(key==='Enter'&&event.target===carousel){event.preventDefault();cards[active].click();}
 });
-carousel.addEventListener('dragstart',event=>event.preventDefault());
-carousel.addEventListener('pointerdown',event=>{
-  if(!event.isPrimary||event.button!==0||leaving)return;
+gestureArea.addEventListener('dragstart',event=>event.preventDefault());
+gestureArea.addEventListener('pointerdown',event=>{
+  if(!event.isPrimary||event.button!==0||leaving||event.target.closest('button'))return;
   gesture={x:event.clientX,y:event.clientY,id:event.pointerId,claimed:false};
 });
-carousel.addEventListener('pointermove',event=>{
+gestureArea.addEventListener('pointermove',event=>{
   if(!gesture||event.pointerId!==gesture.id)return;
   const dx=event.clientX-gesture.x,dy=event.clientY-gesture.y;
-  if(!gesture.claimed&&Math.abs(dx)>10&&Math.abs(dx)>Math.abs(dy)*1.25){gesture.claimed=true;carousel.setPointerCapture(event.pointerId);}
-  if(gesture.claimed){stage.style.translate=`${Math.max(-65,Math.min(65,dx*.17))}px 0`;suppressClickUntil=performance.now()+350;}
+  if(!gesture.claimed&&Math.abs(dx)>10&&Math.abs(dx)>Math.abs(dy)*1.25){gesture.claimed=true;gestureArea.setPointerCapture(event.pointerId);gestureArea.classList.add('is-dragging');}
+  if(gesture.claimed){
+    stage.style.translate=caption.style.translate=`${Math.max(-65,Math.min(65,dx*.17))}px 0`;
+    suppressClickUntil=performance.now()+350;
+  }
 });
+function clearGesture(){
+  const g=gesture;gesture=null;
+  stage.style.translate=caption.style.translate='';gestureArea.classList.remove('is-dragging');
+  if(g&&gestureArea.hasPointerCapture(g.id))gestureArea.releasePointerCapture(g.id);
+  return g;
+}
+function cancelGesture(){const g=clearGesture();if(g?.claimed)suppressClickUntil=performance.now()+350;}
 function finish(event,canceled=false){
-  const g=gesture;gesture=null;stage.style.translate='';if(!g)return;
-  if(carousel.hasPointerCapture(g.id))carousel.releasePointerCapture(g.id);
+  if(!gesture||event.pointerId!==gesture.id)return;
+  const g=clearGesture();
   if(!canceled&&g.claimed&&Math.abs(event.clientX-g.x)>Math.min(55,innerWidth*.12))select(active+(event.clientX<g.x?1:-1));
   if(g.claimed)suppressClickUntil=performance.now()+350;
 }
-carousel.addEventListener('pointerup',event=>finish(event));
-carousel.addEventListener('pointercancel',event=>finish(event,true));
+gestureArea.addEventListener('pointerup',event=>finish(event));
+gestureArea.addEventListener('pointercancel',event=>finish(event,true));
+gestureArea.addEventListener('lostpointercapture',event=>{if(gesture?.id===event.pointerId)cancelGesture();});
 window.addEventListener('pointerup',event=>{if(gesture)finish(event);});
-window.addEventListener('blur',()=>{gesture=null;stage.style.translate='';});
+window.addEventListener('blur',cancelGesture);
 let wheelDebt=0,wheelTime=0,wheelLock=0;
-carousel.addEventListener('wheel',event=>{
+gestureArea.addEventListener('wheel',event=>{
   if(event.ctrlKey||leaving||Math.abs(event.deltaX)<=Math.abs(event.deltaY)||Math.abs(event.deltaX)<2)return;
   event.preventDefault();const now=performance.now();if(now<wheelLock)return;
   if(now-wheelTime>160)wheelDebt=0;wheelTime=now;wheelDebt+=event.deltaX;
   if(Math.abs(wheelDebt)>65){select(active+Math.sign(wheelDebt));wheelDebt=0;wheelLock=now+700;}
 },{passive:false});
-window.addEventListener('resize',layout);
+window.addEventListener('resize',()=>{cancelGesture();layout();});
 for(const event of ['popstate','hashchange'])window.addEventListener(event,()=>{reset();route=readLocation(location.href);select(route.index,{history:false});});
 window.addEventListener('pageshow',()=>{reset();fx.invalidate();});
 window.addEventListener('pagehide',reset);

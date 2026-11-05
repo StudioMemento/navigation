@@ -16,13 +16,13 @@
 <body>
   <main>
     <header class="hub" id="hub" aria-label="Esplora Memento">
-      <div class="hub-content">
+      <div class="hub-content" id="gesture-area">
         <div class="carousel" id="carousel" role="region" aria-roledescription="carosello" aria-label="Sezioni Memento. Usa le frecce sinistra e destra per scegliere, Invio per aprire." tabindex="0">
           <div class="slide-stage" id="slide-stage"></div>
         </div>
         <div class="active-caption">
           <h1 class="section-heading">
-            <a class="title-link" id="page-title" href="https://mementostudio.it/studio" target="_top">
+            <a class="title-link" id="page-title" href="https://mementostudio.it/studio" target="_top" draggable="false">
               <span class="sr-only" id="title-accessible">STUDIO</span>
               <svg id="title-art" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg"></svg>
             </a>
@@ -32,7 +32,7 @@
         <button class="slide-arrow slide-arrow--next" id="next-slide" type="button" aria-label="Sezione successiva"><svg viewBox="0 0 28 48" aria-hidden="true"><path d="m5 5 18 19L5 43"/></svg></button>
       </div>
       <a class="enter-link" id="enter-page" href="https://mementostudio.it/studio" target="_top" aria-label="Entra in Studio">
-        <svg viewBox="0 0 48 28" aria-hidden="true"><path d="m5 5 19 18L43 5"/></svg>
+        <svg viewBox="0 0 240 56" preserveAspectRatio="none" aria-hidden="true"><path d="M8 8 120 48 232 8" vector-effect="non-scaling-stroke"/></svg>
       </a>
     </header>
     <p id="announcement" class="sr-only" role="status" aria-live="polite"></p>
