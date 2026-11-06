@@ -1,60 +1,38 @@
-# MEMENTO NAV R3 — Verifiche
+# Verifica R4 — 6 novembre 2026
 
-Data: 6 novembre 2026. Ambiente: Chrome remoto, desktop Linux. Le dimensioni mobile/tablet sono viewport di iframe di verifica; non sono dispositivi fisici o emulazione touch completa.
+## Esito
 
-## Prove automatiche eseguite
+Integrazione eseguita sulla NAV verticale R3. Le cinque scene e i link originali sono conservati; navbar, blur e logo provengono dal kit V12 allegato. Non è stato aggiornato il progetto Vercel esistente.
 
-`node scripts/verify.mjs` e `node scripts/verify-artifact.mjs`.
+## Controlli automatici
 
-- Formati e cornice minima esterna del 20% su sei viewport.
-- Segno della rotazione e bordo esterno più vicino e apparentemente più largo sulle due secondarie.
-- Distanza proiettata dell'edge interno maggiore di metà card + 44 px.
-- Proiezione/inversione del punto locale su piani inclinati.
-- Continuità ciclica, selezione dell'indice più vicino, direzione e annullamento dello snap.
-- Triangolazione deterministica: 80 facce, area totale unitaria per la fixture di controllo.
-- URL esatti, presenza e intestazioni dei file immagine, icone/font e sintassi dei moduli.
-- Presenza strutturale dei gestori di cancel/visibility, decode, fallback e movimento ridotto.
-- Controlli negativi: tilt inverso e asset assente vengono respinti.
-- WebP responsive + JPEG delle cinque scene: 953.693 byte complessivi.
+- Sei configurazioni di viewport per proporzioni, angoli prospettici, proiezione e inversa.
+- Navigazione ciclica, sezione più vicina, snap e cancel del drag.
+- Mesh a densità variabile, area coperta pari a 1, triangoli non degeneri, edge unici e vicinato simmetrico.
+- Campi confinati in [0,1], distribuzione non circolare, visibilità continua, loading monotono e spaziale.
+- Stesse maschere per 61 posizioni attraversate in avanti e al contrario.
+- Propagazione touch lungo un grafo, emissione diretta verso l’esterno, pool limitato e particelle completamente scadute.
+- Sintassi dei moduli, cinque destinazioni, asset locali e font; una sola istanza mountNav, rimozione del vecchio logo/dock, fallback e cleanup.
+- Controlli negativi inclusi per angoli invertiti, asset mancanti, campo uniforme, falsa propagazione radiale e reveal non spaziale.
 
-I controlli strutturali non sostituiscono prove del touch reale o una misura prestazionale su hardware finale.
+## Verifica visiva e interattiva
 
-## Dimensioni osservate
+Browser: Chrome della sessione cloud. Layout verificati direttamente a 1363 × 937 e tramite iframe responsive a 390 × 844 e 320 × 568 CSS px, DPR del browser cloud. Questi ultimi sono viewport simulati, non telefoni fisici.
 
-| Viewport | Card | Rapporto | Osservazione |
-|---|---:|---:|---|
-| 390 × 844 | 234 × 292,5 | 4:5 | Studio e Start: titolo nella superficie, card adiacenti e controlli separati |
-| 834 × 1194 | 500,4 × 500,4 | 1:1 | Projects: titolo interamente contenuto, nessun reset della sezione |
-| 1440 × 900 | 864 × 432 | 2:1 | Projects/LevelUp/Start: card dominante e navbar sincronizzata |
-| 2560 × 1080 | 1296 × 648 | 2:1 | Start: proporzioni e margini conservati |
-| 844 × 390 | 468 × 234 | 2:1 | Logo, card, chevron e navbar leggibili; anteprime periferiche ridotte dalla finestra |
-| 320 × 568 | 192 × 240 | 4:5 | Solo calcolo automatico, non revisione visiva |
+- Desktop: cinque immagini decodificate, una navbar; logo e icone allineati. Card centrale nitida, tagli alto-sinistra e basso-destra, prospettiva preservata.
+- Loading fermato al 50%: celle del contenuto realmente assenti; immagine e lettere ricostruite dal basso-sinistra. Maschera rimossa nello stato completo.
+- Mobile: scrollWidth corrisponde a 390/320 px; nessun overflow orizzontale. Logo largo 320 px a viewport 390; 280 px con margini di 20 px a viewport 320.
+- Prossimità: il bordo sinistro vicino al puntatore risponde, il perimetro lontano rimane neutro, immagini e testo restano leggibili.
+- Tastiera: freccia giù porta Studio a Services; stato aria-current della navbar aggiornato alla medesima sezione.
+- Touch sintetico sul documento reale: down attiva il campo, up produce un impulso, cancel rimuove il contatto senza produrre un impulso aggiuntivo. Esito harness: TOUCH_CANCEL_PASS.
+- Drag verticale nativo con mouse: Services → Projects, senza apertura accidentale della pagina.
+- Movimento ridotto verificato attraverso il percorso di debug che usa il medesimo flag del media query: navigazione attiva, maschera centrale none, particelle e impulsi a zero.
+- Errori applicativi non osservati. La console contiene un messaggio proveniente dall’estensione del browser cloud, esterno alla NAV.
 
-Verificata anche la pagina diretta nel viewport Chrome 1363 × 936.
+## Prestazioni e limiti
 
-## Interazioni osservate nel browser
+I campioni del callback RAF dopo il caching a riposo sono circa 1.75–3.2 ms nei viewport mobile simulati; durante un passaggio è stato osservato un campione medio di 5.3 ms. Sono misure CPU del callback e non includono il costo GPU/compositing del blur. Il browser cloud ha consegnato circa 1 RAF/s durante parte della prova; questo ambiente non consente di certificare la fluidità a 60 fps.
 
-- Selezione tramite navbar di Studio, Projects, LevelUp e Start.
-- Chevron e cambio di card; aggiornamento del titolo documento, hash, stato accessibile e icona attiva.
-- Rotella verso il basso: Start → Studio, un passaggio per il gesto osservato.
-- Drag verso l'alto: LevelUp → Start. Nessuna apertura accidentale della destinazione.
-- Click sulla secondaria inferiore: Studio → Services. La card si centra, senza aprire il sito di destinazione.
-- Loop Start → Studio osservato; aritmetica del loop inverso verificata automaticamente. Input ArrowUp inviato nel browser; il suo esito finale non è stato isolato prima del successivo aggiornamento.
-- Ridimensionamento mobile → tablet → landscape → desktop → ultrawide mantenendo la sezione selezionata.
-- Tutte e cinque le immagini risultavano complete e decodificate; corrispondenza Services/card/navbar verificata nel DOM.
-- Superfici nitide e opache; campo esterno ai lati. Luce di prossimità e accento locale del bordo visibili.
-- La prima implementazione del blur produceva un artefatto di riflessione su Start: rimosso il backdrop-filter e sostituito con una copia della stessa immagine sfocata e mascherata. Nuova schermata verificata senza quell'artefatto.
+Non sono stati verificati Safari, Firefox, GPU o telefoni fisici. Non è stata prodotta una registrazione video. Verificare maschere SVG, blur nativo e pinch zoom sui dispositivi finali prima della pubblicazione definitiva. Il progetto usa Canvas2D e non il renderer WebGL proposto come percorso consigliato dal brief; gli asset HTML rimangono originali e accessibili.
 
-La costruzione usa clip triangolari distribuite realmente applicate all'intera superficie. La verifica visiva ha controllato gli stati stabili; non è stata acquisita una registrazione ad alta cadenza dell'intera sequenza appear/disappear.
-
-## Prestazioni e limiti aperti
-
-La sessione remota ha restituito cadenze rAF irregolari (campioni 0,1–2,4 fps) e tempi medi dei callback JavaScript fra circa 1 e 12,2 ms. Questi campioni non certificano il target di 60 fps e non includono una misura completa GPU/compositor. Occorre profilare la versione sul browser e hardware finali.
-
-Non eseguiti: Safari/iOS e Chrome/Android su telefoni fisici, pinch reale, swipe con inerzia touch reale, throttle di rete controllato, cache completamente vuota su dispositivo, GPU mobile, toggle OS del movimento ridotto, sospensione/ripresa reale del telefono, apertura finale di tutte le destinazioni esterne. I relativi percorsi sono implementati ma non vanno considerati certificati.
-
-Il bug intermittente mobile storico non è dichiarato risolto su dispositivo. Il caricamento di questa versione è stato verificato per le cinque immagini nel browser remoto.
-
-## Ambito
-
-Nuova NAV separata. Non modificati progetti, sorgenti o impostazioni delle pagine Studio, Services, Projects, LevelUp e Start, né il deploy Vercel attuale.
+L’integrazione riguarda la NAV: non aggiunge VFX nei documenti esterni delle pagine Services, Projects, LevelUp o Start. Se Framer contiene già un secondo logo/navbar/blur, rimuoverlo dal contenitore per evitare la duplicazione: un iframe non può modificare il DOM del documento padre di un’altra origine.

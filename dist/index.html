@@ -10,19 +10,24 @@
 <link rel="preload" href="./assets/fonts/InterVariable.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="./assets/scenes/studio-480.webp" as="image" media="(max-width:600px)">
 <link rel="stylesheet" href="./src/style.css">
+<script>
+if(!matchMedia('(prefers-reduced-motion:reduce)').matches)document.documentElement.classList.add('fx-boot');
+function restoreNav(){document.documentElement.classList.remove('fx-boot');for(const el of document.querySelectorAll('.card-reveal')){el.style.maskImage='none';el.style.webkitMaskImage='none'}if(!document.querySelector('.card'))document.getElementById('fallback').hidden=false;}
+addEventListener('error',restoreNav);addEventListener('unhandledrejection',restoreNav);setTimeout(()=>{if(!window.__navReady)restoreNav()},3000);
+</script>
 </head>
 <body>
 <h1 class="sr-only">Memento — Studio di design & esperienze digitali</h1>
 <canvas id="field" aria-hidden="true"></canvas>
-<header class="masthead"><a id="wordmark" href="https://mementostudio.it/" aria-label="Memento — Homepage"></a></header>
+
 <main id="hub" tabindex="-1" aria-label="Esplora Memento" aria-roledescription="carosello">
  <div class="scene-window"><div id="scene" class="scene"></div></div>
  <button id="previous" class="chevron previous" aria-label="Sezione precedente"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 15 7-7 7 7"/></svg></button>
  <button id="next" class="chevron next" aria-label="Sezione successiva"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 9 7 7 7-7"/></svg></button>
  <p class="sr-only" id="status" aria-live="polite" aria-atomic="true"></p>
 </main>
-<footer class="footer"><nav id="dock" aria-label="Sezioni Memento"></nav><p class="gesture-hint" aria-hidden="true">SCORRI PER ESPLORARE</p></footer>
-<noscript><nav class="fallback" aria-label="Sezioni Memento"><a href="https://mementostudio.it/studio">Studio</a><a href="https://mementostudio.it/services">Services</a><a href="https://mementostudio.it/projects">Projects</a><a href="https://mementostudio.it/levelup">LevelUp</a><a href="https://mementostudio.it/start">Start</a></nav></noscript>
+<p class="gesture-hint" aria-hidden="true">SCORRI PER ESPLORARE</p>
+<nav hidden id="fallback" class="fallback" aria-label="Sezioni Memento"><a href="https://mementostudio.it/studio">Studio</a><a href="https://mementostudio.it/services">Services</a><a href="https://mementostudio.it/projects">Projects</a><a href="https://mementostudio.it/levelup">LevelUp</a><a href="https://mementostudio.it/start">Start</a></nav><noscript><style>#fallback{display:flex!important}</style></noscript>
 <script type="module" src="./src/app.mjs"></script>
 </body>
 </html>

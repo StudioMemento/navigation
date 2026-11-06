@@ -1,85 +1,49 @@
-# MEMENTO — Vertical NAV R3
+# Memento NAV — R4 VFX + Overlay
 
-Navigazione realizzata da zero sul brief `MEMENTO_NAV_VERTICAL_3D_HANDOFF_R2`, con i cinque master consegnati. Solo il progetto NAV. HTML, CSS e moduli JavaScript nativi; nessuna dipendenza runtime o chiave API.
-
-## Avvio
-
-Servire la cartella `dist` con un server HTTP. Per esempio, con Python installato:
-
-```sh
-python3 -m http.server 4173 --directory dist
-```
-
-Aprire `http://localhost:4173`. I moduli ES richiedono HTTP: non aprire `index.html` con doppio click.
+Integrazione sulla NAV verticale 3D R3 del VFX pass R3 e del kit navbar/blur/logo V12 allegato. Conserva le cinque scene originali, le proporzioni, la prospettiva e le destinazioni. Nessuna nuova immagine e nessuna dipendenza runtime esterna.
 
 ## Vercel
 
-Importare il contenuto dello ZIP in un repository o nel progetto Vercel dedicato alla NAV.
+Caricare il contenuto dello ZIP nel repository del progetto NAV. Impostazioni: **Framework Other**, **Output dist**, nessun comando build e nessuna variabile d’ambiente. `vercel.json` è incluso. Non è stato modificato il deploy Vercel esistente.
 
-- Framework preset: **Other**.
-- Root directory: la cartella che contiene questo file e `vercel.json`.
-- Build command: vuoto (nessuna build).
-- Output directory: **dist**.
-- Nessuna variabile d'ambiente.
+Per una verifica locale, servire `dist` via HTTP, ad esempio `python3 -m http.server 4173 --directory dist`. I moduli richiedono HTTP, quindi non aprire index.html con doppio click.
 
-`vercel.json` contiene già la configurazione. Non è stato eseguito un deploy sul progetto Vercel esistente. La versione verificabile è una nuova anteprima separata.
+## Comportamento
 
-## Comandi
+- Rotella, swipe verticale, drag, chevron su/giù e tastiera attraversano le cinque sezioni in loop, con lo snap originale.
+- La card secondaria viene portata al centro; la card attiva apre la sua pagina. Ctrl/Cmd-click e click centrale restano nativi.
+- La navbar V12 apre direttamente le pagine, come previsto dal kit. Il suo stato attivo segue la card centrale.
+- Il logo apre la home. I link puntano a `https://mementostudio.it/` e alle route `/studio`, `/services`, `/projects`, `/levelup`, `/start`.
+- Un solo overlay montato sotto body: logo, cinque icone, blur progressivo superiore e inferiore. Nessuna doppia navbar.
 
-- Rotella verso il basso / swipe verso l'alto / freccia giù: sezione successiva.
-- Drag verticale con mouse o touch; snap al rilascio.
-- Chevron esterni, area 44 × 44 px.
-- La navbar seleziona la card, la card attiva apre la destinazione.
-- Click sulla secondaria: la porta al centro.
-- Frecce su/giù, PageUp/PageDown; Home/End selezionano prima/ultima.
-- Nella navbar, frecce sinistra/destra spostano il focus.
-- Ctrl/Cmd-click e click centrale mantengono il comportamento dei link.
-- Loop Studio → Services → Projects → LevelUp → Start → Studio. Nessun autoplay.
+## VFX integrati
 
-## Destinazioni conservate
+Fondo triangolato con campionamento irregolare a densità variabile, connettività deterministica e movimento minimo dei vertici. Lo stesso campo di prossimità in coordinate viewport alimenta fondo, bordi e card in prospettiva; l’inversa del modello serve all’input locale.
 
-Verificate nel sorgente del deploy `https://mementonav.vercel.app/src/config.mjs` il 6 novembre 2026.
+Il glow percorre soltanto i tratti di bordo vicini al pointer e segue anche i due tagli diagonali. Il reticolo interno scende al 12% dell’intensità verso il centro; il titolo ha un pass separato e ritagliato nei glifi. Immagini, tracking e lettere non vengono deformati. La rete delle card scompare a riposo.
 
-| Card | URL |
-|---|---|
-| Studio | https://mementostudio.it/studio |
-| Services | https://mementostudio.it/services |
-| Projects | https://mementostudio.it/projects |
-| LevelUp | https://mementostudio.it/levelup |
-| Start | https://mementostudio.it/start |
+Le particelle minute nascono dai vertici attivati dal movimento, con repulsione, curl, vita breve e un pool condiviso. Il touch attiva il campo durante il contatto e genera un unico impulso al rilascio; la propagazione usa distanze lungo gli edge. Pointer cancel e perdita di focus ripuliscono il contatto senza generare nuovi impulsi.
 
-Il wordmark apre `https://mementostudio.it/`. Le pagine di destinazione non sono incluse né modificate.
+Loading e passaggi della NAV usano maschere SVG alpha che nascondono realmente celle del contenuto. La progressione di ingresso procede dal basso-sinistra all’alto-destra. Durante il movimento del carosello, le celle ai margini superiore e inferiore seguono la posizione proiettata. Il centro resta completamente leggibile, la maschera viene rimossa quando completa e il wireframe di transizione decade dopo l’arresto. Non viene aggiunto uno scroll verticale alla pagina: gli FX seguono il carosello esistente.
 
-## Struttura e regolazioni
+Il renderer mantiene Canvas2D, già usato dalla base statica, e maschere SVG per il DOM. Non richiede WebGL. Un solo requestAnimationFrame coordina il documento; gli FX locali sono memorizzati a riposo, la pagina nascosta sospende il ciclo, dispose rimuove risorse e listener. Movimento ridotto: contenuti completi, nessuna dissolvenza scroll o impulso mobile. La pagina dispone di fallback HTML e watchdog di avvio.
 
-- `dist/src/config.mjs`: sezioni, URL e punto focale desktop delle immagini.
-- `dist/src/model.mjs`: proporzioni, proiezione/inversa, snap e geometria dello slider.
-- `dist/src/app.mjs`: coordinamento animazioni, input, stato, caricamento e uscita.
-- `dist/src/geometry.mjs`: triangolazione deterministica riutilizzata dagli FX.
-- `dist/src/field.mjs`: campo irregolare esterno, prossimità e impulsi touch.
-- `dist/src/card-fx.mjs`: materiale locale, bordi, glifi e costruzione distribuita.
-- `dist/src/style.css`: layout, forma, tipografia, focus e riduzione del movimento.
-- `dist/assets/scenes`: WebP 96/480/960/1254 px e fallback JPEG.
-- `dist/assets`: icone e wordmark esistenti, font Inter locale.
+## File principali
 
-Le card sono cinque nodi DOM permanenti. Titolo, superficie, immagine, materiale e bordi si trasformano insieme; nessuna sostituzione dell'immagine a metà swipe. Le immagini vengono decodificate prima del passaggio nitido, con fallback coerente e un solo tentativo alternativo JPEG.
-
-La scena mantiene un unico progresso continuo. La proiezione delle secondarie porta i bordi esterni verso l'utente. Le anteprime sono ritagliate dolcemente ai limiti della scena; sui viewport molto bassi lo spazio è riservato a card centrale, logo e controlli.
-
-Il campo globale è dietro superfici opache. Il materiale interno è indipendente e ritagliato. Le maschere di costruzione sono triangoli distribuiti della superficie reale. Le card già costruite si spostano intere.
-
-La risoluzione degli FX è limitata; gli FX a riposo delle secondarie sono memorizzati. La pagina nascosta sospende il ciclo. `prefers-reduced-motion` disabilita deriva continua e inclinazioni animate e semplifica i passaggi.
-
-Per una diagnostica locale aprire `/?qa=1`: l'attributo `data-qa` di `#hub` contiene dimensioni, immagini decodificate e campioni prestazionali. Non inserisce pannelli nell'esperienza.
+| File | Ruolo |
+| --- | --- |
+| `dist/navigation/` | Kit overlay V12 fornito, con asset e logo originali |
+| `dist/src/app.mjs` | Unico loop, eventi pointer/tastiera, slider, lifecycle |
+| `dist/src/vfx-config.mjs` | Colori, raggi, budget e timing |
+| `dist/src/vfx-core.mjs` | Campo, driver di visibilità, grafo touch e pool |
+| `dist/src/geometry.mjs` | Mesh irregolare e contorno condiviso |
+| `dist/src/field.mjs` | Membrana di fondo, input smorzato, particelle condivise |
+| `dist/src/card-fx.mjs` | Maschere, bordo locale, attenuazione e glifi |
+| `dist/src/model.mjs` | Geometria e navigazione originarie |
+| `docs/VFX_DIRECTION_R3.md` | Brief VFX allegato |
 
 ## Verifica
 
-```sh
-npm test
-```
+`npm test` esegue i contratti della navigazione, dei VFX e del pacchetto. Consultare `QA.md` per l’evidenza e i limiti.
 
-Leggere `QA.md` per prove, misure e limiti. Il target 60 fps e il comportamento sui telefoni fisici non sono certificati da questa consegna.
-
-## Provenienza asset
-
-Immagini: cinque PNG master square allegati al brief, convertiti in formati web senza nuova generazione. Wordmark, icone e font: asset del deploy Memento esistente. Nessun caricamento di font o immagini da CDN terze durante l'uso.
+La modalità `?qa` abilita un controllo del loading e i dati diagnostici in `#hub[data-qa]`; è disattivata nella normale esperienza. `?qa&motion=reduce` permette di verificare localmente il fallback senza cambiare le preferenze di sistema. `scripts/qa-check.html` è un harness interno: copiarlo temporaneamente in dist soltanto durante le verifiche responsive.

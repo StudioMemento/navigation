@@ -11,10 +11,24 @@ export function triangulate(points){
  return triangles.filter(t=>t.every(i=>i<n));
 }
 export function mesh(seed=1,cols=7,rows=4){
- const r=seeded(seed),points=[];
- for(let y=0;y<=rows;y++)for(let x=0;x<=cols;x++)points.push({x:(x+(x&&x<cols?(r()-.5)*.75:0))/cols,y:(y+(y&&y<rows?(r()-.5)*.75:0))/rows,phase:r()*Math.PI*2});
- const triangles=triangulate(points);const edges=[],seen=new Set();
- for(const t of triangles)for(let i=0;i<3;i++){const a=t[i],b=t[(i+1)%3],key=[a,b].sort((a,b)=>a-b).join('-');if(!seen.has(key)){seen.add(key);edges.push([a,b]);}}
- return {points,triangles,edges};
+ const r=seeded(seed),points=[{x:0,y:0},{x:1,y:0},{x:1,y:1},{x:0,y:1}];
+ // Variable-radius dart sampling, not a perturbed grid. Boundary points guarantee coverage.
+ for(let x=1;x<cols;x++){const px=(x+(r()-.5)*.6)/cols;points.push({x:px,y:0},{x:px,y:1});}
+ for(let y=1;y<rows;y++){const py=(y+(r()-.5)*.6)/rows;points.push({x:0,y:py},{x:1,y:py});}
+ const count=Math.round(cols*rows*1.35),aspect=cols/rows;
+ for(let attempt=0;points.length<count&&attempt<count*100;attempt++){
+  const x=r(),y=r(),density=.72+.28*Math.sin(x*7.3+y*3.1+seed)*Math.cos(y*5.8-x*2.4),min=.73/rows*density;
+  if(points.every(p=>Math.hypot((x-p.x)*aspect,y-p.y)>min))points.push({x,y});
+ }
+ for(const p of points)p.phase=r()*Math.PI*2;
+ const triangles=triangulate(points.map(p=>({x:p.x*aspect,y:p.y}))),edges=[],seen=new Set(),neighbors=points.map(()=>[]);
+ for(const t of triangles)for(let i=0;i<3;i++){const a=t[i],b=t[(i+1)%3],key=[a,b].sort((a,b)=>a-b).join('-');if(!seen.has(key)){seen.add(key);edges.push([a,b]);neighbors[a].push(b);neighbors[b].push(a);}}
+ return {points,triangles,edges,neighbors};
+}
+export function outline(w,h,c){return [[c,.5],[w-.5,.5],[w-.5,h-c],[w-c,h-.5],[.5,h-.5],[.5,c]];}
+export function borderDistance(x,y,w,h,cut){
+ let distance=Infinity;const p=outline(w,h,cut);
+ for(let i=0;i<p.length;i++){const a=p[i],b=p[(i+1)%p.length],dx=b[0]-a[0],dy=b[1]-a[1],t=Math.max(0,Math.min(1,((x-a[0])*dx+(y-a[1])*dy)/(dx*dx+dy*dy)));distance=Math.min(distance,Math.hypot(x-a[0]-t*dx,y-a[1]-t*dy));}
+ return distance;
 }
 export function cardPath(ctx,w,h,c){ctx.beginPath();ctx.moveTo(c,.5);ctx.lineTo(w-.5,.5);ctx.lineTo(w-.5,h-c);ctx.lineTo(w-c,h-.5);ctx.lineTo(.5,h-.5);ctx.lineTo(.5,c);ctx.closePath();}

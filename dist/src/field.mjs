@@ -1,28 +1,35 @@
-import {seeded,clamp} from './model.mjs';
-import {triangulate} from './geometry.mjs';
+import {clamp} from './model.mjs';
+import {mesh} from './geometry.mjs';
+import {VFX} from './vfx-config.mjs';
+import {fieldEnergy,graphDistances,pulseEnvelope,TrianglePool} from './vfx-core.mjs';
 export class Field{
- constructor(canvas){this.canvas=canvas;this.ctx=canvas.getContext('2d',{alpha:false});this.pulses=[];this.pointer={x:-2000,y:-2000,strength:0};this.last=0;}
- resize(l){this.l=l;const d=Math.min(devicePixelRatio||1,l.small?1.25:1.5);this.canvas.width=Math.round(l.w*d);this.canvas.height=Math.round(l.h*d);this.ctx.setTransform(d,0,0,d,0,0);const r=seeded(1467),points=[];
- const count=l.small?64:148;
- for(let i=0;i<count;i++){let x=r(),y=r();if(i<count*.8){const side=i%4;if(side===0)x=Math.pow(r(),2.2)*.27;if(side===1)x=1-Math.pow(r(),2.2)*.27;if(side===2)y=Math.pow(r(),2.2)*.21;if(side===3)y=1-Math.pow(r(),2.2)*.21;}
- points.push({x,y,phase:r()*6.28,speed:.35+r()*.4,energy:.2+r()*.8});}
- this.points=points;this.positions=points.map(()=>({x:0,y:0,value:0}));this.edges=[];const seen=new Set();
- for(const t of triangulate(points))for(let k=0;k<3;k++){let a=t[k],b=t[(k+1)%3],key=[a,b].sort((a,b)=>a-b).join('-');if(!seen.has(key)){seen.add(key);this.edges.push([a,b]);}}
- this.fragments=Array.from({length:l.small?9:19},()=>({x:r(),y:r(),phase:r()*6.28,speed:.07+r()*.08,size:.8+r()*1.4}));
+ constructor(canvas){this.canvas=canvas;this.ctx=canvas.getContext('2d',{alpha:false});this.pulses=[];this.pointer={x:-2000,y:-2000,strength:0};this.current={...this.pointer};this.last=0;this.travel=0;this.lastEmit={x:-2000,y:-2000};this.overlay=document.createElement('canvas');this.overlay.id='vfx-particles';this.overlay.setAttribute('aria-hidden','true');document.body.append(this.overlay);this.pc=this.overlay.getContext('2d');}
+ resize(l){this.l=l;const d=Math.min(devicePixelRatio||1,l.small?VFX.mobileDpr:VFX.dpr);for(const canvas of [this.canvas,this.overlay]){canvas.width=Math.round(l.w*d);canvas.height=Math.round(l.h*d);canvas.getContext('2d').setTransform(d,0,0,d,0,0);}
+ this.grid=mesh(1467,l.small?7:14,l.small?12:9);this.points=this.grid.points.map(p=>({x:p.x*l.w,y:p.y*l.h,phase:p.phase}));this.positions=this.points.map(p=>({...p,energy:0}));this.shortest=this.points.map((p,i)=>Math.min(...this.grid.neighbors[i].map(j=>Math.hypot(p.x-this.points[j].x,p.y-this.points[j].y))));this.pool=new TrianglePool(l.small?VFX.mobilePool:VFX.pool);this.pulses=[];
  }
- touch(x,y,t){if(this.pulses.length>=3)this.pulses.shift();this.pulses.push({x,y,time:t});}
- draw(t,reduced=false){const c=this.ctx,l=this.l;if(!l)return;const time=reduced?0:t*.001;
- c.fillStyle='#070809';c.fillRect(0,0,l.w,l.h);
- this.pulses=this.pulses.filter(p=>t-p.time<1450);
- for(let i=0;i<this.points.length;i++){const p=this.points[i],q=this.positions[i];q.x=p.x*l.w+Math.sin(time*p.speed+p.phase)*(l.small?1.3:2.7);q.y=p.y*l.h+Math.cos(time*p.speed*.77+p.phase)*2;
- let strength=0;const dx=q.x-this.pointer.x,dy=q.y-this.pointer.y;
- if(this.pointer.strength){const anis=1+.26*Math.sin(p.phase+time*.4)+.15*Math.sin(q.y*.014+q.x*.009);const dist=Math.hypot(dx,dy*1.13)/anis;strength=Math.exp(-dist*dist/(l.small?16000:31000))*this.pointer.strength*(.25+.75*p.energy);}
- for(const pulse of this.pulses){const age=(t-pulse.time)*.001,dist=Math.hypot(q.x-pulse.x,q.y-pulse.y),delay=dist/(180+170*p.energy),wave=clamp(1-Math.abs(age-delay-.14)/.5);strength=Math.max(strength,wave*clamp(1-age/1.45)*.85*p.energy);}
- const border=Math.max(Math.abs(p.x-.5)*2,Math.abs(p.y-.5)*2);q.base=.012+Math.pow(border,2.5)*.13;q.value=strength;}
- c.lineWidth=.55;
- for(const [a,b]of this.edges){const A=this.positions[a],B=this.positions[b],dist=Math.hypot(A.x-B.x,A.y-B.y);if(dist>(l.small?230:440))continue;const e=(A.value+B.value)/2,base=(A.base+B.base)/2;
- c.strokeStyle=e>.025?`rgba(236,153,64,${Math.min(.63,base*.55+e*.52)})`:`rgba(157,165,170,${base})`;c.beginPath();c.moveTo(A.x,A.y);c.lineTo(B.x,B.y);c.stroke();}
- for(const q of this.positions){const e=q.value;c.fillStyle=e>.05?`rgba(255,185,95,${.25+e*.7})`:`rgba(210,213,210,${q.base*1.65})`;c.beginPath();c.arc(q.x,q.y,e>.12?1.05:.65,0,6.29);c.fill();if(e>.32){c.shadowColor='#ffb054';c.shadowBlur=5*e;c.fillRect(q.x-.7,q.y-.7,1.4,1.4);c.shadowBlur=0;}}
- for(const f of this.fragments){const x=f.x*l.w+Math.sin(time*f.speed+f.phase)*14,y=f.y*l.h+Math.cos(time*f.speed*.9+f.phase)*19,a=f.phase+time*.11,dx=x-this.pointer.x,dy=y-this.pointer.y;const e=this.pointer.strength*Math.exp(-(dx*dx+dy*dy)/35000);c.save();c.translate(x,y);c.rotate(a);c.fillStyle=e>.1?`rgba(242,171,80,${.15+e*.45})`:'rgba(201,203,196,.19)';c.beginPath();c.moveTo(0,-f.size);c.lineTo(f.size*.8,f.size);c.lineTo(-f.size,f.size*.55);c.closePath();c.fill();c.restore();}
+ touch(x,y,t){if(this.reduced)return;this.pulses.push({time:t,distances:graphDistances(this.points,this.grid.neighbors,x,y,this.l.small?420:580)});if(this.pulses.length>2)this.pulses.shift();}
+ cancel(){this.pointer.strength=0;}
+ energy(x,y){let energy=fieldEnergy(x,y,this.current,this.l.small?VFX.mobileRadius:VFX.radius);if(this.pulses.length){let near=0,distance=Infinity;for(let i=0;i<this.points.length;i++){const p=this.points[i],d=(p.x-x)**2+(p.y-y)**2;if(d<distance){distance=d;near=i;}}energy=Math.max(energy,this.positions[near]?.pulse||0);}return energy;}
+ begin(t,reduced=false){this.reduced=reduced;const dt=Math.min(.04,(t-this.last)/1000||.016);this.last=t;this.dt=dt;
+ const target=this.pointer.strength||0;this.current.strength+=(target-this.current.strength)*(1-Math.exp(-dt/(target>this.current.strength?VFX.attack:VFX.release/3)));
+ if(target){if(this.current.strength<.02){this.current.x=this.pointer.x;this.current.y=this.pointer.y;}else{const blend=1-Math.exp(-dt/.04);this.current.x+=(this.pointer.x-this.current.x)*blend;this.current.y+=(this.pointer.y-this.current.y)*blend;}}
+ if(this.pointer.strength){const moved=Math.hypot(this.pointer.x-this.lastEmit.x,this.pointer.y-this.lastEmit.y);if(moved<400)this.travel+=moved;this.lastEmit={x:this.pointer.x,y:this.pointer.y};}else this.travel=0;
+ this.pulses=this.pulses.filter(p=>t-p.time<950);if(reduced){this.pulses=[];this.pool.clear();}
+ for(let i=0;i<this.points.length;i++){const p=this.points[i],q=this.positions[i];q.pulse=0;for(const pulse of this.pulses)q.pulse=Math.max(q.pulse,pulseEnvelope((t-pulse.time)/1000,pulse.distances[i]));
+ const energy=Math.max(fieldEnergy(p.x,p.y,this.current,this.l.small?VFX.mobileRadius:VFX.radius),q.pulse);q.energy=energy;const dx=p.x-this.current.x,dy=p.y-this.current.y,len=Math.hypot(dx,dy)||1,limit=reduced?0:Math.min(this.shortest[i]*.065,this.l.small?3:5),idle=reduced?0:this.l.small?.6:1;
+ let ox=Math.sin(t*.00047+p.phase)*idle+dx/len*energy*limit,oy=Math.cos(t*.00039+p.phase)*idle+dy/len*energy*limit;
+ const length=Math.hypot(ox,oy),cap=this.shortest[i]*.07;if(length>cap){ox*=cap/length;oy*=cap/length;}const targetX=p.x+ox,targetY=p.y+oy;
+ q.x+=(targetX-q.x)*(1-Math.exp(-dt*9));q.y+=(targetY-q.y)*(1-Math.exp(-dt*9));
  }
+ this.pool.update(t,dt);
+ }
+ emit(x,y,t,energy=1){if(this.reduced||this.travel<28||energy<.2)return; if(this.pool.emit(x,y,this.current.x,this.current.y,t,this.l.small?.8:1))this.travel=0;}
+ transitionParticle(x,y,t,dx,dy){if(this.reduced||this.transitionBudget<=0)return;if(this.pool.emit(x,y,x-dx,y-dy,t,this.l.small?.8:1))this.transitionBudget--;}
+ draw(t,reduced=false){if(t-(this.lastDraw||0)<(this.current.strength>.01?16:32))return;this.lastDraw=t;const c=this.ctx,l=this.l;c.fillStyle='#070809';c.fillRect(0,0,l.w,l.h);const q=this.positions;
+ for(const ids of this.grid.triangles){const [a,b,d]=ids.map(i=>q[i]),energy=(a.energy+b.energy+d.energy)/3,shade=.004+(Math.sin((a.x+b.y+d.x)*.01)*.5+.5)*.004;c.fillStyle=energy>.02?`rgba(${VFX.color},${energy*VFX.faceAlpha})`:`rgba(170,181,190,${shade})`;c.beginPath();c.moveTo(a.x,a.y);c.lineTo(b.x,b.y);c.lineTo(d.x,d.y);c.closePath();c.fill();}
+ c.lineWidth=.65;for(const [ai,bi]of this.grid.edges){const a=q[ai],b=q[bi],energy=(a.energy+b.energy)*.5;c.strokeStyle=energy>.025?`rgba(${VFX.color},${.025+energy*.28})`:'rgba(158,166,175,.021)';c.beginPath();c.moveTo(a.x,a.y);c.lineTo(b.x,b.y);c.stroke();}
+ for(const p of q){c.fillStyle=p.energy>.04?`rgba(${VFX.paper},${.07+p.energy*.6})`:'rgba(192,202,212,.045)';c.fillRect(p.x-.5,p.y-.5,1,1);this.emit(p.x,p.y,t,p.energy);}
+ }
+ finish(){if(!this.pool.count&&!this.hadParticles)return;this.hadParticles=this.pool.count;const c=this.pc,l=this.l;c.clearRect(0,0,l.w,l.h);for(const p of this.pool.items){if(!p.alive)continue;c.save();c.translate(p.x,p.y);c.rotate(p.angle);c.fillStyle=`rgba(${VFX.color},${p.alpha*.7})`;c.beginPath();c.moveTo(0,-p.size);c.lineTo(p.size*.8,p.size*.6);c.lineTo(-p.size*.7,p.size*.6);c.closePath();c.fill();c.restore();}}
+ dispose(){this.pool.clear();this.overlay.remove();this.pulses=[];}
 }

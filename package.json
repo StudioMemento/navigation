@@ -1,1 +1,9 @@
-{"name":"memento-nav-vertical-r3","version":"1.0.0","private":true,"type":"module","scripts":{"test":"node scripts/verify.mjs && node scripts/verify-artifact.mjs"}}
+{
+  "name": "memento-nav-vertical-r4-vfx-overlay",
+  "version": "4.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node scripts/verify.mjs && node scripts/verify-vfx.mjs && node scripts/verify-artifact.mjs"
+  }
+}
