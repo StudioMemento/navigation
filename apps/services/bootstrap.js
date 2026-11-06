@@ -1,3 +1,24 @@
+/* VFX bootstrap: independent watchdog always restores readable HTML. */
+(() => {
+  const root = document.documentElement;
+  const enabled = new URLSearchParams(location.search).get('fx') !== 'off'
+    && !matchMedia('(prefers-reduced-motion: reduce)').matches
+    && !matchMedia('(forced-colors: active)').matches
+    && !location.hash
+    && performance.getEntriesByType('navigation')[0]?.type !== 'back_forward';
+  if (!enabled) return;
+  let preparation, deadline;
+  const release = () => {
+    clearTimeout(preparation); clearTimeout(deadline);
+    root.removeAttribute('data-fx-boot');
+    window.__mementoFXBoot.pending = false;
+  };
+  window.__mementoFXBoot = { pending: true, release, ready: () => clearTimeout(preparation) };
+  preparation = setTimeout(release, 200);
+  deadline = setTimeout(() => { release(); window.MementoVFX?.setEnabled(false); }, 1400);
+  root.setAttribute('data-fx-boot', '');
+})();
+
 /* CSS owns selection on page and modal surfaces. Preserve native editing
    menus and dragging in fields while protecting the surrounding content. */
 (() => {

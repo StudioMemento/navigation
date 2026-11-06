@@ -7,6 +7,7 @@ for (const entry of [
   'styles.css',
   'bootstrap.js',
   'memento-services-host.js',
+  'navigation',
   'src',
   'assets',
 ]) {

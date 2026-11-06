@@ -72,10 +72,12 @@ test('Rendering keeps one dialog title, four named controls and an explicit Star
     );
   }
 });
-test('The shipped entry point has one stylesheet, one bootstrap and one module entry', () => {
+test('The entry point has one stylesheet, the page and navigation bootstraps, and one app module', () => {
   const html = readFileSync(new URL('../index.html', import.meta.url), 'utf8');
   assert.equal((html.match(/rel="stylesheet"/g) || []).length, 1);
-  assert.equal((html.match(/<script /g) || []).length, 2);
+  assert.equal((html.match(/<script\s/g) || []).length, 3);
+  assert.equal((html.match(/src="navigation\/bootstrap\.js\?v=12\.0\.0"/g) || []).length, 1);
+  assert.match(html, /data-memento-page="services"/);
   assert.equal((html.match(/type="module"/g) || []).length, 1);
   assert.deepEqual(
     readdirSync(new URL('../', import.meta.url)).filter((f) => f.endsWith('.css')),

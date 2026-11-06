@@ -1,0 +1,40 @@
+{
+  "version": "41.0.0",
+  "unit_tests": {
+    "pass": 9,
+    "fail": 0
+  },
+  "build": "pass",
+  "responsive_widths_verified": [
+    1440,
+    1024,
+    768,
+    390,
+    360
+  ],
+  "popup_390px": "opened, changed board, closed; readable; one shared canvas",
+  "performance": "not certified: browser background throttling invalidated the 15 s comparison",
+  "latest_projection_visual_review": "incomplete: screenshot timeout; JS active/idle and no observed warnings/errors before final projection-cache optimization",
+  "real_mobile_hardware": "not tested",
+  "sha256": {
+    "VALIDATION.json": "9eca16b910d21d6f09ad8b0afb36b83b3ed94df9dc8fb874ecb4466bf92c976c",
+    "bootstrap.js": "f740252ff9f7186dee5c42b4bb2ed2c0f3e4e509fb9e882823d7831b4c16fbf6",
+    "build.mjs": "11b46afda8192164f8a2bff4d616d359e74e6851c8ec0bb0cb83d78018ee1b98",
+    "index.html": "f9a50b600fe00bb5f1f5d9baaf21d114e6f50547ae25cb48c11cd7887591c6f9",
+    "memento-services-host.js": "9aab793521ce24216ceb36ad3d421e25027ee3770f26bf6ec440417d748d4c11",
+    "package-lock.json": "75f7892876b5b5e660be17fb9d179fab4464db0f33a5012c138d127b13211367",
+    "package.json": "491fbcd533c3161d3b60bbc6dcc86bb97dc960f0660416beedde4ce8e546910b",
+    "src/app.js": "0bc1db95c36ecea265f2f426c4651ce12392efa7eb4810feac3cd057a4280016",
+    "src/carousel.js": "d1c6e119fc44cb3e9de4ba96d7a37d0aaf94cde4fdb0b48769b036b3e925702f",
+    "src/content.js": "4b491fa13abe5eee4bd5195492f708d21a14662aa257675344d6695fc8b1c8d3",
+    "src/dialogs.js": "b112520dc293d48f0a1643edce2eb6efd013ed8a4d1b7eb524aaab93252aad24",
+    "src/fx-config.js": "8f88e774d1d9cf46f303be445eac51d2a6accfa2b031e3d7aa013fdceb440748",
+    "src/fx-math.js": "7bb99723d88c72bad57596abaf5c7cc93c1d60650e79537c03ce67347a7bad14",
+    "src/media.js": "99c63b282c5c025a165070bdb98ddd162764b54edade84d7ca8626347b8a60f5",
+    "src/render.js": "be6f176511c152265f85c17ab6f6591239ee4a70d1fac95aabff160980a7eef9",
+    "src/vfx.js": "a75ba6a27238a82218afa2e9d75c4bffe4b2eb79573114dbe863f37334297ead",
+    "src/visuals.js": "7e03402f4d1636233481f11526840ce0c074741038712f48eae5412bc9c47b62",
+    "styles.css": "08cfb7350e62a13e1e0332d3435f93889a4cf6a24a807b87ebbf7c936a604165",
+    "vercel.json": "bef175aa09b2824f5c404ba1744404283d94709c89dc37f271bf87997c548b4b"
+  }
+}

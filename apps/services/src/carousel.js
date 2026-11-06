@@ -192,6 +192,7 @@ export class Carousel {
         (card.querySelector('.popup-card-scroll') || card).inert = !isActive;
       card.style.pointerEvents = amount >= edge ? 'none' : 'auto';
     });
+    document.dispatchEvent(new CustomEvent('memento:carousel-layout', { detail: this.element }));
     if (active !== this.active) {
       this.active = active;
       this.onSettle(active);
@@ -214,6 +215,7 @@ export class Carousel {
         this.current = this.target;
         this.render();
         this.element.classList.remove('is-moving');
+    document.dispatchEvent(new CustomEvent('memento:carousel-settled', {detail: this.element}));
         return;
       }
     } else {
@@ -240,6 +242,7 @@ export class Carousel {
     this.render();
     this.motion = null;
     this.element.classList.remove('is-moving');
+    document.dispatchEvent(new CustomEvent('memento:carousel-settled', {detail: this.element}));
     if (this.focusAfterSettle) {
       this.cards[this.active].focus({ preventScroll: true });
       this.focusAfterSettle = false;

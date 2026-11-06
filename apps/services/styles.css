@@ -47,6 +47,12 @@ html {
 html[data-embedded='false'] {
   background: #0b0c0d;
 }
+/* V12 overlay stays outside the page's filtered / clipped surfaces. */
+html[data-memento-page='services'] {
+  --memento-content-edge-space: clamp(104px, 20svh, 220px);
+  scroll-padding-top: max(76px, calc(env(safe-area-inset-top, 0px) + 60px));
+  scroll-padding-bottom: max(96px, calc(env(safe-area-inset-bottom, 0px) + 80px));
+}
 body {
   margin: 0;
   overflow-x: clip;
@@ -134,7 +140,7 @@ button img {
   position: fixed;
   top: -100px;
   left: 20px;
-  z-index: 200;
+  z-index: 1001;
   padding: 14px 20px;
   background: var(--ink);
   color: #0b0c0d;
@@ -478,7 +484,7 @@ section[id] {
   isolation: isolate;
   overflow: clip;
   padding: calc(
-      max(clamp(96px, 8vw, 160px), var(--carousel-bleed-top) + 24px) + env(safe-area-inset-top, 0px)
+      max(clamp(96px, 8vw, 160px), var(--carousel-bleed-top) + 24px, var(--memento-content-edge-space, 0px)) + env(safe-area-inset-top, 0px)
     )
     0 clamp(28px, 4vw, 64px);
 }
@@ -1312,7 +1318,8 @@ dialog::backdrop {
 
 /* 5. Start invitation and native-scroll enhancement. */
 .start-section {
-  padding-block: clamp(72px, 9vw, 144px) max(90px, env(safe-area-inset-bottom));
+  padding-block: clamp(72px, 9vw, 144px)
+    max(90px, var(--memento-content-edge-space, 0px), calc(env(safe-area-inset-bottom, 0px) + 80px));
 }
 .start-action {
   --corner-cut: 20px;
@@ -1608,3 +1615,21 @@ html[data-overlay-scrollbar='true']::-webkit-scrollbar {
     background: Highlight;
   }
 }
+
+/* The base DOM is visible. Bootstrap is time limited and independent of the renderer. */
+html[data-fx-boot] #memento-catalogo { opacity: 0; }
+.memento-fx { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 180; pointer-events: none !important; contain: strict; }
+.memento-fx-defs { position: absolute; width: 0; height: 0; overflow: hidden; pointer-events: none; }
+html[data-vfx='on'] .category-heading { animation: none !important; }
+html[data-vfx='on'] .start-rim { display: none; }
+html[data-vfx='on'] .service-title { transition: none; }
+.fx-masked { mask-image: var(--fx-mask); mask-mode: alpha; mask-repeat: no-repeat; -webkit-mask-image: var(--fx-mask); -webkit-mask-repeat: no-repeat; }
+.fx-masked:focus-within, .fx-masked.fx-readable { mask-image: none !important; -webkit-mask-image: none !important; }
+html[data-vfx='off'] .fx-masked { mask-image: none !important; -webkit-mask-image: none !important; }
+@media (prefers-reduced-motion: reduce), (forced-colors: active) {
+  html[data-fx-boot] #memento-catalogo { opacity: 1; }
+  .fx-masked { mask-image: none !important; -webkit-mask-image: none !important; }
+  .memento-fx { display: none; }
+}
+
+.fx-empty { pointer-events: none !important; }
