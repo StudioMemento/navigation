@@ -3,42 +3,22 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#070809">
+  <meta name="theme-color" content="#060708">
   <meta name="description" content="Studio, servizi, progetti e nuove possibilità. Esplora l’universo Memento.">
-  <title>Memento — Design & esperienze digitali</title>
-  <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
-  <link rel="preload" as="font" type="font/woff2" href="/assets/fonts/InterVariable.woff2" crossorigin>
-  <link rel="preload" as="image" href="/assets/images/studio.webp" media="(min-width:1024px)">
-  <link rel="preload" as="image" href="/assets/images/studio-portrait.webp" media="(max-width:767px) and (orientation:portrait)">
-  <link rel="preconnect" href="https://mementostudio.it">
+  <title>Memento — Studio di design & esperienze digitali</title>
+  <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+  <link rel="preload" href="/assets/fonts/InterVariable.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="/assets/images/studio-small.webp" as="image" media="(max-width: 767px)">
   <link rel="stylesheet" href="/src/styles.css">
 </head>
 <body>
-  <main>
-    <header class="hub" id="hub" aria-label="Esplora Memento">
-      <div class="hub-content" id="gesture-area">
-        <div class="carousel" id="carousel" role="region" aria-roledescription="carosello" aria-label="Sezioni Memento. Usa le frecce sinistra e destra per scegliere, Invio per aprire." tabindex="0">
-          <div class="slide-stage" id="slide-stage"></div>
-        </div>
-        <div class="active-caption">
-          <h1 class="section-heading">
-            <a class="title-link" id="page-title" href="https://mementostudio.it/studio" target="_top" draggable="false">
-              <span class="sr-only" id="title-accessible">STUDIO</span>
-              <span class="title-base" id="title-base" aria-hidden="true"></span>
-              <svg class="title-fx" id="title-art" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg"></svg>
-            </a>
-          </h1>
-        </div>
-        <button class="slide-arrow slide-arrow--prev" id="previous-slide" type="button" aria-label="Sezione precedente"><svg viewBox="0 0 28 48" aria-hidden="true"><path d="M24 4 4 24 24 44"/></svg></button>
-        <button class="slide-arrow slide-arrow--next" id="next-slide" type="button" aria-label="Sezione successiva"><svg viewBox="0 0 28 48" aria-hidden="true"><path d="M4 4 24 24 4 44"/></svg></button>
-      </div>
-      <a class="enter-link" id="enter-page" href="https://mementostudio.it/studio" target="_top" aria-label="Entra in Studio">
-        <svg viewBox="0 0 168 88" preserveAspectRatio="xMidYMid meet" aria-hidden="true"><path d="M4 4 84 84 164 4" vector-effect="non-scaling-stroke"/></svg>
-      </a>
-    </header>
-    <p id="announcement" class="sr-only" role="status" aria-live="polite"></p>
-    <noscript><nav class="no-script" aria-label="Sezioni Memento"><a href="https://mementostudio.it/studio" target="_top">Studio</a><a href="https://mementostudio.it/services" target="_top">Services</a><a href="https://mementostudio.it/projects" target="_top">Projects</a><a href="https://mementostudio.it/levelup" target="_top">LevelUp</a><a href="https://mementostudio.it/start" target="_top">Start</a></nav></noscript>
+  <h1 class="sr-only">Memento — Studio di design & esperienze digitali</h1>
+  <main id="hub" class="hub">
+    <div id="viewport" class="viewport" tabindex="0" role="region" aria-label="Esplora Memento. Scorri in verticale per cambiare sezione."></div>
+    <canvas id="field" aria-hidden="true"></canvas>
+    <p id="announcement" class="sr-only" role="status" aria-live="polite" aria-atomic="true"></p>
   </main>
+  <noscript><nav class="fallback" aria-label="Sezioni Memento"><a href="https://mementostudio.it/studio">Studio</a><a href="https://mementostudio.it/services">Services</a><a href="https://mementostudio.it/projects">Projects</a><a href="https://mementostudio.it/levelup">LevelUp</a><a href="https://mementostudio.it/start">Start</a></nav></noscript>
   <script type="module" src="/src/app.mjs"></script>
 </body>
 </html>

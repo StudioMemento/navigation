@@ -1,16 +1,6 @@
 {
-  "name": "memento-slider-nav",
-  "version": "5.0.0",
-  "private": true,
-  "type": "module",
-  "description": "Memento \u2014 fullscreen navigation hub",
-  "scripts": {
-    "build": "node scripts/build.mjs",
-    "test": "node --test scripts/logic.test.mjs",
-    "check": "node scripts/verify.mjs",
-    "dev": "node scripts/serve.mjs"
-  },
-  "engines": {
-    "node": "24.x"
-  }
+  "name":"memento-vertical-nav", "version":"6.0.0", "private":true, "type":"module",
+  "description":"Memento — vertical scroll navigation with a shared interactive field",
+  "scripts":{"build":"node scripts/build.mjs","test":"node --test scripts/logic.test.mjs","check":"node scripts/verify.mjs","dev":"node scripts/serve.mjs"},
+  "engines":{"node":">=20"}
 }

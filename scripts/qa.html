@@ -1,18 +1,38 @@
-<!doctype html><html lang="it"><meta charset="utf-8"><title>Memento — verifica responsive</title><style>body{background:#242424;color:white;margin:0;font:12px Arial}header{height:48px;display:flex;align-items:center;gap:16px;padding:0 16px}a{color:#ffd09b}#frame-wrap{position:relative;margin:0 auto}iframe{display:block;border:0;transform-origin:top left;background:black}select{background:#222;color:white;padding:5px}</style><header>Viewport di verifica <select id="size"><option value="1363,936">1363 × 936</option><option value="390,844">390 × 844</option><option value="360,800">360 × 800</option><option value="768,1024">768 × 1024</option><option value="1024,768">1024 × 768</option><option value="844,390">844 × 390</option><option value="2048,803">2048 × 803</option><option value="2560,1080">2560 × 1080</option></select><button id="watch-title" type="button">Controlla testo (8s)</button><output id="title-result"></output><a href="/">Desktop</a><span id="metrics"></span></header><div id="frame-wrap"><iframe id="test-frame" title="Memento responsive" width="390" height="844" src="/"></iframe></div><script>
-const f=document.querySelector('iframe'),wrap=document.querySelector('#frame-wrap'),sizes=document.querySelector('select');
-function resize(){const[w,h]=sizes.value.split(',').map(Number),s=Math.min(1,(innerWidth-24)/w,(innerHeight-60)/h);f.width=w;f.height=h;f.style.transform=`scale(${s})`;wrap.style.width=w*s+'px';wrap.style.height=h*s+'px';document.querySelector('#metrics').textContent=`${w} × ${h} · anteprima ${Math.round(s*100)}%`;}
-sizes.onchange=resize;window.onresize=resize;resize();
-
-let titleObserver=null;
-document.querySelector('#watch-title').onclick=async()=>{
- const doc=f.contentDocument;await doc.fonts.ready;
- const base=doc.querySelector('#title-base'),result=document.querySelector('#title-result');
- if(!base){result.textContent='Titolo non disponibile';return;}
- titleObserver?.disconnect();let changes=0,moves=0;
- titleObserver=new MutationObserver(records=>{changes+=records.length});
- titleObserver.observe(base,{attributes:true,childList:true,subtree:true,characterData:true});
- const move=()=>{moves++};doc.addEventListener('pointermove',move);
- result.textContent='Monitoraggio attivo: muovi il cursore sul titolo senza cambiare slide.';
- setTimeout(()=>{titleObserver.disconnect();doc.removeEventListener('pointermove',move);result.textContent=`Titolo: ${changes} modifiche DOM · ${moves} movimenti puntatore`;},8000);
-};
+<!doctype html><html lang="it"><meta charset="utf-8"><title>Memento NAV — responsive QA</title>
+<style>*{box-sizing:border-box}body{margin:0;background:#18191b;color:#fff;font:14px system-ui;padding:20px}header{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:16px}button{padding:10px 14px;border:1px solid #777;background:#333;color:#fff;border-radius:5px;cursor:pointer}#results{font:12px monospace;white-space:pre-wrap;margin:10px 0 20px;max-height:70px;overflow:auto}.grid{display:flex;gap:24px;align-items:flex-start}iframe{display:block;border:1px solid #777;background:#060708;box-sizing:content-box}h2{font:14px system-ui;font-weight:400}.col{flex:none}</style>
+<header><strong>Memento — controllo responsive</strong><button id="check">Verifica layout</button><button id="touch">Impulso touch</button><button id="verifytouch">Test propagazione</button><button id="burst">Tocchi multipli</button><button id="next">Sezione successiva</button><button id="prev">Sezione precedente</button><button id="link">Verifica tap e rientro</button><button id="back">Ripristina viste</button></header>
+<div id="results" role="status">In attesa delle viste.</div>
+<div class="grid"><div class="col"><h2>390 × 844 · portrait</h2><iframe id="phone" title="Mobile 390" width="390" height="844" src="/"></iframe></div><div class="col"><h2>320 × 568 · compact</h2><iframe id="small" title="Mobile 320" width="320" height="568" src="/"></iframe></div><div class="col"><h2>844 × 390 · landscape</h2><iframe id="landscape" title="Mobile landscape" width="844" height="390" src="/"></iframe></div></div>
+<script type="module">
+ const frames=[...document.querySelectorAll('iframe')],out=document.getElementById('results');
+ const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+ const log=value=>out.textContent=typeof value==='string'?value:JSON.stringify(value,null,2);
+ function check(){
+  const rows=frames.map(f=>{
+   const d=f.contentDocument,w=f.contentWindow,c=d.querySelector('.card[aria-current]'),r=c.getBoundingClientRect(),title=c.querySelector('.title').getBoundingClientRect();
+   const insets=[r.left/w.innerWidth,r.top/w.innerHeight,(w.innerWidth-r.right)/w.innerWidth,(w.innerHeight-r.bottom)/w.innerHeight];
+   return {viewport:[w.innerWidth,w.innerHeight],insets:insets.map(x=>Number(x.toFixed(4))),pass:insets.every(x=>Math.abs(x-.2)<.002),overflow:d.documentElement.scrollWidth>w.innerWidth,titleFits:title.left>=r.left&&title.right<=r.right,active:d.querySelector('memento-nav').getAttribute('active'),image:c.querySelector('picture img').complete&&c.querySelector('picture img').naturalWidth>0};
+  });log(rows);return rows;
+ }
+ document.getElementById('check').onclick=check;
+ function pulse(f,x,y,id){const w=f.contentWindow;w.dispatchEvent(new w.PointerEvent('pointerdown',{pointerType:'touch',clientX:x,clientY:y,pointerId:id,button:0,isPrimary:true,bubbles:true}));w.dispatchEvent(new w.PointerEvent('pointerup',{pointerType:'touch',clientX:x,clientY:y,pointerId:id,button:0,isPrimary:true,bubbles:true}));}
+ document.getElementById('verifytouch').onclick=async()=>{
+  const f=frames[0],w=f.contentWindow,canvas=f.contentDocument.getElementById('field'),x=w.innerWidth*.25,y=w.innerHeight*.57;
+  function sample(){const p=canvas.getContext('2d').getImageData(0,0,canvas.width,canvas.height),scale=canvas.width/w.innerWidth;let count=0,distance=0;for(let i=0;i<p.data.length;i+=4){const [r,g,b,a]=p.data.slice(i,i+4);if(a>16&&r>g*1.2&&g>b*1.12){count++;const j=i/4;distance+=Math.hypot((j%canvas.width)/scale-x,Math.floor(j/canvas.width)/scale-y);}}return {amberPixels:count,meanRadius:count?Math.round(distance/count):0};}
+  const idle=sample();pulse(f,x,y,73);await sleep(160);const near=sample();await sleep(340);const far=sample();await sleep(1400);const end=sample();log({idle,near,far,end,propagates:far.meanRadius>near.meanRadius,returnsToMonochrome:end.amberPixels===0});
+ };
+ document.getElementById('touch').onclick=()=>{for(const f of frames)pulse(f,f.clientWidth*.25,f.clientHeight*.57,42);log('Impulso touch inviato alle tre viste; propagazione 1450 ms.');};
+ document.getElementById('burst').onclick=async()=>{for(let i=0;i<4;i++){for(const f of frames)pulse(f,f.clientWidth*(.15+i*.2),f.clientHeight*(.45+(i%2)*.18),42+i);await sleep(180);}log('Quattro tocchi consecutivi, massimo quattro impulsi attivi.');};
+ async function move(delta){for(const f of frames){const w=f.contentWindow,v=f.contentDocument.getElementById('viewport');v.scrollBy({top:delta*w.innerHeight,behavior:'smooth'});}await sleep(1200);check();}
+ document.getElementById('next').onclick=()=>move(1);document.getElementById('prev').onclick=()=>move(-1);
+ document.getElementById('back').onclick=()=>{for(const f of frames)f.src='/';log('Viste ripristinate.');};
+ document.getElementById('link').onclick=async()=>{
+  const f=frames[0],d=f.contentDocument,c=d.querySelector('.card[aria-current]');
+  c.target='_self';c.href='/scripts/qa-destination.html';c.click();await sleep(700);
+  const arrived=f.contentDocument.title==='QA destination';
+  f.contentWindow.history.back();await sleep(900);
+  const recovered=!f.contentDocument.getElementById('hub')?.classList.contains('is-leaving');
+  log({tapNavigation:arrived,backRestores:recovered});
+ };
+ await Promise.all(frames.map(f=>new Promise(r=>f.addEventListener('load',r,{once:true}))));await sleep(400);check();
 </script></html>

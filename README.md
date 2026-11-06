@@ -1,56 +1,56 @@
-# Memento — Navigazione V5
+# MEMENTO NAV · V6 VERTICAL
 
-Hub fullscreen con slider nelle proporzioni della pagina Servizi: tavole 2:1 su desktop e 1:1 su mobile portrait. La larghezza arriva a 1720 px e si riduce per rispettare lo spazio disponibile nella viewport. Titolo in basso, padding relativo, spaziatura estesa.
+Navigazione verticale circolare: **Studio → Services → Projects → LevelUp → Start → Studio**.
 
-## Correzioni
+## Interazione
 
-- Chevron sinistra/destra ai lati della tavola attiva, centrati in altezza, con aree cliccabili di almeno 44 px.
-- Touch swipe, click-and-drag da immagine o titolo, trackpad orizzontale e tastiera. Riconosciuti sia trascinamenti lunghi sia brevi flick; lo scroll verticale non cambia sezione. Dopo un drag il link non si apre accidentalmente.
-- Chevron inferiore grande con vertice a 90°: bracci a ±45°, SVG proporzionale, nessuna deformazione non uniforme.
-- Testo di base HTML stabile e overlay SVG separato per glow/reticolo. Il cursore aggiorna soltanto l’overlay; nessuna dissolvenza o ricostruzione ripetuta delle lettere.
-- Immagini prese esclusivamente da `nav.zip`. Nessuna nuova immagine generata. Tutti i 12 PNG originali sono conservati in `originals/`; le tavole usano 15 derivati WebP ottimizzati.
-- Rimossa la seconda immagine sfocata dietro ogni tavola. Una sola immagine riempie la card con ritaglio `cover`, senza alterarne le proporzioni.
-- URL delle scene determinati dal loro contenuto per evitare il riutilizzo di vecchie copie in cache.
+- Desktop: scroll verticale, trackpad, click e drag verticale; tastiera ↑ ↓, PageUp/PageDown, Home/End e spazio.
+- Mobile: swipe nativo up/down con scroll snap. Pinch zoom mantenuto.
+- Navbar: l’icona ambra indica la sezione attiva. Click/tap su un’icona seleziona la relativa slide.
+- Click/tap sulla tab, compreso il titolo, apre la pagina canonica. Ctrl/Cmd/middle-click mantengono il comportamento nativo del link.
+- Nessun chevron e nessun indicatore aggiuntivo.
 
-## Uso
+## Layout e immagini
 
-Le frecce laterali, il trascinamento e lo swipe selezionano le cinque sezioni in loop. Un clic su una tavola laterale la seleziona. Un clic sulla tavola attiva, sul titolo o sul chevron inferiore apre la pagina. La navbar apre direttamente la destinazione scelta. I link supportano anche tasto centrale e nuova scheda.
+La tab attiva ha **20% di inset su ciascun asse** a tutti i breakpoint: 20% della larghezza a sinistra/destra, 20% dell’altezza sopra/sotto. Occupa quindi 60vw × 60dvh. Logo e dock sono overlay fissi con safe area.
 
-| Sezione | Destinazione |
-|---|---|
-| Studio | https://mementostudio.it/studio |
-| Services | https://mementostudio.it/services |
-| Projects | https://mementostudio.it/projects |
-| LevelUp | https://mementostudio.it/levelup |
-| Start | https://mementostudio.it/start |
+Cinque nuove scene quadrate 1254 × 1254, con primo piano inferiore sfocato, in WebP a 480 / 768 / 1254 px. In portrait l’immagine square resta intera e si fonde nel fondo della tab; su wide si adatta in cover. Titolo ampio nella parte inferiore e sfumatura ambra continua a 135° verso il basso a destra.
 
-Frecce sinistra/destra, Home/End selezionano. Invio sul carosello apre la sezione. Indietro ripristina la selezione. L’uscita dura 380 ms; con movimento ridotto la navigazione è immediata.
+## VFX
 
-## Aggiornamento Vercel
+Un unico canvas condiviso disegna il reticolato monocromatico, più visibile ai margini. Il cursore attiva localmente ambra, bordi e trama interna molto discreta. Il range ha falloff graduale modulato da noise. I glifi mantengono la loro forma; wireframe e glow si applicano anche alle lettere vicine.
 
-Estrai lo ZIP e sostituisci i file alla root del repository di `mementonav`.
+Ogni touch genera un impulso irregolare, in espansione e dispersione per circa 1,45 s. Non blocca lo swipe. Reveal/dissolve con reticolato e piccoli frammenti triangolari accompagnano il passaggio delle sezioni e l’uscita dalla nav.
 
-| Impostazione | Valore |
-|---|---|
-| Root Directory | Root del repository, campo vuoto |
-| Framework Preset | Other |
-| Build Command | `npm run build` |
-| Output Directory | `dist` |
-| Node | 24.x |
+## Performance e accessibilità
 
-La configurazione è già inclusa in `vercel.json`. Non servono dipendenze npm o variabili d’ambiente. L’esportazione non aggiorna automaticamente il deployment pubblico.
+- Nessuna dipendenza runtime, nessun framework o CDN.
+- Icone del dock ridotte da 2,37 MB a 21,4 KB complessivi; font Inter Latin/Latin-1 a 98 KB.
+- Tutte le 15 varianti delle cover: 370,9 KB complessivi; le cinque versioni 768 px: 91,5 KB.
+- Immagini responsive, lazy load e priorità alla sezione iniziale/vicine.
+- Canvas a risoluzione limitata, 4 impulsi e 72 frammenti massimi; budget inferiore su pointer coarse.
+- Disegno sospeso a riposo e quando la pagina è nascosta.
+- `prefers-reduced-motion` disattiva propagazione e particelle; forced colors disattiva il campo.
+- Focus visibile, link reali, indicazione della sezione per screen reader, fallback senza JavaScript.
+
+## Vercel
+
+Estrarre lo ZIP e usare questa cartella come root del progetto.
+
+- Framework preset: Other
+- Build command: `npm run build`
+- Output directory: `dist`
+- Node: 20 o successivo
+- Nessuna variabile d’ambiente
+
+`vercel.json` è già incluso. Il build assegna una directory con hash alle immagini per evitare cover obsolete in cache. I link di destinazione restano su `https://mementostudio.it/studio`, `/services`, `/projects`, `/levelup`, `/start`.
 
 ## Verifica locale
 
 ```sh
-npm run check
 npm test
-npm run build
+npm run check
 npm run dev
 ```
 
-Preview sorgente: `http://localhost:5173`. Verifica responsive e monitor delle modifiche al titolo: `http://localhost:5173/scripts/qa.html`. Per servire la build: `node scripts/serve.mjs --dist --port 5174`.
-
-La build pubblica comprende solo `index.html`, `src/`, `assets/` e `navigation/`. Gli originali e il banco di prova restano esclusi dal deployment.
-
-La provenienza esatta delle immagini è in `docs/ASSET_MAPPING.json`; controlli effettuati e limiti sono in `docs/VERIFICA.md`.
+La pagina `/scripts/qa.html` del server di sviluppo permette di controllare tre viewport e gli impulsi touch. Il report è in `docs/QA.md`. Le pagine QA non sono incluse nel build pubblico.

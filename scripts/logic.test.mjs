@@ -1,37 +1,36 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {PAGES} from '../src/config.mjs';
-import {wrap,distance,readLocation,pageAddress} from '../src/logic.mjs';
-import {isHorizontalSwipe,swipeStep} from '../src/gesture.mjs';
-test('loop in both directions places every slide exactly once',()=>{
-  assert.equal(wrap(-1),4);assert.equal(wrap(5),0);
-  for(let i=-15;i<15;i++)assert.deepEqual(PAGES.map((_,j)=>distance(j,wrap(i))).sort(),[-1,-2,0,1,2].sort());
+import {wrap,readLocation,pageAddress} from '../src/logic.mjs';
+import {verticalIntent,dragDestination,slotAt,centerSlot,nearestSlot,isModified,shouldSuppressClick} from '../src/gesture.mjs';
+test('a complete forward and reverse loop preserves every page at both sentinel boundaries',()=>{
+ for(let n=-30;n<30;n++)assert.equal(wrap(n),wrap(n+5));
+ for(let n=0;n<15;n++){const centered=centerSlot(n);assert.ok(centered>=5&&centered<10);assert.equal(wrap(centered),wrap(n));}
+ assert.equal(nearestSlot(0,9),10);assert.equal(nearestSlot(4,5),4);
+ assert.equal(slotAt(843.75*8.99,843.75),9);assert.equal(slotAt(-30,844),0);assert.equal(slotAt(999999,844),14);
 });
-test('all canonical destinations and old selection links still select the correct slide',()=>{
-  for(const p of PAGES){assert.equal(readLocation(p.publicURL).page.id,p.id);assert.equal(readLocation(`/#${p.slug}`).page.id,p.id);assert.equal(readLocation(`/#${p.id}-content`).page.id,p.id);}
-  assert.equal(readLocation('/unknown').index,0);
+test('vertical mouse drags work in both directions across viewport heights; horizontal or tiny jitter does not claim the gesture',()=>{
+ assert.equal(verticalIntent(100,40),false);assert.equal(verticalIntent(3,-70),true);assert.equal(verticalIntent(0,7),false);
+ for(const h of [320,568,844,1080]){
+  assert.equal(dragDestination(7,-h*.2,700,h),8);
+  assert.equal(dragDestination(7,h*.2,700,h),6);
+  assert.equal(dragDestination(7,-24,30,h),8);
+  assert.equal(dragDestination(7,2,3,h),7);
+  assert.equal(dragDestination(7,-20,500,h),7);
+ }
 });
-test('direct navigation retains safe deep-link context and always uses the canonical origin',()=>{
-  const r=readLocation('/services?service=web&secret=x#web');
-  assert.equal(pageAddress(r.page,r.query,r.anchor),'https://mementostudio.it/services?service=web#web');
-  for(const p of PAGES)assert.equal(pageAddress(p),p.publicURL);
-  assert.equal(pageAddress(PAGES[0],'bad=x','#<script>'),PAGES[0].publicURL);
+test('scroll suppression blocks accidental click-through while normal and modified clicks retain their behavior',()=>{
+ assert.equal(shouldSuppressClick(100,200,false,false),true);
+ assert.equal(shouldSuppressClick(201,200,false,false),false);
+ assert.equal(shouldSuppressClick(201,200,true,false),true);
+ assert.equal(shouldSuppressClick(201,200,false,true),true);
+ for(const key of ['metaKey','ctrlKey','shiftKey','altKey'])assert.equal(isModified({button:0,[key]:true}),true);
+ assert.equal(isModified({button:1}),true);assert.equal(isModified({button:0}),false);
 });
-test('horizontal drag moves once in either direction on desktop and mobile',()=>{
-  for(const width of [360,390,1440,3440]){
-    assert.equal(swipeStep(-90,4,500,width),1);
-    assert.equal(swipeStep(90,-6,500,width),-1);
-  }
-});
-test('vertical scrolling, taps and short slow drags do not select a slide',()=>{
-  assert.equal(isHorizontalSwipe(8,2),false);
-  assert.equal(swipeStep(120,180,200,390),0);
-  assert.equal(swipeStep(20,1,400,390),0);
-  assert.equal(swipeStep(0,0,0,390),0);
-});
-test('a short deliberate flick works, small jitter and diagonal scroll do not',()=>{
-  assert.equal(swipeStep(-30,3,40,390),1);
-  assert.equal(swipeStep(30,3,40,390),-1);
-  assert.equal(swipeStep(-18,0,10,390),0);
-  assert.equal(swipeStep(-30,40,30,390),0);
+test('all established destinations, hash selections and deep-link context remain correct',()=>{
+ for(const p of PAGES){assert.equal(readLocation(p.publicURL).page.id,p.id);assert.equal(readLocation(`/#${p.slug}`).page.id,p.id);assert.equal(readLocation(`/#${p.id}-content`).page.id,p.id);assert.equal(pageAddress(p),p.publicURL);}
+ const r=readLocation('/services?service=web&secret=x#web');
+ assert.equal(pageAddress(r.page,r.query,r.anchor),'https://mementostudio.it/services?service=web#web');
+ assert.equal(pageAddress(PAGES[0],'bad=x','#<script>'),PAGES[0].publicURL);
+ assert.equal(readLocation('/unknown').index,0);
 });
