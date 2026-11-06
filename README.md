@@ -1,56 +1,85 @@
-# MEMENTO NAV · V6 VERTICAL
+# MEMENTO — Vertical NAV R3
 
-Navigazione verticale circolare: **Studio → Services → Projects → LevelUp → Start → Studio**.
+Navigazione realizzata da zero sul brief `MEMENTO_NAV_VERTICAL_3D_HANDOFF_R2`, con i cinque master consegnati. Solo il progetto NAV. HTML, CSS e moduli JavaScript nativi; nessuna dipendenza runtime o chiave API.
 
-## Interazione
+## Avvio
 
-- Desktop: scroll verticale, trackpad, click e drag verticale; tastiera ↑ ↓, PageUp/PageDown, Home/End e spazio.
-- Mobile: swipe nativo up/down con scroll snap. Pinch zoom mantenuto.
-- Navbar: l’icona ambra indica la sezione attiva. Click/tap su un’icona seleziona la relativa slide.
-- Click/tap sulla tab, compreso il titolo, apre la pagina canonica. Ctrl/Cmd/middle-click mantengono il comportamento nativo del link.
-- Nessun chevron e nessun indicatore aggiuntivo.
+Servire la cartella `dist` con un server HTTP. Per esempio, con Python installato:
 
-## Layout e immagini
+```sh
+python3 -m http.server 4173 --directory dist
+```
 
-La tab attiva ha **20% di inset su ciascun asse** a tutti i breakpoint: 20% della larghezza a sinistra/destra, 20% dell’altezza sopra/sotto. Occupa quindi 60vw × 60dvh. Logo e dock sono overlay fissi con safe area.
-
-Cinque nuove scene quadrate 1254 × 1254, con primo piano inferiore sfocato, in WebP a 480 / 768 / 1254 px. In portrait l’immagine square resta intera e si fonde nel fondo della tab; su wide si adatta in cover. Titolo ampio nella parte inferiore e sfumatura ambra continua a 135° verso il basso a destra.
-
-## VFX
-
-Un unico canvas condiviso disegna il reticolato monocromatico, più visibile ai margini. Il cursore attiva localmente ambra, bordi e trama interna molto discreta. Il range ha falloff graduale modulato da noise. I glifi mantengono la loro forma; wireframe e glow si applicano anche alle lettere vicine.
-
-Ogni touch genera un impulso irregolare, in espansione e dispersione per circa 1,45 s. Non blocca lo swipe. Reveal/dissolve con reticolato e piccoli frammenti triangolari accompagnano il passaggio delle sezioni e l’uscita dalla nav.
-
-## Performance e accessibilità
-
-- Nessuna dipendenza runtime, nessun framework o CDN.
-- Icone del dock ridotte da 2,37 MB a 21,4 KB complessivi; font Inter Latin/Latin-1 a 98 KB.
-- Tutte le 15 varianti delle cover: 370,9 KB complessivi; le cinque versioni 768 px: 91,5 KB.
-- Immagini responsive, lazy load e priorità alla sezione iniziale/vicine.
-- Canvas a risoluzione limitata, 4 impulsi e 72 frammenti massimi; budget inferiore su pointer coarse.
-- Disegno sospeso a riposo e quando la pagina è nascosta.
-- `prefers-reduced-motion` disattiva propagazione e particelle; forced colors disattiva il campo.
-- Focus visibile, link reali, indicazione della sezione per screen reader, fallback senza JavaScript.
+Aprire `http://localhost:4173`. I moduli ES richiedono HTTP: non aprire `index.html` con doppio click.
 
 ## Vercel
 
-Estrarre lo ZIP e usare questa cartella come root del progetto.
+Importare il contenuto dello ZIP in un repository o nel progetto Vercel dedicato alla NAV.
 
-- Framework preset: Other
-- Build command: `npm run build`
-- Output directory: `dist`
-- Node: 20 o successivo
-- Nessuna variabile d’ambiente
+- Framework preset: **Other**.
+- Root directory: la cartella che contiene questo file e `vercel.json`.
+- Build command: vuoto (nessuna build).
+- Output directory: **dist**.
+- Nessuna variabile d'ambiente.
 
-`vercel.json` è già incluso. Il build assegna una directory con hash alle immagini per evitare cover obsolete in cache. I link di destinazione restano su `https://mementostudio.it/studio`, `/services`, `/projects`, `/levelup`, `/start`.
+`vercel.json` contiene già la configurazione. Non è stato eseguito un deploy sul progetto Vercel esistente. La versione verificabile è una nuova anteprima separata.
 
-## Verifica locale
+## Comandi
+
+- Rotella verso il basso / swipe verso l'alto / freccia giù: sezione successiva.
+- Drag verticale con mouse o touch; snap al rilascio.
+- Chevron esterni, area 44 × 44 px.
+- La navbar seleziona la card, la card attiva apre la destinazione.
+- Click sulla secondaria: la porta al centro.
+- Frecce su/giù, PageUp/PageDown; Home/End selezionano prima/ultima.
+- Nella navbar, frecce sinistra/destra spostano il focus.
+- Ctrl/Cmd-click e click centrale mantengono il comportamento dei link.
+- Loop Studio → Services → Projects → LevelUp → Start → Studio. Nessun autoplay.
+
+## Destinazioni conservate
+
+Verificate nel sorgente del deploy `https://mementonav.vercel.app/src/config.mjs` il 6 novembre 2026.
+
+| Card | URL |
+|---|---|
+| Studio | https://mementostudio.it/studio |
+| Services | https://mementostudio.it/services |
+| Projects | https://mementostudio.it/projects |
+| LevelUp | https://mementostudio.it/levelup |
+| Start | https://mementostudio.it/start |
+
+Il wordmark apre `https://mementostudio.it/`. Le pagine di destinazione non sono incluse né modificate.
+
+## Struttura e regolazioni
+
+- `dist/src/config.mjs`: sezioni, URL e punto focale desktop delle immagini.
+- `dist/src/model.mjs`: proporzioni, proiezione/inversa, snap e geometria dello slider.
+- `dist/src/app.mjs`: coordinamento animazioni, input, stato, caricamento e uscita.
+- `dist/src/geometry.mjs`: triangolazione deterministica riutilizzata dagli FX.
+- `dist/src/field.mjs`: campo irregolare esterno, prossimità e impulsi touch.
+- `dist/src/card-fx.mjs`: materiale locale, bordi, glifi e costruzione distribuita.
+- `dist/src/style.css`: layout, forma, tipografia, focus e riduzione del movimento.
+- `dist/assets/scenes`: WebP 96/480/960/1254 px e fallback JPEG.
+- `dist/assets`: icone e wordmark esistenti, font Inter locale.
+
+Le card sono cinque nodi DOM permanenti. Titolo, superficie, immagine, materiale e bordi si trasformano insieme; nessuna sostituzione dell'immagine a metà swipe. Le immagini vengono decodificate prima del passaggio nitido, con fallback coerente e un solo tentativo alternativo JPEG.
+
+La scena mantiene un unico progresso continuo. La proiezione delle secondarie porta i bordi esterni verso l'utente. Le anteprime sono ritagliate dolcemente ai limiti della scena; sui viewport molto bassi lo spazio è riservato a card centrale, logo e controlli.
+
+Il campo globale è dietro superfici opache. Il materiale interno è indipendente e ritagliato. Le maschere di costruzione sono triangoli distribuiti della superficie reale. Le card già costruite si spostano intere.
+
+La risoluzione degli FX è limitata; gli FX a riposo delle secondarie sono memorizzati. La pagina nascosta sospende il ciclo. `prefers-reduced-motion` disabilita deriva continua e inclinazioni animate e semplifica i passaggi.
+
+Per una diagnostica locale aprire `/?qa=1`: l'attributo `data-qa` di `#hub` contiene dimensioni, immagini decodificate e campioni prestazionali. Non inserisce pannelli nell'esperienza.
+
+## Verifica
 
 ```sh
 npm test
-npm run check
-npm run dev
 ```
 
-La pagina `/scripts/qa.html` del server di sviluppo permette di controllare tre viewport e gli impulsi touch. Il report è in `docs/QA.md`. Le pagine QA non sono incluse nel build pubblico.
+Leggere `QA.md` per prove, misure e limiti. Il target 60 fps e il comportamento sui telefoni fisici non sono certificati da questa consegna.
+
+## Provenienza asset
+
+Immagini: cinque PNG master square allegati al brief, convertiti in formati web senza nuova generazione. Wordmark, icone e font: asset del deploy Memento esistente. Nessun caricamento di font o immagini da CDN terze durante l'uso.

@@ -1,50 +1,14 @@
-import {readFile,readdir,stat} from 'node:fs/promises';
-import {createHash} from 'node:crypto';
-import {execFileSync} from 'node:child_process';
-import path from 'node:path';
-import {fileURLToPath} from 'node:url';
 import assert from 'node:assert/strict';
-import {PAGES} from '../src/config.mjs';
-import {STATIONS,publicRouteURL} from '../navigation/core.mjs';
-const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
-const expected=['studio','services','projects','levelup','start'];
-assert.deepEqual(PAGES.map(p=>p.publicURL),expected.map(x=>'https://mementostudio.it/'+x));
-const hashes=[];let total=0;
-function webpSize(b){
- assert.equal(b.toString('ascii',0,4),'RIFF');assert.equal(b.toString('ascii',8,12),'WEBP');
- for(let i=12;i+8<b.length;){
-  const kind=b.toString('ascii',i,i+4),size=b.readUInt32LE(i+4),j=i+8;
-  if(kind==='VP8X')return [b.readUIntLE(j+4,3)+1,b.readUIntLE(j+7,3)+1];
-  if(kind==='VP8 ')return [b.readUInt16LE(j+6)&16383,b.readUInt16LE(j+8)&16383];
-  if(kind==='VP8L'){const v=b.readUInt32LE(j+1);return [(v&16383)+1,((v>>>14)&16383)+1];}
-  i+=8+size+(size%2);
- }throw Error('No WebP dimension header');
+import {layout,pose,project,unproject,relative,nearest,dragSnap,wrap} from '../dist/src/model.mjs';
+import {mesh} from '../dist/src/geometry.mjs';
+const sizes=[[2560,1080,2,1296,648],[1440,900,2,864,432],[834,1194,1,500.4,500.4],[390,844,.8,234,292.5],[844,390,2,468,234],[320,568,.8,192,240]];
+for(const [w,h,r,cw,ch]of sizes){const l=layout(w,h);assert.equal(l.ratio,r);assert.ok(Math.abs(l.width-cw)<.01);assert.ok(Math.abs(l.height-ch)<.01);assert.ok(l.width<=w*.6+.01&&l.height<=h*.6+.01);
+ for(const d of [-1,1]){const p=pose(d,l),top=project(0,0,p,l),bottom=project(0,l.height,p,l);assert.ok(d<0?top.z>bottom.z:bottom.z>top.z);const outer=d<0?top:bottom,inner=d<0?bottom:top;assert.ok(Math.abs(outer.x-l.cx)>Math.abs(inner.x-l.cx));assert.ok(Math.abs(inner.y-l.cy)>l.height/2+44);for(const [x,y]of [[0,0],[l.width*.2,l.height*.8],[l.width,l.height]]){const proj=project(x,y,p,l),local=unproject(proj.x,proj.y,p,l);assert.ok(Math.abs(local.x-x)<1e-6&&Math.abs(local.y-y)<1e-6);}}
 }
-for(const p of PAGES){
- for(const [suffix,size] of [['',1254],['-small',768],['-tiny',480]]){
-  const b=await readFile(path.join(root,'assets/images',p.image+suffix+'.webp'));total+=b.length;
-  assert.deepEqual(webpSize(b),[size,size]);assert.ok(b.length>1000&&b.length<220000);
-  if(!suffix)hashes.push(createHash('sha256').update(b).digest('hex'));
- }
-}
-assert.equal(new Set(hashes).size,5);assert.ok(total<1000000);
-async function scan(dir){for(const entry of await readdir(dir,{withFileTypes:true})){
- const p=path.join(dir,entry.name);if(entry.isDirectory())await scan(p);else if(/\.(mjs|js)$/.test(p)){
-  execFileSync(process.execPath,['--check',p]);
-  const src=await readFile(p,'utf8');for(const m of src.matchAll(/(?:from\s+|import\s*\()(['"])(\.[^'"]+)\1/g))assert.ok((await stat(path.resolve(path.dirname(p),m[2].split('?')[0]))).isFile());
- }
-}}
-await scan(path.join(root,'src'));await scan(path.join(root,'navigation'));
-assert.deepEqual(STATIONS.map(p=>publicRouteURL({id:p.id,view:'page'})),PAGES.map(p=>p.publicURL));
-const iconSource=await readFile(path.join(root,'navigation/icon-assets.mjs'),'utf8');
-for(const m of iconSource.matchAll(/new URL\('([^']+)'/g))assert.ok((await stat(path.resolve(root,'navigation',m[1].split('?')[0]))).size>1000);
-const html=await readFile(path.join(root,'index.html'),'utf8');
-for(const m of html.matchAll(/(?:href|src)="(\/(?:src|assets)\/[^"?#]+)"/g))assert.ok((await stat(path.join(root,m[1]))).isFile());
-const noChevron=text=>!/(previous-slide|next-slide|enter-link|slide-arrow)/.test(text);
-assert.equal(noChevron('<button id="next-slide">Next</button>'),false,'positive control');
-assert.equal(noChevron(html),true);assert.equal(noChevron(await readFile(path.join(root,'src/app.mjs'),'utf8')),true);
-const vercel=JSON.parse(await readFile(path.join(root,'vercel.json'),'utf8'));assert.equal(vercel.outputDirectory,'dist');assert.equal(vercel.buildCommand,'npm run build');
-execFileSync(process.execPath,['scripts/build.mjs'],{cwd:root,stdio:'pipe'});
-await scan(path.join(root,'dist/src'));
-const built=await readFile(path.join(root,'dist/src/app.mjs'),'utf8');assert.ok(/\/assets\/scenes-[a-f0-9]+\//.test(built));assert.ok(!built.includes('/assets/images/'));
-console.log(`RELEASE_ASSETS_OK — 15 square WebP variants, ${total} bytes, canonical links, modules and static build verified`);
+assert.equal(nearest(0,4),5);assert.equal(nearest(4,0),-1);assert.equal(relative(0,5),0);assert.equal(wrap(-1),4);
+for(let i=0;i<5;i++)for(let step=-50;step<=50;step++){const p=step/10;assert.ok(Math.abs(relative(i,p+5)-relative(i,p))<1e-10);}
+assert.equal(dragSnap(0,.3,.0),1);assert.equal(dragSnap(0,.05,0),0);assert.equal(dragSnap(0,-.06,-.6),-1);assert.equal(dragSnap(4,5,.8,true),4);
+const m=mesh(55,8,5);assert.ok(m.triangles.length>60);assert.deepEqual(m,mesh(55,8,5));let area=0;for(const tr of m.triangles){const[a,b,c]=tr.map(i=>m.points[i]);area+=Math.abs((b.x-a.x)*(c.y-a.y)-(b.y-a.y)*(c.x-a.x))/2;}assert.ok(Math.abs(area-1)<1e-9);
+// Positive control: reversed tilt must fail the outward-edge condition.
+const l=layout(1440,900),wrong={...pose(-1,l),angle:l.angle};assert.throws(()=>assert.ok(project(0,0,wrong,l).z>project(0,l.height,wrong,l).z));
+console.log('NAV_CONTRACT_VERIFIED',JSON.stringify({viewports:sizes.length,faces:m.triangles.length,area}));

@@ -1,24 +1,28 @@
 <!doctype html>
 <html lang="it">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#060708">
-  <meta name="description" content="Studio, servizi, progetti e nuove possibilità. Esplora l’universo Memento.">
-  <title>Memento — Studio di design & esperienze digitali</title>
-  <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
-  <link rel="preload" href="/assets/fonts/InterVariable.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="preload" href="/assets/scenes-c8fed5c48ef5/studio-small.webp" as="image" media="(max-width: 767px)">
-  <link rel="stylesheet" href="/src/styles.css">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#070809">
+<meta name="description" content="Studio di design & esperienze digitali. Cinque spazi, un unico universo. Esplora Memento.">
+<title>Memento — Studio di design & esperienze digitali</title>
+<link rel="icon" href="./assets/favicon.svg" type="image/svg+xml">
+<link rel="preload" href="./assets/fonts/InterVariable.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="./assets/scenes/studio-480.webp" as="image" media="(max-width:600px)">
+<link rel="stylesheet" href="./src/style.css">
 </head>
 <body>
-  <h1 class="sr-only">Memento — Studio di design & esperienze digitali</h1>
-  <main id="hub" class="hub">
-    <div id="viewport" class="viewport" tabindex="0" role="region" aria-label="Esplora Memento. Scorri in verticale per cambiare sezione."></div>
-    <canvas id="field" aria-hidden="true"></canvas>
-    <p id="announcement" class="sr-only" role="status" aria-live="polite" aria-atomic="true"></p>
-  </main>
-  <noscript><nav class="fallback" aria-label="Sezioni Memento"><a href="https://mementostudio.it/studio">Studio</a><a href="https://mementostudio.it/services">Services</a><a href="https://mementostudio.it/projects">Projects</a><a href="https://mementostudio.it/levelup">LevelUp</a><a href="https://mementostudio.it/start">Start</a></nav></noscript>
-  <script type="module" src="/src/app.mjs"></script>
+<h1 class="sr-only">Memento — Studio di design & esperienze digitali</h1>
+<canvas id="field" aria-hidden="true"></canvas>
+<header class="masthead"><a id="wordmark" href="https://mementostudio.it/" aria-label="Memento — Homepage"></a></header>
+<main id="hub" tabindex="-1" aria-label="Esplora Memento" aria-roledescription="carosello">
+ <div class="scene-window"><div id="scene" class="scene"></div></div>
+ <button id="previous" class="chevron previous" aria-label="Sezione precedente"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 15 7-7 7 7"/></svg></button>
+ <button id="next" class="chevron next" aria-label="Sezione successiva"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 9 7 7 7-7"/></svg></button>
+ <p class="sr-only" id="status" aria-live="polite" aria-atomic="true"></p>
+</main>
+<footer class="footer"><nav id="dock" aria-label="Sezioni Memento"></nav><p class="gesture-hint" aria-hidden="true">SCORRI PER ESPLORARE</p></footer>
+<noscript><nav class="fallback" aria-label="Sezioni Memento"><a href="https://mementostudio.it/studio">Studio</a><a href="https://mementostudio.it/services">Services</a><a href="https://mementostudio.it/projects">Projects</a><a href="https://mementostudio.it/levelup">LevelUp</a><a href="https://mementostudio.it/start">Start</a></nav></noscript>
+<script type="module" src="./src/app.mjs"></script>
 </body>
 </html>

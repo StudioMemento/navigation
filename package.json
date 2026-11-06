@@ -1,6 +1,1 @@
-{
-  "name":"memento-vertical-nav", "version":"6.0.0", "private":true, "type":"module",
-  "description":"Memento — vertical scroll navigation with a shared interactive field",
-  "scripts":{"build":"node scripts/build.mjs","test":"node --test scripts/logic.test.mjs","check":"node scripts/verify.mjs","dev":"node scripts/serve.mjs"},
-  "engines":{"node":">=20"}
-}
+{"name":"memento-nav-vertical-r3","version":"1.0.0","private":true,"type":"module","scripts":{"test":"node scripts/verify.mjs && node scripts/verify-artifact.mjs"}}
