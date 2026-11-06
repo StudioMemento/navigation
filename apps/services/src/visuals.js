@@ -82,7 +82,7 @@ export function enhanceVisuals() {
     rimActive = false;
     start?.classList.remove('is-rim-lit');
   }
-  if (start && root.dataset.vfx !== 'on') {
+  if (start) {
     rim = svgNode('svg', { class: 'start-rim', 'aria-hidden': 'true', focusable: 'false' });
     const defs = svgNode('defs', {});
     gradient = svgNode('radialGradient', {

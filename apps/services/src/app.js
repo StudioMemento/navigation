@@ -3,7 +3,6 @@ import { getItem, cover, categories, grid, dots } from './render.js';
 import { Carousel, bindDots } from './carousel.js';
 import { createDialogs } from './dialogs.js';
 import { enhanceVisuals } from './visuals.js';
-import { startVFX } from './vfx.js';
 
 const $ = (selector) => document.querySelector(selector);
 const announce = (text) => {
@@ -58,6 +57,5 @@ $('.catalogue-filters').addEventListener('click', (event) => {
 });
 renderCatalogue();
 $('#start-link').href = catalogue.config.startUrl;
-dialogs.route();
-try { startVFX(); } catch (error) { window.__mementoFXBoot?.release(); console.warn('VFX unavailable; base page restored.', error); }
 enhanceVisuals();
+dialogs.route();

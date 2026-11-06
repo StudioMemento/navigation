@@ -1615,21 +1615,3 @@ html[data-overlay-scrollbar='true']::-webkit-scrollbar {
     background: Highlight;
   }
 }
-
-/* The base DOM is visible. Bootstrap is time limited and independent of the renderer. */
-html[data-fx-boot] #memento-catalogo { opacity: 0; }
-.memento-fx { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 180; pointer-events: none !important; contain: strict; }
-.memento-fx-defs { position: absolute; width: 0; height: 0; overflow: hidden; pointer-events: none; }
-html[data-vfx='on'] .category-heading { animation: none !important; }
-html[data-vfx='on'] .start-rim { display: none; }
-html[data-vfx='on'] .service-title { transition: none; }
-.fx-masked { mask-image: var(--fx-mask); mask-mode: alpha; mask-repeat: no-repeat; -webkit-mask-image: var(--fx-mask); -webkit-mask-repeat: no-repeat; }
-.fx-masked:focus-within, .fx-masked.fx-readable { mask-image: none !important; -webkit-mask-image: none !important; }
-html[data-vfx='off'] .fx-masked { mask-image: none !important; -webkit-mask-image: none !important; }
-@media (prefers-reduced-motion: reduce), (forced-colors: active) {
-  html[data-fx-boot] #memento-catalogo { opacity: 1; }
-  .fx-masked { mask-image: none !important; -webkit-mask-image: none !important; }
-  .memento-fx { display: none; }
-}
-
-.fx-empty { pointer-events: none !important; }

@@ -1,16 +1,10 @@
-# Memento Servizi — V42 · Navbar e overlay
+# Memento Servizi — V43 · Navbar e overlay, base V40
 
-Navbar, logo Memento e blur progressivo superiore/inferiore del pacchetto `NAV_OVERLAY.zip` integrati nella pagina Servizi V41. Il kit V12 è copiato integralmente, con Services attivo in ambra, collegamenti canonici, target da 48 px e proporzioni condivise fra desktop e mobile. La build include `navigation/`.
+La V43 integra navbar V12, logo originale e blur progressivo del file `NAV_OVERLAY.zip` sulla V40 precedente al VFX Pass. Services è attivo in ambra. Il VFX Pass delle V41/V42 non è incluso: sono assenti renderer, bootstrap, maschere e stili introdotti con quel pass.
 
-Gli spazi iniziale e finale proteggono il contenuto dal dock e dalle fasce sfocate. Il link per saltare al catalogo resta sopra l'overlay. La navigazione è montata direttamente nel body, fuori dalle superfici filtrate della pagina; i dialoghi nativi mantengono il focus e il livello superiore.
+L'applicazione, le immagini, il bootstrap di pagina e l'helper iframe sono quelli originali della V40, confrontati byte per byte. Le animazioni e le interazioni già presenti nella V40 restano quelle della base. Lo spazio iniziale e finale e lo skip link sono adattati alla navigazione fissa.
 
-Leggi `NAV_OVERLAY.md` per integrazione, verifiche e comportamento in iframe. I 531 file originali in `src/` e `assets/` sono invariati rispetto alla V41.
-
-## Base V41 · VFX PASS
-
-VFX PASS applicato alla base V40. Interazione di prossimità condivisa, contorni e materia triangolare sui glifi reali, bordo sottile sulle card, materializzazione iniziale e dissoluzione reversibile ai margini del viewport. Contenuti e asset fotografici restano quelli della V40.
-
-Leggi `VFX_PASS.md` per configurazione, verifiche eseguite e limiti. I controlli della precedente V40 descritti più sotto non costituiscono una nuova certificazione browser della V41.
+Leggere `NAV_OVERLAY_V43.md` per i dettagli dell'integrazione e della verifica.
 
 Rifinitura dei popup, degli stati colore e della tavola dei servizi inclusi, sulla base unificata delle versioni precedenti.
 
@@ -45,12 +39,8 @@ Su Vercel il file `vercel.json` imposta preset Other, nessuna installazione, com
 | `src/carousel.js` | Posizione, gesto orizzontale, trackpad, tastiera, animazione e caricamento delle immagini vicine. |
 | `src/dialogs.js` | Apertura/chiusura, hash, ritorno al bundle, focus, blocco viewport e bozza email. |
 | `src/visuals.js` | Luce perimetrale Start, comparsa dei titoli, indicatore di scroll. |
-| `src/vfx.js` | Renderer condiviso, cache dei glifi, maschere triangolari e lifecycle. |
-| `src/fx-config.js` | Raggio, durata, smoothing, densità e budget. |
-| `src/fx-math.js` | Campo viewport e topologia deterministica. |
 | `src/app.js` | Montaggio della pagina e filtro Digitale/Fisico. |
 | `bootstrap.js` | Superficie trasparente in iframe, handshake con il parent e proporzioni prima del primo paint e regola del menu contestuale. |
-| `navigation/` | Kit V12 originale: navbar, logotipo, blur, asset e bridge con l'hub. |
 | `styles.css` | Fondamenti, card, caroselli, pagina, dialoghi, CTA e accessibilità. |
 | `memento-services-host.js` | Helper opzionale da caricare nel documento che ospita l’iframe. |
 
@@ -68,7 +58,7 @@ I nomi `v28`, `v29` e `v34` negli asset identificano fotografie già approvate, 
 
 ## Embed
 
-La navigazione locale è visibile nella pagina autonoma. In un iframe con host compatibile, il messaggio `INIT` del bridge Memento V2 la nasconde e la navigazione resta al parent. Senza handshake, dopo 1,2 secondi appare il kit locale con link nel documento superiore. Gli overlay Framer esterni privi di bridge non vengono rilevati automaticamente: evitare di caricare due navigazioni sulla stessa pagina.
+La navbar locale è visibile in standalone. In un iframe con handshake Memento V2 compatibile si nasconde e la navigazione è gestita dal parent. Senza handshake compare dopo 1,2 secondi con destinazioni nel documento superiore. Evitare un secondo overlay esterno Framer privo di bridge sopra quello integrato.
 
 La pagina rileva se si trova in un iframe e lascia trasparente il proprio sfondo. Per il blur del documento ospitante, mantieni l’helper nel parent e marca l’iframe:
 
