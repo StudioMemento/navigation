@@ -1,6 +1,6 @@
 {
   "project": "Memento Studio 3D",
-  "sourceCommit": "cc86cc141f5e0e274912ee5679cbaf39dd4f3a71",
+  "sourceCommit": "06206b2d3146c28a24e9715dc7bd6128886d3a58",
   "date": "2026-11-06",
   "runtimeMatchesPublished": true,
   "counts": {
@@ -11,12 +11,14 @@
     "camera": 20
   },
   "checks": {
-    "catalog": "passed",
-    "integration": "passed",
-    "navigation": "passed",
-    "model": "passed",
-    "desktopBrowser": "28 shaders, 34 lights, 20 shots reviewed before final pipeline/density optimizations",
-    "mobileBrowser": "390x844 DOM fits, three 60x60 targets; final render interrupted when connected browser became unavailable"
+    "overlayKit": "24 passed",
+    "studioIntegration": "passed including asset hashes",
+    "responsiveLayout": "320x568, 390x844, 844x390, 1440x900; no overlap or overflow",
+    "keyboard": "ArrowRight focuses Services from Studio",
+    "render3D": "Unverified: WebGL disabled in QA browser; runtime/assets unchanged"
   },
-  "previewNote": "Actual Graphite review screenshot; final lighting/shader result varies with slot selection."
+  "previewNote": "Overlay and layout checked separately with real HTML/CSS in temporary fixtures, excluded from deliverables.",
+  "overlayVersion": "12.0.0",
+  "previewURL": "https://memento-studio-atelier.memento-studio.chatgpt.site",
+  "baseCommit": "c16a73e5b59324851b9f4d0616baa1d769f9e514"
 }

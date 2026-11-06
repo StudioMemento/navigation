@@ -1,10 +1,18 @@
-# Memento / Studio — Cinematic Slots
+# Memento / Studio — Cinematic Slots + Navbar Overlay
 
 Esperienza isolata dello Studio 3D. Gli altri siti Memento e le destinazioni dei link sono invariati.
 
 ## Vercel
 
 Il sito compilato è in `dist/`. Estrarre lo ZIP, scegliere preset **Other**, output **dist**, installazione e build disabilitate come nel `vercel.json` incluso. Nessuna chiave o variabile d'ambiente. Per sviluppo: `npm ci`, `node scripts/build.mjs`, poi un server statico su `dist/`.
+
+## Navbar, logo e blur — V12
+
+Integrato il kit `O V E R L A Y(4).zip`: wordmark superiore, navbar inferiore con Studio attivo e blur progressivo trasparente sui bordi superiore e inferiore. I link puntano alle sei destinazioni canoniche `https://mementostudio.it/`, `/studio`, `/services`, `/projects`, `/levelup`, `/start`.
+
+Il vecchio logo in alto a sinistra è rimosso. I comandi Camera / Lighting / Shader rimangono sopra la navbar e nitidi; su mobile le azioni in alto restano sotto il wordmark. Il joystick ha spazio dedicato. La scena continua a occupare l'intera viewport. Il bootstrap è unico e conserva il bridge del kit: un contenitore compatibile può nascondere l'overlay del figlio. Escape chiude prima focus/vista interna dello Studio.
+
+Dettagli e limiti della verifica: `docs/NAV_OVERLAY.md`.
 
 ## Interazione
 

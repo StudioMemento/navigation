@@ -3,10 +3,11 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#000000">
 <title>Memento / Studio</title><meta name="description" content="Studio Memento. Un’esperienza di materia, luce e movimento.">
 <link rel="stylesheet" href="./style.css">
+<link rel="stylesheet" href="./studio-overlay.css?v=12.0.0">
 </head><body>
-<main id="experience" aria-label="Studio Memento interattivo">
+<main id="experience" aria-label="Studio Memento interattivo" data-memento-gesture-lock>
 <canvas id="scene" aria-label="Studio 3D. Trascina per esplorare, doppio clic per il fuoco, Escape per tornare alla vista isometrica." tabindex="0"></canvas>
-<header class="masthead"><a class="brand icon-button" href="https://mementostudio.it" aria-label="Memento Studio"><svg viewBox="0 0 32 24" aria-hidden="true"><path d="M3 20V4l7 9 6-9 6 9 7-9v16"/></svg></a><div class="header-actions"><button id="exit" class="icon-button" aria-label="Torna alla vista isometrica" hidden></button><button id="focus-close" class="icon-button" aria-label="Esci dal fuoco" hidden></button><button id="motion" class="icon-button" aria-label="Metti in pausa le animazioni" aria-pressed="false"></button></div></header>
+<header class="masthead"><div class="header-actions"><button id="exit" class="icon-button" aria-label="Torna alla vista isometrica" hidden></button><button id="focus-close" class="icon-button" aria-label="Esci dal fuoco" hidden></button><button id="motion" class="icon-button" aria-label="Metti in pausa le animazioni" aria-pressed="false"></button></div></header>
 <div id="loading" role="status" aria-label="Caricamento dello studio"><div class="loader-orbit" aria-hidden="true"></div><div class="load-track" aria-hidden="true"><i id="load-bar"></i></div></div>
 <div id="error" hidden role="alert"><button id="retry" class="studio-tool" aria-label="Riprova a caricare lo studio"></button></div>
 <div id="controls" hidden><div class="dock"><div class="control-bar" role="group" aria-label="Controlli casuali dello studio">
@@ -17,4 +18,6 @@
 <div id="joystick" role="group" aria-label="Movimento touch"><div id="stick" role="button" tabindex="0" aria-label="Joystick: trascina per muoverti"><i id="stick-knob"></i></div></div>
 </div><span id="status" class="sr-only" aria-live="polite"></span>
 </main><script type="module" src="./app.bundle.js"></script>
+<script type="module" src="./studio-overlay.mjs?v=12.0.0"></script>
+<script defer src="./navigation/bootstrap.js?v=12.0.0" data-memento-page="memento" data-memento-hub="https://mementostudio.it"></script>
 </body></html>

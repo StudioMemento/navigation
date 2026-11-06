@@ -22,5 +22,5 @@ Scope: Replace the Studio controls with three random slots; port all 22 Atlas sh
 - [ ] G4: Browser review confirms all shader modes compile and the controls, 34 lights, cinematic framing, displays and black background work on desktop and mobile.
   EVIDENCE: Browser revision 0b1d292b: 28/28 shader slots, 34/34 lighting slots and 20/20 camera slots reached, screenshots acquired, no WebGL errors. Final responsive DOM at 390x844: no horizontal overflow; three 60x60 targets; no visible copy. Browser tab disappeared during loading, then the connected browser stopped responding. Final mobile render and post-optimization visual regression remain unverified.
 
-- [ ] G5: Same Studio publication succeeds and matching Vercel ZIP is CRC checked, persisted and linked.
-  EVIDENCE: pending
+- [x] G5: Same Studio publication succeeds and matching Vercel ZIP is CRC checked, persisted and linked.
+  EVIDENCE: Published cc86cc141f5e0e274912ee5679cbaf39dd4f3a71 to the same owner-private Studio. Vercel ZIP: 25,019,212 bytes, 52 files, CRC passed, every dist file byte-matches published source. SHA256 e02d95a4d14d7ce4ef48c2457be36c5c8949c3694e131ad1e1ca2d0d51be2d8a. Saved successfully as Library file libfile_83733561c0f48191bc2a7064f798f340 version 4; returned byte count matches.

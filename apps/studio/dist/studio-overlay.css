@@ -1,0 +1,13 @@
+/* Keep Studio controls clear of the shared Memento V12 overlay. */
+#experience { isolation: auto; }
+.masthead { z-index: 1001; justify-content: flex-end; }
+#controls { z-index: 1001; }
+.dock { bottom: calc(90px + env(safe-area-inset-bottom, 0px)); }
+#joystick { bottom: calc(174px + env(safe-area-inset-bottom, 0px)); }
+
+@media (max-width: 700px) {
+  .masthead { top: max(68px, calc(env(safe-area-inset-top, 0px) + 60px)); }
+}
+@media (max-height: 560px) {
+  #joystick { left: max(20px, env(safe-area-inset-left, 0px)); right: auto; }
+}
