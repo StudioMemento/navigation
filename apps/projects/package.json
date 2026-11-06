@@ -1,0 +1,10 @@
+{
+  "name": "memento-portfolio-nav-overlay",
+  "version": "41.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node release/build.mjs",
+    "verify": "node release/verify-v40.mjs"
+  }
+}

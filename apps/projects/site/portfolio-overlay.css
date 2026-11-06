@@ -1,0 +1,46 @@
+/* Portfolio V41: spacing for the supplied Memento overlay V12. */
+html[data-memento-navigation="standalone"] {
+  --portfolio-overlay-top: max(76px, calc(env(safe-area-inset-top, 0px) + 60px));
+}
+html[data-memento-navigation="standalone"] #viewport {
+  scroll-padding-top: var(--portfolio-overlay-top);
+  scroll-padding-bottom: max(96px, calc(env(safe-area-inset-bottom, 0px) + 80px));
+}
+html[data-memento-navigation="standalone"] .catalogue {
+  padding-top: var(--portfolio-overlay-top);
+}
+html[data-memento-navigation="standalone"] .project-nav {
+  z-index: 1001;
+  background: transparent;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+html[data-memento-navigation="standalone"] .catalogue-back {
+  text-shadow: 0 1px 12px #000;
+}
+html[data-memento-navigation="standalone"] .skip-link {
+  z-index: 1002;
+}
+@media (max-width: 767px) {
+  html[data-memento-navigation="standalone"] {
+    --portfolio-back-top: max(60px, calc(env(safe-area-inset-top, 0px) + 44px));
+  }
+  html[data-memento-navigation="standalone"] .project-nav {
+    top: var(--portfolio-back-top);
+    height: 54px;
+    padding-top: 5px;
+  }
+  html[data-memento-navigation="standalone"] .project-station {
+    padding-top: calc(var(--portfolio-back-top) + 70px);
+  }
+  html[data-memento-navigation="standalone"] .scroll-cue {
+    z-index: 1001;
+    bottom: calc(82px + env(safe-area-inset-bottom, 0px));
+  }
+  html[data-memento-navigation="standalone"] .project-finish {
+    padding-bottom: calc(160px + env(safe-area-inset-bottom, 0px));
+  }
+  html[data-memento-navigation="standalone"] #viewport {
+    scroll-padding-bottom: calc(144px + env(safe-area-inset-bottom, 0px));
+  }
+}
