@@ -13,8 +13,8 @@ export async function verifyAssets(base){
  for(const item of [...benefits,...experiences])refs.push(item.asset,item.asset.replace('.webp','-640.webp'));
  for(const item of visions)refs.push(item.before,item.after,item.before.replace('.webp','-640.webp'),item.after.replace('.webp','-640.webp'));
  for(const item of steps)refs.push(item.asset,item.asset.replace('.webp','-768.webp'));
- for(const ref of new Set(refs))await access(join(base,ref));
- for(const name of await readdir(join(base,'src'))){const text=await readFile(join(base,'src',name),'utf8');for(const m of text.matchAll(/from ['"](.+?)['"]/g))await access(resolve(base,'src',m[1]));}
+ for(const ref of new Set(refs))await access(join(base,ref.split(/[?#]/)[0]));
+ for(const entry of await readdir(join(base,'src'),{withFileTypes:true})){if(!entry.isFile())continue;const text=await readFile(join(base,'src',entry.name),'utf8');for(const m of text.matchAll(/from ['"](.+?)['"]/g))await access(resolve(base,'src',m[1]));}
  // Walk the self-contained cinematic module: CSS textures, font, static/dynamic imports.
  async function verifyModule(directory){
   for(const entry of await readdir(directory,{withFileTypes:true})){

@@ -16,8 +16,8 @@ test('V15 preserves the existing catalogue and the requested sequence', () => {
 
 test('The standalone navigation initializes once as LevelUp and every module and icon resolves in the build', async () => {
   const html=await readFile('dist/index.html','utf8');
-  assert.equal((html.match(/src="navigation\/bootstrap.js"/g)||[]).length,1);
-  assert.match(html,/src="navigation\/bootstrap.js" data-memento-page="levelup"/);
+  assert.equal((html.match(/src="\/navigation\/bootstrap\.js\?v=12\.0\.0"/g)||[]).length,1);
+  assert.match(html,/src="\/navigation\/bootstrap\.js\?v=12\.0\.0"\s+data-memento-page="levelup"/);
   const modules=(await readdir('dist/navigation')).filter(name=>/\.(mjs|js)$/.test(name));
   for(const name of modules) {
     const file=resolve('dist/navigation',name),text=await readFile(file,'utf8');

@@ -8,7 +8,6 @@
   <title>LevelUp — Memento Design Studio</title>
   <script src="bootstrap.js"></script>
   <script src="tide-child-bridge.js" data-tide-block-selector="html[data-demo-expanded=true]" defer></script>
-  <script src="navigation/bootstrap.js" data-memento-page="levelup" defer></script>
   <link rel="preload" href="assets/fonts/InterVariable.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="assets/v14/web.webp" as="image" imagesrcset="assets/v14/web-640.webp 640w, assets/v14/web.webp 1280w" imagesizes="(max-width:767px) 90vw, 60vw" fetchpriority="high">
   <link rel="stylesheet" href="ready-to-start/ready-to-start.css">
@@ -72,5 +71,8 @@
   </main>
   <p class="sr-only" id="announcement" aria-live="polite" aria-atomic="true"></p>
   <noscript><p class="no-script">Attiva JavaScript per provare le esperienze. <a href="https://mementostudio.it/start" target="_top">Contatta Memento</a>.</p></noscript>
+  <script defer src="/navigation/bootstrap.js?v=12.0.0"
+    data-memento-page="levelup"
+    data-memento-hub="https://mementostudio.it"></script>
 </body>
 </html>
