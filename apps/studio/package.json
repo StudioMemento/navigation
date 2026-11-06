@@ -13,8 +13,5 @@
   },
   "devDependencies": {
     "esbuild": "0.25.10"
-  },
-  "scripts": {
-    "build": "node scripts/build.mjs"
   }
 }

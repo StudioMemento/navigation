@@ -1,0 +1,8 @@
+{
+  "sourceCommit": "14d2f671117b221657a94d4c717018ee18f15d13",
+  "assets": {
+    "studio-v4-desktop.glb.gz": "1b04512542fb74fabfb7e5829299e084e0c458704f067952a925f70e706d1cd4",
+    "studio-v4-mobile.glb.gz": "3e217c848cd743c38924a63d5e2bb2ef1b9bae155f1ceb1104dc432d9cf0a858",
+    "navigation-grid.json": "ecb7d85c0bb642250c6557efd284e38a44537890b7ad0632a0282a6877074c6b"
+  }
+}

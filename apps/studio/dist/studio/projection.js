@@ -26,4 +26,4 @@ export function setStudioRay(raycaster,pointer,camera){
  raycaster.ray.direction.copy(farPoint).sub(raycaster.ray.origin).normalize();
 }
 
-export function exteriorFrameFactor(aspect){return Math.max(1,1.40/aspect);}
+export function exteriorFrameFactor(aspect){return Math.max(aspect>1.3&&aspect<=2?1.20:1,1.40/aspect);}

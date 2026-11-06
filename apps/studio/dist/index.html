@@ -1,28 +1,20 @@
 <!doctype html>
 <html lang="it"><head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#080b11">
-<title>Memento / Studio — Materia viva</title><meta name="description" content="Uno studio, infinite forme. Esplora Memento tra nuvole, luce e quindici universi animati.">
-<link rel="preload" href="./assets/inter-regular.woff2" as="font" type="font/woff2" crossorigin><link rel="stylesheet" href="./style.css">
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#000000">
+<title>Memento / Studio</title><meta name="description" content="Studio Memento. Un’esperienza di materia, luce e movimento.">
+<link rel="stylesheet" href="./style.css">
 </head><body>
 <main id="experience" aria-label="Studio Memento interattivo">
-<canvas id="scene" aria-label="Studio 3D. Trascina per esplorare. Doppio clic per mettere a fuoco. Esc per tornare all’esterno." tabindex="0"></canvas>
-<header class="masthead"><a class="brand" href="https://mementostudio.it" aria-label="Memento Studio">MEMENTO <span>/ STUDIO</span></a><div class="header-actions"><button id="exit" class="exit-button" hidden>Esci dallo studio <span aria-hidden="true">↗</span></button><button id="motion" class="icon-button" aria-label="Metti in pausa le animazioni" aria-pressed="false"></button></div></header>
-<div id="loading" role="status" aria-live="polite"><span class="loader-word">MEMENTO</span><span class="loader-sub">UNO SPAZIO. INFINITE FORME.</span><div class="load-track"><i id="load-bar"></i></div><span id="load-percent">0%</span></div>
-<div id="error" hidden role="alert"><p id="error-message"></p><button id="retry" class="cut-button">Riprova</button></div>
-<div id="focus-card" class="cut-surface" hidden><span id="focus-name"></span><button id="focus-close" class="icon-button" aria-label="Esci dal fuoco"></button></div>
-<div id="controls" hidden>
-<section id="shot-caption" class="shot-caption" aria-label="Inquadratura attuale"><div class="caption-leader" aria-hidden="true"><svg viewBox="0 0 150 32"><path d="M1 31h88l28-28h31"/><circle cx="148" cy="3" r="2"/></svg><div class="caption-fragments"></div></div><p id="shot-index" class="eyebrow">00 / MEMENTO STUDIO</p><h1 id="shot-title">Lo spazio delle idee.</h1><p id="shot-copy">Uno studio. Infinite forme.</p><div class="entry"><button id="enter" class="cut-button">Entra nello studio <span aria-hidden="true">↗</span></button></div></section>
-<div id="dock" class="dock">
-<div id="view-panel" class="control-panel cut-surface" hidden><div class="panel-head"><span>Esplora lo studio</span><button class="close-panel icon-button" aria-label="Chiudi inquadrature"></button></div><nav id="views" aria-label="Inquadrature dello studio"></nav></div>
-<div id="light-panel" class="control-panel cut-surface" hidden><div class="panel-head"><span>Le tue luci</span><button class="close-panel icon-button" aria-label="Chiudi luci"></button></div><div id="light-options"></div><p class="panel-note">Puoi accenderle anche con un tocco sulla fonte.</p></div>
-<div id="shader-panel" class="control-panel fx-panel cut-surface" hidden><div class="panel-head"><span>15 forme di Memento</span><button class="close-panel icon-button" aria-label="Chiudi shader FX"></button></div><div id="shader-options" class="shader-grid"></div></div>
-<div class="control-bar cut-surface">
-<div class="shot-controls"><button id="previous-view" class="icon-button" aria-label="Inquadratura precedente"></button><button id="views-toggle" aria-label="Scegli inquadratura" aria-controls="view-panel" aria-expanded="false"><span id="view-current">Inquadrature</span></button><button id="next-view" class="icon-button" aria-label="Inquadratura successiva"></button></div><span class="divider"></span>
-<button id="day" class="tool-button" aria-label="Attiva giorno" aria-pressed="false"></button><span class="divider"></span><button id="shaders" class="tool-button fx-toggle" aria-label="Scegli shader FX" aria-controls="shader-panel" aria-expanded="false"></button><span class="divider"></span><button id="lights" class="icon-button" aria-label="Luci" aria-controls="light-panel" aria-expanded="false"></button>
-</div>
-<p class="move-hint"><span class="desktop-hint">Trascina per esplorare <i>·</i> Doppio clic: fuoco <i>·</i> <span class="walk-hint">W A S D: muoviti <i>·</i> Esc: esci</span><span class="orbit-hint">Scroll: avvicinati</span></span><span class="touch-hint">Trascina per esplorare · Doppio tocco: fuoco</span></p>
-</div>
-<div id="joystick" role="group" aria-label="Movimento touch"><div id="stick" role="button" tabindex="0" aria-label="Joystick: trascina per muoverti"><span aria-hidden="true">+</span><i id="stick-knob"></i></div></div>
+<canvas id="scene" aria-label="Studio 3D. Trascina per esplorare, doppio clic per il fuoco, Escape per tornare alla vista isometrica." tabindex="0"></canvas>
+<header class="masthead"><a class="brand icon-button" href="https://mementostudio.it" aria-label="Memento Studio"><svg viewBox="0 0 32 24" aria-hidden="true"><path d="M3 20V4l7 9 6-9 6 9 7-9v16"/></svg></a><div class="header-actions"><button id="exit" class="icon-button" aria-label="Torna alla vista isometrica" hidden></button><button id="focus-close" class="icon-button" aria-label="Esci dal fuoco" hidden></button><button id="motion" class="icon-button" aria-label="Metti in pausa le animazioni" aria-pressed="false"></button></div></header>
+<div id="loading" role="status" aria-label="Caricamento dello studio"><div class="loader-orbit" aria-hidden="true"></div><div class="load-track" aria-hidden="true"><i id="load-bar"></i></div></div>
+<div id="error" hidden role="alert"><button id="retry" class="studio-tool" aria-label="Riprova a caricare lo studio"></button></div>
+<div id="controls" hidden><div class="dock"><div class="control-bar" role="group" aria-label="Controlli casuali dello studio">
+<button id="views-toggle" class="studio-tool" aria-label="Camera casuale" disabled></button>
+<button id="lights" class="studio-tool" aria-label="Lighting casuale" disabled></button>
+<button id="shaders" class="studio-tool" aria-label="Shader casuale" data-active="10" disabled></button>
+</div></div>
+<div id="joystick" role="group" aria-label="Movimento touch"><div id="stick" role="button" tabindex="0" aria-label="Joystick: trascina per muoverti"><i id="stick-knob"></i></div></div>
 </div><span id="status" class="sr-only" aria-live="polite"></span>
 </main><script type="module" src="./app.bundle.js"></script>
 </body></html>

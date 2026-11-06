@@ -1,0 +1,22 @@
+{
+  "project": "Memento Studio 3D",
+  "sourceCommit": "cc86cc141f5e0e274912ee5679cbaf39dd4f3a71",
+  "date": "2026-11-06",
+  "runtimeMatchesPublished": true,
+  "counts": {
+    "shaders": 28,
+    "atlas": 22,
+    "new": 6,
+    "lighting": 34,
+    "camera": 20
+  },
+  "checks": {
+    "catalog": "passed",
+    "integration": "passed",
+    "navigation": "passed",
+    "model": "passed",
+    "desktopBrowser": "28 shaders, 34 lights, 20 shots reviewed before final pipeline/density optimizations",
+    "mobileBrowser": "390x844 DOM fits, three 60x60 targets; final render interrupted when connected browser became unavailable"
+  },
+  "previewNote": "Actual Graphite review screenshot; final lighting/shader result varies with slot selection."
+}

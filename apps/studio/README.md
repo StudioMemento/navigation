@@ -1,43 +1,39 @@
-# Memento Studio — Isometric / Vercel
+# Memento / Studio — Cinematic Slots
 
-Pacchetto completo della versione aggiornata dello studio 3D, esportato il 5 novembre 2026.
+Esperienza isolata dello Studio 3D. Gli altri siti Memento e le destinazioni dei link sono invariati.
 
-## Deploy su Vercel
+## Vercel
 
-1. Estrai lo ZIP.
-2. Carica il contenuto della cartella in un repository e importalo in Vercel, oppure esegui `vercel` dalla cartella estratta con la CLI di Vercel.
-3. Usa come Root Directory la cartella che contiene `vercel.json` e `package.json`.
+Il sito compilato è in `dist/`. Estrarre lo ZIP, scegliere preset **Other**, output **dist**, installazione e build disabilitate come nel `vercel.json` incluso. Nessuna chiave o variabile d'ambiente. Per sviluppo: `npm ci`, `node scripts/build.mjs`, poi un server statico su `dist/`.
 
-La configurazione è già inclusa:
+## Interazione
 
-| Impostazione | Valore |
-| --- | --- |
-| Framework Preset | Other |
-| Install Command | `npm ci --include=dev` |
-| Build Command | `npm run build` |
-| Output Directory | `dist` |
+Tre pulsanti, da sinistra: **Camera → Lighting → Shader**. Ogni clic estrae direttamente una scelta casuale da un mazzo mescolato, senza tendine e senza ripetizioni consecutive. Tutti gli elementi compaiono prima del rimescolamento. L'ultima richiesta prevale sui clic ravvicinati.
 
-Non sono richieste variabili d'ambiente. Il pacchetto contiene tutti gli asset utilizzati a runtime.
+- 20 composizioni: isometria iniziale, postazioni, salotto, libreria, caffè, softbox e dettagli. Percorsi sulla griglia navigabile, transizioni e profondità di campo moderata.
+- 34 setup dal riferimento, definiti in `dist/studio/light-presets.js`.
+- I 22 shader Atlas e 6 nuove varianti: Copper etching, Cyanotype, Iridescent porcelain, Halftone noir, Brushed titanium, Silver relief.
+- Cinque display con animazioni procedurali, composizioni e fasi diverse, palette coerente con lo shader ed emissione luminosa.
+- Fondo nero puro. Nessuna atmosfera, piano di appoggio o disco luminoso artificiale aggiunto. La luce del softbox usa la geometria originale.
+- UI a icone senza testi visibili; etichette accessibili e annunci per screen reader. Pausa e preferenze di movimento ridotto.
 
-## Contenuto
+Trascina per esplorare, doppio clic/tocco per il fuoco, freccia indietro o Escape per tornare all'isometria. Scroll, WASD/frecce con canvas a fuoco e joystick touch mantengono l'esplorazione manuale. Clic sulle sorgenti fisiche per accenderle/spegnerle.
 
-- Camera esterna ortografica con inquadratura isometrica ispirata al riferimento.
-- Passaggio fluido alla camera interna, ingresso, uscita e rientro.
-- Fuoco sugli oggetti con bokeh e ritorno alla vista precedente.
-- 15 Shader FX, luci collegate agli interruttori e giorno/notte.
-- Inquadratura e comandi adattati al mobile.
-- Modelli desktop e mobile, particelle, voxel e font locali.
+## Modello e rendering
 
-I sorgenti modificabili sono `dist/main.js`, `dist/studio/*.js`, `dist/style.css` e `dist/index.html`.
-`dist/app.bundle.js` è il bundle già compilato; dopo ogni modifica JavaScript, rigeneralo con:
+V4 invariato: 92 oggetti logici, 99 primitive, 363.607 triangoli desktop / 260.031 mobile. Conservati AO, normal map PC/Dyson, parti separate e coordinate. Inquadratura iniziale ortografica.
 
-```sh
-npm ci --include=dev
-npm run build
-```
+Materiali con uniformi condivise e pipeline stabile nei cambi shader. Voxel istanziati in una draw call; point cloud di 48.000/24.000 campioni prima del controllo densità. Un solo shadow caster, aggiornato durante i cambi rig e il movimento della luce. DPR adattivo 1–1,65 desktop / 1–1,25 mobile, MSAA 4/2. Un pass Atlas, fuoco solo quando necessario. Asset caricati in parallelo, frame loop sospeso a scheda nascosta. Le prestazioni dipendono da GPU, viewport e stile; non è garantito un frame rate fisso.
 
-Gli asset `.gz` vengono decompressi dall'applicazione. La configurazione inclusa mantiene questo comportamento; non aggiungere un header HTTP `Content-Encoding: gzip` a questi file.
+## Atlas
 
-Le licenze delle librerie distribuite e del font si trovano in `licenses/`.
+`dist/studio/atlas/` contiene i sorgenti originali del catalogo e dei GLSL. `atlas-adapter.js` porta le equazioni e i postprocess sul modello Studio, con illuminazione reale, AO e normal map. Voxel e Point cloud sono campionati dalla scena effettiva. La maschera del postprocess conserva il nero esterno. Graphite usa pressione 1, tratteggio 0,49 e grana 0,2, con emissione display abilitata. È un adattamento dello shading a un modello diverso, non una replica pixel per pixel della workstation Atlas.
 
-Riferimento configurazione: https://vercel.com/docs/project-configuration/vercel-json
+## Verifiche
+
+- `node scripts/verify-slots.mjs catalog`
+- `node scripts/verify-slots.mjs integration`
+- `node scripts/verify-slots.mjs navigation`
+- `node scripts/verify-model-v4.mjs`
+
+La verifica integrazione usa le impronte degli asset incluse nello ZIP; non richiede la cronologia Git. Audit: `docs/SLOTS_AUDIT.md`. Provenienza shader: `docs/atlas-provenance.json`.
