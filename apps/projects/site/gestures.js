@@ -13,7 +13,7 @@ export function installSwipe(root,{canSwipe,onSwipe}) {
     if(!event.isPrimary){reset(true);return;}
     if(event.button!==0 || (window.visualViewport?.scale || 1)>1.01)return;
     if(event.target.closest('video,iframe,model-viewer,input,audio'))return;
-    const surface=event.target.closest('.coverflow,.slider-stage,#media-content');
+    const surface=event.target.closest('.coverflow,.slider-stage,.slide-thumbs,#media-content');
     if(!surface||!canSwipe(surface))return;
     reset();
     gesture={surface,pointer:event.pointerId,x:event.clientX,y:event.clientY,time:performance.now(),horizontal:false,dx:0};

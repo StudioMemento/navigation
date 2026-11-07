@@ -1,6 +1,7 @@
 import { domains, aliases, projectName, filterProjects, wrapIndex, validateProjects } from './catalogue.js';
-import { detailFor, detailMarkup, galleryStage, processStage, number } from './project-layout.js';
-import { installSwipe, installDragScroll } from './gestures.js';
+import { detailFor, detailMarkup, galleryStage } from './project-layout.js';
+import { installSwipe } from './gestures.js';
+import { fitProjectTitle } from './title-fit.js';
 
 const $ = (selector, root = document) => root.querySelector(selector);
 const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
@@ -70,24 +71,55 @@ function renderCatalogue() {
 function coverflowMarkup(label) {
   return `<div class="selector-band"><div class="coverflow" tabindex="0" role="region" aria-roledescription="carosello" aria-label="${label}">
     ${state.deck.map(project => `<button class="flow-card" data-action="select-project" data-id="${project.id}" aria-label="Seleziona ${escapeHTML(projectName(project))}"><span class="flow-face"><span class="flow-image"></span></span></button>`).join('')}
-    </div><div class="flow-controls"><div class="pagination" role="group" aria-label="${label}">${state.deck.map(project => `<button class="rail-dot" data-action="select-project" data-id="${project.id}" aria-label="Seleziona ${escapeHTML(projectName(project))}"><span></span></button>`).join('')}</div></div></div>`;
+    </div></div>`;
+}
+function circularOffset(index, active, length) {
+  let offset=wrapIndex(index-active,length);if(offset>length/2)offset-=length;return offset;
 }
 function updateCoverflow() {
   const length=state.deck.length, active=state.deck.findIndex(project=>project.id===state.active);
-  const offsetFor=index=>{let offset=wrapIndex(index-active,length);if(offset>length/2)offset-=length;return offset;};
-  $$('.selector-band',view).forEach(band=>{
-    $$('.flow-card',band).forEach((card,index)=>{
-      const offset=offsetFor(index),visible=Math.abs(offset)<=(document.documentElement.clientWidth<768?1:2);
-      card.style.setProperty('--offset',offset);card.style.setProperty('--abs',Math.abs(offset));
+  const content=$('#selected-heading')?.getBoundingClientRect().width || viewport.clientWidth*.88;
+  const cardWidth=Math.min(640,content*(viewport.clientWidth<768?.50:.38));
+  const scales=[1,.84,.68,.54];
+  const edge=content/2-cardWidth*scales[2]/2;
+  const positions=[0,edge*.54,edge,content/2+cardWidth*scales[3]*.30];
+  $$('.coverflow',view).forEach(flow=>{
+    flow.style.setProperty('--card-width',`${cardWidth}px`);
+    $$('.flow-card',flow).forEach((card,index)=>{
+      const offset=circularOffset(index,active,length),distance=Math.abs(offset),visible=distance<=3;
+      const old=Number(card.dataset.offset);
+      card.dataset.jump=String(!Number.isFinite(old)||Math.abs(old-offset)>1);
+      card.dataset.offset=String(offset);card.dataset.distance=String(distance);
+      card.style.setProperty('--x',`${Math.sign(offset)*(positions[distance]||0)}px`);
+      card.style.setProperty('--scale',scales[distance]||.4);card.style.setProperty('--abs',distance);
       card.dataset.visible=String(visible);card.dataset.active=String(offset===0);
       card.setAttribute('aria-hidden',String(!visible));card.setAttribute('aria-pressed',String(offset===0));card.tabIndex=visible?0:-1;
       if(visible&&!$('img',card))$('.flow-image',card).innerHTML=photo(state.deck[index].cover,'',true,'flow');
     });
-    $$('.rail-dot',band).forEach((dot,index)=>{
-      const offset=offsetFor(index),visible=Math.abs(offset)<=3;
-      dot.style.setProperty('--offset',offset);dot.dataset.visible=String(visible);
-      dot.setAttribute('aria-hidden',String(!visible));dot.setAttribute('aria-pressed',String(offset===0));dot.tabIndex=visible?0:-1;
-    });
+  });
+}
+function updateThumbs() {
+  const slider=$('[data-slider="gallery"]',view);if(!slider)return;
+  const buttons=$$('.slide-thumb',slider),active=slideIndex('gallery');
+  buttons.forEach((button,index)=>{
+    const offset=circularOffset(index,active,buttons.length),previous=Number(button.dataset.offset);
+    button.dataset.jump=String(Number.isFinite(previous)&&Math.abs(previous-offset)>1);
+    button.dataset.offset=String(offset);button.style.setProperty('--offset',offset);
+    button.style.setProperty('--abs',Math.abs(offset));
+    button.setAttribute('aria-pressed',String(index===active));
+  });
+}
+function updateProcess() {
+  const cards=$$('.process-card',view),active=slideIndex('process');
+  cards.forEach((card,index)=>{
+    const offset=circularOffset(index,active,cards.length),visible=Math.abs(offset)<=1;
+    const previous=Number(card.style.getPropertyValue('--offset'));
+    card.dataset.jump=String(Math.abs(previous-offset)>1);
+    card.style.setProperty('--offset',offset);card.style.setProperty('--abs',Math.abs(offset));
+    card.dataset.active=String(offset===0);card.dataset.visible=String(visible);card.inert=!visible;
+    if(visible)card.removeAttribute('aria-hidden');else card.setAttribute('aria-hidden','true');
+    $('.process-content',card).setAttribute('aria-hidden',String(offset!==0));
+    $('.process-hit',card).hidden=offset===0;
   });
 }
 const slideIndex=id=>state.slides.get(`${state.active}/${id}`)||0;
@@ -97,24 +129,18 @@ function projectContent() {
   $('#project-content').innerHTML=detailMarkup(project,slideIndex('gallery'),slideIndex('process'));
   const stops=[['project-overview','Gallery'],['project-experience','Experience'],['project-vision','Vision'],['project-process','Process'],['project-finish','Altri progetti']];
   $('#cue-stops').innerHTML=stops.map(([id,title])=>`<button class="cue-stop" data-action="jump" data-target="${id}" aria-label="Vai a ${title}"></button>`).join('');
-  fitTitle();updateCoverflow();observeImages(view);measureProgress();scheduleProgress();
+  fitTitle();updateCoverflow();updateThumbs();observeImages(view);measureProgress();scheduleProgress();
   document.title=`${projectName(project)} — Memento Portfolio`;
 }
-function fitTitle() {
-  const title=$('#selected-title'),text=title?.firstElementChild;if(!text)return;
-  // Measure the actual font, then fit its natural width; never distort glyphs.
-  text.style.fontSize='100px';
-  const width=text.getBoundingClientRect().width;
-  if(width>0)text.style.fontSize=`${100*title.clientWidth/width}px`;
-}
+function fitTitle() {fitProjectTitle($('#selected-title'),current()?.title);}
 function renderProject(id) {
   const project=byId(id);if(!project)return showCatalogue();
   state.active=project.id;state.view='slideshow';
   if(!state.deck.some(item=>item.id===project.id))state.deck=[...state.projects];
-  $('#catalogue').hidden=true;view.hidden=false;$('#project-nav').hidden=false;$('#scroll-cue').hidden=false;
+  $('#catalogue').hidden=true;view.hidden=false;$('#scroll-cue').hidden=false;
   document.body.dataset.view='slideshow';
   unobserveImages(view);
-  view.innerHTML=`<header class="project-station" id="project-station">${coverflowMarkup('Seleziona progetto')}<div class="project-title-band content-width" id="selected-heading"></div></header><div id="project-content"></div><section class="project-finish" id="project-finish" aria-label="Continua a esplorare"><div class="closing-label content-width"><span>Continua a esplorare</span><a href="#catalogo" data-action="close-project">Tutti i progetti ${icon('arrow')}</a></div>${coverflowMarkup('Altri progetti')}</section>`;
+  view.innerHTML=`<header class="project-station" id="project-station">${coverflowMarkup('Seleziona progetto')}<div class="project-title-band content-width" id="selected-heading"></div></header><div id="project-content"></div><section class="project-finish" id="project-finish" aria-label="Seleziona un altro progetto">${coverflowMarkup('Altri progetti')}</section>`;
   projectContent();viewport.scrollTo({top:0,behavior:'instant'});viewport.focus({preventScroll:true});
   observer?.disconnect();observer=new ResizeObserver(()=>{fitTitle();updateCoverflow();measureProgress();scheduleProgress();});observer.observe(viewport);
   announce(projectName(project));
@@ -138,7 +164,7 @@ function openProject(id) {
 }
 function showCatalogue() {
   observer?.disconnect();state.view='catalogo';unobserveImages(view);view.replaceChildren();progressStops=[];
-  view.hidden=true;$('#catalogue').hidden=false;$('#project-nav').hidden=true;$('#scroll-cue').hidden=true;
+  view.hidden=true;$('#catalogue').hidden=false;$('#scroll-cue').hidden=true;
   document.body.dataset.view='catalogo';document.title='Portfolio — Memento';
   viewport.scrollTo({top:state.catalogScroll,behavior:'instant'});observeImages($('#project-grid'));
   if(state.catalogFocus)$(`#tile-${state.catalogFocus}`)?.focus({preventScroll:true});
@@ -153,33 +179,31 @@ function route() {
     const project=byId(id);history.replaceState(history.state,'',`#slideshow/${project.id}`);renderProject(project.id);
   }else showCatalogue();
 }
-function positionFor(element){return Math.max(0,element.getBoundingClientRect().top-viewport.getBoundingClientRect().top+viewport.scrollTop-$('#project-nav').getBoundingClientRect().bottom-20);}
+function positionFor(element){return Math.max(0,element.getBoundingClientRect().top-viewport.getBoundingClientRect().top+viewport.scrollTop-80);}
 function goTo(id){const element=document.getElementById(id);if(element)viewport.scrollTo({top:positionFor(element),behavior:scrollBehavior()});}
 function goStart(){viewport.scrollTo({top:0,behavior:scrollBehavior()});$('#project-station .coverflow')?.focus({preventScroll:true});}
-function nextCheckpoint(){const next=progressStops.find(stop=>stop.position>viewport.scrollTop+60);if(next)goTo(next.id);else goStart();}
+function nextCheckpoint(){const next=progressStops.find(stop=>stop.position>viewport.scrollTop+60);if(next)goTo(next.id);else viewport.scrollTo({top:viewport.scrollHeight,behavior:scrollBehavior()});}
 function scheduleProgress(){if(scrollFrame)return;scrollFrame=requestAnimationFrame(()=>{scrollFrame=0;updateProgress();});}
 function measureProgress(){progressStops=$$('.cue-stop').map(button=>({button,id:button.dataset.target,element:document.getElementById(button.dataset.target)})).filter(stop=>stop.element).map(stop=>({...stop,position:positionFor(stop.element)}));}
 function updateProgress(){
   if(state.view!=='slideshow')return;
   const max=Math.max(1,viewport.scrollHeight-viewport.clientHeight),progress=Math.min(1,viewport.scrollTop/max);
   const range=$('#project-progress');range.value=Math.round(progress*1000);range.setAttribute('aria-valuetext',`${Math.round(progress*100)}%`);
-  $('#scroll-cue').style.setProperty('--progress',progress);$('#project-nav').classList.toggle('is-scrolled',viewport.scrollTop>120);
+  $('#scroll-cue').style.setProperty('--progress',progress);
+  $('[data-action="checkpoint-start"]').disabled=viewport.scrollTop<2;
+  $('[data-action="checkpoint-next"]').disabled=viewport.scrollTop>=max-2;
   let active='project-overview';progressStops.forEach(stop=>{if(stop.position<=viewport.scrollTop+8)active=stop.id;});
   progressStops.forEach(({button,id,position})=>{button.style.setProperty('--stop',Math.min(.97,position/max));button.setAttribute('aria-current',String(id===active));});
 }
 function changeSlide(id,index){
   if(!['gallery','process'].includes(id))return;
-  const selected=wrapIndex(index,5),slider=$(`[data-slider="${id}"]`,view);if(!slider)return;
+  const detail=detailFor(current()),items=detail[id],selected=wrapIndex(index,items.length);
+  const slider=$(`[data-slider="${id}"]`,view);if(!slider)return;
+  const focused=slider.contains(document.activeElement);
   state.slides.set(`${state.active}/${id}`,selected);
-  const detail=detailFor(current());
-  $('.slider-stage',slider).innerHTML=id==='gallery'?galleryStage(detail.gallery[selected]):processStage(detail.process[selected]);
-  $('.slide-count',slider).innerHTML=`${number(selected+1)} <span>/ 05</span>`;
-  $$('[data-action="select-slide"]',slider).forEach((button,i)=>button.setAttribute('aria-pressed',String(i===selected)));
-  if(id==='gallery'){
-    const active=$('.slide-thumb[aria-pressed="true"]',slider),strip=$('.slide-thumbs',slider);
-    strip.scrollTo({left:active.offsetLeft-(strip.clientWidth-active.offsetWidth)/2,behavior:scrollBehavior()});
-  }
-  announce(`${id==='gallery'?'Contenuto':'Step'} ${selected+1} di 5`);
+  if(id==='gallery'){$('.slider-stage',slider).innerHTML=galleryStage(items[selected]);updateThumbs();}
+  else {updateProcess();if(focused)slider.focus({preventScroll:true});}
+  announce(`${id==='gallery'?'Contenuto':'Step'} ${selected+1} di ${items.length}`);
 }
 const stepSlide=(id,direction)=>changeSlide(id,slideIndex(id)+direction);
 
@@ -207,32 +231,39 @@ document.addEventListener('keydown',event=>{
   if(['ArrowLeft','ArrowRight','Home','End'].includes(event.key)&&(slider||selector)){
     event.preventDefault();
     const direction=event.key==='ArrowRight'?1:-1;
-    if(slider){if(event.key==='Home'||event.key==='End')changeSlide(slider.dataset.slider,event.key==='Home'?0:4);else stepSlide(slider.dataset.slider,direction);}
+    if(slider){if(event.key==='Home'||event.key==='End')changeSlide(slider.dataset.slider,event.key==='Home'?0:detailFor(current())[slider.dataset.slider].length-1);else stepSlide(slider.dataset.slider,direction);}
     else if(event.key==='Home'||event.key==='End')selectProject(state.deck[event.key==='Home'?0:state.deck.length-1].id);
     else stepProject(direction);
   }else if(event.key==='Home'){event.preventDefault();goStart();}
   else if(event.key==='End'){event.preventDefault();goTo('project-finish');}
 });
 $('#project-progress').addEventListener('input',event=>viewport.scrollTo({top:(viewport.scrollHeight-viewport.clientHeight)*Number(event.target.value)/1000,behavior:'instant'}));
-viewport.addEventListener('scroll',scheduleProgress,{passive:true});
+let cueTimer;
+function activateCue(){
+  const cue=$('#scroll-cue');cue.classList.add('is-active');clearTimeout(cueTimer);
+  cueTimer=setTimeout(()=>cue.classList.remove('is-active'),850);
+}
+viewport.addEventListener('scroll',()=>{scheduleProgress();if(state.view==='slideshow')activateCue();},{passive:true});
+$('#scroll-cue').addEventListener('pointerdown',activateCue,{passive:true});
+$('#project-progress').addEventListener('input',activateCue);
 window.addEventListener('hashchange',route);
 installSwipe(view,{
   canSwipe:surface=>surface.classList.contains('coverflow')?state.deck.length>1:!!surface.closest('[data-slider]'),
   onSwipe:(surface,direction)=>surface.classList.contains('coverflow')?stepProject(direction):stepSlide(surface.closest('[data-slider]').dataset.slider,direction)
 });
-installDragScroll(view);
+
 // One deliberate horizontal trackpad gesture advances one item. Vertical
 // wheel input is untouched and remains available to the existing host bridge.
 let wheelTime=-Infinity,wheelSign=0;
 view.addEventListener('wheel',event=>{
-  const surface=event.target.closest('.coverflow,.slider-stage');
+  const surface=event.target.closest('.coverflow,.slider-stage,.slide-thumbs');
   if(!surface||event.ctrlKey||Math.abs(event.deltaX)<=Math.abs(event.deltaY)*1.3||Math.abs(event.deltaX)<4)return;
   event.preventDefault();const now=performance.now(),sign=Math.sign(event.deltaX),fresh=now-wheelTime>220||sign!==wheelSign;
   wheelTime=now;wheelSign=sign;if(!fresh)return;
   if(surface.classList.contains('coverflow'))stepProject(sign);else stepSlide(surface.closest('[data-slider]').dataset.slider,sign);
 },{passive:false});
 const narrowScreen=matchMedia('(max-width:767px)');
-function syncProgressOrientation(){$('#project-progress').setAttribute('aria-orientation',narrowScreen.matches?'horizontal':'vertical');}
+function syncProgressOrientation(){$('#project-progress').setAttribute('aria-orientation','vertical');}
 narrowScreen.addEventListener('change',syncProgressOrientation);syncProgressOrientation();
 
 async function init(){

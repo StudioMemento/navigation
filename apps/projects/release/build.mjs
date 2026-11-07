@@ -9,6 +9,6 @@ await mkdir(output, { recursive: true });
 const excluded = new Set(['qa-overlay.html', 'LEGGIMI_VERCEL.txt', 'vercel.json']);
 await cp(path.join(root, 'site'), output, {
   recursive: true,
-  filter: source => !excluded.has(path.basename(source))
+  filter: source => !excluded.has(path.basename(source)) && !path.basename(source).startsWith('qa-')
 });
-console.log('Memento Portfolio V41: dist pronta, asset inclusi.');
+console.log('Memento Portfolio V42: dist pronta, asset inclusi.');

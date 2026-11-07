@@ -23,11 +23,22 @@ export function imageSlot(label, kind = '') {
 }
 
 export function galleryStage(item) {
-  return `<div class="placeholder-gallery"><div class="board-meta"><span>Gallery</span><span>${item.number} / 05</span></div>${imageSlot(item.title)}<span class="board-caption">[Didascalia del contenuto]</span></div>`;
+  return `<div class="placeholder-gallery" role="img" aria-label="Contenuto ${escapeHTML(item.number)}"><div class="image-slot" aria-hidden="true"></div></div>`;
 }
 
 export function processStage(item) {
   return `<article class="editorial-board process-board"><div class="editorial-copy"><p class="eyebrow">Process / ${item.number}</p><p class="placeholder-copy">${item.copy}</p><h3>${item.title}</h3></div>${imageSlot(`Visual processo ${item.number}`, 'editorial-visual')}</article>`;
+}
+
+export function processDeck(items, active) {
+  return items.map((item, index) => {
+    let offset = (index - active + items.length) % items.length;
+    if (offset > items.length / 2) offset -= items.length;
+    return `<div class="process-card board" data-process-index="${index}" data-active="${offset === 0}" data-visible="${Math.abs(offset) <= 1}" style="--offset:${offset};--abs:${Math.abs(offset)}"${Math.abs(offset) > 1 ? ' inert aria-hidden="true"' : ''}>
+      <div class="process-content"${offset ? ' aria-hidden="true"' : ''}>${processStage(item)}</div>
+      <button class="process-hit" data-action="select-slide" data-slider-id="process" data-index="${index}" aria-label="Mostra step ${index + 1}"${offset === 0 ? ' hidden' : ''}></button>
+    </div>`;
+  }).join('');
 }
 
 export function detailMarkup(project, galleryIndex = 0, processIndex = 0) {
@@ -35,7 +46,7 @@ export function detailMarkup(project, galleryIndex = 0, processIndex = 0) {
   return `<section class="project-overview content-width" id="project-overview" aria-label="Gallery del progetto">
     <div class="slider" data-slider="gallery" role="region" aria-roledescription="carosello" aria-label="Immagini e render" tabindex="0">
       <div class="slider-stage board">${galleryStage(detail.gallery[galleryIndex])}</div>
-      <div class="slider-footer"><div class="slide-thumbs" role="group" aria-label="Anteprime della gallery">${detail.gallery.map((item, i) => `<button class="slide-thumb" data-action="select-slide" data-slider-id="gallery" data-index="${i}" aria-label="Mostra contenuto ${i + 1}" aria-pressed="${i === galleryIndex}"><span class="thumb-cross" aria-hidden="true"></span><span>${item.number}</span></button>`).join('')}</div><span class="slide-count" aria-live="polite">${number(galleryIndex + 1)} <span>/ 05</span></span></div>
+      <div class="slider-footer"><div class="slide-thumbs" role="group" aria-label="Anteprime della gallery">${detail.gallery.map((item, i) => `<button class="slide-thumb" data-action="select-slide" data-slider-id="gallery" data-index="${i}" aria-label="Mostra contenuto ${i + 1}" aria-pressed="${i === galleryIndex}"><span class="thumb-cross" aria-hidden="true"></span></button>`).join('')}</div></div>
     </div>
   </section>
   <section class="experience-section content-width" id="project-experience" aria-label="Esperienza del progetto">
@@ -43,13 +54,12 @@ export function detailMarkup(project, galleryIndex = 0, processIndex = 0) {
   </section>
   <section class="vision-section content-width media-module" id="project-vision" aria-labelledby="vision-heading">
     ${distributedHeading('VISION', 'vision-heading')}
-    <div class="board"><article class="editorial-board vision-board"><div class="editorial-copy"><p class="eyebrow">Vision / [Nome progetto]</p><p class="placeholder-copy">${detail.vision.copy}</p><h3>${detail.vision.title}</h3></div>${imageSlot('Visual vision', 'editorial-visual')}</article></div>
+    <div class="board vision-frame"><article class="editorial-board vision-board"><div class="editorial-copy"><p class="eyebrow">Vision / [Nome progetto]</p><p class="placeholder-copy">${detail.vision.copy}</p><h3>${detail.vision.title}</h3></div>${imageSlot('Visual vision', 'editorial-visual')}</article></div>
   </section>
-  <section class="process-section content-width media-module" id="project-process" aria-labelledby="process-heading">
-    ${distributedHeading('PROCESS', 'process-heading')}
+  <section class="process-section media-module" id="project-process" aria-labelledby="process-heading">
+    <div class="content-width">${distributedHeading('PROCESS', 'process-heading')}</div>
     <div class="slider" data-slider="process" role="region" aria-roledescription="carosello" aria-label="Step del processo" tabindex="0">
-      <div class="slider-stage board">${processStage(detail.process[processIndex])}</div>
-      <div class="process-controls"><div class="process-dots" role="group" aria-label="Scegli uno step">${detail.process.map((item, i) => `<button class="process-dot" data-action="select-slide" data-slider-id="process" data-index="${i}" aria-label="Mostra step ${i + 1}" aria-pressed="${i === processIndex}"><span></span></button>`).join('')}</div><span class="slide-count" aria-live="polite">${number(processIndex + 1)} <span>/ 05</span></span></div>
+      <div class="slider-stage process-deck">${processDeck(detail.process, processIndex)}</div>
     </div>
   </section>`;
 }

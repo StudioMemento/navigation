@@ -1,0 +1,46 @@
+{
+  "version": "42.0.0",
+  "baseline": "V41 navbar overlay",
+  "projects": 27,
+  "responsive_widths": [
+    320,
+    390,
+    768,
+    1024,
+    1363
+  ],
+  "browser": "Chromium",
+  "mobile_validation": "viewport in iframe, non dispositivi fisici",
+  "horizontal_overflow": false,
+  "title_cases_per_width": 8,
+  "title_overflow": false,
+  "catalogue_idle_filter": "grayscale(1)",
+  "catalogue_hover_filter": "grayscale(0)",
+  "selector_cards": [
+    7,
+    7
+  ],
+  "selector_parity": true,
+  "secondary_edge_alignment": "measured at 320, 768 and desktop; tolerance < 0.3 px",
+  "gallery_visible_text": "",
+  "thumbnail_active_edge": "rgb(255, 121, 80)",
+  "thumbnail_idle_edge": "rgba(255, 255, 255, 0.62)",
+  "thumbnail_center_error_px": 0,
+  "thumbnail_mobile_min_height_px": 44,
+  "gallery_wrap_keyboard_and_drag": true,
+  "project_wrap": "Graphite -> Auren",
+  "process_side_click": "step 5 -> step 1",
+  "closing_selector_opens_top": true,
+  "scroll_cue_idle": "#818181",
+  "scroll_cue_active": "#ff7950",
+  "scroll_end_stops": true,
+  "vision_desktop_height_px": 420.84375,
+  "gallery_desktop_height_px": 599.71875,
+  "application_console_errors": [],
+  "preserved_original_files_verified": 23,
+  "content_status": "gallery neutral slots without visible text; other structural placeholders retained",
+  "not_tested": [
+    "Safari",
+    "physical iOS and Android devices"
+  ]
+}

@@ -23,7 +23,8 @@
   </script>
   <script src="/tide-child-bridge.js" data-tide-scroll-root="#viewport"></script>
   <link rel="stylesheet" href="styles.css">
-  <link rel="stylesheet" href="portfolio-overlay.css?v=41.0.0">
+  <link rel="stylesheet" href="portfolio-overlay.css?v=42.0.0">
+  <link rel="stylesheet" href="structure.css?v=42.0.0">
   <script type="module" src="app.js"></script>
 </head>
 <body>
@@ -32,14 +33,11 @@
     <section id="catalogue" class="catalogue" aria-labelledby="catalogue-title">
       <header class="catalogue-heading"><h1 id="catalogue-title">Progetti.</h1><nav id="filters" class="filters" aria-label="Domini dei progetti"></nav></header>
       <div id="project-grid" class="project-grid"></div>
-      <div id="empty-state" class="empty-state" hidden><span>Nessun progetto.</span><button data-action="reset-filters">Tutti i progetti</button></div>
+      <div id="empty-state" class="empty-state" hidden><span>Nessun progetto.</span><button data-action="reset-filters">Azzera filtri</button></div>
       <footer class="footer"><a href="https://mementostart.vercel.app/">Ready to<br>start?<svg viewBox="0 0 100 160" aria-hidden="true"><path d="m20 10 70 70-70 70"/></svg></a></footer>
     </section>
     <section id="project-view" hidden aria-label="Player portfolio"></section>
   </main>
-  <nav id="project-nav" class="project-nav" aria-label="Navigazione portfolio" hidden>
-    <a href="#catalogo" class="catalogue-back" data-action="close-project" aria-label="Tutti i progetti — torna al catalogo"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m14 5-7 7 7 7"/></svg><span>Tutti i progetti</span></a>
-  </nav>
   <nav id="scroll-cue" class="scroll-cue" aria-label="Scorri il progetto" hidden>
     <button class="cue-button" data-action="checkpoint-start" aria-label="Torna all’inquadratura iniziale"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 15 6-6 6 6"/></svg></button>
     <div class="cue-track"><span class="cue-line"></span><input id="project-progress" type="range" min="0" max="1000" value="0" step="1" aria-label="Avanzamento nel progetto" aria-orientation="vertical"><div id="cue-stops" class="cue-stops"></div></div>
