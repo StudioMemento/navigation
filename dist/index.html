@@ -8,8 +8,8 @@
 <title>Memento — Studio di design & esperienze digitali</title>
 <link rel="icon" href="./assets/favicon.svg" type="image/svg+xml">
 <link rel="preload" href="./assets/fonts/InterVariable.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="preload" href="./assets/scenes/studio-480.webp" as="image" media="(max-width:600px)">
-<link rel="stylesheet" href="./src/style.css">
+<link rel="preload" href="./assets/scenes/studio-480.webp?v=r10" as="image" media="(max-width:600px)">
+<link rel="stylesheet" href="./src/style.css?v=r10">
 <script>
 if(!matchMedia('(prefers-reduced-motion:reduce)').matches)document.documentElement.classList.add('fx-boot');
 function restoreNav(){document.documentElement.classList.remove('fx-boot');for(const el of document.querySelectorAll('.card-reveal')){el.style.maskImage='none';el.style.webkitMaskImage='none'}if(!document.querySelector('.card'))document.getElementById('fallback').hidden=false;}
@@ -27,6 +27,6 @@ addEventListener('error',restoreNav);addEventListener('unhandledrejection',resto
  <p class="sr-only" id="status" aria-live="polite" aria-atomic="true"></p>
 </main>
 <nav hidden id="fallback" class="fallback" aria-label="Sezioni Memento"><a href="https://mementostudio.it/studio">Studio</a><a href="https://mementostudio.it/services">Services</a><a href="https://mementostudio.it/projects">Projects</a><a href="https://mementostudio.it/levelup">LevelUp</a><a href="https://mementostudio.it/start">Start</a></nav><noscript><style>#fallback{display:flex!important}</style></noscript>
-<script type="module" src="./src/app.mjs"></script>
+<script type="module" src="./src/app.mjs?v=r10"></script>
 </body>
 </html>

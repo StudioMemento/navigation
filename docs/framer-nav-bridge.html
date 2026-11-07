@@ -1,5 +1,6 @@
 <!-- Home Framer: Settings > Custom Code > End of body (solo pagina home).
-     Non aggiungere un secondo iframe. Questo script collega quello esistente.
+     Sostituire il blocco bridge precedente. Non aggiungere un secondo iframe.
+     Questo script collega quello esistente e ne comunica il viewport visibile.
      Pubblicare la home dopo aver incollato il blocco completo. -->
 <script>
 (() => {
@@ -12,8 +13,22 @@
     const slug = value.replace(/^#/, '').toLowerCase();
     return slug === 'memento' ? 'studio' : sections.includes(slug) ? slug : null;
   };
-  let iframe = null, connection = null;
-  const ready = () => iframe?.contentWindow.postMessage({ channel: CHANNEL, version: VERSION, type: 'HOST_READY' }, CHILD_ORIGIN);
+  let iframe = null, connection = null, viewportRaf = 0;
+  const VIEWPORT_CHANNEL = 'memento:hub-viewport';
+  const viewport = () => {
+    viewportRaf = 0;
+    if (!iframe?.getBoundingClientRect) return;
+    const vv = window.visualViewport, rect = iframe.getBoundingClientRect();
+    // Ignore zoom; native pinch-pan stays native. The clipped bottom keeps the
+    // child dock above browser chrome even when Framer uses a taller 100vh box.
+    if (vv && Math.abs(vv.scale - 1) > .01) return;
+    const visibleBottom = vv ? vv.offsetTop + vv.height : document.documentElement.clientHeight;
+    const height = Math.min(rect.height, visibleBottom - rect.top);
+    if (!Number.isFinite(height) || height < 160) return;
+    iframe.contentWindow.postMessage({ channel: VIEWPORT_CHANNEL, version: 1, type: 'VIEWPORT', height }, CHILD_ORIGIN);
+  };
+  const scheduleViewport = () => { if (!viewportRaf) viewportRaf = window.requestAnimationFrame(viewport); };
+  const ready = () => { iframe?.contentWindow.postMessage({ channel: CHANNEL, version: VERSION, type: 'HOST_READY' }, CHILD_ORIGIN); viewport(); };
   const attach = () => {
     const next = [...document.querySelectorAll('iframe')].find(frame => {
       try { const src = new URL(frame.src, location.href); return src.origin === CHILD_ORIGIN && ['/', '/index.html'].includes(src.pathname); }
@@ -35,6 +50,8 @@
   const receive = event => {
     attach();
     const data = event.data;
+    if (iframe && event.source === iframe.contentWindow && event.origin === CHILD_ORIGIN &&
+        data?.channel === VIEWPORT_CHANNEL && data.version === 1 && data.type === 'REQUEST') { viewport(); return; }
     if (!iframe || event.source !== iframe.contentWindow || event.origin !== CHILD_ORIGIN ||
         !data || typeof data !== 'object' || Array.isArray(data) || data.channel !== CHANNEL || data.version !== VERSION ||
         typeof data.requestId !== 'string' || data.requestId.length < 8 || data.requestId.length > 128) return;
@@ -49,6 +66,10 @@
   window.addEventListener('message', receive);
   window.addEventListener('hashchange', sync);
   window.addEventListener('popstate', sync);
+  window.addEventListener('resize', scheduleViewport);
+  window.addEventListener('scroll', scheduleViewport, { passive: true });
+  window.visualViewport?.addEventListener('resize', scheduleViewport);
+  window.visualViewport?.addEventListener('scroll', scheduleViewport);
   const observer = new MutationObserver(attach);
   observer.observe(document.documentElement, { childList: true, subtree: true });
   attach();
@@ -58,6 +79,11 @@
     window.removeEventListener('message', receive);
     window.removeEventListener('hashchange', sync);
     window.removeEventListener('popstate', sync);
+    window.removeEventListener('resize', scheduleViewport);
+    window.removeEventListener('scroll', scheduleViewport);
+    window.visualViewport?.removeEventListener('resize', scheduleViewport);
+    window.visualViewport?.removeEventListener('scroll', scheduleViewport);
+    if (viewportRaf) window.cancelAnimationFrame(viewportRaf);
     delete window.__MEMENTO_HOME_ROUTE_R6__;
   } };
 })();

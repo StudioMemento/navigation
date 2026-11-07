@@ -16,10 +16,18 @@ export class Field{
  const d=Math.min(devicePixelRatio||1,l.small?VFX.mobileDpr:VFX.dpr,Math.sqrt(2000000/(l.w*l.h))),same=this.l&&this.l.w===l.w&&this.l.h===l.h&&this.dpr===d;this.l=l;if(same)return;this.dpr=d;
  for(const canvas of [this.canvas,this.overlay]){canvas.width=Math.round(l.w*d);canvas.height=Math.round(l.h*d);canvas.getContext('2d').setTransform(d,0,0,d,0,0);}
  this.grid=backgroundMesh(l.w,l.h,l.small);this.points=this.grid.points.map(p=>({x:p.x*l.w,y:p.y*l.h,phase:p.phase}));this.positions=this.points.map(p=>({...p,energy:0,light:0}));
- this.faceShades=this.grid.triangles.map(([a,b,c],i)=>{
-  const x=(this.grid.points[a].x+this.grid.points[b].x+this.grid.points[c].x)/3,y=(this.grid.points[a].y+this.grid.points[b].y+this.grid.points[c].y)/3;
-  const cluster=Math.max(Math.exp(-((x-.115)**2/.025+(y-.28)**2/.055)),Math.exp(-((x-.85)**2/.025+(y-.76)**2/.055)));
-  return {shade:(.004+.09*cluster)*(.35+.65*(.5+.5*Math.sin(i*2.73))),variation:.5+.5*Math.sin(i*1.83)};
+ // A face receives a diffuse vertex light, not a flat polygon tone. Gradients
+ // are cached for this size; tiny idle motion shifts only the clipping geometry.
+ this.vertexShade=this.points.map((p,i)=>.018+.021*(.5+.5*Math.sin(p.phase*1.7+i*.31)));
+ this.faceShades=this.grid.triangles.map((ids,i)=>{
+  const anchor=ids.reduce((best,id)=>this.vertexShade[id]>this.vertexShade[best]?id:best,ids[0]),p=this.points[anchor];
+  const radius=Math.max(1,...ids.map(id=>Math.hypot(this.points[id].x-p.x,this.points[id].y-p.y)))*1.02;
+  const shade=this.vertexShade[anchor],gradient=this.ctx.createRadialGradient(p.x,p.y,0,p.x,p.y,radius);
+  gradient.addColorStop(0,`rgba(150,157,167,${shade})`);
+  gradient.addColorStop(.38,`rgba(150,157,167,${shade*.42})`);
+  gradient.addColorStop(.76,`rgba(150,157,167,${shade*.08})`);
+  gradient.addColorStop(1,'rgba(150,157,167,0)');
+  return {anchor,radius,shade,gradient,variation:.5+.5*Math.sin(i*1.83)};
  });
  this.shortest=this.points.map((p,i)=>Math.min(...this.grid.neighbors[i].map(j=>Math.hypot(p.x-this.points[j].x,p.y-this.points[j].y))));
  this.pool=new TrianglePool(l.small?VFX.mobilePool:VFX.pool);this.pulses=[];this.candidates=[];this.travel=0;this.pulseCredits=0;this.lastDraw=0;
@@ -64,34 +72,36 @@ export class Field{
  this.lastDraw=t;const c=this.ctx,l=this.l,q=this.positions;c.globalAlpha=1;c.fillStyle='#0a0a0b';c.fillRect(0,0,l.w,l.h);
  for(let i=0;i<this.grid.triangles.length;i++){
   const ids=this.grid.triangles[i],a=q[ids[0]],b=q[ids[1]],d=q[ids[2]],face=this.faceShades[i];
-  const breath=reduced?1:1+.07*Math.sin(t*.00023+a.phase);
-  c.fillStyle=`rgba(187,190,193,${face.shade*breath})`;
-  c.beginPath();c.moveTo(a.x,a.y);c.lineTo(b.x,b.y);c.lineTo(d.x,d.y);c.closePath();c.fill();
+  const breath=reduced?1:.97+.03*Math.sin(t*.00023+a.phase);
+  c.globalAlpha=breath;c.fillStyle=face.gradient;
+  c.beginPath();c.moveTo(a.x,a.y);c.lineTo(b.x,b.y);c.lineTo(d.x,d.y);c.closePath();c.fill();c.globalAlpha=1;
   const energy=(a.light+b.light+d.light)/3;
   if(energy>.012){
-   let hot=a,cool=b;for(const p of [b,d])if(p.light>hot.light)hot=p;for(const p of [a,d])if(p.light<cool.light)cool=p;
-   if(hot===cool)cool=hot===a?b:a;
-   const tint=c.createLinearGradient(hot.x,hot.y,cool.x,cool.y),gain=.35+.65*face.variation;
-   tint.addColorStop(0,`rgba(${VFX.color},${(energy*.04+hot.light*.16)*gain})`);
-   tint.addColorStop(1,`rgba(${VFX.color},${cool.light*.015*gain})`);c.fillStyle=tint;c.fill();
+   let hot=a;for(const p of [b,d])if(p.light>hot.light)hot=p;
+   const reach=Math.max(1,Math.hypot(hot.x-a.x,hot.y-a.y),Math.hypot(hot.x-b.x,hot.y-b.y),Math.hypot(hot.x-d.x,hot.y-d.y))*1.05;
+   const tint=c.createRadialGradient(hot.x,hot.y,0,hot.x,hot.y,reach),gain=.55+.45*face.variation;
+   const alpha=Math.min(.056,(energy*.01+hot.light*.048)*gain);
+   tint.addColorStop(0,`rgba(${VFX.color},${alpha})`);
+   tint.addColorStop(.45,`rgba(${VFX.color},${alpha*.34})`);
+   tint.addColorStop(1,`rgba(${VFX.color},0)`);c.fillStyle=tint;c.fill();
   }
  }
  for(let i=0;i<this.grid.edges.length;i++){
   const [ai,bi]=this.grid.edges[i],a=q[ai],b=q[bi],energy=Math.max(a.light,b.light),variation=.5+.5*Math.sin(i*2.47);
-  c.beginPath();c.moveTo(a.x,a.y);c.lineTo(b.x,b.y);c.lineWidth=.55;c.strokeStyle=`rgba(171,175,180,${.045+.1*variation})`;c.stroke();
+  c.beginPath();c.moveTo(a.x,a.y);c.lineTo(b.x,b.y);c.lineWidth=.5;c.strokeStyle=`rgba(171,175,180,${.025+.055*variation})`;c.stroke();
   if(energy>.025){
    // Light travels along the existing edges from the hot vertex. There are no
    // screen-space rays and no per-edge blur filters.
    const tint=c.createLinearGradient(a.x,a.y,b.x,b.y);
-   tint.addColorStop(0,`rgba(${VFX.color},${a.light*.85})`);tint.addColorStop(1,`rgba(${VFX.color},${b.light*.85})`);
-   c.strokeStyle=tint;c.lineWidth=.85;c.stroke();
-   if(energy>.38){c.globalAlpha=.15;c.lineWidth=2.6;c.stroke();c.globalAlpha=1;}
+   tint.addColorStop(0,`rgba(${VFX.color},${a.light*.52})`);tint.addColorStop(1,`rgba(${VFX.color},${b.light*.52})`);
+   c.strokeStyle=tint;c.lineWidth=.7;c.stroke();
   }
  }
- for(const p of this.hotNodes){const size=34+p.light*78;c.globalAlpha=p.light*.8;c.drawImage(this.glow,p.x-size/2,p.y-size/2,size,size);}c.globalAlpha=1;
+ // Nodes stay as tiny pins. The facet gradient carries the light, without
+ // wide star glows, screen-space halos or an inflated edge stroke.
  for(let i=0;i<q.length;i++){
-  const p=q[i],alpha=.44+.5*Math.pow(.5+.5*Math.sin(p.phase),2),size=p.light>.2?1.65:1.4;
-  c.fillStyle=p.light>.04?`rgba(${VFX.paper},${Math.min(1,.25+p.light*.9)})`:`rgba(225,225,219,${alpha})`;
+  const p=q[i],alpha=.22+.30*Math.pow(.5+.5*Math.sin(p.phase),2),size=p.light>.2?1.15:.9;
+  c.fillStyle=p.light>.04?`rgba(${VFX.hot},${.32+p.light*.30})`:`rgba(225,225,219,${alpha})`;
   c.fillRect(p.x-size/2,p.y-size/2,size,size);this.emit(p.x,p.y,t,p.energy,'background');
  }
  }

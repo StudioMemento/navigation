@@ -1,0 +1,318 @@
+{
+  "version": "R10",
+  "generator": "built-in image_gen",
+  "exporter": {
+    "script": "scripts/export-assets-r10.py",
+    "pillow": "13.0.0",
+    "operations": [
+      "LANCZOS resize",
+      "WebP/JPEG compression"
+    ],
+    "webpQuality": 85,
+    "jpegQuality": 88
+  },
+  "sources": [
+    {
+      "name": "studio",
+      "path": "art/studio.png",
+      "width": 1254,
+      "height": 1254,
+      "bytes": 1666311,
+      "sha256": "f5582817f9c66ea5b4e2256412318a07c01efc0d1e54f1a4192fa21c99f27e47"
+    },
+    {
+      "name": "services",
+      "path": "art/services.png",
+      "width": 1254,
+      "height": 1254,
+      "bytes": 1580307,
+      "sha256": "7d1a3b1668f5d9f9618321cae4b0d8bceec42ef8e51de9c0019ac21f79684904"
+    },
+    {
+      "name": "projects",
+      "path": "art/projects.png",
+      "width": 1254,
+      "height": 1254,
+      "bytes": 1559772,
+      "sha256": "e389a237dfcac954120075984370c8189704d8c52642c2e736fea3778aaffb2a"
+    },
+    {
+      "name": "levelup",
+      "path": "art/levelup.png",
+      "width": 1254,
+      "height": 1254,
+      "bytes": 1518852,
+      "sha256": "4b204e2c4b4565a0a078704d1aa8e4a98e75d7802d21abd4b826faf0df457a00"
+    },
+    {
+      "name": "start",
+      "path": "art/start.png",
+      "width": 1254,
+      "height": 1254,
+      "bytes": 1534497,
+      "sha256": "4ce9e646ae1ced2d5f630feae0019330a651512bdb072985e99c1d2176772752"
+    },
+    {
+      "name": "gallery-alternate",
+      "path": "art/gallery-alternate.png",
+      "width": 1254,
+      "height": 1254,
+      "bytes": 1675359,
+      "sha256": "26c32f1dcaaced80ccd6cf17f38ddb5b9290f701e578fe18b41bdc10a9cc994b"
+    }
+  ],
+  "outputs": [
+    {
+      "source": "studio",
+      "path": "dist/assets/scenes/studio-96.webp",
+      "format": "WEBP",
+      "width": 96,
+      "height": 96,
+      "quality": 85,
+      "bytes": 2326,
+      "sha256": "b38089a76acf666a5bd3b587bec196b965f9d269011177fa43c7ebb706099490"
+    },
+    {
+      "source": "studio",
+      "path": "dist/assets/scenes/studio-480.webp",
+      "format": "WEBP",
+      "width": 480,
+      "height": 480,
+      "quality": 85,
+      "bytes": 20774,
+      "sha256": "822e186afe44f5197874868b8be82b31e1aeb2c5038f001903399613db2e173a"
+    },
+    {
+      "source": "studio",
+      "path": "dist/assets/scenes/studio-960.webp",
+      "format": "WEBP",
+      "width": 960,
+      "height": 960,
+      "quality": 85,
+      "bytes": 55530,
+      "sha256": "fa9fbffc124200f721a8d7bb0116d0b3e3aea4bb84e13d6eda68deb69a422f57"
+    },
+    {
+      "source": "studio",
+      "path": "dist/assets/scenes/studio-1254.webp",
+      "format": "WEBP",
+      "width": 1254,
+      "height": 1254,
+      "quality": 85,
+      "bytes": 77480,
+      "sha256": "e9556bddbc08480ad097cd0a70f7b609d037e3c3021d36b25e6ff640d7b9415f"
+    },
+    {
+      "source": "studio",
+      "path": "dist/assets/scenes/studio.jpg",
+      "format": "JPEG",
+      "width": 1254,
+      "height": 1254,
+      "quality": 88,
+      "bytes": 229177,
+      "sha256": "6fa4bdcaf3320f5b7899ac59e2eb2f85e4694140126215a5ed27f8f68d4c3880"
+    },
+    {
+      "source": "services",
+      "path": "dist/assets/scenes/services-96.webp",
+      "format": "WEBP",
+      "width": 96,
+      "height": 96,
+      "quality": 85,
+      "bytes": 1976,
+      "sha256": "057231618f250a1cb1d217c3f0277b3c4fe09a4fe173b599515d098f79a2a798"
+    },
+    {
+      "source": "services",
+      "path": "dist/assets/scenes/services-480.webp",
+      "format": "WEBP",
+      "width": 480,
+      "height": 480,
+      "quality": 85,
+      "bytes": 16724,
+      "sha256": "b427c89ceb8d7824abe1b4e019a7612e4db2cd82976abe3beff8de17c97a1086"
+    },
+    {
+      "source": "services",
+      "path": "dist/assets/scenes/services-960.webp",
+      "format": "WEBP",
+      "width": 960,
+      "height": 960,
+      "quality": 85,
+      "bytes": 41410,
+      "sha256": "30123a6efc408cb41a7d9e5d464b64928196a213a952d5c476f96e2bfee1acc3"
+    },
+    {
+      "source": "services",
+      "path": "dist/assets/scenes/services-1254.webp",
+      "format": "WEBP",
+      "width": 1254,
+      "height": 1254,
+      "quality": 85,
+      "bytes": 58568,
+      "sha256": "4f8a211815fa3e73f27037353b74c7380c8aa912dd70cbce259914b0f993b031"
+    },
+    {
+      "source": "services",
+      "path": "dist/assets/scenes/services.jpg",
+      "format": "JPEG",
+      "width": 1254,
+      "height": 1254,
+      "quality": 88,
+      "bytes": 183878,
+      "sha256": "3497e9aa12648cee9a644179b33a25a9ec728ee39b11e202436662155c40a2cf"
+    },
+    {
+      "source": "projects",
+      "path": "dist/assets/scenes/projects-96.webp",
+      "format": "WEBP",
+      "width": 96,
+      "height": 96,
+      "quality": 85,
+      "bytes": 1856,
+      "sha256": "f3fcdcaa26227baae46468b99e3b2a49d6decc4a474a8c6ab1825b3dce5c167f"
+    },
+    {
+      "source": "projects",
+      "path": "dist/assets/scenes/projects-480.webp",
+      "format": "WEBP",
+      "width": 480,
+      "height": 480,
+      "quality": 85,
+      "bytes": 14108,
+      "sha256": "11b96a77d40f4a68c6123b853f5ecf213e2e99068c22650336cc8aa7616e66a8"
+    },
+    {
+      "source": "projects",
+      "path": "dist/assets/scenes/projects-960.webp",
+      "format": "WEBP",
+      "width": 960,
+      "height": 960,
+      "quality": 85,
+      "bytes": 34636,
+      "sha256": "039dbe75a36fb7fb752c35a4d6f1cb20a1bd6a61e0547c1f103d89df5e3b7af0"
+    },
+    {
+      "source": "projects",
+      "path": "dist/assets/scenes/projects-1254.webp",
+      "format": "WEBP",
+      "width": 1254,
+      "height": 1254,
+      "quality": 85,
+      "bytes": 48126,
+      "sha256": "deb3c0bfe30fbf11642efd92c79099da52c4e5c106b7f9342701821b0dadeae7"
+    },
+    {
+      "source": "projects",
+      "path": "dist/assets/scenes/projects.jpg",
+      "format": "JPEG",
+      "width": 1254,
+      "height": 1254,
+      "quality": 88,
+      "bytes": 159598,
+      "sha256": "77f75611e5f574aa11e29ad7feddb49a9452950057d7649d95b7661fb283230d"
+    },
+    {
+      "source": "levelup",
+      "path": "dist/assets/scenes/levelup-96.webp",
+      "format": "WEBP",
+      "width": 96,
+      "height": 96,
+      "quality": 85,
+      "bytes": 1938,
+      "sha256": "650429a45286c3af28860f54ec50fc651cf91169b3f8fd6ce56710568c1b3693"
+    },
+    {
+      "source": "levelup",
+      "path": "dist/assets/scenes/levelup-480.webp",
+      "format": "WEBP",
+      "width": 480,
+      "height": 480,
+      "quality": 85,
+      "bytes": 14964,
+      "sha256": "c0bbae41c6c9ca0db1bb9db3873477356d71bb44817aa2126b7bd78704119a50"
+    },
+    {
+      "source": "levelup",
+      "path": "dist/assets/scenes/levelup-960.webp",
+      "format": "WEBP",
+      "width": 960,
+      "height": 960,
+      "quality": 85,
+      "bytes": 38418,
+      "sha256": "21412abcb60b95dad6f93e4039fa475bd296b03d9e41839ade505afbc63a2380"
+    },
+    {
+      "source": "levelup",
+      "path": "dist/assets/scenes/levelup-1254.webp",
+      "format": "WEBP",
+      "width": 1254,
+      "height": 1254,
+      "quality": 85,
+      "bytes": 52800,
+      "sha256": "809765a82ce93276239ff96412f9d55071ca5bb6082d4cb28970d9bec02e5205"
+    },
+    {
+      "source": "levelup",
+      "path": "dist/assets/scenes/levelup.jpg",
+      "format": "JPEG",
+      "width": 1254,
+      "height": 1254,
+      "quality": 88,
+      "bytes": 176543,
+      "sha256": "40ad42ccce22466eee2b49e02c8f461d11cc9aeaac7e2c7a93daf438dd51cfa2"
+    },
+    {
+      "source": "start",
+      "path": "dist/assets/scenes/start-96.webp",
+      "format": "WEBP",
+      "width": 96,
+      "height": 96,
+      "quality": 85,
+      "bytes": 1858,
+      "sha256": "c250d25ff68ccb3aecd30ec1034470b4e98424f2d7c967d69b294e81531da4be"
+    },
+    {
+      "source": "start",
+      "path": "dist/assets/scenes/start-480.webp",
+      "format": "WEBP",
+      "width": 480,
+      "height": 480,
+      "quality": 85,
+      "bytes": 14406,
+      "sha256": "8e9190bb25bb1b1321581b417d0a7a2f5da075e0a3e7dd4637b570dd955dec6b"
+    },
+    {
+      "source": "start",
+      "path": "dist/assets/scenes/start-960.webp",
+      "format": "WEBP",
+      "width": 960,
+      "height": 960,
+      "quality": 85,
+      "bytes": 35800,
+      "sha256": "77ed1eab08c67fbb979aa675ccd6611c5b34f59f35a0cfc28b10f30fefde660b"
+    },
+    {
+      "source": "start",
+      "path": "dist/assets/scenes/start-1254.webp",
+      "format": "WEBP",
+      "width": 1254,
+      "height": 1254,
+      "quality": 85,
+      "bytes": 50964,
+      "sha256": "ba58ed02f73671af510f3038aef5c5dfca7696203c2f7cdd546aa9c3d1975ba1"
+    },
+    {
+      "source": "start",
+      "path": "dist/assets/scenes/start.jpg",
+      "format": "JPEG",
+      "width": 1254,
+      "height": 1254,
+      "quality": 88,
+      "bytes": 161023,
+      "sha256": "8bddcc06a773a7c0ebcf24d6ab07cd35d9a0b713d78585eb347eb6726d055d9f"
+    }
+  ],
+  "sceneBytes": 1494881,
+  "sceneBudgetBytes": 1500000
+}

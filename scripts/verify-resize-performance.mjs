@@ -3,7 +3,7 @@ import {performance} from 'node:perf_hooks';
 import {readFile} from 'node:fs/promises';
 import vm from 'node:vm';
 import {cardMesh} from '../dist/src/geometry.mjs';
-import {layout,relative,queuedStep} from '../dist/src/model.mjs';
+import {layout,relative,queuedStep,viewportHeight} from '../dist/src/model.mjs';
 
 const timings=[];
 for(const [w,h,small]of [[1920,1080,false],[1100,550,false],[350,438,true]]){
@@ -30,9 +30,9 @@ const cards=Array.from({length:5},(_,i)=>({fxKey:'old',typeRevision:0,pose:{visi
 const state={cards,disposed:false,layoutRaf:0,resizeTimer:0,resizePending:false,fxReady:true,fxKey:'old',
  warmHandle:0,warmIdle:false,fontRevision:0,lastCommitMs:0,setupMs:0,layoutSignature:'old',resizeStartedAt:0,
  started:true,appearing:false,position:0,l:layout(390,844),sceneDirty:false,titleMetrics:new Map(),
- hub:{clientWidth:2048,clientHeight:818},overlay:{},scene:{style:{}},devicePixelRatio:1,
+ hub:{clientWidth:2048,clientHeight:818},overlay:{},scene:{style:{}},devicePixelRatio:1,window:{visualViewport:null},hostViewportHeight:undefined,
  document:{documentElement:{clientWidth:2048,clientHeight:818,style:{setProperty:(k,v)=>styles.set(k,v)}},body:{classList:{add(){},remove(){}}}},
- field:{resize(){fieldResizes++;}},layout,relative,performance,
+ field:{resize(){fieldResizes++;}},layout,relative,viewportHeight,performance,
  requestAnimationFrame:fn=>{frames.push(fn);return frames.length;},setTimeout:fn=>{timers.set(++timerId,fn);return timerId;},clearTimeout:id=>timers.delete(id),
  requestIdleCallback:()=>999,cancelIdleCallback(){},wake(){},drawScene(){cards.forEach((c,i)=>c.pose={visible:Math.abs(relative(i,0))<1.75});},decodeImage(){}};
 vm.createContext(state);vm.runInContext(lifecycle,state);
@@ -42,13 +42,24 @@ frames.shift()();
 assert.equal(fieldResizes,0,'Heavy work cannot block the first resized CSS paint');
 assert.ok(parseFloat(styles.get('--card-w'))>700,'The card immediately adopts the new viewport');
 assert.equal(state.l.w,2048);assert.equal(timers.size,1);
-state.hub.clientWidth=1920;vm.runInContext('requestFit()',state);frames.shift()();
-assert.equal(timers.size,1,'A later resize replaces the previous commit');
+state.hub.clientWidth=state.document.documentElement.clientWidth=1920;vm.runInContext('requestFit()',state);frames.shift()();
+assert.equal(timers.size,1,'A later resize replaces the previous commit');assert.equal(state.l.w,1920,'The document viewport owns the actual layout width');
 const commit=[...timers.values()][0];timers.clear();commit();
 assert.equal(fieldResizes,1);assert.equal(cards.filter(c=>c.fx.resizes).length,3,'Only visible cards initialize synchronously');
 assert.equal(typeRefreshes,0);assert.equal(state.resizePending,false);
 vm.runInContext('fit()',state);assert.equal(fieldResizes,1);assert.equal(timers.size,0,'An unchanged layout is a no-op');
 cards[3].el.hidden=true;cards[3].el.style.visibility='';vm.runInContext('ensureFX(cards[3])',state);assert.equal(cards[3].el.hidden,true);assert.equal(cards[3].el.style.visibility,'','Hidden preparation restores visibility');
+// Browser chrome updates only visualViewport, not document/clientHeight.
+state.window.visualViewport={height:700,scale:1};vm.runInContext('requestFit()',state);frames.shift()();
+assert.equal(state.l.h,700,'Browser toolbar height is applied during the CSS frame');
+assert.equal(styles.get('--nav-viewport-height'),'700px');assert.equal(fieldResizes,1,'Viewport shrink still defers expensive FX');
+let viewportCommit=[...timers.values()][0];timers.clear();viewportCommit();assert.equal(fieldResizes,2);
+state.window.visualViewport.height=818;state.hostViewportHeight=690;vm.runInContext('requestFit()',state);frames.shift()();
+assert.equal(state.l.h,690,'Trusted parent clipping is applied even to an oversized iframe');
+viewportCommit=[...timers.values()][0];timers.clear();viewportCommit();assert.equal(fieldResizes,3);
+state.hostViewportHeight=undefined;state.window.visualViewport={height:409,scale:2};vm.runInContext('requestFit()',state);frames.shift()();
+assert.equal(state.l.h,818,'Native pinch zoom does not resize the app layout');
+viewportCommit=[...timers.values()][0];timers.clear();viewportCommit();assert.equal(fieldResizes,4);
 state.disposed=true;vm.runInContext('requestFit()',state);assert.equal(frames.length,0);
 
 let target=0;for(let i=0;i<100;i++)target=queuedStep(.1,target,1);

@@ -4,9 +4,9 @@ export const overlayCSS = `
   --mm-rail: min(var(--memento-overlay-width,320px),calc(100% - var(--memento-overlay-gutter,20px) * 2));
   --mm-glyph-height: var(--memento-overlay-logo-height,11px);
   --mm-top: max(var(--memento-overlay-top,16px),env(safe-area-inset-top,0px));
-  --mm-bottom-gap: calc((var(--mm-rail) - 200px) / 8);
+  --mm-bottom-gap: max(12px,env(safe-area-inset-bottom,0px));
   --mm-accent: var(--memento-overlay-accent,#ff7950);
-  position:fixed; inset:0; z-index:var(--memento-overlay-z,1000); display:block;
+  position:fixed; inset:0 0 auto; height:100%; height:var(--nav-viewport-height,100svh); z-index:var(--memento-overlay-z,1000); display:block;
   pointer-events:none; color:#f5f4f2; font:10px/1.3 Inter,Arial,sans-serif;
   background:transparent; opacity:1; filter:none; transform:none; isolation:auto; contain:none;
   -webkit-font-smoothing:antialiased;
@@ -23,9 +23,8 @@ export const overlayCSS = `
 .mm-wordmark { top:var(--mm-top); display:flex; align-items:flex-start; min-height:44px; padding:3px 0 0; pointer-events:auto; color:inherit; text-decoration:none; }
 .mm-letter-row { display:flex; width:100%; height:var(--mm-glyph-height); justify-content:space-between; align-items:center; }
 .mm-glyph { display:block; flex:none; height:var(--mm-glyph-height); fill:currentColor; overflow:visible; }
-.mm-dock { bottom:-4px; width:calc(var(--mm-rail) + 8px); display:flex; align-items:center; justify-content:space-between; gap:0; margin:0;
-  /* A percentage margin resolves against the viewport width, as does the rail. */
-  margin-bottom:calc(var(--mm-bottom-gap) + env(safe-area-inset-bottom,0px)); padding:0; border:0; background:transparent; }
+.mm-dock { bottom:var(--mm-bottom-gap); width:calc(var(--mm-rail) + 8px); display:flex; align-items:center; justify-content:space-between; gap:0; margin:0;
+  margin-bottom:0; padding:0; border:0; background:transparent; }
 .mm-link { display:flex; position:relative; flex:0 0 48px; width:48px; height:48px; justify-content:center; align-items:center; border:0; padding:0;
   pointer-events:auto; color:inherit; text-decoration:none; background:transparent; touch-action:manipulation; -webkit-tap-highlight-color:transparent; }
 .mm-tile { position:relative; width:40px; height:40px; display:grid; place-items:center; border-radius:10px; overflow:hidden; background:#040506; border:1px solid #ffffff1f;
