@@ -68,4 +68,10 @@ export function wheelStep(state,delta,now){
  state.delta=0;state.used=true;state.stepTime=now;
  return sign;
 }
+// Keep rapid gestures responsive without queuing many off-screen revolutions.
+// Explicit route/keyboard Home selections still use their exact destination.
+export function queuedStep(position,target,step){
+ const center=Math.round(position);
+ return clamp(Math.round(target)+Math.sign(step),center-2,center+2);
+}
 export function seeded(seed=431){return()=>{seed|=0;seed=seed+0x6D2B79F5|0;let t=Math.imul(seed^seed>>>15,1|seed);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}

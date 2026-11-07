@@ -1,9 +1,9 @@
 {
-  "name": "memento-nav-r8-ambra-polish",
-  "version": "8.0.0",
+  "name": "memento-nav-r9-campo-latente",
+  "version": "9.0.0",
   "private": true,
   "type": "module",
   "scripts": {
-    "test": "node scripts/verify.mjs && node scripts/verify-vfx.mjs && node scripts/verify-artifact.mjs && node scripts/verify-type-polish.mjs && node scripts/verify-route.mjs && node scripts/verify-amber-field.mjs && node scripts/verify-slider-sync.mjs && node scripts/verify-background-r8.mjs && node scripts/verify-card-surface.mjs"
+    "test": "node scripts/verify.mjs && node scripts/verify-vfx.mjs && node scripts/verify-artifact.mjs && node scripts/verify-type-polish.mjs && node scripts/verify-route.mjs && node scripts/verify-amber-field.mjs && node scripts/verify-slider-sync.mjs && node scripts/verify-background-r9.mjs && node scripts/verify-card-surface.mjs && node scripts/verify-resize-performance.mjs"
   }
 }

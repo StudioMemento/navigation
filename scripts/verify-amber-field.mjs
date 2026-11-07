@@ -22,7 +22,7 @@ assert.ok(Math.max(...samples)-Math.min(...samples)>.2);
 for(const x of [0,100,500,1000])assert.equal(fieldEnergy(x,300,{x:500,y:350,strength:0},VFX.radius),0);
 
 // Exercise the actual queue and shared lifecycle with a no-op canvas adapter.
-const context=new Proxy({createLinearGradient(){return {addColorStop(){}};}}, {get:(o,k)=>k in o?o[k]:(()=>{}),set:(o,k,v)=>{if(typeof v==='string'&&v.startsWith('rgba('))assert.ok(!v.includes('NaN'));o[k]=v;return true;}});
+const context=new Proxy({createLinearGradient(){return {addColorStop(){}};},createRadialGradient(){return {addColorStop(){}};}}, {get:(o,k)=>k in o?o[k]:(()=>{}),set:(o,k,v)=>{if(typeof v==='string'&&v.startsWith('rgba('))assert.ok(!v.includes('NaN'));o[k]=v;return true;}});
 const canvas=()=>({getContext:()=>context,setAttribute(){},remove(){}});
 const savedDocument=globalThis.document,savedDpr=globalThis.devicePixelRatio;
 globalThis.document={createElement:canvas,body:{append(){}}};globalThis.devicePixelRatio=1;

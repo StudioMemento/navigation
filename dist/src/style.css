@@ -17,9 +17,9 @@ button:focus-visible,a:focus-visible{outline:1px solid #ffd0a2;outline-offset:6p
 .card-surface{position:absolute;inset:0;isolation:isolate;background:#0b0b0c;clip-path:polygon(var(--cut) 0,100% 0,100% calc(100% - var(--cut)),calc(100% - var(--cut)) 100%,0 100%,0 var(--cut));overflow:hidden;backface-visibility:hidden}
 .card-reveal{position:absolute;inset:0;backface-visibility:hidden;mask-mode:alpha;mask-repeat:no-repeat;-webkit-mask-repeat:no-repeat}
 .card-image,.image-fallback{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% var(--focal,61%);pointer-events:none}
-.image-fallback{filter:grayscale(1)}
-.card-image{opacity:0;transition:opacity .28s ease;--photo-color:calc((1 - var(--secondary)) * (.8 + .2 * var(--image-energy)));filter:grayscale(calc(1 - var(--photo-color))) brightness(calc(.82 + .14 * (1 - var(--secondary)) + .1 * var(--image-energy)));}
-.card-image.decoded{opacity:1}
+.image-fallback{filter:grayscale(1) brightness(.82)}
+.card-image{opacity:0;transition:opacity .1s linear;filter:grayscale(calc(.2 - .2 * var(--image-energy))) brightness(calc(.96 + .1 * var(--image-energy)));}
+.card-image.decoded{opacity:calc(1 - var(--secondary))}
 .image-softness{position:absolute;inset:0;background:linear-gradient(to bottom,transparent 48%,rgba(4,4,5,.08) 64%,rgba(4,4,5,.58) 100%);pointer-events:none}
 .card-shade{position:absolute;inset:0;background:#030405;opacity:0;pointer-events:none}
 .title{position:absolute;bottom:var(--padding);left:var(--padding);width:calc(100% - var(--padding) * 2);padding:0;margin:0;display:flex;align-items:baseline;justify-content:space-between;font-weight:300;line-height:1;font-size:var(--title-size,90px);opacity:calc(1 - var(--secondary));pointer-events:none}
@@ -42,3 +42,7 @@ body.dragging,body.dragging .card{cursor:grabbing}
 
 
 .chevron-fx{position:absolute;inset:-20px;width:calc(100% + 40px);height:calc(100% + 40px);pointer-events:none}
+
+/* Geometry remains usable while resize events are coalesced. */
+.resizing .card-fx,.resizing .card-edge,.resizing .chevron-fx{visibility:hidden}
+.resizing .card-reveal{mask-image:none!important;-webkit-mask-image:none!important}
