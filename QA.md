@@ -1,38 +1,29 @@
-# Verifica R4 — 6 novembre 2026
+# Verifica NAV R5
 
-## Esito
-
-Integrazione eseguita sulla NAV verticale R3. Le cinque scene e i link originali sono conservati; navbar, blur e logo provengono dal kit V12 allegato. Non è stato aggiornato il progetto Vercel esistente.
+7 novembre 2026.
 
 ## Controlli automatici
 
-- Sei configurazioni di viewport per proporzioni, angoli prospettici, proiezione e inversa.
-- Navigazione ciclica, sezione più vicina, snap e cancel del drag.
-- Mesh a densità variabile, area coperta pari a 1, triangoli non degeneri, edge unici e vicinato simmetrico.
-- Campi confinati in [0,1], distribuzione non circolare, visibilità continua, loading monotono e spaziale.
-- Stesse maschere per 61 posizioni attraversate in avanti e al contrario.
-- Propagazione touch lungo un grafo, emissione diretta verso l’esterno, pool limitato e particelle completamente scadute.
-- Sintassi dei moduli, cinque destinazioni, asset locali e font; una sola istanza mountNav, rimozione del vecchio logo/dock, fallback e cleanup.
-- Controlli negativi inclusi per angoli invertiti, asset mancanti, campo uniforme, falsa propagazione radiale e reveal non spaziale.
+- Proiezione e inversa, ordine delle cinque sezioni, loop, drag/snap e dimensioni su sette viewport: 1997×787, 2560×1080, 1440×900, 834×1194, 390×844, 844×390, 320×568.
+- Confronto con la tavola a 1997×787: card ~1000×476; padding 6% sui tre lati del titolo; preview con bordo esterno più vicino alla camera e margine interno di 8–10 px.
+- Topologia stabile, triangolazione senza edge duplicati, copertura, campo irregolare, impulso lungo adiacenze, pool limitato, reveal monotono e 61 stati di proiezione/reverse.
+- A 1000×476: 345 vertici per la superficie della card; 165 per il fondo a 1997×787. La lunghezza media degli edge periferici della card è inferiore a quella interna.
+- Parsing di tutti i moduli, asset originali completi, cinque destinazioni preservate, configurazione Vercel, singolo mount della navbar e singolo RAF nell'app.
 
-## Verifica visiva e interattiva
+## Browser
 
-Browser: Chrome della sessione cloud. Layout verificati direttamente a 1363 × 937 e tramite iframe responsive a 390 × 844 e 320 × 568 CSS px, DPR del browser cloud. Questi ultimi sono viewport simulati, non telefoni fisici.
+Chrome remoto, controlli tramite interfaccia reale e pagina interna di verifica.
 
-- Desktop: cinque immagini decodificate, una navbar; logo e icone allineati. Card centrale nitida, tagli alto-sinistra e basso-destra, prospettiva preservata.
-- Loading fermato al 50%: celle del contenuto realmente assenti; immagine e lettere ricostruite dal basso-sinistra. Maschera rimossa nello stato completo.
-- Mobile: scrollWidth corrisponde a 390/320 px; nessun overflow orizzontale. Logo largo 320 px a viewport 390; 280 px con margini di 20 px a viewport 320.
-- Prossimità: il bordo sinistro vicino al puntatore risponde, il perimetro lontano rimane neutro, immagini e testo restano leggibili.
-- Tastiera: freccia giù porta Studio a Services; stato aria-current della navbar aggiornato alla medesima sezione.
-- Touch sintetico sul documento reale: down attiva il campo, up produce un impulso, cancel rimuove il contatto senza produrre un impulso aggiuntivo. Esito harness: TOUCH_CANCEL_PASS.
-- Drag verticale nativo con mouse: Services → Projects, senza apertura accidentale della pagina.
-- Movimento ridotto verificato attraverso il percorso di debug che usa il medesimo flag del media query: navigazione attiva, maschera centrale none, particelle e impulsi a zero.
-- Errori applicativi non osservati. La console contiene un messaggio proveniente dall’estensione del browser cloud, esterno alla NAV.
+- Layout desktop 1363×936 circa e mobile via iframe 390×844 e 320×568: immagini caricate 5/5; larghezza del documento uguale al viewport; card principale completamente rivelata; un solo overlay.
+- Hover reale sul titolo: foto a colori, micro-reticolo limitato ai glifi, anteprime neutre.
+- Test degli eventi immagine: `IMAGE_GATE_PASS`, con passaggio color → neutral.
+- Test sintetico touch down/up/cancel: `TOUCH_CANCEL_PASS`; un impulso al rilascio, nessun impulso aggiuntivo sul cancel, stato di contatto liberato. I grafi locali ricevono impulsi separati.
+- Drag verticale reale: LevelUp → Start. Rotella reale: Start → Studio, con ciclo completo.
+- JavaScript disabilitato via iframe sandbox: visibili tutti e cinque i link di fallback.
+- Reduced motion: maschere rimosse, zero particelle/impulsi; chevron e tastiera portano a Services e Start. Verifica tramite override diagnostico, non tramite impostazione del sistema operativo.
 
-## Prestazioni e limiti
+## Limiti
 
-I campioni del callback RAF dopo il caching a riposo sono circa 1.75–3.2 ms nei viewport mobile simulati; durante un passaggio è stato osservato un campione medio di 5.3 ms. Sono misure CPU del callback e non includono il costo GPU/compositing del blur. Il browser cloud ha consegnato circa 1 RAF/s durante parte della prova; questo ambiente non consente di certificare la fluidità a 60 fps.
+Il browser remoto ha eseguito il RAF con cadenza fortemente ridotta durante la prova; non costituisce un benchmark a 60 fps. Il codice usa tempo trascorso reale per le transizioni e limita il passo delle particelle. Il target di 60 fps rimane da misurare sui dispositivi reali.
 
-Non sono stati verificati Safari, Firefox, GPU o telefoni fisici. Non è stata prodotta una registrazione video. Verificare maschere SVG, blur nativo e pinch zoom sui dispositivi finali prima della pubblicazione definitiva. Il progetto usa Canvas2D e non il renderer WebGL proposto come percorso consigliato dal brief; gli asset HTML rimangono originali e accessibili.
-
-L’integrazione riguarda la NAV: non aggiunge VFX nei documenti esterni delle pagine Services, Projects, LevelUp o Start. Se Framer contiene già un secondo logo/navbar/blur, rimuoverlo dal contenitore per evitare la duplicazione: un iframe non può modificare il DOM del documento padre di un’altra origine.
+Il test touch sintetico verifica il ciclo degli eventi; non sostituisce un test su hardware iOS/Android. Safari non è stato verificato. Nessuna nuova immagine generata. Il deploy Vercel esistente non è stato sovrascritto.

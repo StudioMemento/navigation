@@ -32,3 +32,34 @@ export function borderDistance(x,y,w,h,cut){
  return distance;
 }
 export function cardPath(ctx,w,h,c){ctx.beginPath();ctx.moveTo(c,.5);ctx.lineTo(w-.5,.5);ctx.lineTo(w-.5,h-c);ctx.lineTo(w-c,h-.5);ctx.lineTo(.5,h-.5);ctx.lineTo(.5,c);ctx.closePath();}
+
+function topology(points,aspect){
+ const triangles=triangulate(points.map(p=>({x:p.x*aspect,y:p.y}))),edges=[],neighbors=points.map(()=>[]),seen=new Set();
+ for(const t of triangles)for(let i=0;i<3;i++){const a=t[i],b=t[(i+1)%3],key=[a,b].sort((x,y)=>x-y).join(':');if(!seen.has(key)){seen.add(key);edges.push([a,b]);neighbors[a].push(b);neighbors[b].push(a);}}
+ return {points,triangles,edges,neighbors};
+}
+// A dense, independent rim and a progressively more open interior.
+export function cardMesh(w,h,seed=89,small=false){
+ const r=seeded(seed),points=[];
+ const add=(x,y)=>points.push({x:x/w,y:y/h,phase:r()*Math.PI*2});
+ for(const [x,y]of [[0,0],[w,0],[w,h],[0,h]])add(x,y);
+ for(let x=12;x<w-5;x+=12+r()*12){add(x,0);add(Math.max(1,Math.min(w-1,x+(r()-.5)*8)),h);}
+ for(let y=12;y<h-5;y+=12+r()*12){add(0,y);add(w,Math.max(1,Math.min(h-1,y+(r()-.5)*8)));}
+ for(let x=18;x<w-16;x+=24+r()*19){add(x,9+r()*13);add(x,h-9-r()*13);}
+ for(let y=22;y<h-20;y+=24+r()*19){add(9+r()*13,y);add(w-9-r()*13,y);}
+ const cap=small?360:680;
+ for(let attempt=0;attempt<cap*14&&points.length<cap;attempt++){
+  const x=24+r()*(w-48),y=24+r()*(h-48),d=Math.min(x,w-x,y,h-y),spacing=19+Math.min(1,d/70)*(23+19*(.5+.5*Math.sin(x*.018+y*.015+seed)));
+  if(points.every(p=>Math.hypot(p.x*w-x,p.y*h-y)>spacing))add(x,y);
+ }
+ return topology(points,w/h);
+}
+export function backgroundMesh(w,h,small=false){
+ const base=mesh(1467,small?6:12,small?10:8),r=seeded(3178),points=[...base.points];
+ for(const [x,y,spread,count]of [[.035,.24,48,10],[.91,.73,65,13],[.975,.39,43,9],[.24,.96,53,7]])for(let i=0;i<count;i++){
+  const a=r()*Math.PI*2,d=10+r()*spread,px=Math.max(0,Math.min(1,x+Math.cos(a)*d/w)),py=Math.max(0,Math.min(1,y+Math.sin(a)*d/h));
+  if(points.every(p=>Math.hypot((p.x-px)*w,(p.y-py)*h)>12))points.push({x:px,y:py,phase:r()*Math.PI*2});
+ }
+ return topology(points,w/h);
+}
+export function insideCard(x,y,w,h,cut){return x>=0&&y>=0&&x<=w&&y<=h&&x+y>=cut&&x+y<=w+h-cut;}

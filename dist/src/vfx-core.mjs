@@ -2,6 +2,7 @@ import {clamp,smooth,seeded} from './model.mjs';
 export const smoothRange=(a,b,x)=>smooth((x-a)/(b-a));
 export function fieldEnergy(x,y,p,radius){
  if(!p.strength)return 0;
+ if(Math.abs(x-p.x)>radius*1.42||Math.abs(y-p.y)>radius*1.32)return 0;
  const wx=20*Math.sin(y*.013+x*.006)+11*Math.cos(x*.018-y*.009);
  const wy=18*Math.sin(x*.012-y*.008)+9*Math.cos(y*.02+x*.01);
  const d=Math.hypot((x-p.x)*.91+wx,(y-p.y)*1.12+wy);
@@ -26,7 +27,7 @@ export function graphDistances(points,neighbors,startX,startY,maxDistance=600){
 export function pulseEnvelope(age,distance){if(!Number.isFinite(distance))return 0;const arrival=distance/660;return Math.pow(clamp(1-Math.abs(age-arrival-.07)/.13),2)*Math.exp(-distance/240)*clamp(1-age/.95);}
 export class TrianglePool{
  constructor(capacity=80){this.items=Array.from({length:capacity},()=>({alive:false}));this.rng=seeded(5163);this.tokens=0;this.last=0;this.count=0;}
- emit(x,y,px,py,now,scale=1){if(now-this.last<55)return false;const p=this.items.find(p=>!p.alive);if(!p)return false;const r=this.rng,dx=x-px,dy=y-py,length=Math.hypot(dx,dy)||1,speed=25+r()*36;
+ emit(x,y,px,py,now,scale=1){if(now-this.last<(scale<1?166:84))return false;const p=this.items.find(p=>!p.alive);if(!p)return false;const r=this.rng;let dx=x-px,dy=y-py;const length=Math.hypot(dx,dy)||1,speed=25+r()*36;if(dx===0&&dy===0){const angle=r()*Math.PI*2;dx=Math.cos(angle);dy=Math.sin(angle);}
  Object.assign(p,{alive:true,x,y,vx:dx/length*speed,vy:dy/length*speed,birth:now,life:(.25+r()*.35)*scale,size:(1.2+r()*1.8)*scale,angle:r()*6.28,spin:(r()-.5)*4,seed:r()*9});this.last=now;return true;}
  update(now,dt){this.count=0;for(const p of this.items){if(!p.alive)continue;const age=(now-p.birth)/1000;if(age>=p.life){p.alive=false;continue;}this.count++;
  // Curl of a scalar potential: derivatives give clockwise AND anticlockwise eddies.
