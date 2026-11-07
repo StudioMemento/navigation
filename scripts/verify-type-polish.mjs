@@ -31,7 +31,7 @@ function context(){
   save(){state.push(this.globalCompositeOperation);},restore(){this.globalCompositeOperation=state.pop();}
  };
 }
-const l=layout(1440,900),ctx=context(),surface={drawImage(){}},edge={save(){},restore(){},drawImage(){}};
+const l=layout(1440,900),ctx=context(),surface={drawImage(){}},edge={save(){},restore(){},drawImage(){},strokeText(){}};
 const glyphs=[{x:100,width:50},{x:l.width-150,width:50}],top=l.height-130;
 let input=.1;const emissions=[];
 const fx={

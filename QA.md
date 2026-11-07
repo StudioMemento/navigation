@@ -1,21 +1,27 @@
-# QA R7 — Ambra V2 / 7 novembre 2026
+# QA R8 — 7 novembre 2026
+
+## Analisi produzione
+
+Ispezionati in Chrome il dominio mementostudio.it e il suo iframe mementonav.vercel.app. Il child R7 aggiorna la navbar al termine dello spring; la R8 aggiorna il target e la navbar insieme all’input. Il dominio pubblico non è stato modificato durante questa lavorazione.
 
 ## Controlli automatici
 
-`npm test` supera i contratti per geometria e proiezione, VFX, asset, regressione typo/NaN, route/bridge, campo Ambra V2 e cleanup. La geometria copre sette viewport, inclusi portrait e landscape, e inset estesi: i bordi interni delle preview entrano nella proiezione della card centrale mantenendo profondità negativa. I controlli verificano anche la separazione delle hit area.
+`npm test`: tutti i nove script passano. Copertura: proporzioni e margini su sette viewport; mesh e proiezione; asset; colori e maschere della tipografia; ripristino route e bridge; particelle; retargeting rapido e rotella continua; densità e animazione del fondo; reticolo unico e pulizia del canvas bordo.
 
-## Risultati nel browser di anteprima
+La regressione del canvas esercita 80 frame sull’angolo con trasformazioni traslate appositamente introdotte: la pulizia ripristina ogni volta il perimetro reale. Controllo aggiuntivo su Canvas raster reale: 80 immagini del bordo identiche nonostante la trasformazione inquinata.
 
-- Composizione desktop e mobile osservata: preview dietro la card attiva, contatto ombreggiato, chevron sottili e nessun invito allo scroll. Le fotografie inattive non hanno un filtro blur; il kit navbar V12 mantiene il proprio overlay.
-- Gate `IMAGE_80_100_PASS`: card attiva a riposo `grayscale(0.2) brightness(0.96)`, hover `grayscale(0) brightness(1.06)`, uscita nuovamente `grayscale(0.2) brightness(0.96)`. Entrambe le preview: `grayscale(1) brightness(0.82)`.
-- Hover sul bordo: reticolo e glow locali, nessuna accensione uniforme della cornice. Hover sulla scritta: accento ambra locale nei glifi, riempimento chiaro e leggibilità conservati.
-- Sequenza di movimento sulla scritta: emissione effettiva osservata dal contatore, picco di 7 particelle nella sessione cloud; non è un target di densità o un benchmark.
-- 320 × 568: 12 px liberi tra logo/freccia e freccia/dock, nessun overflow, hint assente. Il layout della card resta leggibile.
-- `TOUCH_CANCEL_PASS`: eventi Pointer simulati, un impulso al rilascio e nessuno aggiuntivo su cancel; pulizia di contatto e particelle.
-- Modalità reduced motion: passaggio LevelUp → Start operativo, foto caricate 5/5, maschera della card attiva `none`, una sola navbar, nessuna particella o impulso residuo.
+## Verifica browser della R8
+
+- Composizione osservata a 1200×800 e iframe mobile 390×844: titoli a peso 300, nessun overflow nella card, chevron e dock separati.
+- Hover prolungato nell’angolo alto sinistro: bordo luminoso unico, senza copie traslate o linee ripetute come nello screenshot segnalato.
+- Hover mobile su testo e chevron: luce ambra locale, contorni e alone esterno visibili; testo HTML conservato.
+- Reveal fermato al 55%: ricostruzione per facce triangolari, fronti ambra con intensità differenziata.
+- Dieci selezioni consecutive richieste a intervalli di 60ms: stato della navbar e sezione selezionata coincidono dopo ciascuna selezione; risultato PASS su tutte le dieci verifiche. Il browser può rallentare i timer.
+- Reduced motion: Studio → Services operativo, navbar Services, tutte le cinque foto decodificate, maschera della card attiva `none`.
+- Nessun errore applicativo osservato. Il browser cloud ha emesso un errore interno alla propria estensione, estraneo ai moduli del sito.
 
 ## Limiti
 
-Il browser cloud rallenta l'animazione a circa 1 fps e non permette un giudizio affidabile sulla fluidità reale. La resa temporale dei triangolini e lo swipe vanno confermati su hardware desktop/mobile; i test Pointer simulati non sostituiscono questa verifica. I valori nel markdown Ambra V2 sono calibrazioni di implementazione, non misure ricavate dai concept.
+Il browser cloud limita l’animazione osservata a circa 1 fps: non consente di certificare 60fps o la sensazione temporale su hardware reale. Lo spring è verificato numericamente e la sincronizzazione è verificata nel browser; fluidità finale e swipe fisico vanno confermati sul dispositivo dopo il deploy. La prova a 390px è un iframe responsivo, non uno smartphone fisico.
 
-Il bridge Framer è coperto dai test di messaggi/origini/source/request ID. La verifica del parent di produzione resta separata dal pacchetto child: `docs/framer-nav-bridge.html` contiene l'integrazione da installare nella home. Questa consegna non certifica un aggiornamento del dominio di produzione.
+Il pacchetto contiene il child aggiornato e il bridge già esistente; nessuna modifica o nuova pubblicazione del parent Framer è stata eseguita.

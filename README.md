@@ -1,8 +1,8 @@
-# Memento NAV — R7 / Ambra V2
+# Memento NAV — R8 / Ambra Polish
 
 Slider verticale calibrato su `Slider_nav proportions_(1).png` per struttura e chevron, con gli effetti delle sei tavole neutre Ambra V2. Le cinque immagini originali, Inter e la navbar overlay V12 sono conservati. Le regole NAV aggiornano il master Start R4: card attiva a colori già a riposo, preview nitide in bianco e nero, sovrapposizione e luce locale più leggibili.
 
-La specifica aggiornata, la precedenza dei riferimenti e i criteri di accettazione sono in [MEMENTO_NAV_VFX_AMBRA_V2_R7.md](docs/MEMENTO_NAV_VFX_AMBRA_V2_R7.md). Le tavole guidano la calibrazione e non richiedono nuovi asset o una replica pixel-perfect.
+Le correzioni R8 sono documentate in [MEMENTO_NAV_R8_CHANGELOG.md](docs/MEMENTO_NAV_R8_CHANGELOG.md). Il riferimento visivo di base resta [MEMENTO_NAV_VFX_AMBRA_V2_R7.md](docs/MEMENTO_NAV_VFX_AMBRA_V2_R7.md). Le tavole guidano la calibrazione e non richiedono nuovi asset o una replica pixel-perfect.
 
 ## Avvio e Vercel
 
@@ -12,10 +12,10 @@ Progetto statico, senza dipendenze di runtime o build. In Vercel selezionare **O
 
 - Viewport completo e ciclo Studio → Services → Projects → LevelUp → Start.
 - Su desktop largo, card 2:1 con altezza obiettivo del 60% del viewport e larghezza entro l’88% del viewport. Le aree effettive di logo, dock e controlli possono ridurla.
-- Padding laterale e inferiore pari al 6% della larghezza della card. Inter 200, titolo grande e spaziatura distribuita.
+- Padding laterale e inferiore pari al 6% della larghezza della card. Inter 300, titolo grande e spaziatura distribuita.
 - Anteprime sopra/sotto inclinate e leggermente coperte dalla card attiva: sovrapposizione del 4% dell’altezza, limitata a 12–24 CSS px, con morbida ombra di contatto. Fotografie inattive sempre in bianco e nero, senza blur aggiuntivo; il blur della navbar overlay resta nel proprio livello.
-- Chevron sottili con grafica larga al massimo 54 CSS px, area interattiva separata e spazio riservato rispetto a logo/dock. Due tagli diagonali alto-sinistra / basso-destra sulla card.
-- Mobile: card larga fino al 90% del viewport, rapporto adattato all’orientamento e limiti di altezza. Le aree interattive dei chevron hanno altezza 48–52 CSS px, ridotta a 44 sui viewport bassi.
+- Chevron più presenti con grafica larga al massimo 62 CSS px, reticolo locale e bagliore esterno, area interattiva separata e spazio riservato rispetto a logo/dock. Due tagli diagonali alto-sinistra / basso-destra sulla card.
+- Mobile: card larga fino al 90% del viewport, rapporto adattato all’orientamento e limiti di altezza. Le aree interattive dei chevron hanno altezza 54–58 CSS px, ridotta a 48 sui viewport bassi.
 - Eliminata la scritta “SCORRI PER ESPLORARE” e il suo spazio dedicato.
 
 ## Interazioni
@@ -26,15 +26,15 @@ La card attiva conserva l’80% del colore originale a riposo e raggiunge il 100
 
 Il campo di esplorazione usa ambra calda e un range non uniforme: bordi, facce e vertici rispondono localmente senza un disco luminoso riconoscibile. Fondo, superficie e glifi hanno topologie indipendenti. Il bordo vicino riceve più luce; il centro della card mantiene una risposta attenuata. La foto e il pannello non si deformano.
 
-La tipografia mantiene il testo HTML pieno e Inter 200, con reticolo di microfacce, edge glow e propagazione ritagliati nei glifi. I piccoli triangoli accompagnano il movimento e l’esplorazione di bordo e testo; l’emissione si esaurisce quando il pointer si ferma. All’uscita il fondo torna neutro e la card attiva ritorna al proprio 80% di colore.
+La tipografia mantiene il testo HTML pieno e Inter 300, con reticolo di microfacce, edge glow e propagazione ritagliati nei glifi. I piccoli triangoli accompagnano il movimento e l’esplorazione di bordo e testo; l’emissione si esaurisce quando il pointer si ferma. All’uscita il fondo torna neutro e la card attiva ritorna al proprio 80% di colore.
 
-Loading e attraversamento del viewport costruiscono/scompongono il contenuto usando celle deterministiche. La costruzione dipende dalla posizione dello slider e si inverte sulle stesse celle. Touch up emette un impulso sui grafi; pointercancel non emette un secondo impulso. Il pool condiviso ha capacità di 96 triangolini desktop e 36 mobile: è un limite, non una quantità da mantenere visibile. Un solo RAF coordina la pagina.
+Loading e attraversamento del viewport costruiscono/scompongono il contenuto usando gli stessi triangoli del reticolo hover, con intensità ambra diverse per faccia e bordi deduplicati. La costruzione dipende dalla posizione dello slider e si inverte sulle stesse celle. Touch up emette un impulso sui grafi; pointercancel non emette un secondo impulso. Il pool condiviso ha capacità di 96 triangolini desktop e 36 mobile: è un limite, non una quantità da mantenere visibile. Un solo RAF coordina la pagina. La navbar si aggiorna all’input; lo slider mantiene la velocità corrente quando la destinazione cambia, senza attendere il completamento della precedente transizione.
 
 `prefers-reduced-motion` disattiva movimento del reticolo, particelle, impulso e maschere animate. Rimangono contenuto e navigazione. Il fallback senza JavaScript espone i cinque collegamenti. Il campo non intercetta input né impedisce pinch zoom.
 
 ## File
 
-I moduli sono in `dist/src/`: `model.mjs` gestisce proporzioni e proiezione; `geometry.mjs` topologie e sagoma; `field.mjs` fondo e particelle; `card-fx.mjs` superficie, testo, colore e reveal; `vfx-core.mjs` le primitive condivise; `vfx-config.mjs` la calibrazione; `config.mjs` contenuti e URL. `dist/navigation/` contiene il kit overlay originale.
+I moduli sono in `dist/src/`: `model.mjs` gestisce proporzioni e proiezione; `geometry.mjs` topologie e sagoma; `field.mjs` fondo e particelle; `card-fx.mjs` superficie, testo, colore e reveal; `chevron-fx.mjs` reticolo e glow delle frecce; `vfx-core.mjs` le primitive condivise; `vfx-config.mjs` la calibrazione; `config.mjs` contenuti e URL. `dist/navigation/` contiene il kit overlay originale.
 
 Diagnostica locale: `/?qa` e `/?qa&motion=reduce`. La pagina di verifica sotto `scripts/qa-check.html` può essere copiata temporaneamente nella root servita. Non è parte dell'interfaccia pubblica.
 

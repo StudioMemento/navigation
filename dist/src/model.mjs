@@ -7,7 +7,7 @@ export function layout(w,h,insets={}){
  const portrait=h>w*1.08;
  const ratio=portrait?(w<600?.8:1.08):2;
  const small=w<600,short=h<520;
- const arrowHeight=short?44:small?48:52,controlGap=12;
+ const arrowHeight=short?48:small?54:58,controlGap=12;
  const logoBottom=insets.logoBottom??60;
  const dockTop=insets.dockTop??h-(44+(Math.min(320,w-40)-200)/8);
  // Reserve the actual overlay hit areas before sizing the hero, including safe areas.
@@ -44,5 +44,28 @@ export function dragSnap(start,position,velocity,cancel=false){
  const delta=position-start;
  if(Math.abs(delta)>.19||Math.abs(velocity)>.38)return Math.round(start)+Math.sign(Math.abs(delta)>.1?delta:velocity);
  return Math.round(start);
+}
+// Analytic critically damped spring: callers keep both values when retargeting,
+// so rapid input changes the destination without restarting the visible motion.
+export function slideStep(position,velocity,target,dt,reduced=false){
+ if(reduced)return {position:target,velocity:0,settled:true};
+ dt=clamp(dt,0,.1);
+ const omega=18+Math.min(6,Math.abs(target-position)*2),delta=position-target;
+ const step=(velocity+omega*delta)*dt,decay=Math.exp(-omega*dt);
+ position=target+(delta+step)*decay;velocity=(velocity-omega*step)*decay;
+ const settled=Math.abs(target-position)<.0008&&Math.abs(velocity)<.008;
+ return {position:settled?target:position,velocity:settled?0:velocity,settled};
+}
+// Continue a sustained wheel gesture instead of locking until it stops. A short
+// repeat interval and distance threshold discard the small inertial tail.
+export function wheelStep(state,delta,now){
+ const sign=Math.sign(delta);
+ if(!sign)return 0;
+ if(now-state.time>170||sign!==state.sign){state.delta=0;state.used=false;}
+ state.time=now;state.sign=sign;state.delta+=delta;
+ const threshold=state.used?90:24;
+ if(Math.abs(state.delta)<=threshold||state.used&&now-state.stepTime<85)return 0;
+ state.delta=0;state.used=true;state.stepTime=now;
+ return sign;
 }
 export function seeded(seed=431){return()=>{seed|=0;seed=seed+0x6D2B79F5|0;let t=Math.imul(seed^seed>>>15,1|seed);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}

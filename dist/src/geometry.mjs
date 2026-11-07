@@ -55,10 +55,19 @@ export function cardMesh(w,h,seed=89,small=false){
  return topology(points,w/h);
 }
 export function backgroundMesh(w,h,small=false){
- const base=mesh(1467,small?6:12,small?10:8),r=seeded(3178),points=[...base.points];
- for(const [x,y,spread,count]of [[.035,.24,48,10],[.91,.73,65,13],[.975,.39,43,9],[.24,.96,53,7]])for(let i=0;i<count;i++){
-  const a=r()*Math.PI*2,d=10+r()*spread,px=Math.max(0,Math.min(1,x+Math.cos(a)*d/w)),py=Math.max(0,Math.min(1,y+Math.sin(a)*d/h));
-  if(points.every(p=>Math.hypot((p.x-px)*w,(p.y-py)*h)>12))points.push({x:px,y:py,phase:r()*Math.PI*2});
+ // Work in actual viewport pixels: density remains comparable in portrait,
+ // landscape and wide embeds, and the topology is generated only on resize.
+ const r=seeded(1467),points=[],spacing=small?51:64,cap=small?240:580;
+ const add=(x,y)=>points.push({x:x/w,y:y/h,phase:r()*Math.PI*2});
+ for(const [x,y]of [[0,0],[w,0],[w,h],[0,h]])add(x,y);
+ for(let x=spacing*.6;x<w-spacing*.3;x+=spacing*(.75+r()*.45)){add(x,0);add(Math.min(w-1,x+(r()-.5)*spacing*.45),h);}
+ for(let y=spacing*.6;y<h-spacing*.3;y+=spacing*(.75+r()*.45)){add(0,y);add(w,Math.min(h-1,y+(r()-.5)*spacing*.45));}
+ const count=Math.min(cap,Math.max(points.length+12,Math.round(w*h/(spacing*spacing)*1.5)));
+ for(let attempt=0;points.length<count&&attempt<count*70;attempt++){
+  const x=r()*w,y=r()*h;
+  const density=.76+.21*(.5+.5*Math.sin(x*.009+y*.006)*Math.cos(y*.011-x*.004));
+  const min=spacing*density;
+  if(points.every(p=>Math.hypot(p.x*w-x,p.y*h-y)>min))add(x,y);
  }
  return topology(points,w/h);
 }
