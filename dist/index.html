@@ -26,7 +26,7 @@ addEventListener('error',restoreNav);addEventListener('unhandledrejection',resto
  <button id="next" class="chevron next" aria-label="Sezione successiva"><svg viewBox="0 0 30 14" aria-hidden="true"><path d="m1 1 14 12 14-12"/></svg></button>
  <p class="sr-only" id="status" aria-live="polite" aria-atomic="true"></p>
 </main>
-<p class="gesture-hint" aria-hidden="true">SCORRI PER ESPLORARE</p>
+<p id="gesture-hint" class="gesture-hint" aria-hidden="true">SCORRI PER ESPLORARE</p>
 <nav hidden id="fallback" class="fallback" aria-label="Sezioni Memento"><a href="https://mementostudio.it/studio">Studio</a><a href="https://mementostudio.it/services">Services</a><a href="https://mementostudio.it/projects">Projects</a><a href="https://mementostudio.it/levelup">LevelUp</a><a href="https://mementostudio.it/start">Start</a></nav><noscript><style>#fallback{display:flex!important}</style></noscript>
 <script type="module" src="./src/app.mjs"></script>
 </body>

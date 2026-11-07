@@ -1,11 +1,11 @@
 import {clamp,smooth,project} from './model.mjs';
 import {mesh,cardMesh,cardPath,outline,borderDistance,insideCard} from './geometry.mjs';
 import {VFX} from './vfx-config.mjs';
-import {visibility,loadVisibility,graphDistances,pulseEnvelope} from './vfx-core.mjs';
+import {visibility,loadVisibility,graphDistances,pulseEnvelope,glyphLight} from './vfx-core.mjs';
 const SVG='http://www.w3.org/2000/svg';
 export class CardFX{
  constructor(card,index,field){
-  Object.assign(this,{card,index,field,canvas:card.querySelector('.card-fx'),edge:card.querySelector('.card-edge'),title:card.querySelector('.title'),shell:card.querySelector('.card-reveal'),amount:1,last:0,waveAt:-10000,titleEntered:false,previousMask:null,imageEnergy:0,pulses:[]});
+  Object.assign(this,{card,index,field,canvas:card.querySelector('.card-fx'),edge:card.querySelector('.card-edge'),title:card.querySelector('.title'),shell:card.querySelector('.card-reveal'),amount:1,last:0,waveAt:-10000,waveOrigin:null,titleEntered:false,previousMask:null,imageEnergy:0,pulses:[]});
   this.ctx=this.canvas.getContext('2d');this.ec=this.edge.getContext('2d');this.spans=[...this.title.children];this.glyphMask=document.createElement('canvas');this.typeCanvas=document.createElement('canvas');
  }
  resize(l){
@@ -48,7 +48,7 @@ export class CardFX{
   const near=this.nearest(pointer.x,pointer.y);if(Math.hypot(this.points[near].x-pointer.x,this.points[near].y-pointer.y)>r)return;
   this.pulses.push({time:t,distances:graphDistances(this.points,this.grid.neighbors,pointer.x,pointer.y,r*1.8)});if(this.pulses.length>2)this.pulses.shift();this.restingKey=null;
  }
- cancel(){this.pulses=[];this.imageEnergy=0;this.card.style.setProperty('--image-energy','0');this.restingKey=null;}
+ cancel(){this.pulses=[];this.imageEnergy=0;this.waveAt=-10000;this.waveOrigin=null;this.titleEntered=false;this.card.style.setProperty('--image-energy','0');this.restingKey=null;}
  updateMask(pose,reduced,t){
   let complete=true;const l=this.l,focused=this.card.classList.contains('focused'),top=VFX.top,bottom=l.h-VFX.bottom,band=(bottom-top)*VFX.band;
   const key=[pose.y,pose.z,pose.angle,this.amount,reduced,focused].join(':');if(this.maskKey===key)return;this.maskKey=key;
@@ -93,15 +93,17 @@ export class CardFX{
   c.restore();e.restore();
  }
  drawType(t,pose,c,e){
-  if(pose.secondary>.05)return;const l=this.l,w=l.width,ctx=this.typeCanvas.getContext('2d');ctx.clearRect(0,this.typeTop,w,this.typeHeight);let maximum=0;
+  if(pose.secondary>.05)return;const l=this.l,w=l.width,ctx=this.typeCanvas.getContext('2d');ctx.globalCompositeOperation='source-over';ctx.clearRect(0,this.typeTop,w,this.typeHeight);let maximum=0;
   const energies=this.glyphs.map(g=>{const p=project(g.x+g.width/2,this.typeTop+this.typeHeight*.5,pose,l),energy=Math.max(this.field.directEnergy(p.x,p.y),this.xy[this.nearest(g.x+g.width/2,this.typeTop+this.typeHeight*.5)].pulse);maximum=Math.max(maximum,energy);return energy;});
   if(maximum>.2&&!this.titleEntered&&t-this.waveAt>750){this.waveAt=t;const g=this.glyphs[energies.indexOf(maximum)];this.waveOrigin=(g.x+g.width/2)/w;this.titleEntered=true;}if(maximum<.07)this.titleEntered=false;
-  const elapsed=(t-this.waveAt)/780,travel=elapsed>=0&&elapsed<1.1?Math.pow(1-elapsed/1.1,1.3):0;
-  if(maximum<.008&&travel===0)return;
-  const light=(x,i)=>Math.max(energies[i]*.66,Math.exp(-Math.pow((Math.abs(x/w-this.waveOrigin)-elapsed*.95)/.12,2))*travel*.78);
-  for(const f of this.typeFaces){const [a,b,d]=f.points,energy=light((a.x+b.x+d.x)/3,f.glyph);if(energy<.02)continue;ctx.fillStyle=`rgba(${VFX.color},${energy*(.22+.38*f.variation)})`;ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.lineTo(d.x,d.y);ctx.closePath();ctx.fill();}
+  const elapsed=(t-this.waveAt)/780,travelling=Number.isFinite(this.waveOrigin)&&elapsed>=0&&elapsed<1.1;
+  if(maximum<.008&&!travelling)return;
+  const light=(x,i)=>glyphLight(energies[i],x/w,this.waveOrigin,elapsed);
+  // Translucent microfaces enrich the original full HTML glyph; they never
+  // replace its fill or its silhouette with an outline.
+  for(const f of this.typeFaces){const [a,b,d]=f.points,energy=light((a.x+b.x+d.x)/3,f.glyph);if(energy<.02)continue;ctx.fillStyle=`rgba(${VFX.color},${energy*(.16+.30*f.variation)})`;ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.lineTo(d.x,d.y);ctx.closePath();ctx.fill();}
   ctx.lineWidth=.6;for(const {a,b,glyph}of this.typeEdges){const energy=light((a.x+b.x)/2,glyph);if(energy<.02)continue;ctx.strokeStyle=`rgba(${VFX.paper},${energy*.62})`;ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.stroke();}
-  ctx.globalCompositeOperation='destination-in';ctx.drawImage(this.glyphMask,0,this.typeTop,w,this.typeHeight);ctx.globalCompositeOperation='source-over';c.drawImage(this.typeCanvas,0,this.typeTop,w,this.typeHeight);
+  ctx.save();ctx.globalCompositeOperation='destination-in';ctx.drawImage(this.glyphMask,0,this.typeTop,w,this.typeHeight);ctx.restore();c.drawImage(this.typeCanvas,0,this.typeTop,w,this.typeHeight);
   e.save();e.globalAlpha=.12;e.shadowColor=`rgba(${VFX.color},.4)`;e.shadowBlur=3;e.drawImage(this.typeCanvas,0,this.typeTop,w,this.typeHeight);e.restore();
  }
  dispose(){this.shell.style.maskImage='none';this.shell.style.webkitMaskImage='none';this.canvas.remove();this.edge.remove();this.card.querySelector('svg')?.remove();this.pulses=[];}

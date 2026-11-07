@@ -1,0 +1,64 @@
+<!-- Home Framer: Settings > Custom Code > End of body (solo pagina home).
+     Non aggiungere un secondo iframe. Questo script collega quello esistente.
+     Pubblicare la home dopo aver incollato il blocco completo. -->
+<script>
+(() => {
+  if (window.__MEMENTO_HOME_ROUTE_R6__) return;
+  const CHILD_ORIGIN = 'https://mementonav.vercel.app';
+  const CHANNEL = 'memento:hub-route', VERSION = 1;
+  const sections = ['studio', 'services', 'projects', 'levelup', 'start'];
+  const sectionName = value => {
+    if (typeof value !== 'string' || value.length > 32) return null;
+    const slug = value.replace(/^#/, '').toLowerCase();
+    return slug === 'memento' ? 'studio' : sections.includes(slug) ? slug : null;
+  };
+  let iframe = null, connection = null;
+  const ready = () => iframe?.contentWindow.postMessage({ channel: CHANNEL, version: VERSION, type: 'HOST_READY' }, CHILD_ORIGIN);
+  const attach = () => {
+    const next = [...document.querySelectorAll('iframe')].find(frame => {
+      try { const src = new URL(frame.src, location.href); return src.origin === CHILD_ORIGIN && ['/', '/index.html'].includes(src.pathname); }
+      catch { return false; }
+    });
+    if (!next) return;
+    next.title = 'Navigazione Memento';
+    if (next !== iframe) {
+      iframe?.removeEventListener('load', ready);
+      iframe = next; connection = null;
+      iframe.addEventListener('load', ready);
+      ready();
+    }
+  };
+  const state = initial => {
+    if (!iframe || !connection) return;
+    iframe.contentWindow.postMessage({ channel: CHANNEL, version: VERSION, type: 'STATE', requestId: connection, initial, section: sectionName(location.hash) }, CHILD_ORIGIN);
+  };
+  const receive = event => {
+    attach();
+    const data = event.data;
+    if (!iframe || event.source !== iframe.contentWindow || event.origin !== CHILD_ORIGIN ||
+        !data || typeof data !== 'object' || Array.isArray(data) || data.channel !== CHANNEL || data.version !== VERSION ||
+        typeof data.requestId !== 'string' || data.requestId.length < 8 || data.requestId.length > 128) return;
+    if (data.type === 'REQUEST') { connection = data.requestId; state(true); return; }
+    if (data.type !== 'CHANGE' || data.requestId !== connection) return;
+    const section = sectionName(data.section);
+    if (!section || sectionName(location.hash) === section) return;
+    const url = new URL(location.href); url.hash = section;
+    history.replaceState(history.state, '', url);
+  };
+  const sync = () => state(false);
+  window.addEventListener('message', receive);
+  window.addEventListener('hashchange', sync);
+  window.addEventListener('popstate', sync);
+  const observer = new MutationObserver(attach);
+  observer.observe(document.documentElement, { childList: true, subtree: true });
+  attach();
+  window.__MEMENTO_HOME_ROUTE_R6__ = { destroy() {
+    observer.disconnect();
+    iframe?.removeEventListener('load', ready);
+    window.removeEventListener('message', receive);
+    window.removeEventListener('hashchange', sync);
+    window.removeEventListener('popstate', sync);
+    delete window.__MEMENTO_HOME_ROUTE_R6__;
+  } };
+})();
+</script>

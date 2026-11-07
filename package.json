@@ -1,9 +1,9 @@
 {
-  "name": "memento-nav-vertical-r5-start-vfx",
-  "version": "5.0.0",
+  "name": "memento-nav-r6-vfx-polish",
+  "version": "6.0.0",
   "private": true,
   "type": "module",
   "scripts": {
-    "test": "node scripts/verify.mjs && node scripts/verify-vfx.mjs && node scripts/verify-artifact.mjs"
+    "test": "node scripts/verify.mjs && node scripts/verify-vfx.mjs && node scripts/verify-artifact.mjs && node scripts/verify-type-polish.mjs && node scripts/verify-route.mjs"
   }
 }

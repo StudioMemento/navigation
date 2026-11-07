@@ -3,11 +3,19 @@ export const smooth=(v)=>{v=clamp(v);return v*v*(3-2*v)};
 export const wrap=(v,n=5)=>((v%n)+n)%n;
 export function relative(index,position,n=5){return wrap(index-position+n/2,n)-n/2}
 export function nearest(index,position,n=5){return position+relative(index,position,n)}
-export function layout(w,h){
+export function layout(w,h,insets={}){
  const portrait=h>w*1.08;
  const ratio=portrait?(w<600?.8:1.08):2.1;
- const width=Math.min(w*(portrait?.9:.88),h*.605*ratio),height=width/ratio;
  const small=w<600,short=h<520;
+ const arrowHeight=short?44:small?48:52,controlGap=12;
+ const logoBottom=insets.logoBottom??60;
+ const dockTop=insets.dockTop??h-(44+(Math.min(320,w-40)-200)/8);
+ // Reserve the actual overlay hit areas before sizing the hero, including safe areas.
+ const clearance=Math.max(logoBottom,h-dockTop)+arrowHeight+controlGap*2;
+ const width=Math.min(w*(portrait?.9:.88),h*.605*ratio,Math.max(40,h-2*clearance)*ratio),height=width/ratio;
+ const preferredOffset=Math.max(34,Math.min(62,(h-height)*.18));
+ const previousY=clamp(h/2-height/2-preferredOffset,logoBottom+controlGap+arrowHeight/2,h/2-height/2-controlGap-arrowHeight/2);
+ const nextY=clamp(h/2+height/2+preferredOffset,h/2+height/2+controlGap+arrowHeight/2,dockTop-controlGap-arrowHeight/2);
  const gap=small?8:10;
  const perspective=height*3.5;
  const angle=(small?44:50)*Math.PI/180;
@@ -15,7 +23,7 @@ export function layout(w,h){
  // Preview inner edges meet the central panel; chevrons sit over the previews.
  const innerScale=perspective/(perspective+depth+Math.sin(angle)*height/2);
  const secondaryY=(height/2+gap)/innerScale+Math.cos(angle)*height/2;
- return {w,h,width,height,ratio,small,short,gap,perspective,angle,depth,secondaryY,padding:width*.06,cut:Math.max(10,Math.min(18,width*.017)),cx:w/2,cy:h/2};
+ return {w,h,width,height,ratio,small,short,gap,perspective,angle,depth,secondaryY,padding:width*.06,cut:Math.max(10,Math.min(18,width*.017)),cx:w/2,cy:h/2,previousY,nextY,arrowHeight,logoBottom,dockTop};
 }
 export function pose(distance,l,reduced=false){
  const a=Math.abs(distance),e=smooth(Math.min(a,1)),sgn=Math.sign(distance);

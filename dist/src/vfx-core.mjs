@@ -25,6 +25,15 @@ export function graphDistances(points,neighbors,startX,startY,maxDistance=600){
  return dist;
 }
 export function pulseEnvelope(age,distance){if(!Number.isFinite(distance))return 0;const arrival=distance/660;return Math.pow(clamp(1-Math.abs(age-arrival-.07)/.13),2)*Math.exp(-distance/240)*clamp(1-age/.95);}
+// A weak hover can reach a glyph before any propagation front has started.
+// In that state the wave contributes exactly zero, never NaN: an invalid canvas
+// colour silently retains its previous value (initially opaque black).
+export function glyphLight(energy,x,origin,elapsed){
+ const local=Number.isFinite(energy)?clamp(energy)*.66:0;
+ if(!Number.isFinite(origin)||!Number.isFinite(x)||!Number.isFinite(elapsed)||elapsed<0||elapsed>=1.1)return local;
+ const decay=Math.pow(1-elapsed/1.1,1.3),front=Math.exp(-Math.pow((Math.abs(x-origin)-elapsed*.95)/.12,2))*decay*.62;
+ return clamp(Math.max(local,front));
+}
 export class TrianglePool{
  constructor(capacity=80){this.items=Array.from({length:capacity},()=>({alive:false}));this.rng=seeded(5163);this.tokens=0;this.last=0;this.count=0;}
  emit(x,y,px,py,now,scale=1){if(now-this.last<(scale<1?166:84))return false;const p=this.items.find(p=>!p.alive);if(!p)return false;const r=this.rng;let dx=x-px,dy=y-py;const length=Math.hypot(dx,dy)||1,speed=25+r()*36;if(dx===0&&dy===0){const angle=r()*Math.PI*2;dx=Math.cos(angle);dy=Math.sin(angle);}

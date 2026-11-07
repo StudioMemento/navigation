@@ -1,4 +1,4 @@
-# Memento NAV — R5 / Start VFX
+# Memento NAV — R6 / VFX polish
 
 Slider verticale aggiornato sulla tavola «Amber doorway level-up navigation», con il linguaggio interattivo Start R4. Le cinque immagini originali, Inter e la navbar overlay V12 sono conservati.
 
@@ -33,3 +33,13 @@ Loading e attraversamento del viewport costruiscono/scompongono il contenuto usa
 Diagnostica locale: `/?qa` e `/?qa&motion=reduce`. La pagina di verifica sotto `scripts/qa-check.html` può essere copiata temporaneamente nella root servita. Non è parte dell'interfaccia pubblica.
 
 Le misurazioni e i limiti della verifica sono in `QA.md`.
+
+## R6 — correzioni dal deploy
+
+- Risolto il colore non valido che rendeva nera la typo al primo hover debole. Testo pieno avorio, microfacce più discrete, propagazione finita e locale.
+- Dimensioni della card e posizioni delle frecce rispettano le hit area reali di logo/dock, con almeno 12 px di separazione nei formati verificati, anche con safe area.
+- Hint leggibile sopra il blur; nascosto quando non ha spazio sufficiente.
+- Focus mouse separato dal focus tastiera per evitare colore bloccato dopo un trascinamento.
+- Ripristino dell’ultima sezione nella sessione, deep link e bridge parent/iframe con origini verificate.
+
+**Integrazione Framer necessaria:** aggiungere il blocco completo di `docs/framer-nav-bridge.html` nella home, Custom Code → End of body, e pubblicare la home. Questo completa il supporto degli URL esterni `/#start`, la sincronizzazione del parent e il titolo accessibile dell’iframe già esistente. Non creare un secondo iframe. Senza il blocco, il child ripristina l’ultima sezione visitata nella sessione ma non può leggere il frammento cross-origin del parent. Dettagli in `docs/ROUTE_RESTORE.md`.

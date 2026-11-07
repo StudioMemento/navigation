@@ -2,8 +2,8 @@ import assert from 'node:assert/strict';
 import {layout,pose,project,unproject,relative,nearest,dragSnap,wrap} from '../dist/src/model.mjs';
 import {mesh} from '../dist/src/geometry.mjs';
 const sizes=[[1997,787,2.1],[2560,1080,2.1],[1440,900,2.1],[834,1194,1.08],[390,844,.8],[844,390,2.1],[320,568,.8]];
-for(const [w,h,r]of sizes){const l=layout(w,h);assert.equal(l.ratio,r);assert.ok(l.width<=w*.9+.01&&l.height<=h*.605+.01);assert.ok(l.width/w>.49);assert.ok(Math.abs(l.padding/l.width-.06)<1e-8);
- if(w/h>1.5)assert.ok(Math.abs(l.height/h-.605)<.01);
+for(const [w,h,r]of sizes){const l=layout(w,h);assert.equal(l.ratio,r);assert.ok(l.width<=w*.9+.01&&l.height<=h*.605+.01);if(h>=520)assert.ok(l.width/w>.49);assert.ok(Math.abs(l.padding/l.width-.06)<1e-8);
+ if(w/h>1.5&&h>=600)assert.ok(Math.abs(l.height/h-.605)<.01);
  for(const d of [-1,1]){const p=pose(d,l),top=project(0,0,p,l),bottom=project(0,l.height,p,l);assert.ok(d<0?top.z>bottom.z:bottom.z>top.z);const outer=d<0?top:bottom,inner=d<0?bottom:top;assert.ok(Math.abs(outer.x-l.cx)>Math.abs(inner.x-l.cx));assert.ok(Math.abs(Math.abs(inner.y-l.cy)-l.height/2-l.gap)<1e-6);for(const [x,y]of [[0,0],[l.width*.2,l.height*.8],[l.width,l.height]]){const proj=project(x,y,p,l),local=unproject(proj.x,proj.y,p,l);assert.ok(Math.abs(local.x-x)<1e-6&&Math.abs(local.y-y)<1e-6);}}
 }
 const reference=layout(1997,787);assert.ok(Math.abs(reference.width-1002)<8&&Math.abs(reference.height-476)<5);
@@ -15,3 +15,13 @@ const m=mesh(55,8,5);assert.ok(m.triangles.length>60);assert.deepEqual(m,mesh(55
 // Positive control: reversed tilt must fail the outward-edge condition.
 const l=layout(1440,900),wrong={...pose(-1,l),angle:l.angle};assert.throws(()=>assert.ok(project(0,0,wrong,l).z>project(0,l.height,wrong,l).z));
 console.log('NAV_CONTRACT_VERIFIED',JSON.stringify({viewports:sizes.length,faces:m.triangles.length,area}));
+
+// All four control bands must be disjoint, including notched devices and short landscapes.
+for(const [w,h] of [[320,568],[390,844],[844,390],[667,375],[1440,900],[1997,787]])for(const inset of [{},{logoBottom:88,dockTop:h-90}]){
+ const l=layout(w,h,inset),half=l.arrowHeight/2;
+ assert.ok(l.previousY-half>=l.logoBottom+11.99, `${w}x${h}: logo`);
+ assert.ok(l.previousY+half<=h/2-l.height/2-11.99, `${w}x${h}: upper card`);
+ assert.ok(l.nextY-half>=h/2+l.height/2+11.99, `${w}x${h}: lower card`);
+ assert.ok(l.nextY+half<=l.dockTop-11.99, `${w}x${h}: dock`);
+}
+console.log('CONTROL_CLEARANCE_VERIFIED');
