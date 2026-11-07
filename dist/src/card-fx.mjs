@@ -38,6 +38,19 @@ export class CardFX{
    for(let j=0;j<grid.triangles.length;j++)this.typeFaces.push({points:grid.triangles[j].map(k=>points[k]),glyph:i,variation:.5+.5*Math.sin(j*13+i*7)});
    for(const [a,b]of grid.edges)this.typeEdges.push({a:points[a],b:points[b],glyph:i});
   }
+  // Cache sparse real contour positions only when typography/layout changes.
+  // Particle origins follow the glyph silhouette, never its bounding rectangle.
+  this.typeContour=[];this.waveAt=-10000;this.waveOrigin=null;this.titleEntered=false;
+  try{
+   const pixels=c.getImageData(0,0,this.glyphMask.width,this.glyphMask.height),data=pixels.data,pw=pixels.width,ph=pixels.height,stride=Math.max(2,Math.round(this.dpr*3));
+   const alpha=(x,y)=>x<0||y<0||x>=pw||y>=ph?0:data[(y*pw+x)*4+3];
+   for(let y=1;y<ph-1;y+=stride)for(let x=1;x<pw-1;x+=stride){
+    if(alpha(x,y)<72||Math.min(alpha(x-stride,y),alpha(x+stride,y),alpha(x,y-stride),alpha(x,y+stride))>48)continue;
+    const lx=x/this.dpr,ly=this.typeTop+y/this.dpr,glyph=this.glyphs.findIndex(g=>lx>=g.x-1&&lx<=g.x+g.width+1);
+    if(glyph>=0)this.typeContour.push({x:lx,y:ly,glyph,near:this.nearest(lx,ly)});
+   }
+   if(this.typeContour.length>300){const step=this.typeContour.length/300;this.typeContour=Array.from({length:300},(_,i)=>this.typeContour[Math.floor(i*step)]);}
+  }catch{this.typeContour=[];} // Keep the clean HTML title if a mask cannot be sampled.
   this.restingKey=null;
   for(const p of this.points){const distance=borderDistance(p.x,p.y,w,h,this.l.cut);p.weight=VFX.center+(1-VFX.center)*(1-smooth(distance/(Math.min(w,h)*VFX.edgeFade)));if(p.y>this.typeTop-4&&p.y<this.typeTop+this.typeHeight+4)p.weight*=.13;}
  }
@@ -79,7 +92,7 @@ export class CardFX{
   }
   if(!reduced){
    const borderEnergy=this.border.map(p=>{const q=project(p.x,p.y,pose,l),v=visibility(q.y,VFX.top,l.h-VFX.bottom,(l.h-VFX.top-VFX.bottom)*VFX.band);return Math.max(field.directEnergy(q.x,q.y),this.xy[p.near].pulse)*opacity*v;});
-   for(let bucket=1;bucket<=8;bucket++){e.beginPath();let count=0;for(let i=0;i<this.border.length;i++){const a=this.border[i],b=this.border[(i+1)%this.border.length],energy=(borderEnergy[i]+borderEnergy[(i+1)%this.border.length])*.5;if(energy<.015||Math.ceil(energy*8)!==bucket)continue;e.moveTo(a.x,a.y);e.lineTo(b.x,b.y);count++;}if(!count)continue;const energy=bucket/8;e.strokeStyle=`rgba(${VFX.color},${energy*.4})`;e.lineWidth=2.5;e.shadowColor=`rgba(${VFX.color},${energy*.65})`;e.shadowBlur=10;e.stroke();e.shadowBlur=0;e.strokeStyle=`rgba(${VFX.paper},${energy*.85})`;e.lineWidth=.9;e.stroke();}
+   for(let bucket=1;bucket<=8;bucket++){e.beginPath();let count=0;for(let i=0;i<this.border.length;i++){const a=this.border[i],b=this.border[(i+1)%this.border.length],energy=(borderEnergy[i]+borderEnergy[(i+1)%this.border.length])*.5;if(energy<.015||Math.ceil(energy*8)!==bucket)continue;e.moveTo(a.x,a.y);e.lineTo(b.x,b.y);count++;}if(!count)continue;const energy=bucket/8;e.strokeStyle=`rgba(${VFX.color},${energy*.12})`;e.lineWidth=8;e.shadowColor=`rgba(${VFX.color},${energy*.7})`;e.shadowBlur=13;e.stroke();e.strokeStyle=`rgba(${VFX.color},${energy*.68})`;e.lineWidth=2.2;e.shadowBlur=4;e.stroke();e.shadowBlur=0;e.strokeStyle=`rgba(${VFX.hot||VFX.paper},${energy*.92})`;e.lineWidth=.85;e.stroke();}
   }
   c.save();cardPath(c,w,h,l.cut);c.clip();c.lineWidth=.55;
   if(this.complete&&!reduced){
@@ -89,7 +102,7 @@ export class CardFX{
    for(const p of this.xy){const energy=p.energy*p.weight;if(energy<.1)continue;c.fillStyle=`rgba(${VFX.paper},${energy*.28})`;c.fillRect(p.x-.35,p.y-.35,.7,.7);}
    this.drawType(t,pose,c,e);
   }
-  if(!reduced){for(const f of this.faces){let strength=0;if(f.value>.015&&f.value<.985)strength=Math.sin(f.value*Math.PI)*.25*(1-pose.dark*.7)*transition;if(this.amount>.07&&this.amount<.42){const front=loadVisibility(Math.min(1,this.amount+.18),f.cx,f.cy,this.index);if(front>.05&&front<.95)strength=Math.max(strength,Math.sin(front*Math.PI)*.27);}if(strength<.004)continue;c.strokeStyle=`rgba(${VFX.color},${strength})`;c.beginPath();for(let j=0;j<3;j++){const p=f.pts[j];j?c.lineTo(p.x*w,p.y*h):c.moveTo(p.x*w,p.y*h);}c.closePath();c.stroke();}}
+  if(!reduced){for(const f of this.faces){let strength=0;if(f.value>.015&&f.value<.985)strength=Math.sin(f.value*Math.PI)*.42*(1-pose.dark*.7)*transition;if(this.amount>.07&&this.amount<.42){const front=loadVisibility(Math.min(1,this.amount+.18),f.cx,f.cy,this.index);if(front>.05&&front<.95)strength=Math.max(strength,Math.sin(front*Math.PI)*.44);}if(strength<.004)continue;c.strokeStyle=`rgba(${VFX.color},${strength})`;c.beginPath();for(let j=0;j<3;j++){const p=f.pts[j];j?c.lineTo(p.x*w,p.y*h):c.moveTo(p.x*w,p.y*h);}c.closePath();c.fillStyle=`rgba(${VFX.color},${strength*.12})`;c.fill();c.shadowColor=`rgba(${VFX.color},${strength*.55})`;c.shadowBlur=4;c.stroke();c.shadowBlur=0;}}
   c.restore();e.restore();
  }
  drawType(t,pose,c,e){
@@ -101,10 +114,15 @@ export class CardFX{
   const light=(x,i)=>glyphLight(energies[i],x/w,this.waveOrigin,elapsed);
   // Translucent microfaces enrich the original full HTML glyph; they never
   // replace its fill or its silhouette with an outline.
-  for(const f of this.typeFaces){const [a,b,d]=f.points,energy=light((a.x+b.x+d.x)/3,f.glyph);if(energy<.02)continue;ctx.fillStyle=`rgba(${VFX.color},${energy*(.16+.30*f.variation)})`;ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.lineTo(d.x,d.y);ctx.closePath();ctx.fill();}
-  ctx.lineWidth=.6;for(const {a,b,glyph}of this.typeEdges){const energy=light((a.x+b.x)/2,glyph);if(energy<.02)continue;ctx.strokeStyle=`rgba(${VFX.paper},${energy*.62})`;ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.stroke();}
+  for(const f of this.typeFaces){const [a,b,d]=f.points,energy=light((a.x+b.x+d.x)/3,f.glyph);if(energy<.02)continue;ctx.fillStyle=`rgba(${VFX.color},${energy*(.42+.44*f.variation)})`;ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.lineTo(d.x,d.y);ctx.closePath();ctx.fill();}
+  ctx.lineWidth=.7;for(const {a,b,glyph}of this.typeEdges){const energy=light((a.x+b.x)/2,glyph);if(energy<.02)continue;ctx.strokeStyle=`rgba(${VFX.paper},${energy*.82})`;ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.stroke();}
   ctx.save();ctx.globalCompositeOperation='destination-in';ctx.drawImage(this.glyphMask,0,this.typeTop,w,this.typeHeight);ctx.restore();c.drawImage(this.typeCanvas,0,this.typeTop,w,this.typeHeight);
-  e.save();e.globalAlpha=.12;e.shadowColor=`rgba(${VFX.color},.4)`;e.shadowBlur=3;e.drawImage(this.typeCanvas,0,this.typeTop,w,this.typeHeight);e.restore();
+  // A short local halo follows the clipped microfaces. The base HTML fill
+  // remains intact; no global title opacity, outline substitution or distortion.
+  e.save();e.globalCompositeOperation='screen';e.globalAlpha=.30;e.shadowColor=`rgba(${VFX.color},.85)`;e.shadowBlur=l.small?5:8;e.drawImage(this.typeCanvas,0,this.typeTop,w,this.typeHeight);e.restore();
+  const candidates=[];
+  for(const p of this.typeContour||[]){const view=project(p.x,p.y,pose,l),direct=Math.max(this.field.directEnergy(view.x,view.y),this.xy[p.near]?.pulse||0),energy=glyphLight(direct,p.x/w,this.waveOrigin,elapsed);if(energy<.25)continue;const rank=energy*(.82+.18*Math.sin(p.x*.17+p.y*.11));if(candidates.length===3&&rank<=candidates[2].rank)continue;candidates.push({x:view.x,y:view.y,energy,rank});candidates.sort((a,b)=>b.rank-a.rank);if(candidates.length>3)candidates.pop();}
+  for(const p of candidates)this.field.emit(p.x,p.y,t,p.energy,'glyph');
  }
  dispose(){this.shell.style.maskImage='none';this.shell.style.webkitMaskImage='none';this.canvas.remove();this.edge.remove();this.card.querySelector('svg')?.remove();this.pulses=[];}
 }

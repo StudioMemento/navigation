@@ -1,13 +1,16 @@
 import {clamp,smooth,seeded} from './model.mjs';
 export const smoothRange=(a,b,x)=>smooth((x-a)/(b-a));
 export function fieldEnergy(x,y,p,radius){
- if(!p.strength)return 0;
- if(Math.abs(x-p.x)>radius*1.42||Math.abs(y-p.y)>radius*1.32)return 0;
- const wx=20*Math.sin(y*.013+x*.006)+11*Math.cos(x*.018-y*.009);
- const wy=18*Math.sin(x*.012-y*.008)+9*Math.cos(y*.02+x*.01);
- const d=Math.hypot((x-p.x)*.91+wx,(y-p.y)*1.12+wy);
- const gain=.76+.15*Math.sin(x*.016+y*.011)+.09*Math.cos(y*.019-x*.008);
- return clamp(Math.pow(1-smoothRange(radius*.10,radius*1.18,d),1.4)*gain*p.strength);
+ if(!p.strength||!Number.isFinite(radius)||radius<=0)return 0;
+ if(Math.abs(x-p.x)>radius*1.65||Math.abs(y-p.y)>radius*1.5)return 0;
+ // Stable spatial lobes vary reach as well as energy. Only the mesh receives
+ // this field: no radial mask or opaque glow disc is ever painted.
+ const wx=radius*(.085*Math.sin(y*.013+x*.006)+.04*Math.cos(x*.018-y*.009));
+ const wy=radius*(.075*Math.sin(x*.012-y*.008)+.035*Math.cos(y*.02+x*.01));
+ const reach=.95+.17*Math.sin(x*.007+y*.011)+.08*Math.cos(y*.015-x*.009);
+ const d=Math.hypot((x-p.x)*.90+wx,(y-p.y)*1.08+wy)/reach;
+ const gain=.79+.14*Math.sin(x*.016+y*.011)+.07*Math.cos(y*.019-x*.008);
+ return clamp(Math.pow(1-smoothRange(radius*.08,radius*1.16,d),1.25)*gain*p.strength);
 }
 export function visibility(y,top,bottom,band){return smoothRange(top,top+band,y)*(1-smoothRange(bottom-band,bottom,y));}
 export function loadVisibility(progress,x,y,seed=0){
@@ -29,19 +32,30 @@ export function pulseEnvelope(age,distance){if(!Number.isFinite(distance))return
 // In that state the wave contributes exactly zero, never NaN: an invalid canvas
 // colour silently retains its previous value (initially opaque black).
 export function glyphLight(energy,x,origin,elapsed){
- const local=Number.isFinite(energy)?clamp(energy)*.66:0;
+ const local=Number.isFinite(energy)?clamp(energy)*.88:0;
  if(!Number.isFinite(origin)||!Number.isFinite(x)||!Number.isFinite(elapsed)||elapsed<0||elapsed>=1.1)return local;
- const decay=Math.pow(1-elapsed/1.1,1.3),front=Math.exp(-Math.pow((Math.abs(x-origin)-elapsed*.95)/.12,2))*decay*.62;
+ const decay=Math.pow(1-elapsed/1.1,1.3),front=Math.exp(-Math.pow((Math.abs(x-origin)-elapsed*.95)/.105,2))*decay*.76;
  return clamp(Math.max(local,front));
 }
 export class TrianglePool{
- constructor(capacity=80){this.items=Array.from({length:capacity},()=>({alive:false}));this.rng=seeded(5163);this.tokens=0;this.last=0;this.count=0;}
- emit(x,y,px,py,now,scale=1){if(now-this.last<(scale<1?166:84))return false;const p=this.items.find(p=>!p.alive);if(!p)return false;const r=this.rng;let dx=x-px,dy=y-py;const length=Math.hypot(dx,dy)||1,speed=25+r()*36;if(dx===0&&dy===0){const angle=r()*Math.PI*2;dx=Math.cos(angle);dy=Math.sin(angle);}
- Object.assign(p,{alive:true,x,y,vx:dx/length*speed,vy:dy/length*speed,birth:now,life:(.25+r()*.35)*scale,size:(1.2+r()*1.8)*scale,angle:r()*6.28,spin:(r()-.5)*4,seed:r()*9});this.last=now;return true;}
+ constructor(capacity=80){this.items=Array.from({length:capacity},()=>({alive:false}));this.rng=seeded(5163);this.last=-Infinity;this.count=0;this.emittedAt=-Infinity;this.emittedNow=0;}
+ emit(x,y,px,py,now,scale=1,options={}){
+ if(![x,y,px,py,now,scale].every(Number.isFinite)||scale<=0)return false;
+ const burst=Boolean(options.burst),interval=scale<1?90:48;
+ if(now!==this.emittedAt){if(now-this.last<interval)return false;this.emittedAt=now;this.emittedNow=0;}
+ // A burst shares one time token and is capped, even with several surfaces.
+ if(this.emittedNow>=(burst?(scale<1?2:3):1))return false;
+ const p=this.items.find(p=>!p.alive);if(!p)return false;const r=this.rng;
+ let dx=x-px,dy=y-py,length=Math.hypot(dx,dy);if(length<.01){const angle=r()*Math.PI*2;dx=Math.cos(angle);dy=Math.sin(angle);length=1;}
+ const spread=(r()-.5)*.9,angle=Math.atan2(dy,dx)+spread,speed=34+r()*54;
+ const large=r()>.91;
+ Object.assign(p,{alive:true,x,y,previousX:x,previousY:y,vx:Math.cos(angle)*speed,vy:Math.sin(angle)*speed,birth:now,life:(.38+r()*.36)*scale,size:(large?3.7+r()*1.5:1.25+r()*2.2)*scale,angle:r()*6.28,spin:(r()-.5)*5,seed:r()*9,alpha:0,hot:.55+r()*.45});
+ this.last=now;this.emittedNow++;this.count++;return true;
+ }
  update(now,dt){this.count=0;for(const p of this.items){if(!p.alive)continue;const age=(now-p.birth)/1000;if(age>=p.life){p.alive=false;continue;}this.count++;
  // Curl of a scalar potential: derivatives give clockwise AND anticlockwise eddies.
  const fx=Math.cos(p.y*.045+p.seed)*Math.sin(p.x*.038+p.seed),fy=-Math.cos(p.x*.038+p.seed)*Math.sin(p.y*.045+p.seed);
- p.vx=(p.vx+fx*17*dt)*Math.exp(-1.2*dt);p.vy=(p.vy+fy*17*dt)*Math.exp(-1.2*dt);p.x+=p.vx*dt;p.y+=p.vy*dt;p.angle+=p.spin*dt;p.alpha=Math.min(1,age/.045)*Math.pow(1-age/p.life,2);
+ p.previousX=p.x;p.previousY=p.y;p.vx=(p.vx+fx*35*dt)*Math.exp(-.85*dt);p.vy=(p.vy+fy*35*dt)*Math.exp(-.85*dt);p.x+=p.vx*dt;p.y+=p.vy*dt;p.angle+=p.spin*dt;p.alpha=Math.min(1,age/.035)*Math.pow(1-age/p.life,1.4);
  }}
  clear(){for(const p of this.items)p.alive=false;this.count=0;}
 }

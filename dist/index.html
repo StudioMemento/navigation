@@ -22,11 +22,10 @@ addEventListener('error',restoreNav);addEventListener('unhandledrejection',resto
 
 <main id="hub" tabindex="-1" aria-label="Esplora Memento" aria-roledescription="carosello">
  <div class="scene-window"><div id="scene" class="scene"></div></div>
- <button id="previous" class="chevron previous" aria-label="Sezione precedente"><svg viewBox="0 0 30 14" aria-hidden="true"><path d="m1 13 14-12 14 12"/></svg></button>
- <button id="next" class="chevron next" aria-label="Sezione successiva"><svg viewBox="0 0 30 14" aria-hidden="true"><path d="m1 1 14 12 14-12"/></svg></button>
+ <button id="previous" class="chevron previous" aria-label="Sezione precedente"><svg viewBox="0 0 30 16" aria-hidden="true"><path d="m1 15 14-14 14 14"/></svg></button>
+ <button id="next" class="chevron next" aria-label="Sezione successiva"><svg viewBox="0 0 30 16" aria-hidden="true"><path d="m1 1 14 14 14-14"/></svg></button>
  <p class="sr-only" id="status" aria-live="polite" aria-atomic="true"></p>
 </main>
-<p id="gesture-hint" class="gesture-hint" aria-hidden="true">SCORRI PER ESPLORARE</p>
 <nav hidden id="fallback" class="fallback" aria-label="Sezioni Memento"><a href="https://mementostudio.it/studio">Studio</a><a href="https://mementostudio.it/services">Services</a><a href="https://mementostudio.it/projects">Projects</a><a href="https://mementostudio.it/levelup">LevelUp</a><a href="https://mementostudio.it/start">Start</a></nav><noscript><style>#fallback{display:flex!important}</style></noscript>
 <script type="module" src="./src/app.mjs"></script>
 </body>
