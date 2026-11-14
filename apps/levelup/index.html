@@ -3,30 +3,31 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#0b0c0d">
+  <meta name="theme-color" content="#000000">
   <meta name="description" content="Diamo forma a ciò che rende unico il tuo brand. Esplora le esperienze Memento e immagina il tuo prossimo progetto.">
   <title>LevelUp — Memento Design Studio</title>
   <script src="bootstrap.js"></script>
   <script src="tide-child-bridge.js" data-tide-block-selector="html[data-demo-expanded=true]" defer></script>
   <link rel="preload" href="assets/fonts/InterVariable.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="assets/v14/web.webp" as="image" imagesrcset="assets/v14/web-640.webp 640w, assets/v14/web.webp 1280w" imagesizes="(max-width:767px) 90vw, 60vw" fetchpriority="high">
-  <link rel="stylesheet" href="ready-to-start/ready-to-start.css">
   <link rel="stylesheet" href="styles.css">
   <link rel="stylesheet" href="src/ready-to-start.css">
+  <link rel="stylesheet" href="src/vfx.css">
+  <link rel="modulepreload" href="vfx/memento-vfx.js">
   <script type="module" src="src/app.js"></script>
 </head>
 <body>
   <a class="skip-link" href="#contatto">Vai al contatto</a>
   <main id="levelup">
     <section class="opening bundle-opening" aria-labelledby="page-title">
-      <header class="page-width opening-heading"><h1 id="page-title" class="gradient-text fitted-heading" data-fit data-mobile-lines="Cosa ti rende|speciale?">Cosa ti rende speciale?</h1></header>
+      <header class="page-width opening-heading"><h1 id="page-title" class="gradient-text fitted-heading" data-vfx="title" data-fit data-mobile-lines="Cosa ti rende|speciale?">Cosa ti rende speciale?</h1></header>
       <div class="carousel bundle-carousel benefit-carousel" id="benefits" role="region" aria-roledescription="carosello" aria-label="Come valorizzare il tuo brand" aria-describedby="carousel-help"><div class="carousel-stage"></div></div>
       <nav class="carousel-controls" id="benefit-dots" aria-label="Scegli un dominio"></nav>
       <p id="carousel-help" class="sr-only">Trascina in orizzontale, usa i punti o le frecce della tastiera. Scorri in verticale per continuare.</p>
     </section>
 
     <section class="experiences-section" aria-labelledby="experiences-title">
-      <header class="page-width section-heading"><h2 id="experiences-title" class="gradient-text fitted-heading" data-fit data-mobile-lines="Esplora le|esperienze!">Esplora le esperienze!</h2></header>
+      <header class="page-width section-heading"><h2 id="experiences-title" class="gradient-text fitted-heading" data-vfx="title" data-fit data-mobile-lines="Esplora le|esperienze!">Esplora le esperienze!</h2></header>
       <div class="carousel portfolio-carousel" id="portfolio" role="region" aria-roledescription="carosello" aria-label="Esperienze Memento" aria-describedby="portfolio-help"><div class="carousel-stage"></div></div>
       <nav class="carousel-controls" id="portfolio-dots" aria-label="Scegli una demo"></nav>
       <p id="portfolio-help" class="sr-only">La selezione aggiorna la demo qui sotto. Il nome della slide attiva apre il progetto in una nuova scheda. L’icona in alto a destra espande la demo. Premi Invio sulla slide per raggiungere la demo.</p>
@@ -45,28 +46,27 @@
     </section>
 
     <section class="vision-section page-width" aria-labelledby="vision-title">
-      <header class="section-heading"><h2 id="vision-title" class="gradient-text fitted-heading" data-fit data-mobile-lines="Immaginalo per|il tuo brand.">Immaginalo per il tuo brand.</h2></header>
+      <header class="section-heading"><h2 id="vision-title" class="gradient-text fitted-heading" data-vfx="title" data-fit data-mobile-lines="Immaginalo per|il tuo brand.">Immaginalo per il tuo brand.</h2></header>
       <div class="vision-grid" id="vision-grid"></div>
     </section>
 
     <section class="steps-section page-width" aria-labelledby="steps-title">
-      <header class="section-heading"><h2 id="steps-title" class="gradient-text fitted-heading" data-fit data-mobile-lines="Partiamo dalla|tua idea.">Partiamo dalla tua idea.</h2></header>
+      <header class="section-heading"><h2 id="steps-title" class="gradient-text fitted-heading" data-vfx="title" data-fit data-mobile-lines="Partiamo dalla|tua idea.">Partiamo dalla tua idea.</h2></header>
       <ol class="steps-grid" id="steps-grid"></ol>
     </section>
 
     <section class="contact-section page-width memento-start" id="contatto" aria-labelledby="start-title">
       <h2 class="sr-only" id="start-title">Ready to start?</h2>
-      <a class="memento-start__card" id="contact-link" href="https://mementostudio.it/start?from=levelup" target="_top" aria-label="Ready to start? — Raccontaci la tua idea" data-ready-to-start data-renderer="static" data-effect-state="idle" data-running="false">
-        <div class="memento-start__field" aria-hidden="true">
-          <img class="memento-start__fallback" src="ready-to-start/assets/sparkle-idle.svg" data-src="ready-to-start/assets/sparkle-idle.svg" alt="" loading="lazy" decoding="async" draggable="false">
-          <canvas class="memento-start__canvas"></canvas>
-          <canvas class="memento-start__edges"></canvas>
-        </div>
-        <svg class="memento-start__frame" viewBox="0 0 1000 800" preserveAspectRatio="none" aria-hidden="true"><path d="M35 .5H999.5V765L965 799.5H.5V35Z" /></svg>
-        <span class="memento-start__footer" aria-hidden="true">
-          <span class="memento-start__title"><span data-text="READY TO">READY TO</span><span data-text="START?">START?</span></span>
-        </span>
-      </a>
+      <!-- The effect is the published https://visualfx.vercel.app/, embedded through ready-to-start/embed.html.
+           Underneath it, the same CTA as a plain link: keyboard focus, no-JS and every fallback. -->
+      <div class="start-embed" id="start-embed" data-state="idle">
+        <a class="start-embed__card" id="contact-link" href="https://mementostudio.it/start?from=levelup" target="_top" aria-label="Ready to start? — Raccontaci la tua idea">
+          <svg class="start-embed__outline" viewBox="0 0 1000 800" preserveAspectRatio="none" aria-hidden="true"><path d="M35 .5H999.5V765L965 799.5H.5V35Z" /></svg>
+          <span class="start-embed__title" aria-hidden="true"><span>READY TO</span><span>START?</span></span>
+        </a>
+        <iframe class="start-embed__view" id="start-frame" title="Ready to start? — effetto interattivo" data-src="ready-to-start/embed.html" tabindex="-1" aria-hidden="true" loading="lazy"></iframe>
+        <svg class="start-embed__focus" viewBox="0 0 1000 800" preserveAspectRatio="none" aria-hidden="true"><path d="M35 .5H999.5V765L965 799.5H.5V35Z" /></svg>
+      </div>
     </section>
   </main>
   <p class="sr-only" id="announcement" aria-live="polite" aria-atomic="true"></p>

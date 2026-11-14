@@ -1,64 +1,58 @@
-// LevelUp owns loading and page lifecycle; the cinematic renderer stays replaceable.
-export function mountStart(card = document.querySelector('[data-ready-to-start]')) {
-  if (!card) return;
+// Ready to start: the published effect (https://visualfx.vercel.app/), embedded through ready-to-start/embed.html.
+// LevelUp owns loading, visibility and the destination. The effect's own CTA is routed to Start in the top window,
+// with the context of the visit (the experience selected above), exactly like the plain link underneath it.
+export const START_EMBED = 'https://visualfx.vercel.app/';
+const MESSAGE = 'memento:ready-to-start';
+
+export function mountStart({ destination = () => null } = {}) {
+  const box = document.getElementById('start-embed');
+  const frame = document.getElementById('start-frame');
+  const link = document.getElementById('contact-link');
+  if (!box || !frame || !link) return;
   const events = new AbortController();
-  let scene, loading, disposed = false, suspended = false, inView = false;
-  const on = (target, type, listener) => target.addEventListener(type, listener, { signal: events.signal });
+  const on = (target, type, listener, options = {}) => target.addEventListener(type, listener, { ...options, signal: events.signal });
+  let timer = 0;
+  const state = value => { box.dataset.state = value; };
 
-  function sync() {
-    if (!scene) return;
-    scene.visible = inView && !suspended && !document.hidden &&
-      document.documentElement.dataset.demoExpanded !== 'true';
-    if (scene.visible) scene.resume();
-    else scene.pause();
+  function load() {
+    if (frame.getAttribute('src') || !frame.dataset.src) return;
+    state('loading');
+    frame.src = frame.dataset.src;
+    // A frame that never answers leaves the plain CTA in charge; a late answer still brings the effect in.
+    clearTimeout(timer);
+    timer = setTimeout(() => { if (box.dataset.state === 'loading') state('fallback'); }, 15000);
   }
 
-  async function load() {
-    if (scene || loading || disposed) return;
-    card.dataset.effectState = 'loading';
-    loading = import('../ready-to-start/ready-to-start.js');
-    try {
-      const { ReadyToStart } = await loading;
-      if (disposed) return;
-      scene = new ReadyToStart(card);
-      // A single host observer decides visibility, including full-screen demos.
-      scene.intersection.disconnect();
-      card.dataset.effectState = 'ready';
-      near?.disconnect();
-      sync();
-    } catch {
-      // The semantic link, static scene and title remain usable if loading fails.
-      card.dataset.effectState = 'fallback';
-      card.dataset.renderer = 'static';
-      card.dataset.running = 'false';
-    } finally {
-      loading = null;
-    }
+  function start() {
+    if (box.dataset.state === 'leaving') return;
+    state('leaving');
+    // The click happened inside the effect: its activation reaches this frame, so _top may navigate when hosted.
+    window.open(destination() || link.href, '_top');
   }
 
-  const near = 'IntersectionObserver' in window ? new IntersectionObserver(entries => {
-    if (entries.some(entry => entry.isIntersecting)) load();
-  }, { rootMargin: '360px' }) : null;
-  const visible = 'IntersectionObserver' in window ? new IntersectionObserver(entries => {
-    inView = entries[0].isIntersecting;
-    sync();
-  }) : null;
-  near?.observe(card);
-  visible?.observe(card);
-  // Without observer support the static CTA is the deliberate fallback.
-  on(card, 'focus', () => { if (near) load(); });
-  on(document, 'visibilitychange', sync);
-  on(document, 'memento:overlay-change', sync);
-  on(window, 'pagehide', event => {
-    suspended = true;
-    sync();
-    if (!event.persisted) {
-      disposed = true;
-      near?.disconnect();
-      visible?.disconnect();
-      scene?.destroy();
-      events.abort();
-    }
+  on(window, 'message', event => {
+    if (event.origin !== location.origin || event.source !== frame.contentWindow) return;
+    const data = event.data;
+    if (!data || data.type !== MESSAGE || data.version !== 1) return;
+    if (data.event === 'ready') { clearTimeout(timer); state('ready'); }
+    else if (data.event === 'start') start();
+    else if (data.event === 'fallback' && box.dataset.state === 'loading') state('fallback');
   });
-  on(window, 'pageshow', () => { suspended = false; sync(); });
+
+  // Loaded near the viewport only: the effect is a WebGL page of its own.
+  if ('IntersectionObserver' in window) {
+    const near = new IntersectionObserver(entries => {
+      if (!entries.some(entry => entry.isIntersecting)) return;
+      near.disconnect();
+      load();
+    }, { rootMargin: '360px' });
+    near.observe(box);
+    events.signal.addEventListener('abort', () => near.disconnect());
+  } else load();
+  // Keyboard users reach the link first: the effect may follow, it is never in their way.
+  on(link, 'focus', load);
+
+  // Back from Start through the page cache: the wrapper restores the effect and says so; until then, the plain CTA.
+  on(window, 'pageshow', event => { if (event.persisted && box.dataset.state === 'leaving') state('loading'); });
+  on(window, 'pagehide', event => { if (!event.persisted) { clearTimeout(timer); events.abort(); } });
 }

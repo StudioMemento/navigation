@@ -7,32 +7,36 @@ import { mountStart } from './ready-to-start.js';
 const $ = selector => document.querySelector(selector);
 const escape = value => String(value).replace(/[&<>"']/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]));
 const lines = items => items.map(text => `<span>${escape(text)}</span>`).join(' ');
+// Carousel boards are VFX cards drawn through their own 3D transform, clipped and faded by the carousel.
+const board = 'data-vfx="card" data-vfx-transform data-vfx-clip=".carousel" data-vfx-focus data-vfx-photo=".card-art"';
+// The VFX engine (START V23) loads after the content; until then, and on any failure, the DOM page is complete.
+let vfx = null;
 const image = (item, eager = false) => `<img class="card-art" src="${item.asset}" srcset="${item.asset.replace('.webp','-640.webp')} 640w, ${item.asset} ${item.domain ? 1280 : 1536}w" sizes="${item.domain ? '(max-width:767px) 90vw, 60vw' : '(max-width:767px) 70vw, 40vw'}" alt="${escape(item.alt || '')}" width="${item.domain ? 1280 : 1536}" height="${item.domain ? 1280 : 1024}" loading="${eager ? 'eager' : 'lazy'}" decoding="async" ${eager ? 'fetchpriority="high"' : ''} draggable="false">`;
 
 $('#benefits .carousel-stage').innerHTML = benefits.map((item,i) => `
-  <article class="showcase-card cut-frame" data-slide="${i}" role="group" aria-roledescription="slide" aria-label="${i+1} di ${benefits.length}: ${escape(item.title.join(' '))}">
+  <article class="showcase-card cut-frame" ${board} data-slide="${i}" role="group" aria-roledescription="slide" aria-label="${i+1} di ${benefits.length}: ${escape(item.title.join(' '))}">
     ${image(item,i===0)}<div class="benefit-copy"><h2 class="gradient-text">${lines(item.title)}</h2><p>${escape(item.copy)}</p></div>
     <a class="domain-link" data-domain-link data-slide-control href="${serviceUrl(item)}" target="_top" aria-label="Esplora i servizi ${item.domain}"><span>${item.domain}</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 5 7 7-7 7"/></svg></a>
   </article>`).join('');
 $('#portfolio .carousel-stage').innerHTML = experiences.map((item,i) => `
-  <article class="showcase-card cut-frame" data-slide="${i}" role="group" aria-roledescription="slide" aria-label="${escape(item.title)}, ${escape(item.categories.join(', '))}">
-    ${image(item)}<ul class="project-category" role="list">${item.categories.map(category=>`<li>${escape(category)}</li>`).join('')}</ul>
+  <article class="showcase-card cut-frame" ${board} data-slide="${i}" role="group" aria-roledescription="slide" aria-label="${escape(item.title)}, ${escape(item.categories.join(', '))}">
+    ${image(item)}<ul class="project-category" role="list">${item.categories.map(category=>`<li><span aria-hidden="true">–</span>${escape(category)}</li>`).join('')}</ul>
     <h3 class="project-name" data-slide-control data-no-swipe><a class="gradient-text" href="${escape(item.url)}" target="_blank" rel="noopener noreferrer" aria-label="Apri ${escape(item.title)} in una nuova scheda">${escape(item.title)}</a></h3>
     <button class="project-expand" data-slide-control data-no-swipe type="button" data-expand="${i}" aria-controls="demo-panel" aria-haspopup="dialog" aria-label="Espandi ${escape(item.title)}"><img src="assets/icons/maximize.svg" alt="" width="24" height="24"></button>
   </article>`).join('');
 $('#vision-grid').innerHTML = visions.map(item => `
-  <article class="vision-card cut-frame vision-${item.id}" aria-labelledby="vision-${item.id}-title">
+  <article class="vision-card cut-frame vision-${item.id}" data-vfx="card" data-vfx-photo=".comparison > img" data-vfx-compare=".comparison-before" aria-labelledby="vision-${item.id}-title">
     <div class="vision-copy"><h3 class="gradient-text" id="vision-${item.id}-title">${lines(item.title)}</h3><p>${escape(item.copy)}</p></div>
     <div class="vision-art"><div class="comparison" id="comparison-${item.id}">
       <img src="${item.after}" srcset="${item.after.replace('.webp','-640.webp')} 640w, ${item.after} 1280w" sizes="(max-width:767px) 75vw, 600px" alt="${escape(item.alt)}" width="1280" height="1280" loading="lazy" decoding="async" draggable="false">
       <div class="comparison-before"><img src="${item.before}" srcset="${item.before.replace('.webp','-640.webp')} 640w, ${item.before} 1280w" sizes="(max-width:767px) 75vw, 600px" alt="Lo stesso soggetto come modello di base" width="1280" height="1280" loading="lazy" decoding="async" draggable="false"></div>
-      <div class="comparison-divider" aria-hidden="true"><span><img src="assets/icons/caret-left.svg" alt=""><img src="assets/icons/caret-right.svg" alt=""></span></div>
+      <div class="comparison-divider" data-vfx-dom aria-hidden="true"><span><img src="assets/icons/caret-left.svg" alt=""><img src="assets/icons/caret-right.svg" alt=""></span></div>
       <label class="sr-only" for="range-${item.id}">Confronta ${escape(item.title.join(' '))} Trascina per cambiare materiali e finiture.</label>
       <input id="range-${item.id}" type="range" min="0" max="100" value="0" aria-valuetext="0% modello di base, 100% materiali e finiture">
     </div></div>
   </article>`).join('');
 $('#steps-grid').innerHTML = steps.map((item,i) => `
-  <li class="step-card cut-frame"><img class="step-art" src="${item.asset}" srcset="${item.asset.replace('.webp','-768.webp')} 768w, ${item.asset} 1536w" sizes="(max-width:900px) 90vw, 33vw" alt="" width="1536" height="1024" loading="lazy" decoding="async"><p>${escape(item.copy)}</p><span class="step-number" aria-hidden="true">STEP ${i+1}</span><h3 class="gradient-text">${lines(item.title)}</h3></li>`).join('');
+  <li class="step-card cut-frame" data-vfx="card"><img class="step-art" src="${item.asset}" srcset="${item.asset.replace('.webp','-768.webp')} 768w, ${item.asset} 1536w" sizes="(max-width:900px) 90vw, 33vw" alt="" width="1536" height="1024" loading="lazy" decoding="async"><p>${escape(item.copy)}</p><span class="step-number" aria-hidden="true">STEP ${i+1}</span><h3 class="gradient-text">${lines(item.title)}</h3></li>`).join('');
 
 function pagination(root, items, label, select) {
   root.innerHTML = items.map((item,i) => `<button type="button" aria-label="${escape(label(item))}" aria-current="${i===0}" data-index="${i}"><span></span></button>`).join('');
@@ -48,7 +52,7 @@ function pagination(root, items, label, select) {
 function mark(root,index) { [...root.children].forEach((button,i) => button.setAttribute('aria-current',String(i===index))); }
 let benefitsCarousel;
 pagination($('#benefit-dots'),benefits,item=>item.title.join(' '),index=>benefitsCarousel.select(index));
-benefitsCarousel = new Carousel($('#benefits'),{onOpen:index=>{window.open(serviceUrl(benefits[index]),'_top');},onSettle:index=>{
+benefitsCarousel = new Carousel($('#benefits'),{onRender:()=>vfx?.motion(),onOpen:index=>{window.open(serviceUrl(benefits[index]),'_top');},onSettle:index=>{
   mark($('#benefit-dots'),index); $('#announcement').textContent=benefits[index].title.join(' ');
 }});
 $('#benefits').addEventListener('keydown',event=>{
@@ -84,7 +88,7 @@ function reachDemo() {
   player.load(selectedExperience());
   panel.focus({preventScroll:true});
 }
-portfolio=new Carousel($('#portfolio'),{onSelect:selectExperience,onCommit:commitSelection,onOpen:reachDemo});
+portfolio=new Carousel($('#portfolio'),{onRender:()=>vfx?.motion(),onSelect:selectExperience,onCommit:commitSelection,onOpen:reachDemo});
 portfolio.current=portfolio.target=portfolio.active=selected;
 portfolio.render(); updateSelection(selected,false);
 // Food starts immediately, so it can finish loading while the opening is explored.
@@ -164,10 +168,14 @@ for(const heading of document.querySelectorAll('[data-fit]')) {
     context.font='350 100px Inter';
     const unit=Math.max(...parts.map(part=>context.measureText(part).width+(part.length-1)*100*(-.055)));
     heading.style.fontSize=(Math.max(18,(width-2)*100/unit))+'px';
+    vfx?.invalidate();
   };
   new ResizeObserver(fit).observe(heading.parentElement);
   document.fonts.ready.then(fit); fit();
 }
 $('#contact-link').addEventListener('click',()=>{if(engaged)$('#contact-link').href=contactUrl(engaged);});
 enhanceVisuals();
-mountStart();
+mountStart({ destination: () => contactUrl(engaged) });
+import('../vfx/memento-vfx.js')
+  .then(({ mountVfx }) => { vfx = mountVfx(); })
+  .catch(() => { document.documentElement.classList.remove('vfx-boot', 'vfx-live'); document.documentElement.classList.add('vfx-off'); });

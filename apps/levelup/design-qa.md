@@ -1,26 +1,22 @@
-# Verifica LevelUp V18 · 6 novembre 2026
+# Verifica LevelUp V19 · 14 novembre 2026
 
 ## Ambito
 
-Ripristino della base funzionale pre-VFX (V16) e installazione del kit navbar V12 allegato. Nessun redesign di contenuti, caroselli o CTA.
+VFX della pagina START V23 applicati a LevelUp; Ready to start sostituito dall'incorporamento di https://visualfx.vercel.app/; sfondo nero vero, nessuna scena di sfondo. Contenuti, caroselli, demo, confronti e navbar della V18 invariati.
 
 ## Controlli eseguiti
 
-- Build di produzione completata: `LEVELUP_BUILD_OK`.
-- Suite del progetto: 13 test superati, nessun fallimento.
-- Verifica delle risorse: 65 riferimenti locali risolti e 5 sezioni presenti; dipendenze interne del modulo cinematic verificate ricorsivamente.
-- Suite originale del kit navbar: 24 controlli superati, inclusi destinazioni, geometrie SVG, maschere del blur, bridge e sintassi.
-- Confronto byte per byte del kit allegato con `public/navigation/` e `dist/navigation/`.
-- Confronto byte per byte della CTA con la distribuzione cinematic originale.
-- Bootstrap della pagina, carosello, contenuti, player, geometria portfolio e bridge Tide conservati dalla V15.
-- Nessun modulo `src/vfx/`, classe `vfx-boot`, preload o evento `memento:vfx-layout` nel pacchetto runtime.
-- Un solo bootstrap navbar e un solo meta viewport con `viewport-fit=cover`.
-- Configurazione Vercel inclusa; rivalidazione estesa ai moduli `.mjs`.
+- Motore VFX: typecheck e 29 test (catena, struttura, proiezione e inversione delle board trasformate, gradienti delle ombre e delle maschere).
+- Pagina: build `LEVELUP_BUILD_OK`, 18 test superati, 66 risorse locali risolte, 5 sezioni. Controlli negativi: chunk del motore mancante, wrapper che non incorpora più VisualFX, asset mancante.
+- Chrome headless (WebGL2 via SwiftShader), 1440 × 900 e 390 × 844 touch: 27 superfici registrate e pronte, `vfx-live` attivo, nessun errore in console. Titoli monocromi, board dei caroselli disegnate in prospettiva come nel DOM, hover ambra su board, confronti e step, linea del confronto e maniglia DOM, frammentazione allo scroll.
+- Senza WebGL: `vfx-off`, pagina DOM completa.
+- Ready to start (VisualFX servito da una copia locale nel test, perché questo ambiente non raggiunge visualfx.vercel.app): card allineata alla tab con i tagli; click sull'effetto → navigazione rifiutata dalla policy → Start nella finestra principale con `experience=elite` dopo aver scelto Memento Elite; Tab → anello ambra sul contorno, Invio → Start; Indietro dopo entrambi → effetto di nuovo pronto.
+- Demo espansa e richiusa: il motore si ferma e riparte, il focus torna al pulsante.
 
-## Limiti della verifica
+## Non verificato o limite noto
 
-Il browser collegato e il browser cloud non hanno potuto raggiungere il server locale della sessione (`ERR_CONNECTION_REFUSED`). Non si dichiara quindi una nuova verifica visiva desktop/mobile, né una misura di FPS. Le proporzioni responsive e il blur sono quelli del kit allegato, conservato integralmente. I deploy delle esperienze esterne non sono stati modificati né nuovamente verificati.
-
-## Verifica consigliata dopo il deploy
-
-Controllare il rendering a 390, 768 e 1440 px: logo superiore, LevelUp acceso, blur ai bordi, caroselli e confronto prima/dopo; aprire e richiudere una demo espansa; raggiungere Ready to start e verificare che la navbar resti fuori dalla tab. Provare inoltre i link del logo e delle cinque sezioni.
+- **Prestazioni reali**: solo renderer software (pochi fps), nessuna misura su GPU o telefoni. La pagina ha più superfici di START (27, di cui 17 board di carosello); le board nascoste del carosello non vengono disegnate.
+- **Safari e Firefox**: non provati. In particolare il rifiuto della navigazione interna a VisualFX: se un browser non lo applicasse, Start si caricherebbe per un istante nella tab prima di aprirsi nella finestra principale.
+- **LevelUp dentro l'iframe di Framer**: la navigazione `_top` dopo il click nell'effetto si basa sull'attivazione dell'utente propagata ai frame antenati; non provato in un iframe reale.
+- **VisualFX pubblicato**: la pagina live non era raggiungibile da qui; è stata confrontata la struttura (link a Start senza target, titolo, meta) ma non resa in browser.
+- **Sfocatura della navbar** nel renderer software appare irregolare in basso: è un artefatto noto dell'ambiente (vedi README di START V23).

@@ -1,0 +1,73 @@
+/*
+ * Memento VFX (START V23) on LevelUp. Same engine, same constants, same material: one canvas behind the content.
+ * The DOM keeps layout, semantics, focus and hit areas; while html.vfx-live is set it stops painting the surfaces
+ * the canvas draws. Removing .vfx-live (any failure, context loss) restores the DOM page.
+ */
+
+/* Resolved lengths for the engine: getComputedStyle returns px instead of the raw clamp()/calc(). */
+@property --cut { syntax: '<length>'; inherits: true; initial-value: 16px; }
+@property --vfx-fade { syntax: '<length>'; inherits: false; initial-value: 0px; }
+.cut-frame { --cut: var(--corner-cut); }
+.carousel { --vfx-fade: var(--side-fade); }
+
+.vfx-canvas { position: fixed; inset: 0; width: 100%; height: 100%; display: block; z-index: 0; pointer-events: none; }
+main { position: relative; z-index: 1; }
+
+/*
+ * True black, no background (as START V23; the LevelUp scene comes later). A uniform near-black shows the navigation's
+ * progressive blur as horizontal bands: its eight masked layers round to one level darker at every step.
+ */
+html[data-embedded=false] { background: #000; }
+
+/* Before the engine is live the page waits in black (failsafe in bootstrap.js: 3 s). */
+html.vfx-boot main { opacity: 0; }
+html.vfx-off .vfx-canvas { display: none; }
+
+@media screen {
+  /* GPU representation is live: registered surfaces stop painting in the DOM. [data-vfx-dom] subtrees stay DOM. */
+  html.vfx-live [data-vfx],
+  html.vfx-live [data-vfx] *:not(iframe):not(input):not([data-vfx-dom]):not([data-vfx-dom] *) {
+    color: transparent !important;
+    -webkit-text-fill-color: transparent !important;
+    text-decoration-color: transparent !important;
+    background-color: transparent !important;
+    background-image: none !important;
+    border-color: transparent !important;
+    text-shadow: none !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    caret-color: transparent;
+  }
+  html.vfx-live [data-vfx] img:not([data-vfx-dom] img) { visibility: hidden !important; }
+  html.vfx-live [data-vfx] svg:not([data-vfx-dom] svg) { visibility: hidden !important; }
+  /* Colours and positions are read by the engine at rest: no transition or animation may be half-way when it measures. */
+  html.vfx-ready [data-vfx],
+  html.vfx-ready [data-vfx] *:not(iframe):not([data-vfx-dom]):not([data-vfx-dom] *),
+  html.vfx-ready [data-vfx]::before,
+  html.vfx-ready [data-vfx]::after { transition: none !important; animation: none !important; }
+  /* Frames, shades and dividers drawn by pseudo-elements are drawn by the engine too. */
+  html.vfx-live [data-vfx]::before,
+  html.vfx-live [data-vfx]::after,
+  html.vfx-live [data-vfx] *:not([data-vfx-dom]):not([data-vfx-dom] *)::before,
+  html.vfx-live [data-vfx] *:not([data-vfx-dom]):not([data-vfx-dom] *)::after { opacity: 0 !important; }
+  /* The comparison handle stays DOM (it only shows on hover and focus); its line is the engine's. */
+  html.vfx-live .comparison-divider::before { opacity: 0 !important; }
+  html.vfx-live [data-vfx] ::selection { background: rgba(255, 255, 255, 0.22); }
+}
+
+/* A focused control is never left inside a transition band. */
+main :focus-visible { scroll-margin-block: 20vh; }
+
+/*
+ * Rest state is monochrome in the DOM fallback too: light from above, shade at the base of every line, a neutral
+ * frame. Amber only ever comes from energy.
+ */
+:root {
+  /* the amber title gradient (VFX.color.titleAmber) desaturated: same luminance, no hue */
+  --title-gradient: linear-gradient(0deg, #838383 0%, #9c9c9c 9%, #bfbfbf 20%, #dfdfdf 32%, #f2f2f2 44%, #f2f2f2 100%);
+  --frame-gradient: linear-gradient(135deg, #d6d5d2c7 0%, #a3a29f66 27%, #6b6a6857 62%, #7b7a7875 83%, #b9b8b5cc 100%);
+}
+
+@media print { .vfx-canvas { display: none; } }
+@media (forced-colors: active) { .vfx-canvas { display: none; } }

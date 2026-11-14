@@ -16,6 +16,18 @@
   new ResizeObserver(update).observe(root);
 })();
 
+/* VFX boot (START V23): the content waits in black until the engine has drawn its first frame.
+   Failsafe: never longer than 3 s. Reduced motion, forced colours or no WebGL2: the DOM page at once. */
+(() => {
+  const root = document.documentElement;
+  try {
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches || matchMedia('(forced-colors: active)').matches) return;
+    if (!document.createElement('canvas').getContext('webgl2')) return;
+    root.classList.add('vfx-boot');
+    setTimeout(() => root.classList.remove('vfx-boot'), 3000);
+  } catch { /* The plain DOM page. */ }
+})();
+
 /* Surface handshake lets a compatible host own its background and blur. */
 (() => {
   if (window.parent === window) return;
