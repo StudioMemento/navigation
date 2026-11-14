@@ -1,0 +1,36 @@
+@font-face{font-family:Inter;src:url('/assets/fonts/InterVariable.woff2') format('woff2');font-weight:100 900;font-display:swap}
+:root{color-scheme:dark;--ink:#000;--paper:#eeefed;--amber:#ff7950;--hover:#dfad6b;--ease:cubic-bezier(.22,1,.36,1);
+ /* the amber title gradient (DNA, VFX.color.titleAmber) and its idle, desaturated version: light from above */
+ --title-gradient:linear-gradient(0deg,#838383 0%,#9c9c9c 9%,#bfbfbf 20%,#dfdfdf 32%,#f2f2f2 44%,#f2f2f2 100%);
+ --title-amber:linear-gradient(0deg,#d9682f 0%,#e2874f 9%,#ecb28c 20%,#f5d9c6 32%,#fbefe8 44%,#fbefe8 100%);--vh:100svh;--card-w:80vw;--card-h:55vh;--padding:4.8vw;--cut:16px}
+*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;background:var(--ink);font-family:Inter,Arial,sans-serif;color:var(--paper);overscroll-behavior:none}body{overflow:hidden;-webkit-tap-highlight-color:transparent}button,a{touch-action:manipulation}button{font:inherit;color:inherit}button:focus-visible,a:focus-visible{outline:2px solid #ecc089;outline-offset:5px}
+.sr-only{position:absolute!important;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+#world{position:fixed;inset:0;width:100%;height:var(--vh);pointer-events:none;z-index:0}
+#hub{position:fixed;inset:0;height:var(--vh);touch-action:pan-x pinch-zoom;user-select:none;-webkit-user-select:none}
+#scene{position:absolute;inset:0;height:var(--vh);perspective-origin:50% 50%;transform-style:preserve-3d;pointer-events:none}
+.card{position:absolute;top:50%;left:50%;width:var(--card-w);height:var(--card-h);margin:calc(var(--card-h) / -2) 0 0 calc(var(--card-w) / -2);transform-origin:center;transform-style:preserve-3d;will-change:transform;pointer-events:auto;text-decoration:none;color:inherit;backface-visibility:hidden;-webkit-backface-visibility:hidden}
+.card[hidden]{display:none}.card img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 48%;clip-path:polygon(var(--cut) 0,100% 0,100% calc(100% - var(--cut)),calc(100% - var(--cut)) 100%,0 100%,0 var(--cut));filter:grayscale(1);transition:filter .35s var(--ease)}
+/* DOM rendering (fallback, and until the engine is live): the scenes are black and white at rest and take their colour
+   (80% saturation) on hover; titles carry the idle gradient and warm to the amber one. Amber only comes from a gesture. */
+.card[data-slot="active"]:hover img{filter:saturate(.8)}
+/* Live GPU representation: the DOM keeps layout, semantics, focus and hit areas but stops painting what the canvas draws. */
+html.vfx-live .card.image-ready img{opacity:0}
+html.vfx-live .card.title-ready h2{background-image:none}
+html.vfx-boot #hub{opacity:0}
+#hub{transition:opacity .6s var(--ease)}
+.card h2{position:absolute;bottom:var(--padding);left:var(--padding);width:calc(100% - var(--padding) * 2);margin:0;display:flex;justify-content:space-between;align-items:baseline;font-size:var(--title-size,100px);line-height:.95;font-weight:280;transform:translateZ(14px);pointer-events:none;color:transparent;-webkit-text-fill-color:transparent;background-image:var(--title-gradient);-webkit-background-clip:text;background-clip:text}
+.card h2 span{display:block}
+.card[data-slot="active"]:hover h2{background-image:var(--title-amber)}
+html.vfx-live .card.title-ready:hover h2{background-image:none}
+.card[data-slot="active"]{cursor:pointer}.card[data-slot="previous"],.card[data-slot="next"]{cursor:ns-resize}.card:not([data-slot="active"]) img{filter:grayscale(1) brightness(.4)}
+.chevron{position:absolute;left:50%;transform:translate(-50%,-50%);width:78px;height:54px;padding:11px 10px;z-index:5;border:0;background:transparent;cursor:pointer;color:#e0e2e0;transition:color .25s,filter .25s;opacity:.95}
+.chevron svg{width:100%;height:100%;fill:none;stroke:currentColor;stroke-width:1.25;stroke-linecap:round;stroke-linejoin:round;overflow:visible}.chevron:hover,.chevron:focus-visible{color:var(--amber);filter:drop-shadow(0 0 6px #ff795055)}
+#previous{top:var(--previous-y)}#next{top:var(--next-y)}body.dragging,body.dragging .card{cursor:grabbing}
+.no-js{position:fixed;inset:35% 10%;display:flex;flex-wrap:wrap;gap:25px;z-index:50;background:#101010;padding:25px}.no-js a{color:#eee}
+.lab-toggle{position:fixed;right:18px;top:18px;z-index:1101;background:#111e;border:1px solid #ffffff25;border-radius:6px;color:#ccc;font-size:11px;padding:10px;cursor:pointer}
+.lab{position:fixed;z-index:1100;right:18px;top:58px;width:255px;padding:20px;background:#101112ef;border:1px solid #ffffff1c;border-radius:8px;backdrop-filter:blur(20px);font-size:12px}.lab[hidden]{display:none}.lab h3{font-weight:400;letter-spacing:.1em;font-size:13px;margin:0 0 20px}.lab label{display:grid;grid-template-columns:1fr auto;gap:8px;margin:15px 0}.lab input[type=range]{grid-column:1/-1;width:100%;accent-color:var(--amber)}.lab output{font-variant-numeric:tabular-nums;color:var(--amber)}.lab button{border:1px solid #ffffff25;background:#ffffff08;padding:8px;color:#ddd;cursor:pointer}.lab .qa{display:block;margin-top:15px;color:#8a8d90;font-size:10px;line-height:1.6;white-space:pre-wrap}
+@media(max-width:600px){.chevron{width:64px;height:50px}.card h2{transform:translateZ(8px)}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+@media(forced-colors:active){#world{display:none}.card img{opacity:1!important}.card{border:1px solid CanvasText}.card h2{color:CanvasText;-webkit-text-fill-color:CanvasText;background:none}}
+@media print{#world{display:none}}
+html.vfx-off #world{display:none}

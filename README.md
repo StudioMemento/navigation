@@ -1,35 +1,43 @@
-# Memento NAV — R10 / Lowpoly Amber
+# Memento NAV R12 — VFX DNA
 
-Navigazione verticale Studio → Services → Projects → LevelUp → Start. La R10 corregge l’ancoraggio mobile della navbar, elimina l’ombra della card attiva e aggiunge gradienti di profondità alle anteprime. Il fondo ha sfumature molto leggere originate dai vertici, densità calibrata e piccoli punti senza bloom.
+Navigazione Vite + Three.js, derivata dalla R11, con gli effetti sviluppati sulla START V23: stessa materia, stessa energia, stessa luce, stesse costanti. Le cinque scene e l'ordine restano quelli della R11: Studio → Services → Projects → LevelUp → Start → Studio.
 
-Sono incluse **sei immagini rigenerate square 1254 × 1254**, con mezzitoni scuri e ambra intenso: cinque già integrate, più una variante della galleria Projects. I master sono in `art/`, con i prompt; le varianti web sono in `dist/assets/scenes/`.
+Il DNA (regole, palette, tempi) è in `docs/dna/`. La sezione `applicazione-alle-pagine.md` riporta gli adattamenti della navigation, scritti prima del codice come chiede il DNA.
 
-**Pacchetto pronto per Vercel, non pubblicato.**
+## Avvio e build
 
-## Installazione
+Node 22.12+ o 24. Eseguire `npm ci`, `npm run dev`. Per la distribuzione: `npm test`, `npm run build`. Su Vercel: framework Vite, comando `npm run build`, output `dist`. La cartella `dist/` inclusa è anche distribuibile come sito statico.
 
-1. Distribuire il progetto su Vercel con preset **Other**, nessun build command, output **dist**. Il `vercel.json` incluso contiene la configurazione.
-2. Nella home Framer sostituire il precedente bridge con il blocco completo di [framer-nav-bridge.html](docs/framer-nav-bridge.html), Custom Code → End of body. Pubblicare la home. Non aggiungere un secondo iframe. L’aggiornamento del bridge serve per tenere la navbar nel viewport visibile anche quando il contenitore Framer è più alto.
-3. Eseguire `npm test` per le regressioni. Nessuna dipendenza runtime o build è necessaria. La sola verifica/rigenerazione degli asset usa Python 3 con Pillow.
+L'embed su mementostudio.it carica mementonav.vercel.app: per aggiornarlo basta distribuire questa build sul progetto NAV esistente. Tutti i link di destinazione mantengono mementostudio.it e il target `_top`. Il bridge iframe (sezione, altezza del viewport) è invariato.
 
-## Comportamento
+## Cosa cambia rispetto alla R11
 
-- Mobile: card entro l’84% del viewport per mostrare più fondo; padding interno 4,5%. Desktop: rapporto 2:1, larghezza entro l’88%, padding 6%.
-- Dock sopra la safe area, con almeno 12 px dal fondo visibile; controlli separati dal logo e dalla navbar.
-- Card centrale senza ombra proiettata. Anteprime inclinate con gradiente nero verso il punto di sovrapposizione.
-- Card attiva all’80% del colore in quiete, pieno colore in prossimità/focus. Anteprime in bianco e nero.
-- Reticolo stabile con idle leggero, risposta ambra locale e frammenti triangolari. Reveal/disappear sulle stesse celle usate dall’hover. Contorno luminoso sottile, esterno alla sagoma.
-- Rotella, swipe/drag verticale, chevron e tastiera. Navbar sincronizzata all’input; transizioni con destinazione modificabile durante il movimento.
-- `prefers-reduced-motion`, fallback senza JavaScript, pinch zoom, ripristino sessione, deep link e route bridge conservati.
+- **Nero vero, nessuno sfondo.** Il reticolo di sfondo con il bagliore ambra che seguiva il puntatore e la scia di triangoli sono stati rimossi: per il DNA sono un disco che segue il cursore e ambra a riposo. Pagina, pannelli e primo paint sono `#000`.
+- **Quiete, base attiva, range.** A riposo la scena è in bianco e nero e il titolo ha il gradiente desaturato (luce dall'alto). Con il puntatore sulla tab la scena prende i suoi colori all'80% e il titolo il gradiente ambra con il reticolo dorato. Nelle celle raggiunte la scena va al 100% e il titolo al giallo caldo, con bordo interno, bagliore e un bloom leggero.
+- **Energia a reazione a catena.** Una rete di celle irregolari per ogni tab e per ogni titolo; il gesto accende celle sparse, la catena si propaga a zone e si spegne da sola. Le celle restano invisibili a riposo e hanno spigoli a filo sottile.
+- **Bordo per segmenti.** 96 tratti che si accendono dal lato più vicino al puntatore, dalle celle accese, dalle schegge che lo attraversano. La tab che arriva in lettura accende il tratto da cui arriva.
+- **Titoli dipinti sul piano della tab.** Impaginati come l'`<h2>` del DOM, con campo di distanza dei glifi: luce che segue la sagoma esatta delle lettere, senza cambiarne peso o forma.
+- **Fasce 15/70/15 nel carosello.** La sezione successiva arriva già frammentata dal basso, la precedente esce dall'alto; la frammentazione dipende solo dalla posizione ed è monocromatica. Allo stop del carosello le celle in uscita derivano e svaniscono.
+- **Caricamento in sei fasi.** Le tab partono nere (`vfx-boot`, massimo 3 s) e si costruiscono per celle in 1,8 s; se l'utente interagisce, il caricamento accelera di 3,2 volte.
+- **Schegge e scintille** solo dalle celle accese mentre il puntatore si muove, e durante il caricamento.
+- **Grade finale della START:** spalla delle luci, bloom selettivo con striatura anamorfica, vignettatura, grana, aberrazione cromatica verso i bordi, dithering. Il blur progressivo del 20% alto e basso resta composto in WebGL, come nella R11.
+- **Palette del DNA** anche in navbar, chevron e focus: ambra di riferimento `#FF7950`, rampa `#9E2208 → #FF5510 → #FF8A1C → #FFCB72`.
 
-## Prestazioni e verifica
+## Regia e verifica
 
-Un ciclo di animazione condiviso, topologie in cache, canvas limitati in pixel, varianti responsive e preparazione differita delle card lontane. Il resize aggiorna prima il CSS e accorpa gli effetti dopo 120 ms. Le immagini nuove non aggiungono librerie runtime.
+- `?lab=1`: otto controlli (raggio del puntatore, bloom, striatura, profondità immagini, luce del bordo, sorgenti delle scene, schegge, grana) e il riepilogo di renderer, profilo e fps. I valori di default sono in `src/settings.js`; colori, tempi e densità sono quelli del DNA (`src/vfx/config.mjs`).
+- `?vfx=high|medium|low` blocca un profilo di qualità; altrimenti il profilo scende da solo se i frame superano 30 ms.
+- `?motion=reduce` simula reduced motion: niente propagazione, niente fasce, caricamento immediato, hover al 60%, grana ferma.
+- `?qa=1` espone `window.__nav` per avanzare il tempo in modo deterministico (screenshot su renderer lenti). Senza il parametro non esiste.
 
-[QA.md](QA.md) distingue test automatici, verifiche browser e limiti. Non viene promessa una frequenza di 60 fps sulla base del browser remoto.
+## Rendering
 
-[Changelog R10](docs/MEMENTO_NAV_R10_CHANGELOG.md). Gli altri documenti di revisione restano come storico: in caso di differenze prevalgono README, changelog e codice R10.
+- Un solo contesto WebGL2 e un solo loop. Ogni tab ha tre mesh sullo stesso piano: la struttura monocromatica (pannello, scena, cornice, titolo), l'overlay d'energia della tab, l'overlay del titolo. Il frame si compone in half float con MSAA ×4 e si gradua una volta sola verso lo schermo.
+- Il DOM resta la fonte di verità per layout, semantica, focus e click: quando l'engine è pronto aggiunge `html.vfx-live` e il DOM smette di dipingere immagini e titoli già disegnati dal canvas. Errore, perdita del contesto o assenza di WebGL2 riportano subito alla navigazione DOM (scene in bianco e nero, colore in hover, titoli con gradiente).
+- Dopo tre secondi senza reazioni il loop si ferma; qualsiasi input lo riprende.
 
-Per la verifica locale servire `dist/` via HTTP. `/?qa` mostra la diagnostica. Copiare temporaneamente `scripts/qa-r10.html` in `dist/` per la matrice di controllo, poi rimuoverla prima della distribuzione.
+## File
 
-Per riesportare le immagini dai master: `python3 scripts/export-assets-r10.py`. Non modifica stile o colore: ridimensiona e comprime soltanto.
+`src/vfx/` contiene i moduli del DNA (configurazione, catena, bordo, rete, struttura, particelle, campo di distanza, puntatore, titoli). `src/shaders.js` e `src/renderer.js` contengono gli shader GLSL ES 3.0 e l'engine. `src/main.js` contiene carosello, input e regia. `public/navigation/` conserva logo e navbar del kit con la palette del DNA. `art/` contiene i cinque master PNG. `public/assets/scenes/` contiene le varianti WebP 768 e 1536. `docs/` contiene note, DNA, prompt e bridge Framer.
+
+Non sono richieste API key o librerie da CDN a runtime.

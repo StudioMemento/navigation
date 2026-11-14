@@ -1,9 +1,6 @@
 {
-  "name": "memento-nav-r10-lowpoly-amber",
-  "version": "10.0.0",
-  "private": true,
-  "type": "module",
-  "scripts": {
-    "test": "node scripts/verify.mjs && node scripts/verify-vfx.mjs && node scripts/verify-artifact.mjs && node scripts/verify-type-polish.mjs && node scripts/verify-route.mjs && node scripts/verify-amber-field.mjs && node scripts/verify-slider-sync.mjs && node scripts/verify-background-r10.mjs && node scripts/verify-card-surface.mjs && node scripts/verify-resize-performance.mjs && node scripts/verify-mobile-r10.mjs && node scripts/verify-assets-r10.mjs"
-  }
+  "name": "memento-nav-r12-vfx-dna", "version": "12.0.0", "private": true, "type": "module",
+  "scripts": { "dev": "vite --host 0.0.0.0", "build": "vite build", "preview": "vite preview --host 0.0.0.0", "test": "node --test tests/*.test.mjs" },
+  "dependencies": { "three": "0.187.0", "delaunator": "5.1.0" },
+  "devDependencies": { "vite": "8.3.6" }
 }
