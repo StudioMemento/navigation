@@ -1,5 +1,15 @@
 # Servizi V44 — effetti, sfondo, touch e mobile di START V27
 
+## V44.1 — correzione per Windows (Direct3D 11)
+
+Sulla V44 pubblicata, con Chrome su Windows e una RTX 3070 Ti, il programma shader delle tavole non si collegava (`VALIDATE_STATUS false`). Il processo GPU andava in crash e il contesto WebGL veniva perso e ripristinato di continuo: lampi, schermo bianco e pagina DOM senza effetti.
+
+- **Causa**: le estensioni Servizi passavano array uniformi per valore a funzioni con un ciclo (maschere doppie, velo, cornice delle tessere). La traduzione HLSL di ANGLE non riesce a compilarle. SwiftShader e Vulkan, usati nella verifica della V44, le accettavano.
+- **Correzione**: la valutazione delle stop è srotolata e legge ogni array uniforme con indici costanti, senza parametri array né cicli. Il risultato è identico: nel confronto dei render la differenza media è sotto 1/255.
+- **Verificato sulla GPU dell'utente**, nel browser integrato: gli shader della V44 perdono il contesto in circa 1,3 s, quelli corretti si collegano in 0,3–0,4 s. Si collegano anche tutti gli altri programmi del motore: titoli, particelle, bloom, composizione, grading.
+- **Salvaguardia**: se uno shader non si collega o il contesto viene perso due volte, il motore si ferma e resta la pagina DOM (`vfx-off`), senza cicli di lampi. Un nuovo test vieta parametri array nelle funzioni GLSL.
+
+
 ## Base e integrazione
 
 - Base: `MEMENTO_SERVIZI_V43_NAV_OVERLAY_VERCEL.zip`. Contenuti, asset, popup, filtri, hash, bozza email e navbar (kit 12.0.0) invariati.
@@ -23,7 +33,7 @@ Marcate `Servizi` nel codice; le funzioni pure sono in `vfx/src/servizi.ts` e co
 
 ## Verifiche del 16 novembre 2026
 
-- **Motore**: typecheck e 57 test in 7 file. Sono i test di LevelUp V20 senza quello della navbar 12.1.0, che non fa parte di questo pacchetto, più 8 test Servizi: sorgenti `srcset`, maschere doppie, velo, residenza.
+- **Motore**: typecheck e 57 test in 7 file (58 dalla V44.1). Sono i test di LevelUp V20 senza quello della navbar 12.1.0, che non fa parte di questo pacchetto, più 8 test Servizi: sorgenti `srcset`, maschere doppie, velo, residenza.
 - **Pagina**: `npm test` 9/9 (5 della V43 e 4 di integrazione VFX). Build con il motore in `dist/vfx/`.
 - **Suite browser della V43** (Chromium 153 headless):
   - DOM di fallback (`SERVIZI_DOM=1`): 6/6 file. Coprono 14 viewport, 34 misure adiacenti ai breakpoint, 400 tavole, embed, interazioni, 72 liste bundle e stati colore.

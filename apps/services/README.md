@@ -1,4 +1,6 @@
-# Memento Servizi — V44 · Effetti, sfondo, touch e mobile di START V27
+# Memento Servizi — V44.1 · Effetti, sfondo, touch e mobile di START V27
+
+**V44.1** corregge gli shader che su Windows (Direct3D 11) mandavano in crash la GPU: lampi, schermo bianco, nessun effetto. Dettagli in `VFX_V44.md`.
 
 Pacchetto completo per Vercel, sulla base della V43 (navbar V12 e overlay). Contenuti, caroselli, popup, filtri, hash, bozza email e navbar restano quelli della V43. Al catalogo si aggiungono testi, tavole, VFX, sfondo, reazione touch e migliorie mobile di START V27, cioè lo stesso motore della LevelUp V20. Il motore e lo sfondo sono già compilati in `public/vfx/`: il deploy non richiede dipendenze npm né variabili d'ambiente.
 

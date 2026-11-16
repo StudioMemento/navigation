@@ -56,3 +56,14 @@ describe('Servizi: residency of the surfaces', () => {
     expect(RESIDENCY.far).toBeGreaterThan(RESIDENCY.near);
   });
 });
+
+describe('Servizi: shaders that Direct3D 11 (ANGLE on Windows) can link', () => {
+  it('no GLSL function takes an array parameter (it crashed the GPU process on an RTX 3070 Ti)', async () => {
+    const shaders = await import('../shaders');
+    for (const [name, src] of Object.entries(shaders)) {
+      if (typeof src !== 'string') continue;
+      for (const m of src.matchAll(/\b(?:float|vec[234]|void|int|bool)\s+\w+\s*\(([^)]*)\)\s*\{/g))
+        expect(/\[\s*\d+\s*\]/.test(m[1]), `${name}: ${m[0]}`).toBe(false);
+    }
+  });
+});

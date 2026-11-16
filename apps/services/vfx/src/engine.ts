@@ -165,6 +165,8 @@ export class VfxEngine {
   private load = { value: 0 };
   private loading = false; private loadingElapsed = 0; private loadRate = 1;
   private loaded = false; private lost = false; private destroyed = false;
+  /** Servizi: a shader this GPU cannot run, or a context lost twice, leaves the DOM page for good (no flashing loop). */
+  private failed = false; private losses = 0;
   private layoutDirty = true; private renderDirty = true; private motionDirty = true;
   /* START V24: the canvas is overscanned by `pad` above and below the viewport and moves with native scroll */
   private viewportDirty = true; private viewW = 0; private pixelRatio = 0;
@@ -193,6 +195,7 @@ export class VfxEngine {
     const renderer = new WebGLRenderer({ canvas, alpha: true, antialias: false, premultipliedAlpha: true, depth: false, stencil: false, powerPreference: 'high-performance' });
     if (!renderer.capabilities.isWebGL2) { renderer.dispose(); throw new Error('WebGL2 unavailable'); }
     this.renderer = renderer;
+    renderer.debug.onShaderError = () => { console.warn('Memento VFX disabled: a shader does not link on this GPU'); this.fail(); };
     renderer.autoClear = false;
     renderer.setClearColor(0x000000, 0);
     const gl = renderer.getContext();
@@ -318,7 +321,15 @@ export class VfxEngine {
     });
   }
 
-  private goLive() { root().classList.add('vfx-live'); root().classList.remove('vfx-boot'); this.renderDirty = true; }
+  /** The DOM page from now on: the engine stops at its next frame and releases the GPU. */
+  private fail() {
+    if (this.failed) return;
+    this.failed = true;
+    this.goDom();
+    root().classList.add('vfx-off');
+  }
+
+  private goLive() { if (this.failed) return; root().classList.add('vfx-live'); root().classList.remove('vfx-boot'); this.renderDirty = true; }
   /** Any failure returns the page to its plain DOM rendering at once. */
   private goDom() { root().classList.remove('vfx-live', 'vfx-boot'); }
 
@@ -359,9 +370,13 @@ export class VfxEngine {
       this.surfaces.forEach(s => { s.dirty = true; }); this.layoutDirty = true; this.renderDirty = true;
     }, { signal });
     document.fonts.addEventListener?.('loadingdone', () => { this.surfaces.forEach(s => { s.dirty = true; }); this.layoutDirty = true; }, { signal });
-    this.canvas.addEventListener('webglcontextlost', e => { e.preventDefault(); this.lost = true; this.goDom(); }, { signal });
+    this.canvas.addEventListener('webglcontextlost', e => {
+      e.preventDefault(); this.lost = true; this.goDom();
+      if (++this.losses >= 2) this.fail();
+    }, { signal });
     this.canvas.addEventListener('webglcontextrestored', () => {
       this.lost = false;
+      if (this.failed) return;
       // Servizi: painted pixels are not kept on the CPU; every surface is prepared again near the viewport
       this.surfaces.forEach(s => this.evict(s));
       this.viewportDirty = true; this.layoutDirty = true;
@@ -1066,6 +1081,7 @@ export class VfxEngine {
 
   private animate = (time: number) => {
     if (this.destroyed) return;
+    if (this.failed) { this.raf = 0; this.destroy(); root().classList.add('vfx-off'); return; }
     if (document.hidden || (window as { __TIDE_VISIBLE__?: boolean }).__TIDE_VISIBLE__ === false || this.covered()) { this.raf = 0; this.lastTick = 0; return; }
     this.raf = requestAnimationFrame(this.animate);
     // Cap high refresh screens without disconnecting the canvas from native scrolling.

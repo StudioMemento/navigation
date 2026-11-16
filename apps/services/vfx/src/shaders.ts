@@ -67,18 +67,15 @@ float layer(){
 }
 `;
 
-/* LevelUp: piecewise linear alpha stops (black ::after shades, img mask-image), the same evaluation as alphaAt(). */
+/*
+ * Piecewise linear alpha stops (black ::after shades, mask-image layers), the same evaluation as alphaAt(). Servizi:
+ * unrolled with constant indices into the uniform arrays themselves. Passing uniform arrays by value to looping
+ * functions made ANGLE's Direct3D 11 translation fail to link on Windows (context lost); constant reads cannot.
+ * Unused stops repeat the last one, so their segments add nothing.
+ */
 const STOPS = /* glsl */ `
-float stopsAt(vec2 s[6], int n, float t){
-  float a=s[0].y;
-  if(t<=s[0].x) return a;
-  for(int i=1;i<6;i++){
-    if(i>=n) break;
-    if(t<=s[i].x){ float span=s[i].x-s[i-1].x; return span<=1e-6?s[i].y:mix(s[i-1].y,s[i].y,(t-s[i-1].x)/span); }
-    a=s[i].y;
-  }
-  return a;
-}
+float seg(float a, float b, float t){ return b-a<=1e-6?step(b,t):clamp((t-a)/(b-a),0.,1.); }
+#define STOPS6(S,t) (S[0].y+(S[1].y-S[0].y)*seg(S[0].x,S[1].x,t)+(S[2].y-S[1].y)*seg(S[1].x,S[2].x,t)+(S[3].y-S[2].y)*seg(S[2].x,S[3].x,t)+(S[4].y-S[3].y)*seg(S[3].x,S[4].x,t)+(S[5].y-S[4].y)*seg(S[4].x,S[5].x,t))
 `;
 
 /* The warmth of a title (its hover state, breathing): the content pass hands the type over to the overlay by it. */
@@ -204,16 +201,17 @@ uniform vec4 uShadeBox;       // local px: x, y, w, h of the shaded box
 uniform vec4 uShadeLine;      // dir.xy, 1/length, stop count
 uniform vec2 uShade[6];
 ${STOPS}
-/* one alpha gradient over a box (local px), 1 without stops */
-float boxGrad(vec2 p, vec4 box, vec4 line, vec2 s[6]){
-  if(line.w<.5) return 1.;
-  return stopsAt(s,int(line.w),dot(p-box.xy-box.zw*.5,line.xy)*line.z+.5);
-}
+/* position along a gradient line over a box (local px); each gradient reads its own uniform array (STOPS6) */
+float lineAt(vec2 p, vec4 box, vec4 line){ return dot(p-box.xy-box.zw*.5,line.xy)*line.z+.5; }
+float maskA(vec2 p){ return uImgMask.w<.5?1.:STOPS6(uMaskStops,lineAt(p,uMaskBox,uImgMask)); }
+float maskB(vec2 p){ return uImgMask2.w<.5?1.:STOPS6(uMaskStops2,lineAt(p,uMaskBox,uImgMask2)); }
+float veilMask(vec2 p){ return uVeilLine.w<.5?1.:STOPS6(uVeilStops,lineAt(p,uVeilBox,uVeilLine)); }
+float veilShade(vec2 p){ return uVeilShadeLine.w<.5?0.:STOPS6(uVeilShade,lineAt(p,uVeilBox,uVeilShadeLine)); }
 float shadeAt(vec2 p){
   if(uShadeLine.w<.5) return 0.;
   vec2 b=p-uShadeBox.xy;
   float inS=step(0.,b.x)*step(b.x,uShadeBox.z)*step(0.,b.y)*step(b.y,uShadeBox.w);
-  return inS*stopsAt(uShade,int(uShadeLine.w),dot(b-uShadeBox.zw*.5,uShadeLine.xy)*uShadeLine.z+.5);
+  return inS*STOPS6(uShade,dot(b-uShadeBox.zw*.5,uShadeLine.xy)*uShadeLine.z+.5);
 }
 /* x: luminance, y: coverage, z: shade of the legibility gradient; phRGB keeps the colour */
 vec3 phRGB=vec3(0.);
@@ -241,15 +239,15 @@ vec3 photo(vec2 p, float inside){
              *(E.z>0.?smoothstep(0.,E.z,q.y):1.)*(E.w>0.?1.-smoothstep(1.-E.w,1.,q.y):1.)
              *step(0.,uv.x)*step(uv.x,1.)*step(0.,uv.y)*step(uv.y,1.);
   inBox*=step(uImgClip.x,p.x)*step(p.x,uImgClip.z)*step(uImgClip.y,p.y)*step(p.y,uImgClip.w);
-  inBox*=boxGrad(p,uMaskBox,uImgMask,uMaskStops)*boxGrad(p,uMaskBox,uImgMask2,uMaskStops2);
+  inBox*=maskA(p)*maskB(p);
   float cP=t.a*uImgStyle.x*inside*inBox*mix(1.,smoothstep(0.,.36,q.x),uImgStyle.y);
   vec3 C=t.rgb*cP; float A=cP;
   if(uVeilP.z>.5){
     // the veil layer (blurred image, black shade over it), then its mask and opacity, over the sharp photograph
     vec2 vb=p-uVeilBox.xy;
     float inV=step(0.,vb.x)*step(vb.x,uVeilBox.z)*step(0.,vb.y)*step(vb.y,uVeilBox.w);
-    float m=inV*uVeilP.y*boxGrad(p,uVeilBox,uVeilLine,uVeilStops)*inside;
-    float sh=uVeilShadeLine.w>.5?boxGrad(p,uVeilBox,uVeilShadeLine,uVeilShade):0.;
+    float m=inV*uVeilP.y*veilMask(p)*inside;
+    float sh=veilShade(p);
     // a blurred edge: half covered on the box outline, gone two radii outside
     vec2 e=min(vq,1.-vq)*uVeilImg.zw;
     float cB=tv.a*smoothstep(-2.,2.,min(e.x,e.y)/max(uVeilP.w,.5));
@@ -355,7 +353,7 @@ void main(){
     float frame=1.-smoothstep(0.,1.,abs(sd+.7)-.15);
     float k=(p.x/uSize.x+p.y/uSize.y)*.5;
     float g=mix(mix(.74,.3,smoothstep(.1,.9,k)),.62,smoothstep(.75,1.,k));
-    float fm=uFrameLine.w>.5?mix(boxGrad(p,vec4(0.,0.,uSize),uFrameLine,uFrameStops)*uFrameRest.x,1.,uFrameRest.y):1.;
+    float fm=uFrameLine.w>.5?mix(STOPS6(uFrameStops,lineAt(p,vec4(0.,0.,uSize),uFrameLine))*uFrameRest.x,1.,uFrameRest.y):1.;
     col=mix(col,vec4(vec3(g),1.),frame*.62*uFrameA*fm);
   }
   if(uHasImg2>.5){
