@@ -9,7 +9,7 @@ const escape = value => String(value).replace(/[&<>"']/g, c => ({ '&':'&amp;', '
 const lines = items => items.map(text => `<span>${escape(text)}</span>`).join(' ');
 // Carousel boards are VFX cards drawn through their own 3D transform, clipped and faded by the carousel.
 const board = 'data-vfx="card" data-vfx-transform data-vfx-clip=".carousel" data-vfx-focus data-vfx-photo=".card-art"';
-// The VFX engine (START V23) loads after the content; until then, and on any failure, the DOM page is complete.
+// The VFX engine (START V27) loads after the content; until then, and on any failure, the DOM page is complete.
 let vfx = null;
 const image = (item, eager = false) => `<img class="card-art" src="${item.asset}" srcset="${item.asset.replace('.webp','-640.webp')} 640w, ${item.asset} ${item.domain ? 1280 : 1536}w" sizes="${item.domain ? '(max-width:767px) 90vw, 60vw' : '(max-width:767px) 70vw, 40vw'}" alt="${escape(item.alt || '')}" width="${item.domain ? 1280 : 1536}" height="${item.domain ? 1280 : 1024}" loading="${eager ? 'eager' : 'lazy'}" decoding="async" ${eager ? 'fetchpriority="high"' : ''} draggable="false">`;
 
@@ -156,19 +156,22 @@ for(const comparison of document.querySelectorAll('.comparison')) {
 const context=document.createElement('canvas').getContext('2d');
 for(const heading of document.querySelectorAll('[data-fit]')) {
   const text=heading.textContent.trim();
-  let previousMode=null;
+  let previousMode=null, changed=false;
   const fit=()=>{
     const width=heading.parentElement.clientWidth;
     const mobile=window.innerWidth<=767 && Boolean(heading.dataset.mobileLines);
     const parts=mobile?heading.dataset.mobileLines.split('|'):[text];
     if(previousMode!==mobile) {
       heading.innerHTML=parts.map(part=>`<span class="fit-line">${escape(part)}</span>`).join(' ');
-      previousMode=mobile;
+      previousMode=mobile; changed=true;
     }
     context.font='350 100px Inter';
     const unit=Math.max(...parts.map(part=>context.measureText(part).width+(part.length-1)*100*(-.055)));
+    const before=heading.style.fontSize;
     heading.style.fontSize=(Math.max(18,(width-2)*100/unit))+'px';
-    vfx?.invalidate();
+    // START V24: only this title is painted again, and only when its size or its lines changed
+    if(before!==heading.style.fontSize||changed)vfx?.invalidate(heading);
+    changed=false;
   };
   new ResizeObserver(fit).observe(heading.parentElement);
   document.fonts.ready.then(fit); fit();
@@ -177,5 +180,9 @@ $('#contact-link').addEventListener('click',()=>{if(engaged)$('#contact-link').h
 enhanceVisuals();
 mountStart({ destination: () => contactUrl(engaged) });
 import('../vfx/memento-vfx.js')
-  .then(({ mountVfx }) => { vfx = mountVfx(); })
+  .then(({ mountVfx, mountBackground }) => {
+    vfx = mountVfx();
+    // START V27 background (Ghost Fibers), unless a compatible host owns the surface
+    if (document.documentElement.dataset.mementoSurface !== 'transparent') mountBackground?.();
+  })
   .catch(() => { document.documentElement.classList.remove('vfx-boot', 'vfx-live'); document.documentElement.classList.add('vfx-off'); });

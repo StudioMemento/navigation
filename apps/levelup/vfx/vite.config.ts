@@ -1,6 +1,7 @@
 import { defineConfig } from 'vite';
 
-// One entry (the DOM adapter, ~2 kB) and the engine chunk it imports after the content (Three.js, GSAP).
+// One entry (the DOM adapter) and the chunks it imports after the content: the engine (Three.js) and the Ghost Fibers
+// background (plain WebGL2).
 export default defineConfig({
   build: {
     outDir: '../public/vfx',

@@ -1,7 +1,16 @@
+/* START V25 surface and navigation mode, before the first paint: only a compatible host (?mementoEmbed=1) owns the
+   background and the navigation; a plain embed (Framer) and the page on its own are opaque with their own navbar. */
+(() => {
+  const root = document.documentElement, embedded = window.self !== window.top;
+  const hosted = embedded && new URLSearchParams(location.search).get('mementoEmbed') === '1';
+  root.dataset.embedded = String(embedded);
+  root.dataset.mementoSurface = hosted ? 'transparent' : 'opaque';
+  root.dataset.mementoInitialMode = root.dataset.mementoNavigation = hosted ? 'hosted' : 'standalone';
+})();
+
 /* Shared Services V40 geometry; measured from this document's viewport. */
 (() => {
   const root = document.documentElement;
-  root.dataset.embedded = String(window.parent !== window);
   let previous = -1;
   const update = () => {
     const width = root.clientWidth || window.innerWidth;
@@ -16,17 +25,8 @@
   new ResizeObserver(update).observe(root);
 })();
 
-/* VFX boot (START V23): the content waits in black until the engine has drawn its first frame.
-   Failsafe: never longer than 3 s. Reduced motion, forced colours or no WebGL2: the DOM page at once. */
-(() => {
-  const root = document.documentElement;
-  try {
-    if (matchMedia('(prefers-reduced-motion: reduce)').matches || matchMedia('(forced-colors: active)').matches) return;
-    if (!document.createElement('canvas').getContext('webgl2')) return;
-    root.classList.add('vfx-boot');
-    setTimeout(() => root.classList.remove('vfx-boot'), 3000);
-  } catch { /* The plain DOM page. */ }
-})();
+/* START V25: content and navigation are visible at once. The effects take over surface by surface once they are
+   ready (html.vfx-live + [data-vfx-ready]); reduced motion, forced colours or no WebGL2 keep the DOM page. */
 
 /* Surface handshake lets a compatible host own its background and blur. */
 (() => {

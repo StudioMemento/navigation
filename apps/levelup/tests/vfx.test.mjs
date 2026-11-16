@@ -3,13 +3,13 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { Carousel } from '../src/carousel.js';
 
-test('The START V23 VFX is wired on every surface of the page, after the content', async () => {
+test('The START V27 VFX is wired on every surface of the page, after the content', async () => {
   const html = await readFile('dist/index.html', 'utf8');
   const app = await readFile('dist/src/app.js', 'utf8');
   // the four section headings are title surfaces
   for (const id of ['page-title', 'experiences-title', 'vision-title', 'steps-title'])
     assert.match(html, new RegExp(`id="${id}" class="gradient-text fitted-heading" data-vfx="title"`));
-  assert.match(html, /<link rel="stylesheet" href="src\/vfx\.css">/);
+  assert.match(html, /<link rel="stylesheet" href="src\/vfx\.css\?v=20\.0\.0">/);
   assert.match(html, /<link rel="modulepreload" href="vfx\/memento-vfx\.js">/);
   assert.match(html, /<meta name="theme-color" content="#000000">/);
   // carousel boards: drawn through their own 3D transform, clipped by the carousel, dimmed with their focus
@@ -21,18 +21,33 @@ test('The START V23 VFX is wired on every surface of the page, after the content
   assert.match(app, /class="step-card cut-frame" data-vfx="card"/);
   // carousel frames and fitted type reach the engine; the engine is a dynamic import with a DOM fallback
   assert.equal((app.match(/onRender:\(\)=>vfx\?\.motion\(\)/g) || []).length, 2);
-  assert.match(app, /heading\.style\.fontSize=[^\n]+\n\s+vfx\?\.invalidate\(\);/);
-  assert.match(app, /import\('\.\.\/vfx\/memento-vfx\.js'\)[\s\S]+?mountVfx\(\)[\s\S]+?vfx-off/);
+  // START V24: a fitted title repaints alone, and only when its size or lines changed
+  assert.match(app, /heading\.style\.fontSize=[^\n]+\n[^\n]+\n\s+if\(before!==heading\.style\.fontSize\|\|changed\)vfx\?\.invalidate\(heading\);/);
+  assert.match(app, /import\('\.\.\/vfx\/memento-vfx\.js'\)[\s\S]+?mountVfx\(\)[\s\S]+?mountBackground\?\.\(\)[\s\S]+?vfx-off/);
+  assert.match(app, /mementoSurface !== 'transparent'\) mountBackground/);
 });
 
-test('True black, boot veil with a 3 s failsafe, and no DOM paint twice', async () => {
+test('START V25-V27: content at once, per-surface takeover, canvas on native scroll, background, touch fallback', async () => {
   const css = await readFile('dist/src/vfx.css', 'utf8');
   const boot = await readFile('dist/bootstrap.js', 'utf8');
-  assert.match(css, /html\[data-embedded=false\] \{ background: #000; \}/);
-  assert.match(css, /html\.vfx-boot main \{ opacity: 0; \}/);
-  assert.match(css, /html\.vfx-live \[data-vfx\],/);
-  assert.match(boot, /root\.classList\.add\('vfx-boot'\);\s+setTimeout\(\(\) => root\.classList\.remove\('vfx-boot'\), 3000\);/);
-  assert.match(boot, /prefers-reduced-motion: reduce[\s\S]+forced-colors: active/);
+  const html = await readFile('dist/index.html', 'utf8');
+  // surface: opaque true black unless a compatible host (?mementoEmbed=1) owns it, decided before the first paint
+  assert.match(css, /html\[data-memento-surface='opaque'\] \{ background: #000; \}/);
+  assert.match(css, /html\[data-memento-surface='transparent'\] \.memento-background \{ display: none; \}/);
+  assert.match(boot, /get\('mementoEmbed'\) === '1'[\s\S]+?mementoSurface = hosted \? 'transparent' : 'opaque'/);
+  assert.match(html, /<style id="memento-first-paint">html\{background:#000\}/);
+  // no content veil: the DOM shows until each surface is drawn, then that surface stops painting
+  assert.match(css, /html\.vfx-boot main \{ opacity: 1; \}/);
+  assert.doesNotMatch(boot, /classList\.add\('vfx-boot'\)/);
+  assert.match(css, /html\.vfx-live \[data-vfx\]\[data-vfx-ready\],/);
+  assert.doesNotMatch(css, /html\.vfx-live \[data-vfx\],/);
+  // the canvas layer follows the document (compositor scroll); the background is fixed behind it
+  assert.match(css, /\.vfx-layer \{ position: absolute; inset: 0; overflow: clip;/);
+  assert.match(css, /\.vfx-canvas \{ position: absolute; top: 0; left: 0;[^}]+will-change: transform; \}/);
+  assert.match(css, /\.memento-background \{ position: fixed; inset: 0; z-index: -1; pointer-events: none; height: 100lvh; \}/);
+  // DOM fallback of the touch wave on titles
+  assert.match(css, /html:not\(\.vfx-live\) \.touch-lit\.gradient-text/);
+  assert.match(html, /interactive-widget=resizes-content/);
 });
 
 test('Every carousel frame is announced to the engine', () => {

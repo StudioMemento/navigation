@@ -1,4 +1,3 @@
-import gsap from 'gsap';
 import {
   BufferAttribute, BufferGeometry, CanvasTexture, DataTexture, DoubleSide, DynamicDrawUsage, GLSL3, HalfFloatType, InstancedBufferGeometry,
   InstancedInterleavedBuffer, InterleavedBufferAttribute, LinearFilter, Mesh, NoColorSpace, PerspectiveCamera,
@@ -9,6 +8,7 @@ import { ChainField } from './chain';
 import { VFX, gradientRange, hexToRgb, titleRamp, type ChainProfile, type QualityName } from './config';
 import { buildNetwork, hashString, type SurfaceNetwork } from './geometry';
 import { PointerField } from './input';
+import { TouchPulseField, TouchReaction, type SurfaceRect } from './touch';
 import { GPU_STRIDE, Particles } from './particles';
 import { collect, distanceField, imageFit, paint } from './raster';
 import { gradientLine, inverseHomography, parseAlphaGradient, parseTransform, placement, project, unproject, type AlphaGradient } from './projective';
@@ -31,7 +31,7 @@ interface Surface {
   overlay: Mesh<BufferGeometry, RawShaderMaterial>;
   x: number; y: number; w: number; h: number;        // document px
   cellKey: string; netKey: string;
-  net: SurfaceNetwork | null; chain: ChainField | null; energy: BufferAttribute | null;
+  net: SurfaceNetwork | null; chain: ChainField | null; touch: TouchReaction | null; energy: BufferAttribute | null;
   border: BorderLight | null; edgeCells: { cell: number; s: number; w: number }[];
   born: Uint8Array | null; delays: Float32Array | null;
   canvas: HTMLCanvasElement;
@@ -55,6 +55,8 @@ interface Surface {
   hover: number; near: number; inside: boolean; debt: number; budget: number; hot: boolean;
   version: number;
   ready: boolean;
+  /** START V24: measured and painted again only when its size or content changed. */
+  dirty: boolean;
 }
 
 const clamp = (v: number, a: number, b: number) => Math.min(b, Math.max(a, v));
@@ -96,9 +98,9 @@ const barycentric = (triangles: number) => {
 };
 
 /**
- * VFX engine: one persistent WebGL context, one update loop (the GSAP ticker).
+ * VFX engine: one surface WebGL context, one requestAnimationFrame update loop (START V27).
  *
- * One material, one energy. There is no background (V23): the page is true black and only its surfaces are drawn.
+ * One material, one energy. The surface canvas is composited above the independently budgeted Ghost Fibers background.
  * Every surface of the page
  * (titles, cards with their photographs and labels) has a monochrome representation for structure and an overlay for
  * energy. Energy is the same thing everywhere: amber light carried by a chain reaction across a network of cells,
@@ -108,9 +110,9 @@ const barycentric = (triangles: number) => {
  * (`html.vfx-live`) the DOM paint of registered surfaces is switched off, so nothing is drawn twice.
  */
 export class VfxEngine {
-  static create(canvas: HTMLCanvasElement, registry: SurfaceRegistry): VfxEngine | null {
+  static create(canvas: HTMLCanvasElement, registry: SurfaceRegistry, touches = new TouchPulseField()): VfxEngine | null {
     try {
-      return new VfxEngine(canvas, registry);
+      return new VfxEngine(canvas, registry, touches);
     } catch (error) {
       console.warn('Memento VFX disabled:', error);
       root().classList.remove('vfx-boot', 'vfx-live');
@@ -145,17 +147,23 @@ export class VfxEngine {
   private viewH = 1;
   private clock = 0; private frame = 0;
   private load = { value: 0 };
-  private loadTween: gsap.core.Tween | null = null;
+  private loading = false; private loadingElapsed = 0; private loadRate = 1;
   private live = false; private loaded = false; private lost = false; private destroyed = false;
   private layoutDirty = true; private renderDirty = true; private motionDirty = true;
+  /* START V24: the canvas is overscanned by `pad` above and below the viewport and moves with native scroll */
+  private viewportDirty = true; private viewW = 0; private pixelRatio = 0;
+  private pad = 96; private surfaceObserver: ResizeObserver | null = null;
+  private raf = 0; private lastTick = 0;
+  readonly metrics = { layouts: 0, rasterizations: 0, viewportResizes: 0, renders: 0 };
   private quality: QualityName = 'high'; private pinned = false;
   private slow = 0; private frames = 0;
   private readonly reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
   private readonly abort = new AbortController();
   private cleanups: (() => void)[] = [];
   private nextIndex = 0;
+  private readonly touchOnly = matchMedia('(hover: none), (pointer: coarse), (max-width: 767px)');
 
-  private constructor(private canvas: HTMLCanvasElement, private registry: SurfaceRegistry) {
+  private constructor(private canvas: HTMLCanvasElement, private registry: SurfaceRegistry, private touches: TouchPulseField) {
     // the frame is drawn into a multisampled target and graded to the canvas: the canvas itself needs no depth or AA
     const renderer = new WebGLRenderer({ canvas, alpha: true, antialias: false, premultipliedAlpha: true, depth: false, stencil: false, powerPreference: 'high-performance' });
     if (!renderer.capabilities.isWebGL2) { renderer.dispose(); throw new Error('WebGL2 unavailable'); }
@@ -174,9 +182,10 @@ export class VfxEngine {
     const A = VFX.color.amber;
     this.globals = {
       uTime: { value: 0 }, uMotion: { value: this.reduced ? 0 : 1 },
+      uPhotoColor: { value: this.touchOnly.matches ? 1 : 0 },
       uAmb: { value: [...hexToRgb(A.deep), ...hexToRgb(A.mid), ...hexToRgb(A.hot), ...hexToRgb(A.core)] },
       uEmissive: { value: 0 },
-      uView: { value: new Vector2(1, 1) }, uScroll: { value: 0 },
+      uView: { value: new Vector2(1, 1) }, uCanvas: { value: new Vector2(0, 1) }, uScroll: { value: 0 },
       uBand: { value: 120 }, uBandK: { value: new Vector2(0, 0) }, uLoad: { value: 0 },
       uDrift: { value: new Vector3(0, VFX.scroll.drift, VFX.scroll.fade) },
       uFrag: { value: new Vector4(1, 1, 1, 0) },
@@ -199,9 +208,9 @@ export class VfxEngine {
     const ext = renderer.extensions;
     const type = ext.has('EXT_color_buffer_float') || ext.has('EXT_color_buffer_half_float') ? HalfFloatType : UnsignedByteType;
     const rt = (depth: boolean, samples = 0) => new WebGLRenderTarget(4, 4, { depthBuffer: depth, minFilter: LinearFilter, magFilter: LinearFilter, type, samples });
-    this.rtMain = rt(true, 4);
+    this.rtMain = rt(false, this.quality === 'high' ? 2 : 0);
     // selective bloom: only the emission pass is blurred and added back
-    this.rtE = rt(true); this.rtA = rt(false); this.rtB = rt(false);
+    this.rtE = rt(false); this.rtA = rt(false); this.rtB = rt(false);
     this.rtS1 = rt(false); this.rtS2 = rt(false);
     const fs = unbounded(new BufferGeometry());
     fs.setAttribute('position', new BufferAttribute(new Float32Array([-1, -1, 3, -1, -1, 3]), 2));
@@ -221,7 +230,7 @@ export class VfxEngine {
     this.listen();
     // ?vfxdebug exposes the engine for inspection (also in development builds)
     if (import.meta.env.DEV || new URLSearchParams(location.search).has('vfxdebug')) Object.assign(window, { __vfx: this, __VFX: VFX });
-    gsap.ticker.add(this.tick);
+    this.raf = requestAnimationFrame(this.animate);
     void this.start();
   }
 
@@ -234,8 +243,8 @@ export class VfxEngine {
 
   destroy() {
     this.destroyed = true;
-    gsap.ticker.remove(this.tick);
-    this.loadTween?.kill();
+    cancelAnimationFrame(this.raf);
+    this.loading = false;
     this.abort.abort();
     this.cleanups.forEach(f => f());
     this.scroll.destroy();
@@ -262,15 +271,14 @@ export class VfxEngine {
     if (this.destroyed) return;
     this.layout();
     await Promise.race([this.whenPainted(first), wait(400)]);
-    if (this.destroyed || this.lost) return;
+    // a page opened in the background goes live when it is shown (no frame is drawn while it is hidden)
+    if (document.hidden) await new Promise(resolve => document.addEventListener('visibilitychange', resolve, { once: true, signal: this.abort.signal }));
+    if (this.destroyed || this.lost || document.hidden) return;
     this.goLive();
     if (this.reduced) { this.load.value = 1; this.loaded = true; return; }
     // Cellule > Unione > Assestamento > Presente. Any interaction shortens it; nothing is queued behind it.
-    this.loadTween = gsap.to(this.load, {
-      value: 1, duration: VFX.loading.duration, ease: 'power1.inOut',
-      onComplete: () => { this.loaded = true; this.loadTween = null; },
-    });
-    const hurry = () => this.loadTween?.timeScale(VFX.loading.hurry);
+    this.loading = true;
+    const hurry = () => { this.loadRate = VFX.loading.hurry; };
     for (const type of ['pointerdown', 'wheel', 'keydown', 'touchstart'] as const) addEventListener(type, hurry, { once: true, passive: true, signal: this.abort.signal });
   }
 
@@ -288,14 +296,16 @@ export class VfxEngine {
   private listen() {
     const signal = this.abort.signal, passive = { passive: true, signal } as const;
     const input = this.input;
-    addEventListener('pointermove', e => input.move(e.clientX, e.clientY, e.pointerType === 'touch'), passive);
-    addEventListener('pointerdown', e => {
-      input.move(e.clientX, e.clientY, e.pointerType === 'touch');
-      if (e.pointerType !== 'mouse') this.pulseAt(e.clientX, e.clientY + scrollY, 0.9, 4);
-    }, passive);
-    // a lifted finger leaves one local impulse that travels and decays; a cancelled gesture leaves none
-    addEventListener('pointerup', e => { if (e.pointerType !== 'mouse') { this.pulseAt(e.clientX, e.clientY + scrollY, 1, 5); input.leave(); } }, passive);
-    addEventListener('pointercancel', () => { input.cancel(); this.surfaces.forEach(s => s.chain?.quench()); }, passive);
+    const trackMouse = (e: PointerEvent) => {
+      if (e.pointerType === 'mouse') input.move(e.clientX, e.clientY, false);
+      else input.leave(); // A held finger must not feed the slow, continuous hover chain.
+    };
+    addEventListener('pointermove', trackMouse, passive);
+    addEventListener('pointerdown', trackMouse, passive);
+    // START V27: one viewport wave is started on contact (touch-feedback.ts), even before WebGL is ready.
+    // Native scrolling sends pointercancel: leave the pointer but let that wave finish.
+    addEventListener('pointerup', e => { if (e.pointerType !== 'mouse') input.leave(); }, passive);
+    addEventListener('pointercancel', () => input.cancel(), passive);
     addEventListener('blur', () => input.leave(), passive);
     root().addEventListener('mouseleave', () => input.leave(), passive);
     document.addEventListener('pointerover', e => { if ((e.target as Element)?.tagName === 'IFRAME') input.leave(); }, passive);
@@ -306,26 +316,53 @@ export class VfxEngine {
       const r = el.getBoundingClientRect();
       this.pulseAt(r.left + r.width / 2, r.top + r.height / 2 + scrollY, 0.7, 3);
     }, passive);
-    addEventListener('resize', () => { this.layoutDirty = true; }, passive);
-    document.fonts.addEventListener?.('loadingdone', () => { this.layoutDirty = true; }, { signal });
+    // START V24: a height-only change (mobile toolbars) resizes the overscanned canvas, nothing is painted again
+    addEventListener('resize', () => { this.viewportDirty = true; if (root().clientWidth !== this.viewW) this.layoutDirty = true; }, passive);
+    const wake = () => { this.lastTick = 0; this.renderDirty = true; if (!this.raf && !this.destroyed) this.raf = requestAnimationFrame(this.animate); };
+    document.addEventListener('visibilitychange', wake, passive);
+    document.addEventListener('memento:overlay-change', wake, passive);
+    addEventListener('beforeprint', () => this.goDom(), passive);
+    addEventListener('afterprint', () => { if (this.loaded && !this.lost) this.goLive(); }, passive);
+    const forced = matchMedia('(forced-colors: active)');
+    forced.addEventListener('change', () => { if (forced.matches) this.goDom(); else if (this.loaded && !this.lost) this.goLive(); }, { signal });
+    this.touchOnly.addEventListener('change', () => {
+      this.globals.uPhotoColor.value = this.touchOnly.matches ? 1 : 0;
+      this.surfaces.forEach(s => { s.dirty = true; }); this.layoutDirty = true; this.renderDirty = true;
+    }, { signal });
+    document.fonts.addEventListener?.('loadingdone', () => { this.surfaces.forEach(s => { s.dirty = true; }); this.layoutDirty = true; }, { signal });
     this.canvas.addEventListener('webglcontextlost', e => { e.preventDefault(); this.lost = true; this.goDom(); }, { signal });
     this.canvas.addEventListener('webglcontextrestored', () => {
       this.lost = false;
-      this.surfaces.forEach(s => { if (s.ink) s.ink.needsUpdate = true; if (s.dist) s.dist.needsUpdate = true; if (s.img) s.img.needsUpdate = true; });
-      this.layoutDirty = true;
+      this.surfaces.forEach(s => { if (s.ink) s.ink.needsUpdate = true; if (s.dist) s.dist.needsUpdate = true; if (s.img) s.img.needsUpdate = true; if (s.img2) s.img2.needsUpdate = true; });
+      this.viewportDirty = true; this.layoutDirty = true;
       if (this.loaded) this.goLive();
     }, { signal });
 
+    // positions are read again when the page moves; a surface is painted again only when its own box changes
     const observer = new ResizeObserver(() => { this.layoutDirty = true; });
-    observer.observe(root());
     const main = document.querySelector('main');
     if (main) observer.observe(main);
-    this.cleanups.push(() => observer.disconnect());
+    this.surfaceObserver = new ResizeObserver(entries => {
+      for (const entry of entries) {
+        const surface = this.surfaces.get(entry.target as HTMLElement);
+        // the border box ignores CSS transforms: a carousel board is compared with its flat measure
+        const box = entry.borderBoxSize?.[0], w = box ? box.inlineSize : (entry.target as HTMLElement).offsetWidth, h = box ? box.blockSize : (entry.target as HTMLElement).offsetHeight;
+        if (surface && (Math.abs(surface.w - w) > .5 || Math.abs(surface.h - h) > .5)) { surface.dirty = true; this.layoutDirty = true; }
+      }
+    });
+    this.cleanups.push(() => { observer.disconnect(); this.surfaceObserver?.disconnect(); });
+    const invalidate = (target?: Element) => {
+      const owner = target?.closest<HTMLElement>('[data-vfx]');
+      if (owner) { const s = this.surfaces.get(owner); if (s) s.dirty = true; }
+      else this.surfaces.forEach(s => { s.dirty = true; });
+      this.layoutDirty = true;
+    };
     this.cleanups.push(this.registry.subscribe((reason, target, strength) => {
       // a carousel frame moves boards: their matrices are read again, nothing is re-measured
       if (reason === 'motion') { this.motionDirty = true; this.renderDirty = true; return; }
-      this.layoutDirty = true;
-      if (target && strength) {
+      if (reason === 'surfaces') this.layoutDirty = true;
+      else if (reason === 'layout') invalidate(target);
+      if (reason === 'impulse' && target && strength) {
         const r = target.getBoundingClientRect();
         this.pulseAt(r.left + r.width * 0.3, r.top + r.height * 0.45 + scrollY, strength, 6, Math.min(r.width, r.height) * 0.3);
       }
@@ -373,6 +410,15 @@ export class VfxEngine {
     return x >= c[0] && x <= c[2] && y >= c[1] && y <= c[3];
   }
 
+  /** Viewport placement of a surface for the touch wave: boards through their transform, inside their container. */
+  private touchRect(s: Surface): SurfaceRect {
+    const ox = scrollX, oy = this.scroll.y;
+    const rect: SurfaceRect = { x: s.x - ox, y: s.y - oy, w: s.w, h: s.h };
+    if (s.xf) rect.map = (x, y) => { const [dx, dy] = project(s.xf!, x, y); return [dx - ox, dy - oy]; };
+    if (s.clipEl) rect.visible = (x, y) => this.inClip(s, x + ox, y + oy);
+    return rect;
+  }
+
   /** Reads a board's CSS transform, opacity, visibility, stacking and focus; nothing is measured. */
   private updateMotion(s: Surface) {
     const cs = getComputedStyle(s.el), u = s.u;
@@ -385,6 +431,9 @@ export class VfxEngine {
     u.uAlpha.value = s.opacity;
     const order = 100000 + s.group * 1000 + s.z * 2;
     s.content.renderOrder = order; s.overlay.renderOrder = order + 1;
+    // START V25 on touch devices photographs show their colour at rest: a board keeps the DOM's own grayscale(focus)
+    const gray = /grayscale\(([\d.]+)(%?)\)/.exec(cs.filter);
+    u.uPhotoSat.value = gray ? 1 - clamp(parseFloat(gray[1]) / (gray[2] ? 100 : 1), 0, 1) : 1;
     if (s.opt.focus) {
       const f = clamp(parseFloat(cs.getPropertyValue('--slide-focus')) || 0, 0, 1), F = VFX.focus;
       u.uInkA.value = clamp((f - F.ink) / (1 - F.ink), 0, 1);
@@ -427,14 +476,26 @@ export class VfxEngine {
 
   private profile() { return VFX.quality[this.quality]; }
 
-  private layout() {
-    this.layoutDirty = false; this.renderDirty = true;
-    const w = root().clientWidth, h = innerHeight;
-    this.viewH = h;
-    const q = this.profile();
-    this.renderer.setPixelRatio(Math.min(devicePixelRatio || 1, q.dpr));
-    this.renderer.setSize(w, h, false);
-    const bw = Math.max(2, Math.round(w * VFX.bloom.scale)), bh = Math.max(2, Math.round(h * VFX.bloom.scale));
+  /**
+   * START V24: the canvas covers the viewport plus `pad` above and below and is moved by the compositor with the
+   * document (iOS momentum included). Only a width or pixel-ratio change paints the surfaces again.
+   */
+  private resizeViewport() {
+    this.viewportDirty = false;
+    const w = root().clientWidth, h = innerHeight, q = this.profile();
+    const ratio = Math.min(devicePixelRatio || 1, q.dpr);
+    if (w === this.viewW && h === this.viewH && ratio === this.pixelRatio) return;
+    this.metrics.viewportResizes++;
+    if (w !== this.viewW || ratio !== this.pixelRatio) {
+      this.surfaces.forEach(s => { s.dirty = true; }); this.layoutDirty = true;
+    }
+    this.viewW = w; this.viewH = h; this.pixelRatio = ratio;
+    this.pad = Math.min(128, Math.round(h * .15));
+    const renderH = h + this.pad * 2;
+    this.renderer.setPixelRatio(ratio);
+    this.renderer.setSize(w, renderH, false);
+    this.canvas.style.height = `${renderH}px`;
+    const bw = Math.max(2, Math.round(w * VFX.bloom.scale)), bh = Math.max(2, Math.round(renderH * VFX.bloom.scale));
     this.rtE.setSize(bw, bh); this.rtA.setSize(bw, bh); this.rtB.setSize(bw, bh);
     this.rtS1.setSize(Math.max(2, bw >> 1), Math.max(2, bh >> 1)); this.rtS2.setSize(Math.max(2, bw >> 1), Math.max(2, bh >> 1));
     const gl = this.renderer.getContext();
@@ -446,6 +507,14 @@ export class VfxEngine {
     this.globals.uBand.value = this.scroll.bandPx;
     this.camera.aspect = w / h;
     this.camera.updateProjectionMatrix();
+    this.renderDirty = true;
+  }
+
+  private layout() {
+    this.resizeViewport();
+    this.layoutDirty = false; this.renderDirty = true;
+    this.metrics.layouts++;
+    this.scroll.measure(this.viewH);
 
     // DOM colours and opacities are read in their normal state, then the GPU representation takes over again
     const live = this.live;
@@ -466,7 +535,8 @@ export class VfxEngine {
       seen.add(el);
       const r = el.getBoundingClientRect();
       let s = this.surfaces.get(el);
-      if (!s) { s = this.addSurface(el, opt); this.surfaces.set(el, s); }
+      if (!s) { s = this.addSurface(el, opt); this.surfaces.set(el, s); this.surfaceObserver?.observe(el); }
+      if (Math.abs(s.w - r.width) > .5 || Math.abs(s.h - r.height) > .5 || JSON.stringify(s.opt) !== JSON.stringify(opt)) s.dirty = true;
       s.opt = opt;
       s.x = r.left + sx; s.y = r.top + sy; s.w = r.width; s.h = r.height;
       // the clipping container (a carousel): document box and side fade
@@ -486,7 +556,9 @@ export class VfxEngine {
         s.group = groups.get(key)!;
       } else { s.xf = null; s.inv = null; s.u.uHasXf.value = 0; s.shown = true; s.opacity = 1; s.z = 0; }
       if (r.width < 2 || r.height < 2) { s.content.visible = false; return; }
-      this.measureSurface(s);
+      (s.u.uOrigin.value as Vector2).set(s.x, s.y);
+      (s.u.uSize.value as Vector2).set(s.w, s.h);
+      if (s.dirty) { s.dirty = false; this.measureSurface(s); }
     });
     for (const [el, transform, opacity, visibility, focus] of saved) {
       el.style.transform = transform; el.style.opacity = opacity; el.style.visibility = visibility;
@@ -506,14 +578,14 @@ export class VfxEngine {
       uPanel: { value: title ? 0 : 1 }, uCut: { value: new Vector2() }, uPanelCol: { value: new Vector4(...VFX.color.panel) },
       uInk: { value: null }, uHasInk: { value: 0 }, uInkMap: { value: new Vector4(0, 0, 1, 1) }, uVeil: { value: 0 },
       uImg: { value: null }, uHasImg: { value: 0 }, uImgBox: { value: new Vector4(0, 0, 1, 1) }, uImgFit: { value: new Vector4(0, 0, 1, 1) }, uImgStyle: { value: [1, 0, 0] },
-      uHover: { value: 0 }, uGain: { value: 1 }, uBins: { value: new Float32Array(VFX.border.bins) },
+      uHover: { value: 0 }, uTouch: { value: 0 }, uGain: { value: 1 }, uBins: { value: new Float32Array(VFX.border.bins) },
       uGray: { value: new Vector2(...gradientRange()) }, uMicro: { value: 12 },
       uDist: { value: null }, uRange: { value: 24 }, uEm: { value: 16 },
       uTitle: { value: titleRamp() }, uHot: { value: VFX.color.titleHot.flatMap(hexToRgb) },
       uSolid: { value: opt.solid ? 1 : 0 }, uTopo: { value: 1 }, uPointer: { value: new Vector3(-1e4, -1e4, opt.panel ? 0 : 1) },
       uOwn: { value: opt.ownColour ? 1 : 0 }, uNear: { value: 0 }, uWake: { value: new Vector4(...VFX.chain.card.wake) }, uInkWarm: { value: new Vector3(...VFX.chain.card.inkWarm) },
       // LevelUp
-      uXf: { value: new Float32Array(16) }, uHasXf: { value: 0 }, uAlpha: { value: 1 }, uInkA: { value: 1 }, uFrameA: { value: 1 },
+      uXf: { value: new Float32Array(16) }, uHasXf: { value: 0 }, uAlpha: { value: 1 }, uInkA: { value: 1 }, uFrameA: { value: 1 }, uPhotoSat: { value: 1 },
       uClipRect: { value: new Vector4(0, 0, -1, 0) }, uClipFade: { value: 0 },
       uImg2: { value: null }, uHasImg2: { value: 0 }, uSplit: { value: 0 }, uSplitFocus: { value: 0 },
       uImgClip: { value: new Vector4(...NO_CLIP) }, uImgMask: { value: new Vector4() }, uMaskStops: { value: new Float32Array(12) },
@@ -526,17 +598,19 @@ export class VfxEngine {
     overlay.frustumCulled = false; overlay.renderOrder = 11 + index * 2; overlay.visible = false;
     this.scene.add(content, overlay);
     return { el, opt, index, u, content, overlay, x: 0, y: 0, w: 0, h: 0, cellKey: '', netKey: '',
-      net: null, chain: null, energy: null, border: title ? null : new BorderLight(), edgeCells: [], born: null, delays: null,
+      net: null, chain: null, touch: null, energy: null, border: title ? null : new BorderLight(), edgeCells: [], born: null, delays: null,
       canvas: document.createElement('canvas'), ink: null, dist: null, sourceDebt: 0, img: null, imgSrc: '', alpha: null, fontSize: 16,
       veilRest: 0, lift: 0,
       xf: null, inv: null, origin: [0, 0], opacity: 1, z: 0, group: 0, shown: true,
       clipEl: null, clipDoc: NO_CLIP, clipFade: 0,
       photoEl: null, photo2El: null, img2: null, img2Src: '', photoFit: { objectFit: 'fill', objectPosition: '50% 50%' }, photoBox: [0, 0, 1, 1],
       range: null, rangeBox: [0, 1], imgDirty: false, photoVersion: 0,
-      hover: 0, near: 0, inside: false, debt: 0, budget: 0, hot: false, version: 0, ready: false };
+      hover: 0, near: 0, inside: false, debt: 0, budget: 0, hot: false, version: 0, ready: false, dirty: true };
   }
 
   private dropSurface(s: Surface) {
+    this.surfaceObserver?.unobserve(s.el);
+    delete s.el.dataset.vfxReady;
     this.scene.remove(s.content, s.overlay);
     s.content.geometry.dispose(); s.content.material.dispose();
     s.overlay.geometry.dispose(); s.overlay.material.dispose();
@@ -545,6 +619,7 @@ export class VfxEngine {
   }
 
   private measureSurface(s: Surface) {
+    this.metrics.rasterizations++;
     const { el, u } = s, q = this.profile();
     // photographs: the element's own <img> (or the one its options name), and a comparison's before layer
     const img = (s.opt.photo ? el.querySelector<HTMLImageElement>(s.opt.photo) : null)
@@ -642,10 +717,13 @@ export class VfxEngine {
     const ox = Math.floor((bx + scrollX) * scale) / scale - scrollX, oy = Math.floor((by + scrollY) * scale) / scale - scrollY;
     const frame = { x: ox, y: oy, w: Math.max(2, Math.ceil((bx - ox + found.box.width) * scale)), h: Math.max(2, Math.ceil((by - oy + found.box.height) * scale)) };
     const version = ++s.version;
-    void paint(s.canvas, found, scale, frame, s.opt.kind === 'title' ? undefined : VFX.color.cardInk).then(alpha => {
+    // START V24: painted into a new canvas; the previous texture stays on screen until this one is ready
+    const painted = document.createElement('canvas');
+    void paint(painted, found, scale, frame, s.opt.kind === 'title' ? undefined : VFX.color.cardInk).then(alpha => {
       if (s.version !== version || this.destroyed) return;
+      s.canvas = painted;
       s.ink?.dispose();
-      const t = new CanvasTexture(s.canvas);
+      const t = new CanvasTexture(painted);
       t.colorSpace = NoColorSpace; t.premultiplyAlpha = true; t.flipY = false; t.generateMipmaps = false; t.minFilter = LinearFilter; t.magFilter = LinearFilter;
       this.renderer.initTexture(t);
       s.ink = t; s.alpha = alpha;
@@ -660,7 +738,7 @@ export class VfxEngine {
         s.dist = d; u.uDist.value = d;
         this.weightByInk(s);
       }
-      s.content.visible = true; s.ready = true;
+      s.content.visible = true; s.ready = true; s.el.dataset.vfxReady = 'true';
       this.renderDirty = true;
     }).catch(() => { s.ready = true; });
   }
@@ -691,7 +769,8 @@ export class VfxEngine {
     const profile: ChainProfile = title ? C.title : C.card;
     const chain = new ChainField(net, profile);
     chain.onIgnite = (cell, strength) => this.emitFrom(s, cell, strength);
-    s.net = net; s.chain = chain; s.energy = energy;
+    s.net = net; s.chain = chain; s.touch = new TouchReaction(net); s.energy = energy;
+    s.touch.chain.onIgnite = (cell, strength) => this.emitFrom(s, cell, strength, true);
     s.delays = new Float32Array(net.faces); s.born = new Uint8Array(net.faces);
     for (let f = 0; f < net.faces; f++) s.delays[f] = loadingDelay(s.x + net.cx[f], s.y + net.cy[f], net.seed[f]);
     // cells near the outline feed its light
@@ -752,12 +831,12 @@ export class VfxEngine {
 
   /* ------------------------------------------------------------------ emissions */
 
-  /** A few triangles leave the cells the reaction lights, only while the pointer moves: a still pointer emits nothing. */
-  private emitFrom(s: Surface, cell: number, strength: number) {
+  /** A few triangles leave lit cells on movement or a new touch, within the shared particle budget. */
+  private emitFrom(s: Surface, cell: number, strength: number, touch = false) {
     if (this.reduced || !s.net || s.budget < 1) return;
     const moving = this.input.present && this.input.speed > 40 && (s.inside || s === this.hovered);
     const loading = !this.loaded && this.load.value > 0;
-    if (!moving && !loading) return;
+    if (!moving && !loading && !touch) return;
     const title = s.opt.kind === 'title';
     if (Math.random() > (title ? 0.24 : 0.3) * strength) return;
     const [x, y] = this.toDoc(s, s.net.cx[cell], s.net.cy[cell]);
@@ -769,9 +848,11 @@ export class VfxEngine {
     const input = this.input;
     if (title) {
       // repulsion from the pointer plus a share of the gesture's direction
-      const px = input.x, py = input.y + this.scroll.y;
+      const [cx, cy] = this.toDoc(s, s.w * .5, s.h * .5);
+      const px = touch ? cx : input.x, py = touch ? cy : input.y + this.scroll.y;
       const dx = x - px, dy = y - py, d = Math.hypot(dx, dy) || 1, v = rand(...VFX.particles.spark.speed);
-      this.parts.spawn('spark', x, y, (dx / d) * v + input.dirX * input.speed * 0.06, (dy / d) * v + input.dirY * input.speed * 0.06 - 12, s.index);
+      const speed = touch ? 0 : input.speed;
+      this.parts.spawn('spark', x, y, (dx / d) * v + input.dirX * speed * 0.06, (dy / d) * v + input.dirY * speed * 0.06 - 12, s.index);
     } else {
       // shards drift outward from the card's centre and leave the frame
       const [mx, my] = this.toDoc(s, s.w / 2, s.h / 2);
@@ -782,17 +863,37 @@ export class VfxEngine {
 
   /* ------------------------------------------------------------------ loop */
 
-  private tick = (_time: number, deltaMs: number) => {
-    if (this.destroyed || this.lost) return;
+  private animate = (time: number) => {
+    if (this.destroyed) return;
+    if (document.hidden || (window as { __TIDE_VISIBLE__?: boolean }).__TIDE_VISIBLE__ === false) { this.raf = 0; this.lastTick = 0; return; }
+    this.raf = requestAnimationFrame(this.animate);
+    // Cap high refresh screens without disconnecting the canvas from native scrolling.
+    const delta = this.lastTick ? time - this.lastTick : 1000 / 60;
+    if (delta < 1000 / 60 - 1) return;
+    this.lastTick = time;
+    this.tick(time, delta);
+  };
+
+  private tick = (time: number, deltaMs: number) => {
+    if (this.destroyed || this.lost || document.hidden) return;
     if ((window as { __TIDE_VISIBLE__?: boolean }).__TIDE_VISIBLE__ === false && this.loaded) return;
     // LevelUp: the demo player covers the page (fullscreen or modal): nothing here is visible
     if (root().dataset.demoExpanded === 'true' && this.loaded) return;
     const dt = Math.min(0.05, deltaMs / 1000);       // a long frame slows the motion instead of skipping it
     this.clock += dt; this.frame++;
+    if (this.loading) {
+      this.loadingElapsed += dt * this.loadRate;
+      const p = Math.min(1, this.loadingElapsed / VFX.loading.duration);
+      // Exact quadratic power1.inOut ramp, without a second animation ticker.
+      this.load.value = p < .5 ? 2 * p * p : 1 - ((-2 * p + 2) ** 2) / 2;
+      if (p === 1) { this.loading = false; this.loaded = true; }
+    }
+    if (this.viewportDirty) this.resizeViewport();
     if (this.layoutDirty) this.layout();
     const g = this.globals, sc = this.scroll, input = this.input, P = VFX.pointer;
     sc.update(this.reduced);
     input.update(dt);
+    this.touches.beginFrame(time);
 
     // LevelUp: transformed boards follow their DOM transform, opacity and focus; clipped surfaces their container;
     // photographs arrive; comparisons follow their range
@@ -832,6 +933,16 @@ export class VfxEngine {
     for (const s of this.surfaces.values()) {
       const ch = s.chain, net = s.net;
       if (!ch || !net || !s.ready) continue;
+      // Sleeping surfaces do not run chain, border, pointer or upload work.
+      const inView = s.y < sc.y + this.viewH + this.pad && s.y + s.h > sc.y - this.pad;
+      if (!inView) {
+        if (ch.active) ch.quench();
+        s.touch?.clear(); s.u.uTouch.value = 0;
+        if (ch.driveLevel) { ch.drive.fill(0); ch.driveLevel = 0; }
+        if (s.hot) { (s.energy!.array as Float32Array).fill(0); s.energy!.needsUpdate = true; s.hot = false; }
+        s.hover = s.near = s.lift = 0; s.inside = false; s.overlay.visible = false;
+        continue;
+      }
       s.budget = Math.min(4, s.budget + dt * VFX.particles.perSecond);
       ch.propagate = !this.reduced;
       const inside = s === hovered;
@@ -861,6 +972,10 @@ export class VfxEngine {
         while (s.debt >= 1) { s.debt -= 1; ch.igniteAt(clamp(lx, 0, s.w), clamp(ly, 0, s.h), R * 0.12, (0.2 + 0.2 * prox) * (s.opt.gain ?? 1)); }
       } else s.debt = 0;
       s.inside = inside;
+      // START V27: the touch wave travels through the lattice of every visible surface (boards through their transform)
+      if (this.reduced || !s.shown) s.touch?.clear();
+      else s.touch?.step(this.touches, this.touchRect(s), time, dt);
+      s.u.uTouch.value = s.touch && s.touch.level > .003 ? 1 : 0;
       if (s.opt.kind === 'title') this.driveRange(s, inside, lx, ly, R, dt);
       // loading: cells light up as they join, sparsely
       if (loadingNow && s.delays && s.born) {
@@ -871,15 +986,23 @@ export class VfxEngine {
           if (net.weight[f] > 0.4 && Math.random() < VFX.loading.ignite) ch.ignite(f, rand(0.45, 0.8), 3);
         }
       }
-      const active = ch.active;
-      if (active) { ch.step(dt); ch.write(s.energy!.array as Float32Array); s.energy!.needsUpdate = true; s.hot = true; }
+      const active = ch.active, touchActive = s.touch?.active;
+      if (active || touchActive) {
+        if (active) ch.step(dt);
+        const out = s.energy!.array as Float32Array;
+        ch.write(out);
+        if (touchActive) s.touch!.merge(out);
+        s.energy!.needsUpdate = true; s.hot = true;
+      }
       else if (s.hot) { (s.energy!.array as Float32Array).fill(0); s.energy!.needsUpdate = true; s.hot = false; }
       // hover state of the surface: quick in, eased out (type breathes in and out more slowly)
       const slow = s.opt.kind === 'title';
-      s.hover += ((inside ? 1 : 0) - s.hover) * (inside ? (slow ? 1 - Math.exp(-dt / 0.35) : attack) : (slow ? 1 - Math.exp(-dt * 1.6) : ease));
+      const targetHover = inside ? 1 : 0;
+      s.hover += (targetHover - s.hover) * (targetHover > s.hover ? (slow ? 1 - Math.exp(-dt / .35) : attack) : (slow ? 1 - Math.exp(-dt * 1.6) : ease));
       if (s.hover < 0.002) s.hover = 0;
-      s.u.uHover.value = this.reduced ? s.hover * 0.6 : s.hover;
-      s.u.uGain.value = inside ? 1 : Math.max(P.neighbour, s.hover);
+      // Titles take the same readable amber gradient as desktop; local cells carry the travelling facets.
+      s.u.uHover.value = this.reduced ? s.hover * 0.6 : Math.max(s.hover, slow ? (s.touch?.level ?? 0) * .95 : 0);
+      s.u.uGain.value = inside || touchActive ? 1 : Math.max(P.neighbour, s.hover);
       if (s.veilRest > 0) {
         const lifted = inside || (focused === s.el && s.el.matches(':focus-visible'));
         s.lift += ((lifted ? 1 : 0) - s.lift) * veilEase;
@@ -897,6 +1020,8 @@ export class VfxEngine {
         const b = s.border;
         b.decay(dt);
         for (const e of s.edgeCells) { const v = ch.shown[e.cell] * e.w; if (v > 0.02) b.add(e.s, v * 1.15, 1.6); }
+        // START V27: cells the touch lights near the outline feed the real edge glow
+        s.touch?.feedBorder(b, s.edgeCells);
         if (present && (inside || prox > 0)) {
           const [o, d] = outline(lx, ly, s.w, s.h);
           b.add(o, Math.pow(clamp(1 - d / R, 0, 1), 1.3) * (inside ? 0.75 : 0.9) * (s.opt.gain ?? 1), 6);
@@ -905,7 +1030,7 @@ export class VfxEngine {
         glow = b.level;
         (s.u.uBins.value as Float32Array).set(b.bins);
       }
-      s.overlay.visible = ch.active || s.hover > 0.003 || s.near > 0.003 || glow > 0.004;
+      s.overlay.visible = ch.active || !!touchActive || s.hover > 0.003 || s.near > 0.003 || glow > 0.004;
       if (s.overlay.visible || s.hover > 0.003 || s.near > 0.003) busy = true;
     }
 
@@ -921,7 +1046,7 @@ export class VfxEngine {
     this.parts.step(dt);
     this.partGeo.instanceCount = this.parts.count;
     this.partMesh.visible = this.parts.count > 0;
-    this.partBuf.needsUpdate = true;
+    if (this.parts.count) this.partBuf.needsUpdate = true;
 
     // after the page stops, cells on their way out drift away; moving again brings the structure back at once
     const drift = g.uDrift.value as Vector3;
@@ -937,11 +1062,11 @@ export class VfxEngine {
     // adaptive quality: sustained long frames step the profile down
     this.frames++; if (deltaMs > VFX.slowFrame) this.slow++;
     if (this.frames >= 150) {
-      if (this.slow > 70 && this.quality !== 'low' && !this.pinned) { this.quality = this.quality === 'high' ? 'medium' : 'low'; this.layoutDirty = true; }
+      if (this.slow > 70 && this.quality !== 'low' && !this.pinned) { this.quality = this.quality === 'high' ? 'medium' : 'low'; this.viewportDirty = true; }
       this.frames = 0; this.slow = 0;
     }
 
-    busy = busy || this.parts.count > 0 || !this.loaded || this.renderDirty || present;
+    busy = busy || this.touches.active || this.parts.count > 0 || !this.loaded || this.renderDirty || present;
     // at rest only the slow wave moves: every other frame is enough, and none at all with reduced motion
     if (busy || (!this.reduced && this.frame % 2 === 0)) this.render(busy);
   };
@@ -949,8 +1074,13 @@ export class VfxEngine {
   private render(emissive: boolean) {
     const r = this.renderer, g = this.globals, P = VFX.post;
     this.renderDirty = false;
+    this.metrics.renders++;
+    // Canvas and native DOM share the browser's compositor scroll, including iOS momentum.
+    const origin = this.scroll.y - this.pad;
+    this.canvas.style.transform = `translate3d(0, ${origin}px, 0)`;
+    (g.uCanvas.value as Vector2).set(origin, this.viewH + this.pad * 2);
     // off-screen surfaces are skipped entirely
-    const top = this.scroll.y - 80, bottom = this.scroll.y + this.viewH + 80;
+    const top = this.scroll.y - this.pad, bottom = this.scroll.y + this.viewH + this.pad;
     let energy = this.parts.count > 0;
     this.surfaces.forEach(s => {
       const on = s.ready && s.shown && s.w > 2 && s.y < bottom && s.y + s.h > top;
@@ -960,9 +1090,10 @@ export class VfxEngine {
     });
     const bloom = this.profile().bloom;
     g.uEmissive.value = 0;
-    // LevelUp: client px per pixel of the target being drawn (clipped surfaces read gl_FragCoord)
-    const view = g.uView.value as Vector2, frag = g.uFrag.value as Vector4;
-    const target = (t: WebGLRenderTarget) => frag.set(view.x / t.width, view.y / t.height, t.height, 0);
+    // LevelUp: client px per pixel of the target being drawn (clipped surfaces read gl_FragCoord); the target starts
+    // `pad` above the viewport (the overscanned canvas)
+    const view = g.uView.value as Vector2, frag = g.uFrag.value as Vector4, renderH = this.viewH + this.pad * 2;
+    const target = (t: WebGLRenderTarget) => frag.set(view.x / t.width, renderH / t.height, t.height, -this.pad);
     // the frame in high precision over true black (no background): the content and its energy
     target(this.rtMain);
     r.setRenderTarget(this.rtMain);

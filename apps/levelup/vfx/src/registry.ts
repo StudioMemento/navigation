@@ -39,7 +39,8 @@ export interface SurfaceOptions {
   photo?: string;
 }
 
-type Listener = (reason: 'surfaces' | 'layout' | 'motion', target?: Element, strength?: number) => void;
+type Reason = 'surfaces' | 'layout' | 'motion' | 'impulse';
+type Listener = (reason: Reason, target?: Element, strength?: number) => void;
 
 /**
  * Surface registry: the DOM elements that own a GPU representation.
@@ -51,13 +52,16 @@ export class SurfaceRegistry {
 
   add(el: HTMLElement, options: SurfaceOptions) { this.surfaces.set(el, options); this.emit('surfaces'); }
   remove(el: HTMLElement) { if (this.surfaces.delete(el)) this.emit('surfaces'); }
-  /** Content or layout inside surfaces changed in a way observers cannot see (accordion, fitted type). */
-  invalidate = () => this.emit('layout');
+  /**
+   * Content or layout inside surfaces changed in a way observers cannot see (fitted type, new markup). Only the surface
+   * that owns `target` is measured and painted again; without a target, all of them (START V24).
+   */
+  invalidate = (target?: Element | null) => this.listeners.forEach(l => l('layout', target ?? undefined));
   /** Transforms, opacity or focus of transformed surfaces changed (a carousel frame): no re-measure. */
   motion = () => this.emit('motion');
   /** One short local impulse at an element (accordion opening, for instance). */
-  impulse = (target: Element, strength = 0.8) => this.listeners.forEach(l => l('layout', target, strength));
+  impulse = (target: Element, strength = 0.8) => this.listeners.forEach(l => l('impulse', target, strength));
   subscribe(listener: Listener) { this.listeners.add(listener); return () => { this.listeners.delete(listener); }; }
   get listenerCount() { return this.listeners.size; }
-  private emit(reason: 'surfaces' | 'layout' | 'motion') { this.listeners.forEach(l => l(reason)); }
+  private emit(reason: Reason) { this.listeners.forEach(l => l(reason)); }
 }

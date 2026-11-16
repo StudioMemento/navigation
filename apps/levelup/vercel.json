@@ -6,6 +6,15 @@
   "outputDirectory": "dist",
   "headers": [
     {
+      "source": "/navigation/framer-levelup.mjs",
+      "headers": [
+        {
+          "key": "Access-Control-Allow-Origin",
+          "value": "*"
+        }
+      ]
+    },
+    {
       "source": "/(.*)",
       "headers": [
         {

@@ -52,13 +52,13 @@ vec4 inkAt(vec2 p){
  * and the element's own opacity. gl_FragCoord is mapped back to client px for whichever target is being drawn.
  */
 const LAYER = /* glsl */ `
-uniform vec4 uFrag;           // css px per target px (x, y), target height (px)
+uniform vec4 uFrag;           // css px per target px (x, y), target height (px), client y of the target's top (-pad)
 uniform vec4 uClipRect;       // client px: left, top, right, bottom (right < left: no clip)
 uniform float uClipFade;      // px faded at the left and right of the clip (the carousel mask)
 uniform float uAlpha;         // element opacity
 float layer(){
   if(uClipRect.z<uClipRect.x) return uAlpha;
-  vec2 c=vec2(gl_FragCoord.x*uFrag.x,(uFrag.z-gl_FragCoord.y)*uFrag.y);
+  vec2 c=vec2(gl_FragCoord.x*uFrag.x,(uFrag.z-gl_FragCoord.y)*uFrag.y+uFrag.w);
   float v=step(uClipRect.y,c.y)*step(c.y,uClipRect.w);
   float d=min(c.x-uClipRect.x,uClipRect.z-c.x);
   float m=uClipFade>0.?clamp(d/uClipFade,0.,1.):step(0.,d);
@@ -117,7 +117,8 @@ Tri tri(vec2 q, vec2 sub){
 const CLIP = /* glsl */ `
 uniform vec2 uView;           // viewport, CSS px
 uniform float uScroll;
-vec4 clipOf(vec2 doc){ vec2 c=(doc-vec2(0.,uScroll))/uView*2.-1.; return vec4(c.x,-c.y,0.,1.); }
+uniform vec2 uCanvas; // document origin Y and overscanned canvas height (START V24)
+vec4 clipOf(vec2 doc){ vec2 c=(doc-vec2(0.,uCanvas.x))/vec2(uView.x,uCanvas.y)*2.-1.; return vec4(c.x,-c.y,0.,1.); }
 `;
 
 /*
@@ -173,6 +174,8 @@ uniform float uHasImg;
 uniform vec4 uImgBox;         // local px: x, y, w, h of the <img> box
 uniform vec4 uImgFit;         // uv = q * zw + xy
 uniform vec3 uImgStyle;       // opacity, left fade (faq), legibility gradient
+uniform float uPhotoColor;    // no-hover devices show photographs in full colour at rest (START V25)
+uniform float uPhotoSat;      // LevelUp: a carousel board keeps the DOM's grayscale(focus) on its photograph
 /* LevelUp: the before layer of a comparison (left of uSplit), the container the photograph is clipped to, the img's
    own mask-image and the black ::after shade the DOM lays over it */
 uniform sampler2D uImg2;
@@ -294,7 +297,7 @@ void main(){
   vec4 col=uPanel>.5?vec4(uPanelCol.rgb,1.)*uPanelCol.a*inside:vec4(0.);
   vec3 ph=photo(p,inside);
   // the photographs are objects on black: they light the void panel (the brighter of the two), so no box ever shows
-  col.rgb=max(col.rgb,vec3(ph.x)*ph.y);
+  col.rgb=max(col.rgb,mix(vec3(ph.x),phRGB,uPhotoColor*uPhotoSat)*ph.y);
   col.rgb*=1.-ph.z;
   if(uPanel>.5){
     float frame=1.-smoothstep(0.,1.,abs(sd+.7)-.15);
@@ -450,6 +453,7 @@ uniform vec3 uHot[3];         // where the range reaches: top, middle, base
 uniform vec3 uPointer;        // local px, range of the pointer (px)
 uniform float uMicro;         // px, micro-lattice inside the glyphs
 uniform float uLoad;
+uniform float uTouch;        // local short-lived chain; never warms the entire title
 in vec2 vLocal; in vec3 vBary; flat in vec4 vCell; flat in float vE; in float vEv; in float vFade;
 out vec4 o;
 /* px from the nearest outline: negative inside a letter; beyond the texture, the distance to it is added */
@@ -474,7 +478,8 @@ void main(){
   float local=clamp(vEv*1.12+vE*.32,0.,1.15);
   // the warmth of the block decides everything: leaving, the whole look desaturates back into the idle gradient as one
   // piece (never cell by cell, never an overlay fading out). While the page builds, a few cells flash as they join
-  float W=max(base,local*clamp((1.-uLoad)*3.,0.,1.)*.8);
+  float W0=max(base,local*clamp((1.-uLoad)*3.,0.,1.)*.8);
+  float W=max(W0,clamp(local,0.,1.)*uTouch);
   if(W<.004) discard;
   float sd=sdAt(p);
   if(sd>uRange) discard;
@@ -502,7 +507,7 @@ void main(){
   // the overlay takes over the share W of the type, with the type's own coverage: the content pass has given up exactly
   // that share (SURFACE_FRAG), so the edges keep their anti-aliasing and nothing behind them is erased (no dark rim)
   float k=vFade;
-  float cov=a*k*W;
+  float cov=a*k*W0;
   // warm light that follows each letter: a rim just inside the outline where the energy is, a soft glow outside.
   // Both are light only (added, no coverage): they never darken what is around the letters
   float g=clamp(local*1.1+base*.4,0.,1.)*vFade*W;
@@ -512,7 +517,8 @@ void main(){
   vec3 glow=ramp(.42+.2*g)*outer*(.04+.17*g)*vFade*W;
   // bloom: a touch of brilliance from the reached letters, the lattice and their rim, held low
   if(uEmissive>.5){ o=vec4(((hot*a*fill*.09+facet*a*lit*.07)*vFade+rimC*.24+glow*.3)*W,0.); return; }
-  o=vec4(col*cov+rimC*k+glow,cov);
+  // Touch changes existing ink by its colour delta, preserving anti-aliased coverage.
+  o=vec4(col*cov+(col-idle)*a*k*(W-W0)+rimC*k+glow,cov);
 }`;
 
 /* ------------------------------------------------------------------ particles */
@@ -607,9 +613,7 @@ void main(){
   if(uMix.y>0.) col+=texture(uStreak,vUv).rgb*vec3(1.,.82,.62)*uMix.y;
   col=shoulder(col);
   col*=1.-uMix.z*smoothstep(.42,1.05,r)*smoothstep(.42,1.05,r);
-  float l=dot(col,vec3(.299,.587,.114));
-  float grain=(hash(gl_FragCoord.xy+vec2(uFrame*17.31,uFrame*-9.73))-.5)*2.;
-  col+=(grain*uMix.w*smoothstep(.004,.12,l)*(1.-.6*l)+(ign(gl_FragCoord.xy+uFrame*5.588)-.5)/255.)*s.a;   // nothing on a transparent pixel
+  // V25: no film grain or animated dithering; the photographic/text grade stays clean.
   float a=s.a;
   if(a<1.) a=clamp(max(a,max(col.r,max(col.g,col.b))),0.,1.);
   o=vec4(max(col,0.),a);

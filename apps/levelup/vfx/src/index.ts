@@ -1,8 +1,11 @@
 import { SurfaceRegistry, type SurfaceKind, type SurfaceOptions } from './registry';
+import { TouchPulseField } from './touch';
+import { installTouchFeedback } from './touch-feedback';
 
 /**
- * Memento VFX for pages without React (LevelUp). The same engine as START: one canvas behind the content, one engine,
- * loaded after the content. Surfaces are declared in the markup:
+ * Memento VFX for pages without React (LevelUp). The same engine as START V27: one canvas behind the content, one engine,
+ * loaded after the content, one touch wave field started on contact even before WebGL is ready. Surfaces are declared
+ * in the markup:
  *
  *   data-vfx="title" | "card"          the kind (required)
  *   data-vfx-cut="both|tl|none"        cut corners of a card
@@ -22,8 +25,8 @@ export interface VfxHandle {
   registry: SurfaceRegistry;
   /** Registers every [data-vfx] element under `root` (already registered ones are updated). */
   scan(root?: ParentNode): void;
-  /** Content or layout inside surfaces changed (fitted type, new markup). */
-  invalidate(): void;
+  /** Content or layout inside surfaces changed (fitted type, new markup): only the surface owning `target` repaints. */
+  invalidate(target?: Element | null): void;
   /** Transforms, opacity or focus of transformed surfaces changed (one carousel frame). */
   motion(): void;
   /** One short local pulse of energy at an element. */
@@ -56,10 +59,16 @@ export function optionsOf(el: HTMLElement): SurfaceOptions | null {
 export function mountVfx({ root = document as ParentNode } = {}): VfxHandle {
   const html = document.documentElement;
   const registry = new SurfaceRegistry();
+  // START V24: the canvas lives in a layer as tall as the document and moves with native (compositor) scroll
+  const layer = document.createElement('div');
+  layer.className = 'vfx-layer';
+  layer.setAttribute('aria-hidden', 'true');
   const canvas = document.createElement('canvas');
   canvas.className = 'vfx-canvas';
-  canvas.setAttribute('aria-hidden', 'true');
-  document.body.prepend(canvas);
+  layer.append(canvas);
+  document.body.prepend(layer);
+  const touches = new TouchPulseField();
+  const stopTouch = installTouchFeedback(touches);
 
   const scan = (from: ParentNode = root) => {
     const seen = new Set<HTMLElement>();
@@ -80,20 +89,30 @@ export function mountVfx({ root = document as ParentNode } = {}): VfxHandle {
   // without WebGL2 (or with forced colours, where the system palette owns every colour) the engine is never
   // downloaded: the plain DOM page, at once
   let webgl2 = false;
-  try { webgl2 = !matchMedia('(forced-colors: active)').matches && !!document.createElement('canvas').getContext('webgl2'); } catch { /* none */ }
+  // no probe context: one fewer WebGL context on phones; the engine itself falls back to the DOM if it cannot start
+  try { webgl2 = !matchMedia('(forced-colors: active)').matches && typeof WebGL2RenderingContext !== 'undefined'; } catch { /* none */ }
   if (!webgl2) { html.classList.remove('vfx-boot', 'vfx-live'); html.classList.add('vfx-off'); disposed = true; }
   else import('./engine').then(({ VfxEngine }) => {
     if (disposed) return;
-    const engine = VfxEngine.create(canvas, registry);
+    const engine = VfxEngine.create(canvas, registry, touches);
     dispose = () => engine?.destroy();
   }).catch(() => { html.classList.remove('vfx-boot', 'vfx-live'); html.classList.add('vfx-off'); });
 
   return {
     registry,
     scan,
-    invalidate: () => registry.invalidate(),
+    invalidate: target => registry.invalidate(target),
     motion: () => registry.motion(),
     impulse: (el, strength) => { if (el) registry.impulse(el, strength); },
-    destroy: () => { disposed = true; dispose(); canvas.remove(); },
+    destroy: () => { disposed = true; stopTouch(); dispose(); layer.remove(); },
   };
+}
+
+/**
+ * The START V27 background (Ghost Fibers, see background/mount.ts), downloaded after the content. Not mounted with
+ * forced colours; resolves to its cleanup (a no-op when it cannot run).
+ */
+export function mountBackground(): Promise<() => void> {
+  if (matchMedia('(forced-colors: active)').matches || typeof WebGL2RenderingContext === 'undefined') return Promise.resolve(() => {});
+  return import('./background/mount').then(({ mountGhostFibers }) => mountGhostFibers(), () => () => {});
 }
