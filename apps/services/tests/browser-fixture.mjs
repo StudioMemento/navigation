@@ -23,7 +23,9 @@ const server = http.createServer((req, res) => {
     res.setHeader('content-type', 'text/html');
     return res.end(host);
   }
-  const relative = decodeURIComponent(url.pathname.replace(/^\/v40\//, '')) || 'index.html';
+  let relative = decodeURIComponent(url.pathname.replace(/^\/v40\//, '')) || 'index.html';
+  // The prebuilt VFX engine is published from public/vfx/ (see build.mjs).
+  if (relative.startsWith('vfx/')) relative = 'public/' + relative;
   const file = path.resolve(root, relative);
   if (!file.startsWith(root)) {
     res.statusCode = 403;
@@ -42,7 +44,8 @@ const origin = 'http://127.0.0.1:' + server.address().port;
 const browser = await chromium.launch({
   ...(process.env.CHROMIUM_EXECUTABLE ? { executablePath: process.env.CHROMIUM_EXECUTABLE } : {}),
   headless: true,
-  args: ['--disable-dev-shm-usage'],
+  // Headless Chromium has software WebGL2: the VFX engine runs. SERVIZI_DOM=1 checks the DOM fallback instead.
+  args: ['--disable-dev-shm-usage', ...(process.env.SERVIZI_DOM ? ['--disable-webgl'] : [])],
 });
 fs.mkdirSync(new URL('../test-results/screens/', import.meta.url), { recursive: true });
 export { browser, server, origin };

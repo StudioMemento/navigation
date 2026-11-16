@@ -3,12 +3,13 @@ import { detail as renderDetail } from './render.js';
 import { Carousel, bindDots } from './carousel.js';
 
 class DetailDeck {
-  constructor(element) {
+  constructor(element, onRender) {
     this.controller = new AbortController();
     const status = element.querySelector('.service-deck-status');
     this.scenes = [...element.querySelectorAll('.service-scene')];
     this.carousel = new Carousel(element.querySelector('.popup-carousel'), {
       interactiveContents: true,
+      onRender,
       onSettle: (index) => {
         update(index);
         status.textContent = this.scenes[index].getAttribute('aria-label');
@@ -32,7 +33,8 @@ class DetailDeck {
   }
 }
 
-export function createDialogs(bundleCarousel) {
+// hooks.onDetail(dialog): a detail was rendered and shown; hooks.onRender: every frame of its carousel.
+export function createDialogs(bundleCarousel, hooks = {}) {
   const $ = (selector) => document.querySelector(selector);
   const detail = $('#detail-dialog'),
     lead = $('#lead-dialog');
@@ -147,7 +149,8 @@ export function createDialogs(bundleCarousel) {
     lockBody();
     detail.scrollTop = 0;
     setHash(`#${item.kind === 'bundle' ? 'bundle' : 'servizio'}/${item.id}`);
-    serviceDeck = new DetailDeck(detail.querySelector('.service-deck'));
+    serviceDeck = new DetailDeck(detail.querySelector('.service-deck'), hooks.onRender);
+    hooks.onDetail?.(detail);
     $('#detail-title').focus({ preventScroll: true });
   }
   function closeDetail(restore = true, updateRoute = true) {

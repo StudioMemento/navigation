@@ -2,7 +2,7 @@
 export class Carousel {
   constructor(
     element,
-    { onSettle = () => {}, onOpen = () => {}, interactiveContents = false } = {},
+    { onSettle = () => {}, onOpen = () => {}, onRender = () => {}, interactiveContents = false } = {},
   ) {
     this.element = element;
     this.interactiveContents = interactiveContents;
@@ -17,6 +17,8 @@ export class Carousel {
     this.suspended = this.suppressClick = false;
     this.onSettle = onSettle;
     this.onOpen = onOpen;
+    // Every frame that moves the boards: the VFX engine draws them through the same transforms.
+    this.onRender = onRender;
     this.reduced = matchMedia('(prefers-reduced-motion: reduce)');
     this.measure = () => {
       const width = this.cards[0].offsetWidth || 1;
@@ -196,6 +198,7 @@ export class Carousel {
       this.active = active;
       this.onSettle(active);
     }
+    this.onRender();
   }
   requestFrame() {
     if (this.raf || this.suspended) return;

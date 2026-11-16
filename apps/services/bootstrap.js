@@ -10,10 +10,14 @@
   for (const type of ['contextmenu', 'dragstart']) document.addEventListener(type, protectContent);
 })();
 
-/* Transparent child surface. Parent blur belongs to the hosting document. */
+/* START V25 surface, before the first paint: only a compatible host (?mementoEmbed=1) owns the background and
+   receives a transparent child; a plain embed (Framer) and the page on its own are opaque, with their own background.
+   Parent blur belongs to the hosting document. */
 (() => {
   const embedded = window.parent !== window;
+  const hosted = embedded && new URLSearchParams(location.search).get('mementoEmbed') === '1';
   document.documentElement.dataset.embedded = String(embedded);
+  document.documentElement.dataset.mementoSurface = hosted ? 'transparent' : 'opaque';
   if (!embedded) return;
 
   let parentOrigin = null;

@@ -1,9 +1,9 @@
 <!doctype html>
-<html lang="it">
+<html lang="it" data-embedded="false" data-memento-surface="opaque">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-    <meta name="theme-color" content="#080a0b" />
+    <meta name="theme-color" content="#000000" />
     <script src="bootstrap.js"></script>
     <meta
       name="description"
@@ -33,6 +33,7 @@
     <link rel="modulepreload" href="src/carousel.js" />
     <link rel="modulepreload" href="src/dialogs.js" />
     <link rel="modulepreload" href="src/visuals.js" />
+    <link rel="modulepreload" href="vfx/memento-vfx.js" />
     <script type="module" src="src/app.js"></script>
   </head>
   <body>
@@ -63,7 +64,7 @@
           </section>
           <section class="catalogue page-width" id="catalogo" aria-labelledby="catalogue-heading">
             <div class="catalogue-heading">
-              <h2 id="catalogue-heading">Servizi di design.</h2>
+              <h2 id="catalogue-heading" data-vfx="title">Servizi di design.</h2>
               <div
                 class="catalogue-filters"
                 role="group"
@@ -97,6 +98,8 @@
               class="start-action"
               href="https://mementostudio.it/start"
               target="_top"
+              data-vfx="card"
+              data-vfx-photo=".start-sparkle"
             >
               <span class="start-art" aria-hidden="true">
                 <img
