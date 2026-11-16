@@ -35,8 +35,19 @@ Stesso engine, stesse costanti, stessa materia della START. La navigation cambia
 6. **Passaggio.** La tab che arriva in lettura accende il tratto di bordo da cui arriva (0,55, decade con il bordo) e poche celle lì vicino. È l'unica sorgente della navigation e nasce dal gesto che ha cambiato sezione.
 7. **Budget d'ambra al caricamento.** Una tab della navigation ha circa 3,5 volte le celle di una card START: la quota di celle che si accendono entrando è scalata sulle celle, così ogni tab ha le stesse scintille di una card; un quarto sulle secondarie.
 8. **Le luci delle scene** (lampade, schermi, portale: maschere disegnate per ogni immagine) entrano solo nel bloom e solo con la base attiva. A riposo il bloom non c'è.
-9. **Riposo vero.** Tre secondi dopo l'ultima reazione il loop si ferma e la grana si ferma con lui, come con reduced motion: in un iframe sempre aperto sulla home non si consuma GPU per nulla.
+9. **Riposo vero.** Tre secondi dopo l'ultima reazione il loop delle tab si ferma: in un iframe sempre aperto sulla home non si consuma GPU per nulla (lo sfondo, dalla R13, ha il proprio loop a 30 disegni al secondo).
 10. **Il blur progressivo della navigation** (20% alto e basso) è composto nel grade, sul nero vero, come nella R11: niente otto livelli CSS sopra il canvas, niente bande.
+
+## Navigation: allineamento alla START V24–V27 (R13)
+
+La START ha cambiato quattro cose dopo la V23; la navigation le adotta con le stesse costanti.
+
+1. **Sfondo.** Ghost Fibers (React Bits) con il preset della START: cinque layer, rosso/ambra, nessuna grana. Canvas e contesto propri, al massimo 30 disegni al secondo, DPR 1, risoluzione adattiva; montato poco dopo il primo paint, come la START. Il canvas delle tab è trasparente sopra di esso: i pannelli restano neri e opachi. Nella navigation il blur del 20% alto e basso vale anche per le fibre, composto nel loro shader di uscita (non con livelli CSS).
+2. **Niente grana né dithering animato** nel grade (V25). I profili più bassi cambiano solo la risoluzione: bloom, particelle e scala delle celle restano (V24). MSAA ×2 solo sul profilo alto; il bordo delle tab è già antialiasato negli shader.
+3. **Telefono e tablet** (`hover: none`, `pointer: coarse` o larghezza fino a 767 px): le scene sono a colori anche a riposo (V25). Un dito fermo non alimenta l'hover. Ogni tocco è un solo contatto che percorre le celle esistenti di tab e titoli per brevi rami, arriva con la distanza dal dito, accende il bordo dal lato dove le celle lo raggiungono e si spegne in circa mezzo secondo per cella; i titoli raggiunti prendono il gradiente ambra (V26–V27). Massimo quattro contatti in memoria, 96 celle per superficie e contatto.
+4. **Primo paint.** La navigazione DOM è visibile subito; quando l'engine è pronto prende il posto del DOM e costruisce le tab per celle (V24).
+
+Nella navigation le superfici sono piani in prospettiva: il contatto è pianificato con la posizione sullo schermo di ogni cella proiettata dal piano, e il punto toccato riportato nei px della tab.
 
 ## Come si fa una pagina nuova
 

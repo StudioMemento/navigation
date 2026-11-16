@@ -9,6 +9,7 @@ import { ChainField } from './vfx/chain.mjs';
 import { NAV, VFX, gradientRange, hexToRgb, titleRamp } from './vfx/config.mjs';
 import { buildNetwork, hashString } from './vfx/geometry.mjs';
 import { PointerField } from './vfx/input.mjs';
+import { TouchPulseField, TouchReaction } from './vfx/touch.mjs';
 import { GPU_STRIDE, Particles } from './vfx/particles.mjs';
 import { bandEnable, loadingDelay, smoothstep } from './vfx/structure.mjs';
 import { distanceField, layoutTitle, paintTitle } from './vfx/title.mjs';
@@ -47,7 +48,8 @@ export class VfxRenderer {
   }
 
   constructor(canvas, pages, hooks = {}) {
-    const renderer = new WebGLRenderer({ canvas, alpha: false, antialias: false, depth: false, stencil: false, premultipliedAlpha: true, powerPreference: 'high-performance' });
+    // transparent over the background canvas (V24): panels are opaque, the void lets the fibres through
+    const renderer = new WebGLRenderer({ canvas, alpha: true, antialias: false, depth: false, stencil: false, premultipliedAlpha: true, powerPreference: 'high-performance' });
     if (!renderer.capabilities.isWebGL2) { renderer.dispose(); throw new Error('WebGL2 unavailable'); }
     this.renderer = renderer; this.canvas = canvas; this.hooks = hooks; this.pages = pages;
     renderer.autoClear = false; renderer.setClearColor(0x000000, 0);
@@ -57,23 +59,27 @@ export class VfxRenderer {
     const pin = new URLSearchParams(location.search).get('vfx');
     this.pinned = !!(pin && pin in VFX.quality); if (this.pinned) this.quality = pin;
     this.reduced = false; this.lost = false; this.disposed = false; this.live = false; this.loaded = false;
-    this.load = 0; this.loadSpeed = 1; this.clock = 0; this.frames = 0; this.slow = 0; this.idleFor = 0;
+    this.load = 0; this.loadSpeed = 1; this.clock = 0; this.clockMs = 0; this.frames = 0; this.slow = 0; this.idleFor = 0;
     this.input = new PointerField(); this.parts = new Particles();
+    // contacts are recorded by the page (they also drive the DOM fallback) and read here on the first frame after them
+    this.touches = hooks.touches || new TouchPulseField();
+    this.touchOnly = matchMedia(NAV.touchOnly);
     this.scene = new Scene(); this.post = new Scene(); this.camera = new PerspectiveCamera(45, 1, 1, 20000);
     const A = VFX.color.amber;
     this.globals = {
-      uTime: u(0), uMotion: u(1), uEmissive: u(0), uLoad: u(0),
+      uTime: u(0), uMotion: u(1), uEmissive: u(0), uLoad: u(0), uPhotoColor: u(this.touchOnly.matches ? 1 : 0),
       uView: u(new Vector2(1, 1)), uBand: u(120), uBandK: u(new Vector2(1, 1)), uDrift: u(new Vector3(0, NAV.drift, NAV.fade)),
       uAmb: u([...hexToRgb(A.deep), ...hexToRgb(A.mid), ...hexToRgb(A.hot), ...hexToRgb(A.core)]),
     };
     this.setupParticles(); this.setupPost();
     this.loader = new TextureLoader();
     this.cards = pages.map((page, i) => this.makeCard(page, i));
-    this.ray = { o: new Vector3(), d: new Vector3() }; this.tmp = new Vector3(); this.tmp2 = new Vector3(); this.inv = new Matrix4();
+    this.ray = { o: new Vector3(), d: new Vector3() }; this.tmp = new Vector3(); this.tmp2 = new Vector3(); this.inv = new Matrix4(); this.pm = new Matrix4();
     this.hovered = null; this.layout = null;
     this.abort = new AbortController();
     const hurry = () => { this.loadSpeed = VFX.loading.hurry; };
     for (const type of ['pointerdown', 'wheel', 'keydown', 'touchstart']) addEventListener(type, hurry, { once: true, passive: true, signal: this.abort.signal });
+    this.touchOnly.addEventListener('change', () => { this.globals.uPhotoColor.value = this.touchOnly.matches ? 1 : 0; this.wakeUp(); }, { signal: this.abort.signal });
     this.fontsReady = Promise.race([document.fonts?.load?.('280 100px Inter').then(() => document.fonts.ready) ?? Promise.resolve(), new Promise(r => setTimeout(r, 1500))]).then(() => { this.fontsOk = true; this.titlesDirty = true; });
     root().classList.add('vfx-ready');
     void this.start();
@@ -101,7 +107,7 @@ export class VfxRenderer {
       uHover: u(0), uGain: u(1), uNear: u(0), uTopo: u(1), uEdge: u(1), uLights: u(1), uBins: u(new Float32Array(VFX.border.bins)),
       uPointer: u(new Vector3(-1e4, -1e4, 1)), uWake: u(new Vector4(...VFX.chain.card.wake)), uLightRegions: u(lights),
       uDist: u(null), uRange: u(24), uEm: u(100), uGray: u(new Vector2(...gradientRange())), uTitle: u(titleRamp()),
-      uHot: u(VFX.color.titleHot.flatMap(hexToRgb)), uMicro: u(10),
+      uHot: u(VFX.color.titleHot.flatMap(hexToRgb)), uMicro: u(10), uTouch: u(0),
     };
     const group = new Group();
     const content = new Mesh(unbounded(new BufferGeometry()), this.material(CARD_VERT, CARD_FRAG, card, { depthWrite: true }));
@@ -112,7 +118,7 @@ export class VfxRenderer {
     this.scene.add(group);
     return {
       index: i, slug: page.slug, text: page.title, group, content, overlay, titleMesh: title, u: card, titleOffset,
-      net: null, chain: null, energy: null, netKey: '', border: new BorderLight(), edgeCells: [], born: null, delays: null,
+      net: null, chain: null, touch: null, energy: null, netKey: '', border: new BorderLight(), edgeCells: [], born: null, delays: null,
       t: null, titleKey: '', canvas: document.createElement('canvas'), ink: null, dist: null, titleSize: 0,
       tex: null, quality: 0, loading: false, loaded: false,
       pose: null, d: 0, strength: 0, exit: 0, dir: 1, lx: -1e4, ly: -1e4, hit: false, t0: Infinity,
@@ -138,8 +144,9 @@ export class VfxRenderer {
     const ext = this.renderer.extensions;
     const type = ext.has('EXT_color_buffer_float') || ext.has('EXT_color_buffer_half_float') ? HalfFloatType : UnsignedByteType;
     const rt = (depth, samples = 0) => new WebGLRenderTarget(4, 4, { depthBuffer: depth, minFilter: LinearFilter, magFilter: LinearFilter, type, samples });
-    // the frame in high precision, multisampled: everything is drawn here, then graded once to the screen
-    this.rtMain = rt(true, 4);
+    // the frame in high precision: everything is drawn here, then graded once to the screen. MSAA ×2 only on the high
+    // profile (V24); edges are antialiased analytically in the shaders anyway. Depth stays: the cards occlude in 3D
+    this.rtMain = rt(true, this.quality === 'high' ? 2 : 0);
     this.rtE = rt(true); this.rtA = rt(false); this.rtB = rt(false); this.rtS1 = rt(false); this.rtS2 = rt(false);
     this.rtQ1 = rt(false); this.rtQ2 = rt(false);
     const fs = unbounded(new BufferGeometry());
@@ -149,7 +156,7 @@ export class VfxRenderer {
     this.down = raw(DOWNSAMPLE_FRAG, { uTex: u(this.rtMain.texture), uTexel: u(new Vector2()) });
     this.grade = raw(GRADE_FRAG, {
       uScene: u(this.rtMain.texture), uBloom: u(this.rtB.texture), uStreak: u(this.rtS1.texture), uSoft: u(this.rtQ1.texture),
-      uRes: u(new Vector2(1, 1)), uMix: u(new Vector4()), uLens: u(new Vector3()), uFrame: u(0),
+      uRes: u(new Vector2(1, 1)), uMix: u(new Vector4()), uLens: u(new Vector3()),
     });
     this.fsMesh = new Mesh(fs, this.blur); this.fsMesh.frustumCulled = false; this.post.add(this.fsMesh);
   }
@@ -253,6 +260,8 @@ export class VfxRenderer {
     const chain = new ChainField(net, C);
     chain.onIgnite = (cell, strength) => this.emitFrom(c, cell, strength, false);
     c.net = net; c.chain = chain; c.energy = energy;
+    c.touch = new TouchReaction(net);
+    c.touch.chain.onIgnite = (cell, strength) => this.emitFrom(c, cell, strength, false, true);
     c.delays = new Float32Array(net.faces); c.born = new Uint8Array(net.faces);
     for (let f = 0; f < net.faces; f++) c.delays[f] = loadingDelay(net.cx[f] + c.u.uNoise.value.x, net.cy[f] + c.u.uNoise.value.y, net.seed[f]);
     c.edgeCells = [];
@@ -318,7 +327,9 @@ export class VfxRenderer {
     c.titleOffset.value.set(t.box.x, t.box.y);
     const chain = new ChainField(net, T);
     chain.onIgnite = (cell, strength) => this.emitFrom(c, cell, strength, true);
-    c.t = { layout: t, net, chain, energy, coverage: m, margin, born: new Uint8Array(net.faces), delays: new Float32Array(net.faces) };
+    const touch = new TouchReaction(net);
+    touch.chain.onIgnite = (cell, strength) => this.emitFrom(c, cell, strength, true, true);
+    c.t = { layout: t, net, chain, energy, touch, coverage: m, margin, born: new Uint8Array(net.faces), delays: new Float32Array(net.faces) };
     for (let k = 0; k < net.faces; k++) c.t.delays[k] = loadingDelay(t.box.x + net.cx[k] + c.u.uNoise.value.x, t.box.y + net.cy[k] + c.u.uNoise.value.y, net.seed[k]);
     this.hooks.onTitle?.(c.index);
     return true;
@@ -372,11 +383,12 @@ export class VfxRenderer {
   /* ------------------------------------------------------------------ emissions */
 
   /** A few triangles leave the cells the reaction lights, only while the pointer moves (or while the page builds). */
-  emitFrom(c, cell, strength, title) {
+  emitFrom(c, cell, strength, title, touch = false) {
     if (this.reduced || !settings.shards || c.budget < 1 || !this.layout) return;
     const moving = this.input.present && this.input.speed > 40 && c.inside;
     const loading = !this.loaded && this.load > 0;
-    if (!moving && !loading) return;
+    // on movement, while the page builds, or from a new touch (V27), always within the shared particle budget
+    if (!moving && !loading && !touch) return;
     if (Math.random() > (title ? 0.24 : 0.3) * strength) return;
     let lx, ly;
     if (title) {
@@ -388,8 +400,10 @@ export class VfxRenderer {
     c.budget -= 1;
     const [x, y] = this.toScreen(c, lx, ly), input = this.input;
     if (title) {
-      const dx = x - input.x, dy = y - input.y, d = Math.hypot(dx, dy) || 1, v = rand(...VFX.particles.spark.speed);
-      this.parts.spawn('spark', x, y, (dx / d) * v + input.dirX * input.speed * 0.06, (dy / d) * v + input.dirY * input.speed * 0.06 - 12, c.index);
+      // a touch has no pointer to flee from: sparks leave the title block from its centre
+      const box = c.t.layout.box, [ox, oy] = touch ? this.toScreen(c, box.x + box.w / 2, box.y + box.h / 2) : [input.x, input.y];
+      const dx = x - ox, dy = y - oy, d = Math.hypot(dx, dy) || 1, v = rand(...VFX.particles.spark.speed), speed = touch ? 0 : input.speed;
+      this.parts.spawn('spark', x, y, (dx / d) * v + input.dirX * speed * 0.06, (dy / d) * v + input.dirY * speed * 0.06 - 12, c.index);
     } else {
       const [ox, oy] = this.toScreen(c, this.layout.width / 2, this.layout.height / 2);
       const dx = x - ox, dy = y - oy, d = Math.hypot(dx, dy) || 1, v = rand(...VFX.particles.shard.speed);
@@ -404,8 +418,10 @@ export class VfxRenderer {
     if (this.disposed || !this.layout) return false;
     this.reduced = reduced;
     const g = this.globals, P = VFX.pointer, l = this.layout, input = this.input;
-    this.clock += dt;
+    this.clock += dt; this.clockMs += dt * 1000;
     g.uTime.value = this.clock; g.uMotion.value = reduced ? 0 : 1;
+    this.touches.beginFrame(this.clockMs);
+    if (reduced) this.touches.clear();
     if (this.live && !this.loaded) {
       if (reduced) this.load = 1;
       else this.load = Math.min(1, this.load + (dt / VFX.loading.duration) * this.loadSpeed);
@@ -438,12 +454,13 @@ export class VfxRenderer {
     const hovered = present ? this.pick(input.x, input.y) : (this.cards.forEach(c => { c.hit = false; }), null);
     this.hovered = hovered;
 
-    // titles: painted after the fonts, one per frame, the card in the reading position first
+    // titles: painted after the fonts, one per frame, nearest card first. All five are painted, not only the cards on
+    // screen at boot (R12 stopped there: Projects and LevelUp never received their title and its hover effects)
     if (this.fontsOk && this.titlesDirty) {
-      const order = [...this.cards].filter(c => Math.abs(c.d) < 1.75).sort((a, b) => Math.abs(a.d) - Math.abs(b.d));
+      const order = [...this.cards].sort((a, b) => Math.abs(a.d) - Math.abs(b.d));
       let built = false;
       for (const c of order) if (this.buildTitle(c)) { built = true; break; }
-      if (!built) this.titlesDirty = this.cards.some(c => c.titleKey === '' && Math.abs(c.d) < 1.75);
+      if (!built) this.titlesDirty = false;
     }
 
     // a card arriving on screen after a resize gets its cells (one network per frame at most)
@@ -503,7 +520,17 @@ export class VfxRenderer {
           if (net.weight[f] > 0.4 && Math.random() < share) ch.ignite(f, rand(0.45, 0.8), 3);
         }
       }
-      if (ch.active) { ch.step(dt); ch.write(c.energy.array); c.energy.needsUpdate = true; c.hot = true; }
+      // touch (V27): connected paths through this card's own cells, timed by the distance from the finger
+      const tr = c.touch;
+      if (reduced) tr?.clear();
+      else tr?.step(this.touches, w => this.placeOf(c, w), cell => this.screenY(c, net.cx[cell], net.cy[cell]), this.clockMs, dt);
+      const touchActive = !!tr?.active;
+      if (ch.active || touchActive) {
+        if (ch.active) ch.step(dt);
+        ch.write(c.energy.array);
+        if (touchActive) tr.merge(c.energy.array);
+        c.energy.needsUpdate = true; c.hot = true;
+      }
       else if (c.hot) { c.energy.array.fill(0); c.energy.needsUpdate = true; c.hot = false; }
 
       // hover state of the card: quick in, eased out; the title breathes in and out more slowly
@@ -515,7 +542,7 @@ export class VfxRenderer {
       if (c.warm < 0.002) c.warm = 0;
       const U = c.u;
       U.uHover.value = reduced ? c.hover * 0.6 : c.hover;
-      U.uGain.value = inside ? 1 : Math.max(P.neighbour, c.hover) * gain;
+      U.uGain.value = inside || touchActive ? 1 : Math.max(P.neighbour, c.hover) * gain;
       U.uNear.value = c.near * gain;
       U.uTitleWarm.value = (reduced ? c.warm * 0.6 : c.warm) * c.strength;
       U.uPointer.value.set(lx, ly, 1);
@@ -526,13 +553,15 @@ export class VfxRenderer {
       const b = c.border;
       b.decay(dt);
       for (const e of c.edgeCells) { const v = ch.shown[e.cell] * e.w; if (v > 0.02) b.add(e.s, v * 1.15, 1.6); }
+      // the cells a touch lights near the edge feed the same edge glow as the desktop (V27)
+      tr?.feedBorder(b, c.edgeCells);
       if (present && (inside || prox > 0) && lx > -9000) {
         const [o, d] = outline(lx, ly, l.width, l.height);
         b.add(o, Math.pow(clamp(1 - d / R, 0, 1), 1.3) * (inside ? 0.75 : 0.9) * gain, 6);
       }
       b.settle();
       U.uBins.value.set(b.bins);
-      c.overlay.visible = ch.active || c.hover > 0.003 || c.near > 0.003 || b.level > 0.004;
+      c.overlay.visible = ch.active || touchActive || c.hover > 0.003 || c.near > 0.003 || b.level > 0.004;
       if (c.overlay.visible || inside || prox > 0) busy = true;
     }
 
@@ -545,7 +574,7 @@ export class VfxRenderer {
     });
     this.parts.step(dt);
     this.partGeo.instanceCount = this.parts.count; this.partMesh.visible = this.parts.count > 0; this.partBuf.needsUpdate = true;
-    if (this.parts.count) busy = true;
+    if (this.parts.count || this.touches.active) busy = true;
     if (drift.x > 0.001 && drift.x < NAV.fade * 2.5) busy = true;
 
     // adaptive quality: sustained long frames step the profile down
@@ -599,18 +628,62 @@ export class VfxRenderer {
         if (net.weight[f] > 0.4 && Math.random() < VFX.loading.ignite) ch.ignite(f, rand(0.45, 0.8), 3);
       }
     }
-    if (ch.active) { ch.step(dt); ch.write(t.energy.array); t.energy.needsUpdate = true; c.thot = true; }
+    // touch (V27): the title's own cells light along connected paths; while they do, the block takes its amber gradient
+    const tt = t.touch;
+    if (this.reduced) tt.clear();
+    else tt.step(this.touches, w => this.placeOf(c, w, box), cell => this.screenY(c, box.x + net.cx[cell], box.y + net.cy[cell]), this.clockMs, dt);
+    const touchActive = tt.active;
+    U.uTouch.value = tt.level > 0.003 ? 1 : 0;
+    if (!this.reduced) U.uTitleWarm.value = Math.max(U.uTitleWarm.value, tt.level * 0.95 * c.strength);
+    if (ch.active || touchActive) {
+      if (ch.active) ch.step(dt);
+      ch.write(t.energy.array);
+      if (touchActive) tt.merge(t.energy.array);
+      t.energy.needsUpdate = true; c.thot = true;
+    }
     else if (c.thot) { t.energy.array.fill(0); t.energy.needsUpdate = true; c.thot = false; }
-    c.titleMesh.visible = U.uTitleAlpha.value > 0.002 && (U.uTitleWarm.value > 0.004 || (ch.active && !this.loaded) || ch.driveLevel > 0.003);
-    return c.titleMesh.visible || ch.active;
+    c.titleMesh.visible = U.uTitleAlpha.value > 0.002 && (U.uTitleWarm.value > 0.004 || U.uTouch.value > 0 || (ch.active && !this.loaded) || ch.driveLevel > 0.003);
+    return c.titleMesh.visible || ch.active || touchActive;
   }
 
   rest(c) {
     c.inside = false; c.tinside = false; c.hover = 0; c.near = 0; c.warm = 0; c.debt = 0;
-    c.u.uHover.value = 0; c.u.uNear.value = 0; c.u.uTitleWarm.value = 0;
+    c.u.uHover.value = 0; c.u.uNear.value = 0; c.u.uTitleWarm.value = 0; c.u.uTouch.value = 0;
+    if (c.touch?.active) c.touch.clear();
+    if (c.t?.touch.active) c.t.touch.clear();
     c.overlay.visible = false; c.titleMesh.visible = false;
     if (c.border.level) { c.border.clear(); c.u.uBins.value.fill(0); }
   }
+
+  /** A contact (touch or pen) at a screen point; read by every card on the next frame. */
+  touchAt(x, y) {
+    if (this.reduced || !this.layout) return null;
+    const wave = this.touches.start(x, y, this.layout.w, this.layout.h, this.clockMs);
+    this.wakeUp();
+    return wave;
+  }
+
+  /**
+   * Placement of a network for planning a contact: touch point in network px, network size, and the screen px of every
+   * cell, projected once (card px → plane → screen). `box` offsets a title block inside its card.
+   */
+  placeOf(c, wave, box = null) {
+    const l = this.layout, net = box ? c.t.net : c.net, n = net.faces;
+    const ox = box ? box.x : 0, oy = box ? box.y : 0;
+    const m = this.pm.multiplyMatrices(this.camera.projectionMatrix, this.camera.matrixWorldInverse).multiply(c.group.matrixWorld).elements;
+    const hw = l.width / 2, hh = l.height / 2, sx = new Float32Array(n), sy = new Float32Array(n);
+    for (let i = 0; i < n; i++) {
+      const x = ox + net.cx[i] - hw, y = hh - (oy + net.cy[i]);
+      const cx = m[0] * x + m[4] * y + m[12], cy = m[1] * x + m[5] * y + m[13], cw = m[3] * x + m[7] * y + m[15];
+      if (cw <= 1e-6) { sx[i] = -1e5; sy[i] = -1e5; continue; }
+      sx[i] = (cx / cw * 0.5 + 0.5) * l.w; sy[i] = (0.5 - cy / cw * 0.5) * l.h;
+    }
+    const hit = this.planePoint(c, wave.x, wave.y) || [-1e5, -1e5];
+    return { lx: hit[0] - ox, ly: hit[1] - oy, w: box ? box.w : l.width, h: box ? box.h : l.height, sx, sy };
+  }
+
+  /** Current screen y of a card px (a touch only lights cells that are on screen when it arrives). */
+  screenY(c, lx, ly) { return this.toScreen(c, lx, ly)[1]; }
 
   /** Card px of a screen point on one card's plane (no containment test). */
   planePoint(c, x, y) {
@@ -650,9 +723,8 @@ export class VfxRenderer {
     this.fsMesh.material = this.down; r.setRenderTarget(this.rtQ1); r.render(this.post, this.camera);
     this.blurPass(this.rtQ1, this.rtQ2, 1, 0); this.blurPass(this.rtQ2, this.rtQ1, 0, 1);
     const U = this.grade.uniforms;
-    U.uMix.value.set(glow ? VFX.bloom.strength * settings.bloom : 0, glow ? Q.streak * settings.streak : 0, Q.vignette, Q.grain * settings.grain);
+    U.uMix.value.set(glow ? VFX.bloom.strength * settings.bloom : 0, glow ? Q.streak * settings.streak : 0, Q.vignette, 0);
     U.uLens.value.set(this.profile().bloom ? Q.aberration * r.getPixelRatio() : 0, Q.shoulder, 1);
-    U.uFrame.value = this.reduced ? 0 : Math.floor(this.clock * 24) % 4096;
     this.fsMesh.material = this.grade; r.setRenderTarget(null); r.render(this.post, this.camera);
   }
 

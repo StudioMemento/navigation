@@ -5,6 +5,8 @@ import {initialSection,installRouteSync} from './route-state.mjs';
 import {VfxRenderer} from './renderer.js';
 import {settings,DEFAULTS} from './settings.js';
 import {NAV} from './vfx/config.mjs';
+import {TouchPulseField,listenForTouch,touchArrival} from './vfx/touch.mjs';
+import {startBackground} from './background/background.mjs';
 
 const $=id=>document.getElementById(id),hub=$('hub'),scene=$('scene'),canvas=$('world');
 const reduced=matchMedia('(prefers-reduced-motion: reduce)'),controller=new AbortController();
@@ -32,7 +34,11 @@ const cards=PAGES.map((p,i)=>{
 });
 
 // One WebGL2 context, the START's VFX engine. Any failure leaves the plain DOM navigation (images and titles).
+// The START's background (Ghost Fibers, its own canvas and 30 fps budget) sits behind; touches are one shared field.
+const touches=new TouchPulseField();
+const stopBackground=params.get('bkg')==='0'?()=>{}:startBackground(document.getElementById('bkg'));
 engine=VfxRenderer.create(canvas,PAGES,{
+ touches,
  onImage:i=>{cards[i].el.classList.add('image-ready');wake();},
  onTitle:i=>{cards[i].el.classList.add('title-ready');wake();},
  onLive:()=>{document.body.dataset.renderer='webgl';wake();},
@@ -91,6 +97,8 @@ function stepWorld(dt){
 }
 function frame(now){
  raf=0;if(disposed||document.hidden||qaPaused)return;
+ // high refresh screens are capped at 60 renders a second (V24); the frame is simply skipped
+ if(lastTime&&now-lastTime<1000/NAV.fps-1){raf=requestAnimationFrame(frame);return;}
  const elapsed=lastTime?now-lastTime:16.67,dt=Math.min(elapsed/1000,.05);lastTime=now;
  const begin=performance.now();
  const active_=stepWorld(dt);
@@ -102,7 +110,7 @@ function frame(now){
   hub.dataset.stats=JSON.stringify(stats);const output=document.querySelector('.lab .qa');if(output)output.textContent=`${stats.renderer} · ${fps} fps · ${e?.quality||'-'} · DPR ${e?.dpr||'-'}\n${e?.scenes||0}/5 scene · ${e?.titles||0}/5 titoli · ${l.w} × ${l.h}\nDNA Memento VFX · ${stats.motion}`;
   frameCount=0;frameTime=0;fpsSince=now;
  }
- // At rest nothing moves (DNA): the loop sleeps a moment after the last reaction, the grain freezes with it.
+ // At rest the surface loop sleeps a moment after the last reaction; the background keeps its own 30 fps loop.
  idle=active_?0:idle+dt;
  if(idle<NAV.idle)wake();
 }
@@ -112,12 +120,13 @@ on($('next'),'click',()=>select(queuedStep(position,target,1)));
 on(hub,'wheel',e=>{if(e.ctrlKey||e.metaKey||Math.abs(e.deltaX)>Math.abs(e.deltaY))return;e.preventDefault();const step=wheelStep(wheel,e.deltaY*(e.deltaMode===1?16:e.deltaMode===2?l.h:1),performance.now());if(step)select(queuedStep(position,target,step));},{passive:false});
 on(hub,'pointerdown',e=>{
  if(!e.isPrimary||e.button||e.target.closest('button'))return;route?.markInteracted();pointer.x=e.clientX;pointer.y=e.clientY;pointer.down=true;pointer.power=1;pointer.type=e.pointerType;
- engine?.input.move(e.clientX,e.clientY,e.pointerType==='touch');if(e.pointerType!=='mouse')engine?.pulseAt(e.clientX,e.clientY,.9,4);
+ // a held finger never feeds the slow hover chain (V26): touch is one contact wave, recorded by listenForTouch
+ if(e.pointerType==='mouse')engine?.input.move(e.clientX,e.clientY,false);else engine?.input.leave();
  drag={id:e.pointerId,x:e.clientX,y:e.clientY,start:position,lastY:e.clientY,lastTime:e.timeStamp,velocity:0,claimed:false};wake();
 });
 on(window,'pointermove',e=>{
  if(!e.isPrimary)return;pointer.x=e.clientX;pointer.y=e.clientY;pointer.type=e.pointerType;pointer.power=e.pointerType==='mouse'||pointer.down?1:0;
- if(pointer.power)engine?.input.move(e.clientX,e.clientY,e.pointerType==='touch');
+ if(e.pointerType==='mouse')engine?.input.move(e.clientX,e.clientY,false);else engine?.input.leave();
  if(drag&&e.pointerId===drag.id){const dy=e.clientY-drag.y,dx=e.clientX-drag.x;
   if(!drag.claimed&&Math.abs(dy)>8&&Math.abs(dy)>Math.abs(dx)*1.1){drag.claimed=true;hub.setPointerCapture(e.pointerId);document.body.classList.add('dragging');settled=false;velocity=0;}
   if(drag.claimed){const stride=Math.max(180,l.height+80);position=clamp(drag.start-dy/stride,drag.start-1.24,drag.start+1.24);drag.velocity=(drag.lastY-e.clientY)/stride/(Math.max(1,e.timeStamp-drag.lastTime)/1000);drag.lastY=e.clientY;drag.lastTime=e.timeStamp;suppressClick=performance.now()+350;}
@@ -126,15 +135,33 @@ on(window,'pointermove',e=>{
 function endPointer(e,cancel=false){
  if(!drag||e.pointerId!==drag.id)return;const old=drag;drag=null;pointer.down=false;document.body.classList.remove('dragging');
  // a lifted finger leaves one local impulse that travels and decays; a cancelled gesture or a swipe leaves none
- if(pointer.type!=='mouse'){pointer.power=0;if(!cancel&&!old.claimed)engine?.pulseAt(e.clientX,e.clientY,1,5);engine?.input.leave();}
- if(cancel){engine?.input.cancel();engine?.quench();}
+ // release and native cancellation neither duplicate nor erase the contact wave already running (V26)
+ if(pointer.type!=='mouse'){pointer.power=0;engine?.input.leave();}
+ if(cancel)engine?.input.cancel();
  if(hub.hasPointerCapture(e.pointerId))hub.releasePointerCapture(e.pointerId);
  if(old.claimed){suppressClick=performance.now()+350;select(dragSnap(old.start,position,e.timeStamp-old.lastTime>100?0:old.velocity,cancel));}wake();
 }
 function cancelPointer(){pointer.power=0;pointer.down=false;engine?.input.cancel();if(drag){target=Math.round(drag.start);settled=false;drag=null;updateActive(target);}document.body.classList.remove('dragging');wake();}
 on(window,'pointerup',e=>endPointer(e));on(window,'pointercancel',e=>endPointer(e,true));on(window,'blur',cancelPointer);on(window,'pointerout',e=>{if(!e.relatedTarget){pointer.power=0;engine?.input.leave();wake();}});
 // keyboard: a short accent where focus lands; the focus ring stays the DOM's own
-on(document,'focusin',e=>{const i=cards.findIndex(c=>c.el===e.target);if(i>=0&&e.target.matches(':focus-visible'))engine?.pulseCard(i);});on(hub,'dragstart',e=>e.preventDefault());
+on(document,'focusin',e=>{const i=cards.findIndex(c=>c.el===e.target);if(i>=0&&e.target.matches(':focus-visible'))engine?.pulseCard(i);});
+// Touch (V27): one passive contact event starts a wave read by every card and title on the next frame. Without the
+// GPU representation, the titles it reaches take their amber gradient for a moment instead (bounded, no loop).
+const lit=new Set(),litTimers=new Set();let fallbackContacts=0;
+function contact(x,y){
+ if(document.hidden||motionReduced()||matchMedia('(forced-colors: active)').matches)return;
+ const wave=engine?.touchAt(x,y);
+ if(document.documentElement.classList.contains('vfx-live'))return;
+ // the same timing, on the wall clock, for the DOM titles
+ const now=performance.now(),w={id:wave?.id??++fallbackContacts,x,y,start:now,reach:Math.max(1,Math.hypot(Math.max(x,innerWidth-x),Math.max(y,innerHeight-y)))};
+ litTimers.forEach(clearTimeout);litTimers.clear();lit.forEach(el=>el.classList.remove('touch-lit'));lit.clear();
+ for(const c of cards){
+  if(c.el.hidden)continue;const r=c.title.getBoundingClientRect();if(r.bottom<0||r.top>innerHeight)continue;
+  const later=(fn,ms)=>{const id=setTimeout(()=>{litTimers.delete(id);fn();},Math.max(0,ms));litTimers.add(id);};
+  later(()=>{c.title.classList.add('touch-lit');lit.add(c.title);later(()=>{c.title.classList.remove('touch-lit');lit.delete(c.title);},340);},touchArrival(w,r.left+r.width/2,r.top+r.height/2,r.left)-performance.now());
+ }
+}
+listenForTouch(window,contact,controller.signal);on(hub,'dragstart',e=>e.preventDefault());
 on(window,'keydown',e=>{
  if(e.ctrlKey||e.metaKey||e.altKey||e.target.closest('input,textarea,select,[contenteditable]')||e.composedPath().includes(overlay))return;
  if(['ArrowDown','ArrowRight','PageDown'].includes(e.key)){e.preventDefault();select(queuedStep(position,target,1));}
@@ -146,7 +173,7 @@ on(window,'keydown',e=>{
 on(window,'resize',scheduleFit);if(visualViewport)on(visualViewport,'resize',scheduleFit);
 on(document,'visibilitychange',()=>{if(document.hidden){cancelAnimationFrame(raf);raf=0;lastTime=0;}else{lastTime=0;wake();}});
 on(window,'pageshow',()=>{lastTime=0;wake();});
-on(window,'pagehide',e=>{cancelAnimationFrame(raf);raf=0;if(!e.persisted){disposed=true;controller.abort();cancelAnimationFrame(layoutFrame);engine?.dispose();}});
+on(window,'pagehide',e=>{cancelAnimationFrame(raf);raf=0;if(!e.persisted){disposed=true;controller.abort();cancelAnimationFrame(layoutFrame);engine?.dispose();stopBackground();litTimers.forEach(clearTimeout);}});
 on(reduced,'change',()=>{lastTime=0;wake();});
 // Any loss of the context returns the navigation to its DOM rendering at once.
 on(canvas,'webglcontextlost',e=>{e.preventDefault();if(engine)engine.lost=true;overlay?.removeAttribute('blur');document.documentElement.classList.remove('vfx-live','vfx-boot');document.body.dataset.renderer='context-lost';});
@@ -159,7 +186,7 @@ route=installRouteSync({storage,signal:controller.signal,readSection:()=>PAGES[a
 function setupLab(){
  const button=document.createElement('button');button.className='lab-toggle';button.textContent='Regia';button.setAttribute('aria-expanded','false');
  const panel=document.createElement('aside');panel.className='lab';panel.hidden=true;panel.innerHTML='<h3>MEMENTO VFX DNA</h3>';
- const options=[['reach','Raggio del puntatore',120,400,10],['bloom','Bloom selettivo',0,2,.05],['streak','Striatura anamorfica',0,2,.05],['parallax','Profondità immagini',0,2,.05],['edge','Luce del bordo',0,2,.05],['lights','Sorgenti delle scene',0,2,.05],['shards','Schegge',0,1,1],['grain','Grana',0,2,.05]];
+ const options=[['reach','Raggio del puntatore',120,400,10],['bloom','Bloom selettivo',0,2,.05],['streak','Striatura anamorfica',0,2,.05],['parallax','Profondità immagini',0,2,.05],['edge','Luce del bordo',0,2,.05],['lights','Sorgenti delle scene',0,2,.05],['shards','Schegge',0,1,1]];
  for(const [key,label,min,max,step] of options){const el=document.createElement('label');el.innerHTML=`${label}<output>${settings[key]}</output><input aria-label="${label}" type="range" min="${min}" max="${max}" step="${step}" value="${settings[key]}">`;on(el.querySelector('input'),'input',e=>{settings[key]=+e.target.value;el.querySelector('output').textContent=settings[key];wake();});panel.append(el);}
  const reset=document.createElement('button');reset.textContent='Ripristina';on(reset,'click',()=>{Object.assign(settings,DEFAULTS);panel.querySelectorAll('input').forEach((el,i)=>{el.value=settings[options[i][0]];el.previousElementSibling.textContent=el.value;});wake();});panel.append(reset);const qa=document.createElement('output');qa.className='qa';panel.append(qa);
  on(button,'click',()=>{panel.hidden=!panel.hidden;button.setAttribute('aria-expanded',String(!panel.hidden));});document.body.append(button,panel);
@@ -179,7 +206,8 @@ if(params.has('qa'))window.__nav={
  resume(){qaPaused=false;lastTime=0;wake();},
  advance(seconds,fps=60){const dt=1/fps;for(let t=0;t<seconds-1e-6;t+=dt)stepWorld(dt);engine?.render();return engine?.stats();},
  select(i){select(nearest(i,position));},
- pointer(x,y,type='mouse'){pointer.x=x;pointer.y=y;pointer.type=type;pointer.power=1;engine?.input.move(x,y,type==='touch');},
+ pointer(x,y){pointer.x=x;pointer.y=y;pointer.type='mouse';pointer.power=1;engine?.input.move(x,y,false);},
+ touch(x,y){contact(x,y);},
  leave(){pointer.power=0;engine?.input.leave();},
  get engine(){return engine;}
 };

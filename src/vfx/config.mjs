@@ -54,11 +54,13 @@ export const VFX = Object.freeze({
   /** Structural cells (loading and transition tessellation). */
   cells: { card: 21 },
   bloom: { scale: 0.5, strength: 0.95 },
-  post: { shoulder: 0.84, streak: 0.2, vignette: 0.26, grain: 0.016, aberration: 1.4 },
+  /** V25: no film grain or animated dithering; the photographic and type grade stays clean. */
+  post: { shoulder: 0.84, streak: 0.2, vignette: 0.26, grain: 0, aberration: 1.4 },
   quality: {
     high: { dpr: 2, bloom: true, particles: 1, cellScale: 1 },
-    medium: { dpr: 1.5, bloom: true, particles: 0.6, cellScale: 1.25 },
-    low: { dpr: 1, bloom: false, particles: 0.35, cellScale: 1.6 },
+    /** V24: lower profiles change resolution only; bloom and the cell scale stay. MSAA ×2 only on high (V24). */
+    medium: { dpr: 1.5, bloom: true, particles: 1, cellScale: 1 },
+    low: { dpr: 1, bloom: true, particles: 1, cellScale: 1 },
   },
   slowFrame: 30,
 });
@@ -75,8 +77,12 @@ export const NAV = Object.freeze({
   dprCap: { small: 1.35, large: 1.65 },
   /** The edge light of a card arriving in the reading position ("luce sugli spigoli al passaggio"). */
   arrival: { light: 0.55, width: 10, cells: 4, strength: 0.5 },
-  /** Seconds of complete rest before the loop sleeps (the grain freezes, as with reduced motion). */
+  /** Seconds of complete rest before the surface loop sleeps (the background keeps its own 30 fps loop). */
   idle: 3,
+  /** Surface loop ceiling on high refresh screens (V24). */
+  fps: 60,
+  /** Devices without hover show the scenes in colour at rest (V25); same query as START V27. */
+  touchOnly: '(hover: none), (pointer: coarse), (max-width: 767px)',
 });
 
 /** Amber gradient for the title shader: per stop, colour and the luminance of its idle (desaturated) version. */

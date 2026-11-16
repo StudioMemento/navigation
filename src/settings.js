@@ -1,5 +1,5 @@
 // Lab defaults (?lab=1). Colour, timing and density are the DNA's own (src/vfx/config.mjs) and are not tuned here.
-export const DEFAULTS = Object.freeze({reach:230,bloom:1,streak:1,parallax:1,edge:1,lights:1,shards:1,grain:1});
+export const DEFAULTS = Object.freeze({reach:230,bloom:1,streak:1,parallax:1,edge:1,lights:1,shards:1});
 export const settings = {...DEFAULTS};
 // Authored source masks in image UV (origin bottom-left). Diffuse walls,
 // print stock and floor reflections are deliberately excluded from emission.

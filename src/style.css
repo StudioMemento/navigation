@@ -5,6 +5,7 @@
  --title-amber:linear-gradient(0deg,#d9682f 0%,#e2874f 9%,#ecb28c 20%,#f5d9c6 32%,#fbefe8 44%,#fbefe8 100%);--vh:100svh;--card-w:80vw;--card-h:55vh;--padding:4.8vw;--cut:16px}
 *{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;background:var(--ink);font-family:Inter,Arial,sans-serif;color:var(--paper);overscroll-behavior:none}body{overflow:hidden;-webkit-tap-highlight-color:transparent}button,a{touch-action:manipulation}button{font:inherit;color:inherit}button:focus-visible,a:focus-visible{outline:2px solid #ecc089;outline-offset:5px}
 .sr-only{position:absolute!important;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+#bkg{position:fixed;inset:0;height:var(--vh);pointer-events:none;z-index:0;opacity:0;transition:opacity 1.2s var(--ease)}#bkg.is-live{opacity:1}#bkg .ghost-fibers-canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
 #world{position:fixed;inset:0;width:100%;height:var(--vh);pointer-events:none;z-index:0}
 #hub{position:fixed;inset:0;height:var(--vh);touch-action:pan-x pinch-zoom;user-select:none;-webkit-user-select:none}
 #scene{position:absolute;inset:0;height:var(--vh);perspective-origin:50% 50%;transform-style:preserve-3d;pointer-events:none}
@@ -13,11 +14,14 @@
 /* DOM rendering (fallback, and until the engine is live): the scenes are black and white at rest and take their colour
    (80% saturation) on hover; titles carry the idle gradient and warm to the amber one. Amber only comes from a gesture. */
 .card[data-slot="active"]:hover img{filter:saturate(.8)}
+/* devices without hover: the scenes in colour at rest (START V25) */
+@media(hover:none),(pointer:coarse),(max-width:767px){.card[data-slot="active"] img{filter:none;transition:none}}
+/* a touch reaching a title without the GPU representation: its amber gradient for a moment (START V26) */
+html:not(.vfx-live) .card h2.touch-lit{background-image:var(--title-amber);filter:drop-shadow(0 0 7px #ff795050)}
 /* Live GPU representation: the DOM keeps layout, semantics, focus and hit areas but stops painting what the canvas draws. */
 html.vfx-live .card.image-ready img{opacity:0}
 html.vfx-live .card.title-ready h2{background-image:none}
-html.vfx-boot #hub{opacity:0}
-#hub{transition:opacity .6s var(--ease)}
+
 .card h2{position:absolute;bottom:var(--padding);left:var(--padding);width:calc(100% - var(--padding) * 2);margin:0;display:flex;justify-content:space-between;align-items:baseline;font-size:var(--title-size,100px);line-height:.95;font-weight:280;transform:translateZ(14px);pointer-events:none;color:transparent;-webkit-text-fill-color:transparent;background-image:var(--title-gradient);-webkit-background-clip:text;background-clip:text}
 .card h2 span{display:block}
 .card[data-slot="active"]:hover h2{background-image:var(--title-amber)}
@@ -32,5 +36,6 @@ html.vfx-live .card.title-ready:hover h2{background-image:none}
 @media(max-width:600px){.chevron{width:64px;height:50px}.card h2{transform:translateZ(8px)}}
 @media(prefers-reduced-motion:reduce){*{transition:none!important}}
 @media(forced-colors:active){#world{display:none}.card img{opacity:1!important}.card{border:1px solid CanvasText}.card h2{color:CanvasText;-webkit-text-fill-color:CanvasText;background:none}}
-@media print{#world{display:none}}
+@media print{#world,#bkg{display:none}}
 html.vfx-off #world{display:none}
+@media(forced-colors:active){#bkg{display:none}}

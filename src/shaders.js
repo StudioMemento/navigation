@@ -86,6 +86,7 @@ float outlineAt(vec2 p){
  */
 const PHOTO = /* glsl */ `
 uniform sampler2D uImage;
+uniform float uPhotoColor;    // devices without hover show the scenes in colour at rest (V25)
 uniform float uHasImg;
 uniform vec2 uTextureSize;
 uniform vec2 uTilt;
@@ -220,9 +221,9 @@ void main(){
   float sd=sdTab(p), w=max(fwidth(sd),1e-3);
   float inside=1.-smoothstep(-.7*w,.3*w,sd);
   vec4 col=vec4(uPanelCol.rgb,1.)*uPanelCol.a*inside;
-  // at rest the scene is black and white; the photograph lights the void panel (the brighter of the two)
+  // at rest the scene is black and white (in colour on devices without hover); it lights the void panel
   vec2 ph=photo(p,inside);
-  col.rgb=max(col.rgb,vec3(ph.x)*ph.y*mix(.21,1.,uActive));
+  col.rgb=max(col.rgb,mix(vec3(ph.x),phRGB,uPhotoColor)*ph.y*mix(.21,1.,uActive));
   // the thin frame with its sheen
   float frame=1.-smoothstep(0.,w,abs(sd+.7*w)-.15*w);
   float k=(p.x/uSize.x+p.y/uSize.y)*.5;
@@ -367,6 +368,7 @@ uniform vec4 uTitle[6];       // the amber gradient, top to base: colour, lumina
 uniform vec3 uHot[3];         // where the range reaches: top, middle, base
 uniform float uMicro;         // px, micro-lattice inside the glyphs
 uniform float uLoad;
+uniform float uTouch;         // a touch reaction: local, short-lived; never warms the whole title by itself
 in vec2 vLocal; in vec3 vBary; flat in vec4 vCell; flat in float vE; in float vEv; in float vFade;
 out vec4 o;
 float sdAt(vec2 p){
@@ -387,7 +389,8 @@ void main(){
   // the cells the range reaches and the reaction they start go warm yellow (local). Never a disc
   float base=warmth(p);
   float local=clamp(vEv*1.12+vE*.32,0.,1.15);
-  float W=max(base,local*clamp((1.-uLoad)*3.,0.,1.)*.8)*uTitleAlpha;
+  float W0=max(base,local*clamp((1.-uLoad)*3.,0.,1.)*.8)*uTitleAlpha;
+  float W=max(W0,clamp(local,0.,1.)*uTouch*uTitleAlpha);
   if(W<.004) discard;
   float sd=sdAt(p);
   if(sd>uRange) discard;
@@ -395,7 +398,7 @@ void main(){
   float a=uTitleAlpha>.001?ink.a/uTitleAlpha:0.;
   float lum=a>.003?dot(ink.rgb/ink.a,vec3(.299,.587,.114)):1.;
   float t=clamp((lum-uGray.x)/(uGray.y-uGray.x),0.,1.);
-  vec3 amber=amberOf(lum);
+  vec3 idle=vec3(lum), amber=amberOf(lum);
   float fill=smoothstep(t-.3,t+.06,local*1.05);
   vec3 hot=t>.5?mix(uHot[1],uHot[0],(t-.5)*2.):mix(uHot[2],uHot[1],t*2.);
   float reach=max(local,base*.5);
@@ -411,7 +414,7 @@ void main(){
   col=mix(col,vec3(1.,.9,.74),wire*lit*.3);
   // the overlay takes over the share W of the type with its own coverage: the content pass has given up exactly that
   float k=vFade;
-  float cov=a*k*W;
+  float cov=a*k*W0;
   // warm light that follows each letter: a rim just inside the outline where the energy is, a soft glow outside.
   // Both are light only (added, no coverage): they never darken what is around the letters
   float g=clamp(local*1.1+base*.4,0.,1.)*vFade*W;
@@ -420,7 +423,8 @@ void main(){
   vec3 rimC=ramp(.56+.2*g)*rim*local*vFade*.6*W;
   vec3 glow=ramp(.42+.2*g)*outer*(.04+.17*g)*vFade*W;
   if(uEmissive>.5){ o=vec4(((hot*a*fill*.09+facet*a*lit*.07)*vFade+rimC*.24+glow*.3)*W,0.); return; }
-  o=vec4(col*cov+rimC*k+glow,cov);
+  // touch changes the existing ink by its colour delta, preserving its anti-aliased coverage (V26)
+  o=vec4(col*cov+(col-idle)*a*k*(W-W0)+rimC*k+glow,cov);
 }`;
 
 /* ------------------------------------------------------------------ particles (screen px) */
@@ -483,10 +487,11 @@ void main(){
 }`;
 
 /**
- * The final grade: one pass from the HDR frame to the screen. The navigation's progressive blur of the outer 20%
- * (R11: in WebGL, not eight filtered CSS layers); bloom and a warm horizontal streak where there is energy; highlights
- * roll off above the shoulder (the type below it keeps its exact colour); a slight chromatic aberration toward the
- * frame, vignette at the corners, fine film grain (none on pure black) and dithering last.
+ * The final grade: one pass from the HDR frame to the screen, over a transparent canvas (the background lives on its
+ * own canvas behind). The navigation's progressive blur of the outer 20% (R11: in WebGL, not eight filtered CSS
+ * layers); bloom and a warm horizontal streak where there is energy; highlights roll off above the shoulder (the type
+ * below it keeps its exact colour); a slight chromatic aberration toward the frame and the vignette at the corners.
+ * V25: no film grain and no animated dithering.
  */
 export const GRADE_FRAG = /* glsl */ `
 precision highp float;
@@ -495,12 +500,9 @@ uniform sampler2D uBloom;
 uniform sampler2D uStreak;
 uniform sampler2D uSoft;
 uniform vec2 uRes;            // drawing buffer, px
-uniform vec4 uMix;            // bloom, streak, vignette, grain
+uniform vec4 uMix;            // bloom, streak, vignette, (grain: 0 since V25)
 uniform vec3 uLens;           // chromatic aberration at the corners (px), shoulder, edge blur
-uniform float uFrame;         // grain frame (24 steps a second), fixed with reduced motion
 in vec2 vUv; out vec4 o;
-float ign(vec2 p){ return fract(52.9829189*fract(dot(p,vec2(.06711056,.00583715)))); }
-float hash(vec2 p){ vec3 p3=fract(vec3(p.xyx)*.1031); p3+=dot(p3,p3.yzx+33.33); return fract((p3.x+p3.y)*p3.z); }
 vec3 shoulder(vec3 c){
   float k=uLens.y;
   vec3 over=max(c-k,0.);
@@ -521,8 +523,8 @@ void main(){
   if(uMix.y>0.) col+=texture(uStreak,vUv).rgb*vec3(1.,.82,.62)*uMix.y;
   col=shoulder(col);
   col*=1.-uMix.z*smoothstep(.42,1.05,r)*smoothstep(.42,1.05,r);
-  float l=dot(col,vec3(.299,.587,.114));
-  float grain=(hash(gl_FragCoord.xy+vec2(uFrame*17.31,uFrame*-9.73))-.5)*2.;
-  col+=(grain*uMix.w*smoothstep(.004,.12,l)*(1.-.6*l)+(ign(gl_FragCoord.xy+uFrame*5.588)-.5)/255.)*clamp(s.a,0.,1.);
-  o=vec4(max(col,0.),1.);
+  // premultiplied over the background: panels are opaque, light added over the void keeps its own coverage
+  float a=s.a;
+  if(a<1.) a=clamp(max(a,max(col.r,max(col.g,col.b))),0.,1.);
+  o=vec4(max(col,0.),a);
 }`;
