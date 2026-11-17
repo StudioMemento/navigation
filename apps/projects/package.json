@@ -1,10 +1,14 @@
 {
-  "name": "memento-portfolio-structure",
-  "version": "42.0.0",
+  "name": "memento-portfolio",
+  "version": "43.0.0",
   "private": true,
   "type": "module",
   "scripts": {
     "build": "node release/build.mjs",
-    "verify": "node release/verify-v42.mjs"
+    "verify": "node release/verify-v43.mjs",
+    "verify:package": "node release/verify-package.mjs"
+  },
+  "engines": {
+    "node": ">=20"
   }
 }

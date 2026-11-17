@@ -1,279 +1,369 @@
 import { domains, aliases, projectName, filterProjects, wrapIndex, validateProjects } from './catalogue.js';
-import { detailFor, detailMarkup, galleryStage } from './project-layout.js';
+import { detailMarkup, galleryFor } from './project-layout.js';
+import { escapeHTML, setManifest, photo, setPhoto, hydrate, preload } from './media.js';
+import { Coverflow } from './coverflow.js';
 import { installSwipe } from './gestures.js';
 import { fitProjectTitle } from './title-fit.js';
+import { ExperiencePlayer } from './experience.js';
 
 const $ = (selector, root = document) => root.querySelector(selector);
 const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
-const escapeHTML = value => String(value ?? '').replace(/[&<>"']/g, char => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[char]));
+const root = document.documentElement;
 const paths = {
-  arrow:'M5 19 19 5M5 5h14v14', down:'m5 8 7 7 7-7', up:'m5 16 7-7 7 7', left:'m14 5-7 7 7 7', right:'m10 5 7 7-7 7',
-  expand:'M8 3H3v5m13-5h5v5M3 16v5h5m13-5v5h-5', play:'m9 5 11 7-11 7Z',
+  arrow:'M5 19 19 5M5 5h14v14',
   all:'M3 3h7v7H3Zm11 0h7v7h-7ZM3 14h7v7H3Zm11 0h7v7h-7Z',
   web:'M3 4h18v13H3ZM8 21h8m-4-4v4', '3d':'m12 2 9 5v10l-9 5-9-5V7Zm0 10 9-5M12 12 3 7m9 5v10',
   video:'M3 5h13v14H3Zm13 5 6-3v10l-6-3', visual:'M3 6h5l2-3h4l2 3h5v14H3Zm9 3a4 4 0 1 0 0 8 4 4 0 0 0 0-8',
   design:'m4 17 13-13 4 4L8 21H4Zm10-10 4 4', branding:'M4 4h16v16H4ZM8 16V8l4 5 4-5v8',
 };
 const icon = name => `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="${paths[name]}"/></svg>`;
-let imageManifest = {images:{},aliases:{}};
-const imageSizes = {
-  tile:'(max-width:767px) calc(50vw - 27px), (max-width:1100px) 31vw, (min-width:2100px) 470px, 23vw',
-  wide:'(max-width:767px) calc(50vw - 27px), (max-width:1100px) 62vw, (min-width:2100px) 950px, 46vw',
-  flow:'(max-width:767px) min(68vw, 36svh), min(43vw, 54svh, 840px)',
-  thumb:'(max-width:767px) 70px, (min-width:1667px) 150px, 9vw',
-  stage:'(min-width:2500px) 2200px, (min-width:2160px) 1900px, 88vw', dialog:'80vw'
-};
-function photo(src,alt='',eager=false,role='stage') {
-  const canonical=imageManifest.aliases[src] || src, data=imageManifest.images[canonical];
-  const variants=data?.variants || [], fallback=variants.find(item=>item.width>=480)?.src || canonical;
-  const sizes=imageSizes[role] || imageSizes.stage;
-  const set=variants.map(item=>`${item.src} ${item.width}w`).join(', ');
-  return `<img ${eager?'src':'data-src'}="${escapeHTML(fallback)}" ${set?`${eager?'srcset':'data-srcset'}="${escapeHTML(set)}" sizes="${sizes}"`:''} ${data?`width="${data.width}" height="${data.height}"`:''} alt="${escapeHTML(alt)}" loading="${eager?'eager':'lazy'}" fetchpriority="${eager&&role==='stage'?'high':'auto'}" decoding="async" draggable="false">`;
-}
-const viewport = $('#viewport');
+
+const catalogue = $('#catalogue');
 const view = $('#project-view');
 const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
-const scrollBehavior = () => reducedMotion.matches ? 'instant' : 'smooth';
-const state = { projects:[], deck:[], active:null, domain:'all', view:'catalogo', slides:new Map(), catalogScroll:0, catalogFocus:null, media:null };
+const scrollBehavior = () => (reducedMotion.matches ? 'instant' : 'smooth');
+const state = { projects: [], deck: [], active: null, domain: 'all', view: 'catalogo', gallery: new Map(), catalogScroll: 0, catalogFocus: null };
 const byId = id => state.projects.find(project => project.id === (aliases[id] || id));
 const current = () => byId(state.active);
 const announce = message => { $('#announcement').textContent = message; };
-let scrollFrame = 0, observer, progressStops=[];
-const saveData = navigator.connection?.saveData || matchMedia('(prefers-reduced-data: reduce)').matches;
-const imageObserver = 'IntersectionObserver' in window ? new IntersectionObserver(entries=>{
-  entries.forEach(entry=>{if(entry.isIntersecting){hydrateImage(entry.target);imageObserver.unobserve(entry.target);}});
-},{root:viewport,rootMargin:saveData?'100px':'400px'}) : null;
-function hydrateImage(image) {
-  if(image.dataset.srcset){image.srcset=image.dataset.srcset;delete image.dataset.srcset;}
-  if(image.dataset.src){image.src=image.dataset.src;delete image.dataset.src;}
-}
-function observeImages(root) {
-  $$('img[data-src]',root).forEach(image=>imageObserver?imageObserver.observe(image):hydrateImage(image));
-}
-function unobserveImages(root) {$$('img[data-src]',root).forEach(image=>imageObserver?.unobserve(image));}
+/** The VFX engine (START V27) loads after the content; until then, and on any failure, the DOM page is complete. */
+let vfx = null, coverflow = null, headingObserver = null;
+const player = new ExperiencePlayer({ announce, onChange: element => vfx?.invalidate(element) });
 history.scrollRestoration = 'manual';
 
+/* ------------------------------------------------------------------ images */
+
+const saveData = navigator.connection?.saveData || matchMedia('(prefers-reduced-data: reduce)').matches;
+const imageObserver = 'IntersectionObserver' in window ? new IntersectionObserver(entries => {
+  entries.forEach(entry => { if (entry.isIntersecting) { hydrate(entry.target); imageObserver.unobserve(entry.target); } });
+}, { rootMargin: saveData ? '120px 0px' : '700px 0px' }) : null;
+// selector boards are hydrated by the selector itself (they sit in a clipped, transformed strip)
+const observeImages = scope => $$('img[data-src]', scope).forEach(img => {
+  if (img.closest('.flow-card')) return;
+  if (imageObserver) imageObserver.observe(img); else hydrate(img);
+});
+const unobserveImages = scope => $$('img[data-src]', scope).forEach(img => imageObserver?.unobserve(img));
+
+/* ------------------------------------------------------------------ catalogue (home and archive) */
+
 function renderFilters() {
-  $('#filters').innerHTML = `<button data-action="filter" data-domain="all" aria-label="Tutti i domini" title="Tutti i domini" aria-pressed="true" class="filter-all">${icon('all')}</button>` + Object.entries(domains).map(([id,label]) => `<button data-action="filter" data-domain="${id}" aria-controls="project-grid" aria-pressed="false">${icon(id)}<span>${label}</span></button>`).join('');
+  $('#filters').innerHTML = `<button type="button" data-action="filter" data-domain="all" aria-label="Tutti i domini" title="Tutti i domini" aria-pressed="true" class="filter-all">${icon('all')}</button>` +
+    Object.entries(domains).map(([id, label]) => `<button type="button" data-action="filter" data-domain="${id}" aria-controls="project-grid" aria-pressed="false">${icon(id)}<span>${label}</span></button>`).join('');
 }
-function renderCatalogue() {
-  const projects = filterProjects(state.projects,state.domain);
-  unobserveImages($('#project-grid'));
-  $('#project-grid').innerHTML = projects.map((project,index) => `<a class="project-tile ${project.layout || 'square'}" href="#slideshow/${project.id}" data-action="open-project" data-id="${project.id}" aria-label="Apri progetto ${escapeHTML(projectName(project))}" id="tile-${project.id}">
-    <span class="tile-frame"><span class="tile-visual">${photo(project.cover,'',index < 4&&!location.hash.startsWith('#slideshow/'),project.layout==='wide'?'wide':'tile')}</span></span>
-    <span class="tile-domains">${project.domains.map(domain => `<span>${domains[domain]}</span>`).join('')}</span>
-    <span class="tile-name">${escapeHTML(project.title)}${project.variant ? `<span class="tile-variant">${escapeHTML(project.variant)}</span>` : ''}</span><span class="tile-arrow">${icon('arrow')}</span></a>`).join('');
+
+function tileMarkup(project, index) {
+  const eager = index < 4 && state.view === 'catalogo' && !location.hash.startsWith('#slideshow/');
+  const role = project.layout === 'wide' ? 'wide' : 'tile';
+  return `<a class="project-tile ${project.layout || 'square'}" href="#slideshow/${project.id}" data-action="open-project" data-id="${project.id}" id="tile-${project.id}" aria-label="Apri progetto ${escapeHTML(projectName(project))}" data-vfx="card" data-vfx-photo=".tile-visual img" data-vfx-own-colour>
+    <span class="tile-frame"><span class="tile-visual">${photo(project.cover, { role, eager, lazy: !eager })}</span></span>
+    <span class="tile-meta" data-vfx-dom>
+      <span class="tile-domains">${project.domains.map(domain => `<span>${domains[domain]}</span>`).join('')}</span>
+      <span class="tile-name">${escapeHTML(project.title)}${project.variant ? `<span class="tile-variant">${escapeHTML(project.variant)}</span>` : ''}</span>
+      <span class="tile-arrow">${icon('arrow')}</span>
+      <span class="tile-current" aria-hidden="true">In visione</span>
+    </span></a>`;
+}
+
+function renderCatalogue({ quiet = false } = {}) {
+  const projects = filterProjects(state.projects, state.domain);
+  const grid = $('#project-grid');
+  unobserveImages(grid);
+  grid.innerHTML = projects.map(tileMarkup).join('');
   $('#empty-state').hidden = !!projects.length;
-  observeImages($('#project-grid'));
-  $$('#filters button').forEach(button => button.setAttribute('aria-pressed',String(button.dataset.domain === state.domain)));
-  announce(`${projects.length} ${projects.length===1?'progetto':'progetti'}${state.domain === 'all' ? '' : ` · ${domains[state.domain]}`}`);
+  observeImages(grid);
+  $$('#filters button').forEach(button => button.setAttribute('aria-pressed', String(button.dataset.domain === state.domain)));
+  markCurrent();
+  vfx?.scan();
+  if (!quiet) announce(`${projects.length} ${projects.length === 1 ? 'progetto' : 'progetti'}${state.domain === 'all' ? '' : ` · ${domains[state.domain]}`}`);
 }
-function coverflowMarkup(label) {
-  return `<div class="selector-band"><div class="coverflow" tabindex="0" role="region" aria-roledescription="carosello" aria-label="${label}">
-    ${state.deck.map(project => `<button class="flow-card" data-action="select-project" data-id="${project.id}" aria-label="Seleziona ${escapeHTML(projectName(project))}"><span class="flow-face"><span class="flow-image"></span></span></button>`).join('')}
-    </div></div>`;
+
+/** In a project the same catalogue becomes the archive at the end of the page: same tiles, same filters, same engine surfaces. */
+function placeCatalogue(where) {
+  const filters = $('#filters'), grid = $('#grid-block');
+  if (where === 'archive') { $('#archive-filters')?.append(filters); $('#archive-grid')?.append(grid); }
+  else { $('#filters-home').append(filters); $('#grid-home').append(grid); }
 }
-function circularOffset(index, active, length) {
-  let offset=wrapIndex(index-active,length);if(offset>length/2)offset-=length;return offset;
-}
-function updateCoverflow() {
-  const length=state.deck.length, active=state.deck.findIndex(project=>project.id===state.active);
-  const content=$('#selected-heading')?.getBoundingClientRect().width || viewport.clientWidth*.88;
-  const cardWidth=Math.min(640,content*(viewport.clientWidth<768?.50:.38));
-  const scales=[1,.84,.68,.54];
-  const edge=content/2-cardWidth*scales[2]/2;
-  const positions=[0,edge*.54,edge,content/2+cardWidth*scales[3]*.30];
-  $$('.coverflow',view).forEach(flow=>{
-    flow.style.setProperty('--card-width',`${cardWidth}px`);
-    $$('.flow-card',flow).forEach((card,index)=>{
-      const offset=circularOffset(index,active,length),distance=Math.abs(offset),visible=distance<=3;
-      const old=Number(card.dataset.offset);
-      card.dataset.jump=String(!Number.isFinite(old)||Math.abs(old-offset)>1);
-      card.dataset.offset=String(offset);card.dataset.distance=String(distance);
-      card.style.setProperty('--x',`${Math.sign(offset)*(positions[distance]||0)}px`);
-      card.style.setProperty('--scale',scales[distance]||.4);card.style.setProperty('--abs',distance);
-      card.dataset.visible=String(visible);card.dataset.active=String(offset===0);
-      card.setAttribute('aria-hidden',String(!visible));card.setAttribute('aria-pressed',String(offset===0));card.tabIndex=visible?0:-1;
-      if(visible&&!$('img',card))$('.flow-image',card).innerHTML=photo(state.deck[index].cover,'',true,'flow');
-    });
+
+function markCurrent() {
+  $$('#project-grid .project-tile').forEach(tile => {
+    const on = state.view === 'slideshow' && tile.dataset.id === state.active;
+    if (on) tile.setAttribute('aria-current', 'page'); else tile.removeAttribute('aria-current');
   });
 }
-function updateThumbs() {
-  const slider=$('[data-slider="gallery"]',view);if(!slider)return;
-  const buttons=$$('.slide-thumb',slider),active=slideIndex('gallery');
-  buttons.forEach((button,index)=>{
-    const offset=circularOffset(index,active,buttons.length),previous=Number(button.dataset.offset);
-    button.dataset.jump=String(Number.isFinite(previous)&&Math.abs(previous-offset)>1);
-    button.dataset.offset=String(offset);button.style.setProperty('--offset',offset);
-    button.style.setProperty('--abs',Math.abs(offset));
-    button.setAttribute('aria-pressed',String(index===active));
+
+/* ------------------------------------------------------------------ project */
+
+function coverflowMarkup() {
+  return `<div class="coverflow" tabindex="0" role="region" aria-roledescription="carosello" aria-label="Seleziona progetto">
+    ${state.deck.map((project, index) => `<button class="flow-card" type="button" data-index="${index}" data-id="${project.id}" aria-label="${escapeHTML(projectName(project))}" data-vfx="card" data-vfx-transform data-vfx-clip=".coverflow" data-vfx-focus data-vfx-colour data-vfx-own-colour data-vfx-photo=".flow-image img"><span class="flow-face"><span class="flow-image">${photo(project.cover, { role: 'flow', lazy: true, eager: project.id === state.active })}</span></span></button>`).join('')}
+  </div>`;
+}
+
+function buildSelector() {
+  coverflow?.destroy();
+  $('#project-selector').innerHTML = coverflowMarkup();
+  const active = Math.max(0, state.deck.findIndex(project => project.id === state.active));
+  coverflow = new Coverflow($('.coverflow', view), {
+    active,
+    onSelect: index => showProject(state.deck[index].id),
+    onOpen: () => goTo('project-gallery'),
+    onRender: () => vfx?.motion(),
+    hydrate: card => $$('img[data-src]', card).forEach(hydrate),
   });
 }
-function updateProcess() {
-  const cards=$$('.process-card',view),active=slideIndex('process');
-  cards.forEach((card,index)=>{
-    const offset=circularOffset(index,active,cards.length),visible=Math.abs(offset)<=1;
-    const previous=Number(card.style.getPropertyValue('--offset'));
-    card.dataset.jump=String(Math.abs(previous-offset)>1);
-    card.style.setProperty('--offset',offset);card.style.setProperty('--abs',Math.abs(offset));
-    card.dataset.active=String(offset===0);card.dataset.visible=String(visible);card.inert=!visible;
-    if(visible)card.removeAttribute('aria-hidden');else card.setAttribute('aria-hidden','true');
-    $('.process-content',card).setAttribute('aria-hidden',String(offset!==0));
-    $('.process-hit',card).hidden=offset===0;
-  });
-}
-const slideIndex=id=>state.slides.get(`${state.active}/${id}`)||0;
+
+const galleryIndex = () => state.gallery.get(state.active) || 0;
+
 function projectContent() {
-  const project=current();
-  $('#selected-heading').innerHTML=`<h1 class="project-title" id="selected-title" tabindex="-1"><span>${escapeHTML(project.title)}</span></h1>${project.variant?`<p class="project-variant">${escapeHTML(project.variant)}</p>`:''}`;
-  $('#project-content').innerHTML=detailMarkup(project,slideIndex('gallery'),slideIndex('process'));
-  const stops=[['project-overview','Gallery'],['project-experience','Experience'],['project-vision','Vision'],['project-process','Process'],['project-finish','Altri progetti']];
-  $('#cue-stops').innerHTML=stops.map(([id,title])=>`<button class="cue-stop" data-action="jump" data-target="${id}" aria-label="Vai a ${title}"></button>`).join('');
-  fitTitle();updateCoverflow();updateThumbs();observeImages(view);measureProgress();scheduleProgress();
-  document.title=`${projectName(project)} — Memento Portfolio`;
+  const project = current();
+  $('#selected-heading').innerHTML = `<h1 class="project-title" id="selected-title" tabindex="-1" data-vfx="title" aria-label="${escapeHTML(projectName(project))}">${escapeHTML(project.title)}</h1>${project.variant ? `<p class="project-variant">${escapeHTML(project.variant)}</p>` : ''}`;
+  player.detach();
+  unobserveImages($('#project-content'));
+  $('#project-content').innerHTML = detailMarkup(project, galleryIndex());
+  player.attach($('#project-experience'), project);
+  fitTitle();
+  updateThumbs();
+  observeImages($('#project-content'));
+  preloadNeighbours();
+  markCurrent();
+  vfx?.scan();
+  document.title = `${projectName(project)} — Memento Portfolio`;
 }
-function fitTitle() {fitProjectTitle($('#selected-title'),current()?.title);}
+
+function fitTitle() {
+  const title = $('#selected-title');
+  if (!title) return;
+  fitProjectTitle(title, current()?.title);
+  // START V24: only this title is painted again
+  vfx?.invalidate(title);
+}
+
 function renderProject(id) {
-  const project=byId(id);if(!project)return showCatalogue();
-  state.active=project.id;state.view='slideshow';
-  if(!state.deck.some(item=>item.id===project.id))state.deck=[...state.projects];
-  $('#catalogue').hidden=true;view.hidden=false;$('#scroll-cue').hidden=false;
-  document.body.dataset.view='slideshow';
-  unobserveImages(view);
-  view.innerHTML=`<header class="project-station" id="project-station">${coverflowMarkup('Seleziona progetto')}<div class="project-title-band content-width" id="selected-heading"></div></header><div id="project-content"></div><section class="project-finish" id="project-finish" aria-label="Seleziona un altro progetto">${coverflowMarkup('Altri progetti')}</section>`;
-  projectContent();viewport.scrollTo({top:0,behavior:'instant'});viewport.focus({preventScroll:true});
-  observer?.disconnect();observer=new ResizeObserver(()=>{fitTitle();updateCoverflow();measureProgress();scheduleProgress();});observer.observe(viewport);
+  const project = byId(id);
+  if (!project) return showCatalogue();
+  state.active = project.id; state.view = 'slideshow';
+  if (!state.deck.some(item => item.id === project.id)) state.deck = [...state.projects];
+  catalogue.hidden = true; view.hidden = false;
+  document.body.dataset.view = 'slideshow';
+  view.innerHTML = `<header class="project-station" id="project-station">
+      <div class="selector-band" id="project-selector"></div>
+      <div class="project-title-band content-width" id="selected-heading"></div>
+    </header>
+    <div id="project-content"></div>
+    <section class="project-archive" id="project-archive" aria-labelledby="archive-title">
+      <div class="catalogue-frame">
+        <header class="catalogue-heading"><h2 id="archive-title" class="gradient-text" data-vfx="title">Archivio.</h2><div class="filters-slot" id="archive-filters"></div></header>
+        <div id="archive-grid"></div>
+      </div>
+    </section>`;
+  placeCatalogue('archive');
+  buildSelector();
+  projectContent();
+  window.scrollTo({ top: 0, behavior: 'instant' });
+  $('#selected-title')?.focus({ preventScroll: true });
+  headingObserver?.disconnect();
+  headingObserver = new ResizeObserver(() => { fitTitle(); updateThumbs(); });
+  headingObserver.observe($('#selected-heading'));
   announce(projectName(project));
 }
-function selectProject(id) {
-  if(!byId(id))return;
-  if(state.active===id){goTo('project-overview');return;}
-  const fromSelector=!!document.activeElement?.closest('.selector-band');
-  state.active=id;projectContent();history.replaceState(history.state,'',`#slideshow/${id}`);
-  viewport.scrollTo({top:0,behavior:'instant'});
-  if(fromSelector)$(`#project-station .flow-card[data-id="${id}"]`)?.focus({preventScroll:true});
+
+/** The selector settled on a project: the page below follows at once. */
+function showProject(id) {
+  if (!byId(id) || id === state.active) return;
+  state.active = id;
+  projectContent();
+  history.replaceState(history.state, '', `#slideshow/${id}`);
   announce(projectName(current()));
 }
-function stepProject(direction) {
-  const active=state.deck.findIndex(project=>project.id===state.active);
-  selectProject(state.deck[wrapIndex(active+direction,state.deck.length)].id);
-}
-function openProject(id) {
-  state.catalogScroll=viewport.scrollTop;state.catalogFocus=id;state.deck=filterProjects(state.projects,state.domain);
-  history.pushState({fromCatalog:true},'',`#slideshow/${id}`);renderProject(id);
-}
-function showCatalogue() {
-  observer?.disconnect();state.view='catalogo';unobserveImages(view);view.replaceChildren();progressStops=[];
-  view.hidden=true;$('#catalogue').hidden=false;$('#scroll-cue').hidden=true;
-  document.body.dataset.view='catalogo';document.title='Portfolio — Memento';
-  viewport.scrollTo({top:state.catalogScroll,behavior:'instant'});observeImages($('#project-grid'));
-  if(state.catalogFocus)$(`#tile-${state.catalogFocus}`)?.focus({preventScroll:true});
-}
-function closeProject() {
-  if(history.state?.fromCatalog)history.back();
-  else{history.replaceState(null,'','#catalogo');showCatalogue();}
-}
-function route() {
-  const [name,id]=location.hash.slice(1).split('/');
-  if(['slideshow','progetto'].includes(name)&&byId(id)){
-    const project=byId(id);history.replaceState(history.state,'',`#slideshow/${project.id}`);renderProject(project.id);
-  }else showCatalogue();
-}
-function positionFor(element){return Math.max(0,element.getBoundingClientRect().top-viewport.getBoundingClientRect().top+viewport.scrollTop-80);}
-function goTo(id){const element=document.getElementById(id);if(element)viewport.scrollTo({top:positionFor(element),behavior:scrollBehavior()});}
-function goStart(){viewport.scrollTo({top:0,behavior:scrollBehavior()});$('#project-station .coverflow')?.focus({preventScroll:true});}
-function nextCheckpoint(){const next=progressStops.find(stop=>stop.position>viewport.scrollTop+60);if(next)goTo(next.id);else viewport.scrollTo({top:viewport.scrollHeight,behavior:scrollBehavior()});}
-function scheduleProgress(){if(scrollFrame)return;scrollFrame=requestAnimationFrame(()=>{scrollFrame=0;updateProgress();});}
-function measureProgress(){progressStops=$$('.cue-stop').map(button=>({button,id:button.dataset.target,element:document.getElementById(button.dataset.target)})).filter(stop=>stop.element).map(stop=>({...stop,position:positionFor(stop.element)}));}
-function updateProgress(){
-  if(state.view!=='slideshow')return;
-  const max=Math.max(1,viewport.scrollHeight-viewport.clientHeight),progress=Math.min(1,viewport.scrollTop/max);
-  const range=$('#project-progress');range.value=Math.round(progress*1000);range.setAttribute('aria-valuetext',`${Math.round(progress*100)}%`);
-  $('#scroll-cue').style.setProperty('--progress',progress);
-  $('[data-action="checkpoint-start"]').disabled=viewport.scrollTop<2;
-  $('[data-action="checkpoint-next"]').disabled=viewport.scrollTop>=max-2;
-  let active='project-overview';progressStops.forEach(stop=>{if(stop.position<=viewport.scrollTop+8)active=stop.id;});
-  progressStops.forEach(({button,id,position})=>{button.style.setProperty('--stop',Math.min(.97,position/max));button.setAttribute('aria-current',String(id===active));});
-}
-function changeSlide(id,index){
-  if(!['gallery','process'].includes(id))return;
-  const detail=detailFor(current()),items=detail[id],selected=wrapIndex(index,items.length);
-  const slider=$(`[data-slider="${id}"]`,view);if(!slider)return;
-  const focused=slider.contains(document.activeElement);
-  state.slides.set(`${state.active}/${id}`,selected);
-  if(id==='gallery'){$('.slider-stage',slider).innerHTML=galleryStage(items[selected]);updateThumbs();}
-  else {updateProcess();if(focused)slider.focus({preventScroll:true});}
-  announce(`${id==='gallery'?'Contenuto':'Step'} ${selected+1} di ${items.length}`);
-}
-const stepSlide=(id,direction)=>changeSlide(id,slideIndex(id)+direction);
 
-document.addEventListener('click',event=>{
-  const button=event.target.closest('[data-action]');if(!button||button.disabled)return;
-  if(button.tagName==='A'&&(event.metaKey||event.ctrlKey||event.shiftKey||event.altKey))return;
+/** A tile of the archive: back to the top, the selector follows (with the archive's filter as its deck). */
+function openFromArchive(id) {
+  const deck = filterProjects(state.projects, state.domain);
+  window.scrollTo({ top: 0, behavior: 'instant' });
+  const same = deck.length === state.deck.length && deck.every((project, i) => project.id === state.deck[i].id);
+  if (id === state.active && same) { $('#selected-title')?.focus({ preventScroll: true }); return; }
+  if (!same) {
+    state.deck = deck.some(project => project.id === id) ? deck : [...state.projects];
+    state.active = id;
+    buildSelector();
+    projectContent();
+    history.replaceState(history.state, '', `#slideshow/${id}`);
+    announce(projectName(current()));
+  } else coverflow.select(state.deck.findIndex(project => project.id === id));
+  $('#selected-title')?.focus({ preventScroll: true });
+}
+
+function openProject(id) {
+  if (state.view === 'slideshow') { openFromArchive(id); return; }
+  state.catalogScroll = window.scrollY; state.catalogFocus = id; state.deck = filterProjects(state.projects, state.domain);
+  history.pushState({ fromCatalog: true }, '', `#slideshow/${id}`);
+  renderProject(id);
+}
+
+function showCatalogue() {
+  headingObserver?.disconnect();
+  coverflow?.destroy(); coverflow = null;
+  player.detach();
+  placeCatalogue('home');
+  state.view = 'catalogo';
+  unobserveImages(view);
+  view.replaceChildren();
+  view.hidden = true; catalogue.hidden = false;
+  document.body.dataset.view = 'catalogo';
+  document.title = 'Portfolio — Memento';
+  markCurrent();
+  vfx?.scan();
+  window.scrollTo({ top: state.catalogScroll, behavior: 'instant' });
+  if (state.catalogFocus) $(`#tile-${state.catalogFocus}`)?.focus({ preventScroll: true });
+}
+
+function closeProject() {
+  if (history.state?.fromCatalog) history.back();
+  else { history.replaceState(null, '', '#catalogo'); showCatalogue(); }
+}
+
+function route() {
+  const [name, id] = location.hash.slice(1).split('/');
+  if (['slideshow', 'progetto'].includes(name) && byId(id)) {
+    const project = byId(id);
+    history.replaceState(history.state, '', `#slideshow/${project.id}`);
+    if (state.view === 'slideshow' && view.querySelector('.coverflow')) {
+      const index = state.deck.findIndex(item => item.id === project.id);
+      if (index >= 0) { coverflow.select(index); return; }
+    }
+    renderProject(project.id);
+  } else if (state.view !== 'catalogo' || catalogue.hidden) showCatalogue();
+}
+
+function goTo(id) { document.getElementById(id)?.scrollIntoView({ behavior: scrollBehavior(), block: 'start' }); }
+
+/* ------------------------------------------------------------------ gallery */
+
+function updateThumbs() {
+  const thumbs = $$('.gallery-thumb', view), active = galleryIndex(), n = thumbs.length;
+  thumbs.forEach((button, index) => {
+    let offset = wrapIndex(index - active, n);
+    if (offset > n / 2) offset -= n;
+    const previous = Number(button.dataset.offset);
+    button.dataset.jump = String(Number.isFinite(previous) && Math.abs(previous - offset) > 1);
+    button.dataset.offset = String(offset);
+    button.style.setProperty('--offset', offset);
+    button.style.setProperty('--abs', Math.abs(offset));
+    button.setAttribute('aria-pressed', String(index === active));
+    button.tabIndex = -1;
+  });
+  // the edge fade only when the strip cannot show every thumbnail
+  const strip = $('.gallery-thumbs', view);
+  if (strip && n) {
+    const step = thumbs[0].offsetWidth + (parseFloat(getComputedStyle(strip).getPropertyValue('--thumb-gap')) || 10);
+    strip.dataset.overflow = String(n * step > strip.clientWidth + 1);
+  }
+}
+
+function preloadNeighbours() {
+  const items = galleryFor(current()), i = galleryIndex();
+  if (items.length < 2 || saveData) return;
+  preload(items[wrapIndex(i + 1, items.length)].src);
+  preload(items[wrapIndex(i - 1, items.length)].src);
+}
+
+function changeGallery(index) {
+  const project = current(), items = galleryFor(project);
+  if (items.length < 2) return;
+  const selected = wrapIndex(index, items.length);
+  if (selected === galleryIndex()) return;
+  state.gallery.set(state.active, selected);
+  const image = $('.gallery-image', view), item = items[selected];
+  // one element: the engine follows its 'load' and swaps the texture when the new bitmap is ready
+  setPhoto(image, item.src, { alt: item.alt || projectName(project), role: 'stage' });
+  updateThumbs();
+  preloadNeighbours();
+  announce(`Immagine ${selected + 1} di ${items.length}`);
+}
+const stepGallery = direction => changeGallery(galleryIndex() + direction);
+
+/* ------------------------------------------------------------------ input */
+
+document.addEventListener('click', event => {
+  const button = event.target.closest('[data-action]');
+  if (!button || button.disabled) return;
+  if (button.tagName === 'A' && (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey)) return;
   event.preventDefault();
-  switch(button.dataset.action){
-    case 'filter':state.domain=button.dataset.domain;renderCatalogue();viewport.scrollTo({top:0,behavior:'instant'});break;
-    case 'reset-filters':state.domain='all';renderCatalogue();break;
-    case 'open-project':openProject(button.dataset.id);break;
-    case 'close-project':closeProject();break;
-    case 'select-project':selectProject(button.dataset.id);break;
-    case 'jump':goTo(button.dataset.target);break;
-    case 'checkpoint-start':goStart();break;
-    case 'checkpoint-next':nextCheckpoint();break;
-    case 'select-slide':changeSlide(button.dataset.sliderId,Number(button.dataset.index));break;
-    case 'reload':location.reload();break;
+  switch (button.dataset.action) {
+    case 'filter': {
+      state.domain = button.dataset.domain;
+      renderCatalogue();
+      if (state.view === 'catalogo') window.scrollTo({ top: 0, behavior: 'instant' });
+      break;
+    }
+    case 'reset-filters': state.domain = 'all'; renderCatalogue(); break;
+    case 'open-project': openProject(button.dataset.id); break;
+    case 'select-slide': changeGallery(Number(button.dataset.index)); break;
+    case 'gallery-step': stepGallery(Number(button.dataset.step)); break;
+    case 'experience-start': player.start(); break;
+    case 'experience-expand': player.expand(); break;
+    case 'experience-collapse': player.collapse(); break;
+    case 'reload': location.reload(); break;
   }
 });
-document.addEventListener('keydown',event=>{
-  if(event.defaultPrevented||event.target.closest('input,textarea,select,memento-nav')||state.view!=='slideshow')return;
-  if(event.key==='Escape'){closeProject();return;}
-  const slider=event.target.closest('[data-slider]'),selector=event.target.closest('.selector-band');
-  if(['ArrowLeft','ArrowRight','Home','End'].includes(event.key)&&(slider||selector)){
+
+document.addEventListener('keydown', event => {
+  if (event.defaultPrevented || event.target.closest?.('input,textarea,select,memento-nav')) return;
+  if (event.key === 'Escape') {
+    if (player.expanded) { event.preventDefault(); player.collapse(); return; }
+    if (state.view === 'slideshow') closeProject();
+    return;
+  }
+  if (state.view !== 'slideshow') return;
+  const gallery = event.target.closest?.('[data-slider="gallery"]');
+  if (gallery && ['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) {
     event.preventDefault();
-    const direction=event.key==='ArrowRight'?1:-1;
-    if(slider){if(event.key==='Home'||event.key==='End')changeSlide(slider.dataset.slider,event.key==='Home'?0:detailFor(current())[slider.dataset.slider].length-1);else stepSlide(slider.dataset.slider,direction);}
-    else if(event.key==='Home'||event.key==='End')selectProject(state.deck[event.key==='Home'?0:state.deck.length-1].id);
-    else stepProject(direction);
-  }else if(event.key==='Home'){event.preventDefault();goStart();}
-  else if(event.key==='End'){event.preventDefault();goTo('project-finish');}
-});
-$('#project-progress').addEventListener('input',event=>viewport.scrollTo({top:(viewport.scrollHeight-viewport.clientHeight)*Number(event.target.value)/1000,behavior:'instant'}));
-let cueTimer;
-function activateCue(){
-  const cue=$('#scroll-cue');cue.classList.add('is-active');clearTimeout(cueTimer);
-  cueTimer=setTimeout(()=>cue.classList.remove('is-active'),850);
-}
-viewport.addEventListener('scroll',()=>{scheduleProgress();if(state.view==='slideshow')activateCue();},{passive:true});
-$('#scroll-cue').addEventListener('pointerdown',activateCue,{passive:true});
-$('#project-progress').addEventListener('input',activateCue);
-window.addEventListener('hashchange',route);
-installSwipe(view,{
-  canSwipe:surface=>surface.classList.contains('coverflow')?state.deck.length>1:!!surface.closest('[data-slider]'),
-  onSwipe:(surface,direction)=>surface.classList.contains('coverflow')?stepProject(direction):stepSlide(surface.closest('[data-slider]').dataset.slider,direction)
+    if (event.key === 'Home') changeGallery(0);
+    else if (event.key === 'End') changeGallery(galleryFor(current()).length - 1);
+    else stepGallery(event.key === 'ArrowRight' ? 1 : -1);
+  }
 });
 
-// One deliberate horizontal trackpad gesture advances one item. Vertical
-// wheel input is untouched and remains available to the existing host bridge.
-let wheelTime=-Infinity,wheelSign=0;
-view.addEventListener('wheel',event=>{
-  const surface=event.target.closest('.coverflow,.slider-stage,.slide-thumbs');
-  if(!surface||event.ctrlKey||Math.abs(event.deltaX)<=Math.abs(event.deltaY)*1.3||Math.abs(event.deltaX)<4)return;
-  event.preventDefault();const now=performance.now(),sign=Math.sign(event.deltaX),fresh=now-wheelTime>220||sign!==wheelSign;
-  wheelTime=now;wheelSign=sign;if(!fresh)return;
-  if(surface.classList.contains('coverflow'))stepProject(sign);else stepSlide(surface.closest('[data-slider]').dataset.slider,sign);
-},{passive:false});
-const narrowScreen=matchMedia('(max-width:767px)');
-function syncProgressOrientation(){$('#project-progress').setAttribute('aria-orientation','vertical');}
-narrowScreen.addEventListener('change',syncProgressOrientation);syncProgressOrientation();
+window.addEventListener('hashchange', route);
+installSwipe(view, { selector: '.gallery-stage,.gallery-thumbs', canSwipe: () => galleryFor(current()).length > 1, onSwipe: (_surface, direction) => stepGallery(direction) });
 
-async function init(){
-  try{
-    const [response,images]=await Promise.all([fetch('projects.json'),fetch('images.json').then(response=>response.ok?response.json():null).catch(()=>null)]);
-    if(!response.ok)throw new Error('Portfolio unavailable');if(images)imageManifest=images;
-    state.projects=validateProjects(await response.json());state.deck=[...state.projects];
-    renderFilters();renderCatalogue();route();
-    document.fonts.ready.then(()=>{fitTitle();measureProgress();scheduleProgress();});
-  }catch(error){$('#project-grid').innerHTML='<div class="empty-state">Portfolio non disponibile. <button data-action="reload">Riprova</button></div>';console.error(error);}
+// One deliberate horizontal trackpad gesture advances one image; vertical wheel input stays native.
+let wheelTime = -Infinity, wheelSign = 0;
+view.addEventListener('wheel', event => {
+  const surface = event.target.closest('.gallery-stage,.gallery-thumbs');
+  if (!surface || event.ctrlKey || Math.abs(event.deltaX) <= Math.abs(event.deltaY) * 1.3 || Math.abs(event.deltaX) < 4) return;
+  event.preventDefault();
+  const now = performance.now(), sign = Math.sign(event.deltaX), fresh = now - wheelTime > 220 || sign !== wheelSign;
+  wheelTime = now; wheelSign = sign;
+  if (fresh) stepGallery(sign);
+}, { passive: false });
+
+/* ------------------------------------------------------------------ start */
+
+async function init() {
+  try {
+    const [response, images] = await Promise.all([
+      fetch('projects.json'),
+      fetch('images.json').then(r => (r.ok ? r.json() : null)).catch(() => null),
+    ]);
+    if (!response.ok) throw new Error('Portfolio unavailable');
+    setManifest(images);
+    state.projects = validateProjects(await response.json());
+    state.deck = [...state.projects];
+    renderFilters();
+    renderCatalogue({ quiet: true });
+    route();
+    document.fonts?.ready.then(() => fitTitle());
+  } catch (error) {
+    $('#project-grid').innerHTML = '<div class="empty-state">Portfolio non disponibile. <button type="button" data-action="reload">Riprova</button></div>';
+    console.error(error);
+  }
+  import('./vfx/memento-vfx.js')
+    .then(({ mountVfx, mountBackground }) => {
+      vfx = mountVfx();
+      // START V27 background (Ghost Fibers), unless a compatible host owns the surface
+      if (root.dataset.mementoSurface !== 'transparent') mountBackground?.();
+    })
+    .catch(() => { root.classList.remove('vfx-boot', 'vfx-live'); root.classList.add('vfx-off'); });
 }
 init();
-
