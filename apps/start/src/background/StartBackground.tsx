@@ -11,7 +11,7 @@ export function StartBackground() {
   const [generation, setGeneration] = useState(0);
   const [ready, setReady] = useState(false);
   useEffect(() => {
-    if (matchMedia('(forced-colors: active)').matches) return;
+    if (document.documentElement.hasAttribute('data-memento-native') || matchMedia('(forced-colors: active)').matches) return;
     const restore = () => setGeneration(value => value + 1);
     document.addEventListener('memento:background-restore', restore);
     const id = window.setTimeout(() => setReady(true), 350);

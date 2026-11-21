@@ -14,6 +14,13 @@ export function VfxProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     let dispose = () => {};
     let cancelled = false;
+    if (document.documentElement.hasAttribute('data-memento-native')) {
+      const shared = '/memento-ui/effects.mjs';
+      import(/* @vite-ignore */ shared).then(module => {
+        if (!cancelled && canvas.current) dispose = module.bindSurfaceCanvas(canvas.current,registry).destroy;
+      }).catch(() => document.documentElement.classList.remove('vfx-boot','vfx-live'));
+      return () => { cancelled = true; dispose(); };
+    }
     const stopTouch = installTouchFeedback(touchField);
     import('./engine').then(({ VfxEngine }) => {
       if (cancelled || !canvas.current || matchMedia('(forced-colors: active)').matches) return;
