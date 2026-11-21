@@ -10,8 +10,9 @@
     "test": "node --test tests/*.test.mjs"
   },
   "dependencies": {
-    "three": "0.187.0",
-    "delaunator": "5.1.0"
+    "delaunator": "5.1.0",
+    "parse5": "^7.3.0",
+    "three": "0.187.0"
   },
   "devDependencies": {
     "vite": "8.3.6"

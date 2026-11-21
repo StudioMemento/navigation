@@ -1,0 +1,33 @@
+@view-transition { navigation: auto; }
+:root {
+  --memento-ease: cubic-bezier(.22,.68,.18,1);
+  --memento-transition: 300ms;
+  --memento-accent: #ff7950;
+  --memento-safe-top: max(76px,calc(env(safe-area-inset-top,0px) + 60px));
+  --memento-safe-bottom: max(96px,calc(env(safe-area-inset-bottom,0px) + 80px));
+  background-color: #000;
+}
+html[data-memento-native] {scroll-padding-top:var(--memento-safe-top);scroll-padding-bottom:var(--memento-safe-bottom)}
+html[data-memento-native] [data-memento-content-insets] {padding-top:var(--memento-safe-top);padding-bottom:var(--memento-safe-bottom)}
+::view-transition-group(root) {animation-duration:var(--memento-transition);animation-timing-function:var(--memento-ease)}
+::view-transition-old(root) {animation:memento-out 150ms ease-in both;mix-blend-mode:normal}
+::view-transition-new(root) {animation:memento-in 220ms var(--memento-ease) 80ms both;mix-blend-mode:normal}
+@keyframes memento-out {to {opacity:0}}
+@keyframes memento-in {from {opacity:0;transform:translateY(4px)} to {opacity:1;transform:none}}
+html[data-memento-native] memento-nav:not(:defined){visibility:hidden}
+html[data-memento-modal] memento-nav {visibility:hidden;pointer-events:none}
+#site-atmosphere {position:fixed;inset:0;height:100lvh;z-index:-1;pointer-events:none;overflow:hidden}
+#site-atmosphere .ghost-fibers-canvas {display:block;width:100%;height:100%}
+html[data-memento-native=start] body {isolation:isolate}
+@media (prefers-reduced-motion: reduce), (forced-colors: active) {
+  ::view-transition-group(*),::view-transition-old(*),::view-transition-new(*) {animation:none!important}
+  #site-atmosphere {display:none}
+}
+@media print {#site-atmosphere,memento-nav {display:none}}
+
+.missing-page {display:none}
+html[data-status="404"] .missing-page {display:block;position:fixed;inset:auto 0 16%;z-index:10;text-align:center;color:#fff}
+.missing-page a {color:var(--memento-accent)}
+
+.memento-static-nav {display:flex;flex-wrap:wrap;justify-content:center;gap:1em;padding:1.5em;color:#eee;background:#000}
+.memento-static-nav a {color:inherit}

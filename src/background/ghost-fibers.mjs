@@ -744,7 +744,7 @@ export function mountGhostFibers(container, props = {}) {
 	let renderedAt = 0;
 	let adaptiveScale = 1;
 	let budgetFrames = 0, slowFrames = 0;
-	const hostActive = () => window.__TIDE_VISIBLE__ !== false;
+	const hostActive = () => window.__TIDE_VISIBLE__ !== false && !document.documentElement.hasAttribute('data-memento-modal');
 	const toRgb = (value, fallback) => {
 		if (!probeContext || !value) return fallback;
 		const css = /^[0-9a-f]{3,8}$/i.test(value) ? `#${value}` : value;
@@ -1133,6 +1133,7 @@ export function mountGhostFibers(container, props = {}) {
 	window.addEventListener("pointercancel", onPointerLeave, { passive: true });
 	window.addEventListener("blur", onPointerLeave);
 	document.addEventListener("memento:overlay-change", onVisibility);
+		document.addEventListener("memento:surface-visibility", onVisibility);
 	const resizeObserver = new ResizeObserver(resize);
 	resizeObserver.observe(container);
 	const intersection = new IntersectionObserver((entries) => {
@@ -1158,6 +1159,7 @@ export function mountGhostFibers(container, props = {}) {
 		window.removeEventListener("pointercancel", onPointerLeave);
 		window.removeEventListener("blur", onPointerLeave);
 		document.removeEventListener("memento:overlay-change", onVisibility);
+		document.removeEventListener("memento:surface-visibility", onVisibility);
 		resizeObserver.disconnect();
 		intersection.disconnect();
 		window.removeEventListener("pointermove", onPointerMove);

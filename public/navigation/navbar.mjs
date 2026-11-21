@@ -36,7 +36,7 @@ export class MementoNav extends HTMLElement {
     });
   }
   connectedCallback(){this.dataset.mementoKit=KIT_VERSION;this.update();}
-  attributeChangedCallback(){this.update();}
+  attributeChangedCallback(_name,previous,next){if(previous!==next)this.update();}
   update(){
     const active=station(this.getAttribute('active'))?.id||'memento';
     const target=this.getAttribute('target'),host=this.getAttribute('mode')==='host';
@@ -45,14 +45,18 @@ export class MementoNav extends HTMLElement {
     for(const link of this.shadowRoot.querySelectorAll('a[data-id]')){
       const route={id:link.dataset.id,view:link.dataset.view};
       // Inside the hub every link stays on the hub's own origin (local, preview, production).
-      link.href=host?new URL(routePath(route),location.origin).href:publicRouteURL(route);
-      if(link.classList.contains('mm-wordmark')){if(host&&current!=='page')link.setAttribute('aria-current','page');else link.removeAttribute('aria-current');}
-      else if(link.dataset.id===active&&current!=='world')link.setAttribute('aria-current',current==='location'?'location':'page');else link.removeAttribute('aria-current');
-      if(['_top','_self','_blank'].includes(target))link.target=target;else link.removeAttribute('target');
-      if(target==='_blank')link.rel='noopener';else link.removeAttribute('rel');
+      const path=route.view==='page'?station(route.id).path+'/':current==='page'?'/#'+station(active).slug:routePath(route);
+      const href=host?new URL(path,location.origin).href:publicRouteURL(route);
+      if(link.href!==href)link.href=href;
+      const wordmark=link.dataset.view==='world';
+      const state=wordmark?(host&&current!=='page'?'page':null):link.dataset.id===active&&current!=='world'?(current==='location'?'location':'page'):null;
+      for(const [name,value] of [['aria-current',state],['target',['_top','_self','_blank'].includes(target)?target:null],['rel',target==='_blank'?'noopener':null]]){
+        if(link.getAttribute(name)===value)continue;
+        if(value===null)link.removeAttribute(name);else link.setAttribute(name,value);
+      }
     }
   }
-  setActive(id){if(station(id))this.setAttribute('active',id);}
+  setActive(id){if(station(id)&&this.getAttribute('active')!==id)this.setAttribute('active',id);}
 }
 const registered=customElements.get('memento-nav');
 if(!registered)customElements.define('memento-nav',MementoNav);
