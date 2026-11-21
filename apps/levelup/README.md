@@ -1,3 +1,5 @@
+> **V21 (17 novembre 2026) — bridge 13.** Nucleo di navigazione condiviso con il contenitore Vercel; le aperture verso Services e Start (carosello, «Ready to start», effetto visualfx) passano da `window.MementoNavigation.navigate()` quando il contenitore c'è; `data-memento-layout=overlay` conserva gli spazi della pagina standalone; `X-Robots-Tag: noindex, indexifembedded`. Contenuti, demo, VFX e navbar 12.1.0 invariati. Vedi `docs/PROTOCOLLO.md` del workspace.
+
 # Memento LevelUp · V20 — effetti, sfondo, touch e mobile di START V27
 
 Pacchetto completo per Vercel, sulla base della V19 (contenuti, caroselli, demo, confronti, step e Ready to start invariati). Include sorgenti, asset locali, font Inter, il motore VFX e lo sfondo già compilati e la build pronta in `dist/`. Il deploy non richiede dipendenze npm né variabili d'ambiente.

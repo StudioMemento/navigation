@@ -200,6 +200,6 @@ html[data-overlay-scrollbar=true]{scrollbar-width:none}html[data-overlay-scrollb
 @media(min-width:768px) and (max-width:1023px){.vision-copy{width:53%}.vision-copy h3{font-size:clamp(25px,3.6cqw,32px)}.vision-copy p{font-size:14px}}
 
 /* Supplied navigation overlay clearance. CTA spacing is in src/ready-to-start.css. */
-html[data-memento-navigation=standalone] .opening{padding-top:max(112px,22svh,calc(env(safe-area-inset-top,0px) + 64px))}
+html:is([data-memento-navigation=standalone],[data-memento-layout=overlay]) .opening{padding-top:max(112px,22svh,calc(env(safe-area-inset-top,0px) + 64px))}
 html[data-demo-expanded=true] memento-nav{visibility:hidden}
 .skip-link{z-index:1001}

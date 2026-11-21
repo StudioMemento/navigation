@@ -27,7 +27,9 @@ export function mountStart({ destination = () => null } = {}) {
     if (box.dataset.state === 'leaving') return;
     state('leaving');
     // The click happened inside the effect: its activation reaches this frame, so _top may navigate when hosted.
-    window.open(destination() || link.href, '_top');
+    // Inside the Memento hub the hub opens Start itself, with the same context (bridge 13).
+    const url = destination() || link.href;
+    if (!window.MementoNavigation?.navigate?.(url)) window.open(url, '_top');
   }
 
   on(window, 'message', event => {

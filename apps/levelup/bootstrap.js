@@ -6,6 +6,8 @@
   root.dataset.embedded = String(embedded);
   root.dataset.mementoSurface = hosted ? 'transparent' : 'opaque';
   root.dataset.mementoInitialMode = root.dataset.mementoNavigation = hosted ? 'hosted' : 'standalone';
+  // The Memento hub draws the same navbar over a full-viewport frame: keep the standalone clearances (bridge 13).
+  if (hosted) root.dataset.mementoLayout = 'overlay';
 })();
 
 /* Shared Services V40 geometry; measured from this document's viewport. */

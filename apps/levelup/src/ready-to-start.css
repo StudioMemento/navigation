@@ -13,7 +13,7 @@
   scroll-margin-top: 0;
 }
 /* Reserve the real logo/dock clearance inside the viewport, without adding height. */
-html[data-memento-navigation=standalone] .contact-section.memento-start {
+html:is([data-memento-navigation=standalone], [data-memento-layout=overlay]) .contact-section.memento-start {
   padding-top: max(var(--start-space), calc(env(safe-area-inset-top, 0px) + 64px));
   padding-bottom: max(var(--start-space), calc(env(safe-area-inset-bottom, 0px) + 80px));
 }

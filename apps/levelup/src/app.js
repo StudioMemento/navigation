@@ -50,14 +50,16 @@ function pagination(root, items, label, select) {
   });
 }
 function mark(root,index) { [...root.children].forEach((button,i) => button.setAttribute('aria-current',String(i===index))); }
+// Inside the Memento hub, the hub opens Services (bridge 13); on its own or in a plain embed, the top window does.
+const openTop = url => { if (!window.MementoNavigation?.navigate?.(url)) window.open(url, '_top'); };
 let benefitsCarousel;
 pagination($('#benefit-dots'),benefits,item=>item.title.join(' '),index=>benefitsCarousel.select(index));
-benefitsCarousel = new Carousel($('#benefits'),{onRender:()=>vfx?.motion(),onOpen:index=>{window.open(serviceUrl(benefits[index]),'_top');},onSettle:index=>{
+benefitsCarousel = new Carousel($('#benefits'),{onRender:()=>vfx?.motion(),onOpen:index=>{openTop(serviceUrl(benefits[index]));},onSettle:index=>{
   mark($('#benefit-dots'),index); $('#announcement').textContent=benefits[index].title.join(' ');
 }});
 $('#benefits').addEventListener('keydown',event=>{
   if((event.key==='Enter'||event.key===' ') && event.target.matches('.showcase-card[data-active=true]')) {
-    event.preventDefault(); window.open(serviceUrl(benefits[benefitsCarousel.active]),'_top');
+    event.preventDefault(); openTop(serviceUrl(benefits[benefitsCarousel.active]));
   }
 });
 
