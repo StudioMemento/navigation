@@ -1,3 +1,5 @@
+> **V28 (17 novembre 2026) — bridge 13.** Nucleo di navigazione condiviso con il contenitore Vercel (bundle `navigation/start.bundle.js` rigenerato), `data-memento-layout=overlay` prima del primo paint, `X-Robots-Tag: noindex, indexifembedded`. Contenuti, contatti, VFX e navbar 12.1.0 invariati. Nel contenitore la query di contesto (`from`, `experience`, `idea`) è conservata nell'URL. `framer-start.mjs` e `FRAMER_START_FIX.html` servono solo finché Framer è online. Vedi `docs/PROTOCOLLO.md` del workspace.
+
 # Memento Start — V27
 
 Reazione touch visibile fra le tavole, edge glow collegato al reticolato e testi reattivi. Correzione dell’embed Framer per mantenere logo e navbar nella stessa viewport.
