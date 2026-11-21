@@ -93,9 +93,18 @@ function reachDemo() {
 portfolio=new Carousel($('#portfolio'),{onRender:()=>vfx?.motion(),onSelect:selectExperience,onCommit:commitSelection,onOpen:reachDemo});
 portfolio.current=portfolio.target=portfolio.active=selected;
 portfolio.render(); updateSelection(selected,false);
-// Food starts immediately, so it can finish loading while the opening is explored.
-// Keep the same iframe when the carousel settles or the player expands.
-player.load(selectedExperience());
+// Keep the initial hero light. Explicit selection still starts the selected demo immediately.
+if ('IntersectionObserver' in window) {
+  const nearDemo=new IntersectionObserver(entries=>{
+    if(!entries.some(entry=>entry.isIntersecting))return;
+    nearDemo.disconnect();
+    player.load(selectedExperience());
+  },{rootMargin:'280px'});
+  nearDemo.observe(panel);
+  window.addEventListener('pagehide',event=>{if(!event.persisted)nearDemo.disconnect();});
+} else {
+  player.load(selectedExperience());
+}
 $('#portfolio').addEventListener('keydown',event=>{
   if((event.key==='Enter'||event.key===' ') && event.target.matches('.showcase-card[data-active=true]')) {
     event.preventDefault(); reachDemo();

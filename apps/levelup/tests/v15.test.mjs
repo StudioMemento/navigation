@@ -39,9 +39,12 @@ test('The standalone navigation initializes once as LevelUp and every module and
   assert.match(styles,/html\[data-demo-expanded=true\] memento-nav\{visibility:hidden\}/);
 });
 
-test('The initial player markup and synchronous startup agree on Food', async () => {
+test('Food keeps its poster and mounts its first demo near the panel', async () => {
   const html=await readFile('index.html','utf8'),app=await readFile('src/app.js','utf8');
   assert.match(html,/id="demo-poster" src="assets\/heroes\/food.webp"/);
   assert.match(html,/id="fallback-link"[^>]+href="https:\/\/mementofood.vercel.app\/"/);
-  assert.match(app,/portfolio\.render\(\); updateSelection\(selected,false\);[\s\S]*?\nplayer\.load\(selectedExperience\(\)\);/);
+  const startup=app.slice(app.indexOf('portfolio.render(); updateSelection(selected,false);'),app.indexOf("$('#portfolio').addEventListener('keydown'"));
+  assert.match(startup,/new IntersectionObserver\(entries=>/);
+  assert.match(startup,/if\(!entries\.some\(entry=>entry\.isIntersecting\)\)return;[\s\S]*?player\.load\(selectedExperience\(\)\)/);
+  assert.match(startup,/nearDemo\.observe\(panel\)/);
 });
