@@ -1,3 +1,5 @@
+> **V45 (17 novembre 2026) — bridge 13.** Nucleo di navigazione condiviso con il contenitore Vercel (`navigation/core.mjs`, `navigation/child.mjs`, generati da `packages/navigation-kit`), `modulepreload` dei moduli del kit, `X-Robots-Tag: noindex, indexifembedded`. Contenuti, VFX, navbar 12.0.0 e grafica invariati. Nel contenitore (`?mementoEmbed=1` + `INIT`) la navbar è del contenitore e la CTA Start resta nel sito; da sola o in Framer funziona come la V44.1. Vedi `docs/PROTOCOLLO.md` del workspace.
+
 # Memento Servizi — V44.1 · Effetti, sfondo, touch e mobile di START V27
 
 **V44.1** corregge gli shader che su Windows (Direct3D 11) mandavano in crash la GPU: lampi, schermo bianco, nessun effetto. Dettagli in `VFX_V44.md`.

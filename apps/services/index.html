@@ -27,6 +27,16 @@
       fetchpriority="high"
     />
     <link rel="stylesheet" href="styles.css" />
+    <!-- Navigation bridge (kit 12.0 modules): fetched in parallel, so the hub handshake does not wait for the import chain. -->
+    <link rel="modulepreload" href="navigation/child.mjs?v=12.0.0" />
+    <link rel="modulepreload" href="navigation/core.mjs?v=12.0.0" />
+    <link rel="modulepreload" href="navigation/navbar.mjs?v=12.0.0" />
+    <link rel="modulepreload" href="navigation/styles.mjs?v=12.0.0" />
+    <link rel="modulepreload" href="navigation/blur.mjs?v=12.0.0" />
+    <link rel="modulepreload" href="navigation/icons.mjs?v=12.0.0" />
+    <link rel="modulepreload" href="navigation/wordmark.mjs?v=12.0.0" />
+    <link rel="modulepreload" href="navigation/icon-assets.mjs?v=12.0.0" />
+    <link rel="modulepreload" href="navigation/memento-paths.mjs?v=12.0.0" />
     <link rel="modulepreload" href="src/content.js" />
     <link rel="modulepreload" href="src/media.js" />
     <link rel="modulepreload" href="src/render.js" />
