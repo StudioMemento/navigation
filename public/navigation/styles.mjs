@@ -37,14 +37,14 @@ export const overlayCSS = `
   background:radial-gradient(ellipse at 50% 70%,#ffb86e90 0%,#ff795050 32%,transparent 75%); filter:blur(5px); }
 .mm-symbol { position:relative; z-index:1; display:block; width:34px; height:34px; overflow:hidden; opacity:.9; filter:grayscale(1) brightness(calc(.98 * var(--mm-icon-gain,1))); transition:filter 80ms ease-out,opacity 80ms ease-out; }
 .mm-memento-light { opacity:var(--mm-memento-light,0); transition:opacity 80ms ease-out; }
-.mm-link[aria-current="page"] { --mm-memento-light:1; }
-.mm-link[aria-current="page"] .mm-tile::before { opacity:1; }
-.mm-link[aria-current="page"] .mm-tile::after { opacity:1; }
-.mm-link[aria-current="page"] .mm-symbol { opacity:1; filter:grayscale(0) saturate(1.12) brightness(calc(1.15 * var(--mm-icon-gain,1))); }
+.mm-link[aria-current] { --mm-memento-light:1; }
+.mm-link[aria-current] .mm-tile::before { opacity:1; }
+.mm-link[aria-current] .mm-tile::after { opacity:1; }
+.mm-link[aria-current] .mm-symbol { opacity:1; filter:grayscale(0) saturate(1.12) brightness(calc(1.15 * var(--mm-icon-gain,1))); }
 .mm-wordmark:focus-visible,.mm-link:focus-visible { outline:1px solid #ffffffb3; outline-offset:3px; border-radius:10px; }
 @media (hover:hover) and (pointer:fine) {
-  .mm-link:not([aria-current="page"]):hover .mm-symbol { opacity:1; filter:grayscale(.75) brightness(calc(1.04 * var(--mm-icon-gain,1))); }
-  .mm-link:not([aria-current="page"]):hover { --mm-memento-light:1; }
+  .mm-link:not([aria-current]):hover .mm-symbol { opacity:1; filter:grayscale(.75) brightness(calc(1.04 * var(--mm-icon-gain,1))); }
+  .mm-link:not([aria-current]):hover { --mm-memento-light:1; }
 }
 .mm-link:active .mm-tile { transform:scale(.97); }
 @media (prefers-reduced-motion:reduce) {
@@ -60,7 +60,7 @@ export const overlayCSS = `
   .mm-edge { display:none; }
   .mm-symbol { forced-color-adjust:none; }
   .mm-tile { border:1px solid ButtonText; }
-  .mm-link[aria-current="page"] { outline:2px solid Highlight; }
+  .mm-link[aria-current] { outline:2px solid Highlight; }
 }
 @media print { :host { display:none !important; } }
 `;

@@ -3,3 +3,4 @@ dist/
 .sites/
 .codex/
 *.tar.gz
+.vercel/

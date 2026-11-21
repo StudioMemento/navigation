@@ -1,3 +1,23 @@
+# Memento Hub R14 — contenitore Vercel (dalla NAV R13)
+
+## Base di migrazione su Vercel
+
+Questo pacchetto è associato al progetto di prova **mementonav-migrazione-r14** del team StudioMemento. Il sito pubblico e le pagine di Framer utilizzano i loro progetti attuali. [Apri il progetto di prova su Vercel](https://vercel.com/studio-memento-s-projects/mementonav-migrazione-r14)
+
+Per la prima anteprima, una volta attiva la prova Pro o il piano Pro, estraete tutto lo ZIP, compresa la cartella nascosta `.vercel`. Aprite il terminale nella cartella che contiene `package.json`. Con la CLI Vercel autenticata nel team dello studio, eseguite:
+
+```sh
+vercel deploy --target=preview
+```
+
+La CLI legge la destinazione da `.vercel/project.json`. La configurazione locale è esclusa dai commit Git. La build usa Vite, `npm ci`, `npm run build` e la cartella di output `dist`. Il progetto e il pacchetto richiedono la major 22 di Node, a partire da 22.12.
+
+Per provare anche le quattro pagine aggiornate, aprite l’URL specifico del deployment dell’hub che termina in `-studio-memento-s-projects.vercel.app`. Assegnate le preview di pagina con `memento-src-services`, `memento-src-projects`, `memento-src-levelup` e `memento-src-start`. In assenza di questi parametri l’hub carica le versioni pubblicate delle pagine. Studio usa il deploy esistente. I sorgenti di quest’ultimo sono nel [repository Studio](https://github.com/StudioMemento/mementostudio).
+
+**R14 (17 novembre 2026).** Aperto come documento principale (mementostudio.it, mementonav.vercel.app, preview, locale) il progetto è il **contenitore del sito**: mondo 3D in `/`, sezioni in `/studio`, `/services`, `/projects`, `/levelup`, `/start` caricate dal vivo dalle loro applicazioni, una navbar, un URL e una cronologia. Codice in `src/shell/` (`shell.mjs` stato e transizioni, `frames.mjs` iframe e sessioni, `sources.mjs` app per ambiente), `src/seo.mjs` e `scripts/routes.mjs` (HTML per route, 404, sitemap, robots). Incorporato in un altro sito (la home Framer fino al cambio di dominio) si comporta come la R13 qui sotto. Il renderer (Three.js) è un chunk caricato con il mondo. Build: `npm ci && npm run build` (Vite + `scripts/routes.mjs`), test `npm test` (37). Workspace, protocollo e verifiche: `README.md` e `docs/` alla radice del workspace.
+
+---
+
 # Memento NAV R13 — VFX DNA, START V27
 
 Navigazione Vite + Three.js. La R12 ha portato gli effetti della START V23; la R13 la allinea alla START V27: sfondo Ghost Fibers, grade senza grana, tocco a catena su tab, titoli e bordi, scene a colori a riposo su telefono, ottimizzazioni mobile. Corregge inoltre gli effetti dei titoli di Projects e LevelUp, che nella R12 non si attivavano. Le cinque scene e l'ordine restano quelli della R11: Studio → Services → Projects → LevelUp → Start → Studio.

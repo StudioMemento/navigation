@@ -1,0 +1,52 @@
+/* Container layers: background (#bkg) → world (#world canvas + #hub DOM) → pages (#pages) → navbar (memento-nav, 1000)
+   → loading line and error panel. One surface has input at a time: the world in `world`, the page in `entering/reading`. */
+:root{--shell-enter:640ms;--shell-exit:520ms;--shell-ease:cubic-bezier(.22,1,.36,1)}
+#pages{position:fixed;inset:0;z-index:20;pointer-events:none;contain:strict}
+.section-frame{position:absolute;inset:0 0 auto 0;width:100%;height:var(--vh,100%);border:0;margin:0;padding:0;display:block;background:transparent;color-scheme:normal;
+ opacity:0;visibility:hidden;transform:scale(.985);transform-origin:50% 50%;pointer-events:none;
+ transition:opacity var(--shell-exit) var(--shell-ease),transform var(--shell-exit) var(--shell-ease),visibility 0s linear var(--shell-exit)}
+.section-frame:focus{outline:none}
+.section-frame[data-front=true]{z-index:2}
+.section-frame[data-shown=true]{opacity:1;visibility:visible;transform:none;transition:opacity var(--shell-enter) var(--shell-ease),transform var(--shell-enter) var(--shell-ease),visibility 0s}
+html:is([data-shell=reading],[data-shell=entering]) .section-frame[data-shown=true][data-front=true]{pointer-events:auto}
+/* waiting for the next page over the current one; leaving towards the world */
+html[data-shell=loading][data-shell-from=page] .section-frame[data-shown=true],html[data-shell=error][data-shell-from=page] .section-frame[data-shown=true]{opacity:.45;transform:scale(.992)}
+html[data-shell=exiting] .section-frame[data-shown=true]{opacity:0;transform:scale(.985);transition-duration:var(--shell-exit)}
+
+/* The world steps back while a page arrives (a short push into the active tab) and returns on the way out. */
+#world,#hub{transition:opacity var(--shell-exit) var(--shell-ease),transform var(--shell-exit) var(--shell-ease),visibility 0s}
+html:is([data-shell=entering],[data-shell=reading]) :is(#world,#hub){opacity:0;transform:scale(1.06);transition:opacity var(--shell-enter) var(--shell-ease),transform var(--shell-enter) var(--shell-ease),visibility 0s linear var(--shell-enter)}
+html[data-world=hidden] :is(#world,#hub){visibility:hidden}
+html[data-shell=error][data-shell-from=world] :is(#world,#hub){opacity:.3}
+html[data-shell=loading][data-shell-from=world] #hub .card[data-slot=active]{cursor:progress}
+
+/* A page's dialog, gallery or expanded demo covers the navbar, as the page's own top layer does when it stands alone. */
+memento-nav{transition:opacity .2s var(--shell-ease),visibility 0s}
+html[data-shell-modal=true] memento-nav{opacity:0;visibility:hidden;transition:opacity .2s var(--shell-ease),visibility 0s linear .2s}
+/* A page's dialog or expanded demo holds the shared background, blurred like the page's own background standing alone. */
+#bkg.is-held{filter:blur(18px) brightness(.7);transition:filter .35s var(--shell-ease)}
+
+.shell-status{position:fixed;top:0;left:0;right:0;height:2px;z-index:1001;pointer-events:none;overflow:hidden;opacity:0;transition:opacity .3s var(--shell-ease)}
+.shell-status[data-visible=true]{opacity:1}
+.shell-status__bar{position:absolute;top:0;bottom:0;left:-40%;width:40%;background:linear-gradient(90deg,transparent,#ff7950 40%,#ffcb72 60%,transparent);animation:shell-progress 1.25s var(--shell-ease) infinite}
+@keyframes shell-progress{to{left:100%}}
+
+.shell-error{position:fixed;left:50%;top:50%;z-index:1002;transform:translate(-50%,-50%);width:min(440px,calc(100vw - 40px));padding:28px 26px 24px;background:#000;border:1px solid #ffffff24;color:#eeefed;font-family:Inter,Arial,sans-serif;
+ clip-path:polygon(16px 0,100% 0,100% calc(100% - 16px),calc(100% - 16px) 100%,0 100%,0 16px)}
+.shell-error[hidden]{display:none}
+.shell-error h2{margin:0 0 10px;font-size:22px;font-weight:300;letter-spacing:.01em}
+.shell-error p{margin:0 0 22px;font-size:14px;line-height:1.5;color:#b9bbba}
+.shell-error__actions{display:flex;flex-wrap:wrap;gap:10px}
+.shell-error__actions :is(button,a){min-height:44px;padding:0 16px;display:inline-flex;align-items:center;border:1px solid #ffffff2b;background:#ffffff08;color:#eeefed;font:inherit;font-size:14px;text-decoration:none;cursor:pointer}
+.shell-error__actions :is(button,a):hover{border-color:#ff795080;color:#fff}
+.shell-error__actions :is(button,a):focus-visible{outline:2px solid #ecc089;outline-offset:3px}
+
+@media(prefers-reduced-motion:reduce){
+ :root{--shell-enter:120ms;--shell-exit:120ms}
+ .section-frame,.section-frame[data-shown=true],html[data-shell=exiting] .section-frame[data-shown=true]{transform:none!important}
+ html:is([data-shell=entering],[data-shell=reading]) :is(#world,#hub){transform:none}
+ .shell-status__bar{animation:none;left:0;width:100%;opacity:.6}
+}
+html[data-motion=reduce]{--shell-enter:120ms;--shell-exit:120ms}
+@media(forced-colors:active){.shell-error{border:2px solid CanvasText}.shell-status__bar{background:Highlight}}
+@media print{#pages{display:none}}

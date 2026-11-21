@@ -1,4 +1,4 @@
-import { STATIONS,DEFAULT_HUB,PUBLIC_ORIGIN,station,publicRouteURL } from './core.mjs?v=12.0.0';
+import { STATIONS,DEFAULT_HUB,PUBLIC_ORIGIN,station,publicRouteURL,routePath } from './core.mjs?v=12.0.0';
 import { overlayCSS,legacyHostLayoutCSS } from './styles.mjs?v=12.0.0';
 import { edgeMarkup } from './blur.mjs?v=12.0.0';
 import { iconSVG } from './icons.mjs?v=12.0.0';
@@ -12,7 +12,7 @@ export function safeHub(input=DEFAULT_HUB) {
 
 export class MementoNav extends HTMLElement {
   static kitVersion=KIT_VERSION;
-  static observedAttributes=['active','target'];
+  static observedAttributes=['active','target','mode','current'];
   constructor() {
     super();
     const root=this.attachShadow({mode:'open'});
@@ -22,7 +22,8 @@ export class MementoNav extends HTMLElement {
     root.addEventListener('click',event=>{
       const link=event.target.closest?.('a[data-id]');
       if(!link||event.defaultPrevented||event.button!==0||event.metaKey||event.ctrlKey||event.shiftKey||event.altKey||(link.target&&link.target!=='_self'))return;
-      if(location.origin!==PUBLIC_ORIGIN&&this.getAttribute('mode')!=='preview')return;
+      // The Vercel hub (mode host) owns every route on its own origin; elsewhere only the public site or a preview.
+      if(location.origin!==PUBLIC_ORIGIN&&!['preview','host'].includes(this.getAttribute('mode')))return;
       const intent=new CustomEvent('memento:navigate',{bubbles:true,composed:true,cancelable:true,detail:{id:link.dataset.id,view:link.dataset.view}});
       if(!this.dispatchEvent(intent))event.preventDefault();
     });
@@ -38,9 +39,15 @@ export class MementoNav extends HTMLElement {
   attributeChangedCallback(){this.update();}
   update(){
     const active=station(this.getAttribute('active'))?.id||'memento';
-    const target=this.getAttribute('target');
+    const target=this.getAttribute('target'),host=this.getAttribute('mode')==='host';
+    // current: page (a section is open), location (the world, with a station selected), world (the home itself).
+    const current=['page','location','world'].includes(this.getAttribute('current'))?this.getAttribute('current'):'page';
     for(const link of this.shadowRoot.querySelectorAll('a[data-id]')){
-      if(link.classList.contains('mm-link')&&link.dataset.id===active)link.setAttribute('aria-current','page');else link.removeAttribute('aria-current');
+      const route={id:link.dataset.id,view:link.dataset.view};
+      // Inside the hub every link stays on the hub's own origin (local, preview, production).
+      link.href=host?new URL(routePath(route),location.origin).href:publicRouteURL(route);
+      if(link.classList.contains('mm-wordmark')){if(host&&current!=='page')link.setAttribute('aria-current','page');else link.removeAttribute('aria-current');}
+      else if(link.dataset.id===active&&current!=='world')link.setAttribute('aria-current',current==='location'?'location':'page');else link.removeAttribute('aria-current');
       if(['_top','_self','_blank'].includes(target))link.target=target;else link.removeAttribute('target');
       if(target==='_blank')link.rel='noopener';else link.removeAttribute('rel');
     }
