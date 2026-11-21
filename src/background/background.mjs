@@ -6,7 +6,7 @@ import { NAV_BACKGROUND } from './preset.mjs';
  * failure leaves the black page; a lost context remounts only this layer. Loaded as its own chunk (START: React.lazy).
  */
 export function startBackground(host, { delay = 350 } = {}) {
-  if (!host || matchMedia('(forced-colors: active)').matches) return () => {};
+  if (!host || matchMedia('(forced-colors: active), (prefers-reduced-motion: reduce)').matches) return () => {};
   let current = null, disposed = false;
   let load = null;
   const mount = async () => {

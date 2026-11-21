@@ -1,7 +1,5 @@
-/**
- * Memento VFX DNA — the constants of the START reference implementation (memento-start V23, src/vfx/config.ts),
- * shared by the navigation. Behaviour rules live in the modules; only NAV-specific framing lives in `NAV`.
- */
+/** Shared effect settings used by the Home renderer and all native page surfaces. */
+/** @returns {[number, number, number]} */
 export const hexToRgb = hex => {
   const n = parseInt(hex.slice(1), 16);
   return [((n >> 16) & 255) / 255, ((n >> 8) & 255) / 255, (n & 255) / 255];
@@ -17,10 +15,11 @@ export const desaturate = hex => {
 /** One gradient over the whole title block (0 = cap line, 1 = baseline): light from above, shade only at the base. */
 const TITLE_AMBER = Object.freeze([[0, '#fbefe8'], [0.56, '#fbefe8'], [0.68, '#f5d9c6'], [0.8, '#ecb28c'], [0.91, '#e2874f'], [1, '#d9682f']]);
 
-export const VFX = Object.freeze({
+export const VFX = Object.freeze(/** @type {const} */ ({
   color: {
     /** True black: page, frame and panels. A uniform non-zero black shows the stepped rounding of blurs as bands. */
     base: '#000000',
+    cardInk: '#f2f0ec',
     panel: [0, 0, 0, 1],
     /** Amber scale: deep > mid > hot > core. `base` is the reference tint (navbar, chevrons, focus). */
     amber: { base: '#FF7950', deep: '#9E2208', mid: '#FF5510', hot: '#FF8A1C', core: '#FFCB72' },
@@ -32,6 +31,7 @@ export const VFX = Object.freeze({
     /** Cards: one scale of irregular cells (median ~25 px, mixed ~16–36 px), more often visible near the outline. */
     card: { spacing: 22, edgeSpacing: 22, edgeReach: 120, topoArea: 230000, margin: 30, zone: 170, maxGen: 6, spread: 0.74, carry: 0.86, rate: 0.5,
       wake: [150, 150, 0, 1.2],
+      inkWarm: [0.75, 280, 0.45],
       delay: [0.12, 0.28], release: [0.9, 1.7], refractory: [0.9, 1.5], attack: 0.2 },
     /** Large type: medium cells carry the reaction, a finer lattice of mixed sizes lights inside the glyphs. */
     title: { spacingEm: 0.2, marginEm: 0.16, zoneEm: 1.1, maxGen: 9, spread: 0.82, carry: 0.9, microEm: 0.095, rate: 0.9,
@@ -42,7 +42,7 @@ export const VFX = Object.freeze({
   type: { range: [1.6, 2.4, 0.65, 0.75], rise: 0.45, fall: 1.1 },
   pointer: {
     radius: 230, touchRadius: 110, attack: 0.12, neighbour: 0.25,
-    hoverRate: 7, stillRate: 2.4, moveRate: 1 / 85, jitter: 0.32, enterBurst: 5, proximityRate: 3,
+    hoverRate: 7, stillRate: 2.4, moveRate: 1 / 85, jitter: 0.32, enterBurst: 5, proximityRate: 3, sourceEvery: 1.6,
   },
   border: { bins: 96, decay: 3.2, reach: 46 },
   loading: { duration: 1.8, hurry: 3.2, ignite: 0.14 },
@@ -52,7 +52,9 @@ export const VFX = Object.freeze({
     shard: { size: [3, 12], life: [0.9, 1.5], speed: [45, 125] },
   },
   /** Structural cells (loading and transition tessellation). */
-  cells: { card: 21 },
+  cells: { card: 21, titleEm: 0.075 },
+  scroll: { band: 0.15, drift: 42, fade: 1.6 },
+  focus: { ink: 0.18, frame: 0.22, photo: 0.52 },
   bloom: { scale: 0.5, strength: 0.95 },
   /** V25: no film grain or animated dithering; the photographic and type grade stays clean. */
   post: { shoulder: 0.84, streak: 0.2, vignette: 0.26, grain: 0, aberration: 1.4 },
@@ -63,7 +65,7 @@ export const VFX = Object.freeze({
     low: { dpr: 1, bloom: true, particles: 1, cellScale: 1 },
   },
   slowFrame: 30,
-});
+}));
 
 /**
  * Navigation framing of the same rules. The carousel moves cards through the same 15/70/15 bands scroll moves content
@@ -71,7 +73,7 @@ export const VFX = Object.freeze({
  */
 export const NAV = Object.freeze({
   /** Exit and entry bands as a fraction of the viewport height; drift and fade of the leaving cells once it stops. */
-  band: 0.15, drift: 42, fade: 1.6,
+  ...VFX.scroll,
   push: 42,
   /** DPR ceilings measured for the iframe on mementostudio.it (R11), combined with the quality profile. */
   dprCap: { small: 1.35, large: 1.65 },
@@ -92,6 +94,7 @@ export const titleRamp = () => VFX.color.titleAmber.flatMap(([, c]) => {
 });
 
 /** Luminance of the idle gradient's base and top: the overlay reads height within a line from it. */
+/** @returns {[number, number]} */
 export const gradientRange = () => {
   const lum = hex => hexToRgb(hex).reduce((a, b) => a + b, 0) / 3;
   const g = VFX.color.titleGradient;

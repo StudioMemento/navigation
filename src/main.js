@@ -1,5 +1,4 @@
 import './style.css';
-import './shell/shell.css';
 import {PAGES} from './config.mjs';
 import {clamp,wrap,relative,nearest,layout,viewportHeight,pose,dragSnap,slideStep,wheelStep,queuedStep} from './model.mjs';
 import {initialSection,installRouteSync} from './route-state.mjs';
@@ -7,12 +6,9 @@ import {settings,DEFAULTS} from './settings.js';
 import {NAV} from './vfx/config.mjs';
 import {TouchPulseField,listenForTouch,touchArrival} from './vfx/touch.mjs';
 import {startBackground} from './background/background.mjs';
-import {createShell} from './shell/shell.mjs';
 import {routePath} from './kit/core.mjs';
 
-// Two roles, one project. Top-level (mementostudio.it on Vercel, previews, local): the hub is the site's container and
-// opens every section's live page in its own frame (src/shell/). Embedded (the Framer site until the switch): R13 as it
-// was, every card leaves to mementostudio.it/<section> in the top window.
+// The public site uses native page navigation. Legacy Framer embeds can still open links in the top window.
 let embeddedLegacy=false;try{embeddedLegacy=window.top!==window;}catch{embeddedLegacy=true;}
 const container=!embeddedLegacy;
 document.documentElement.dataset.hubRole=container?'container':'embedded';
@@ -28,21 +24,19 @@ const routeSlug=()=>{const segment=location.pathname.split('/').filter(Boolean)[
 let active=Math.max(0,PAGES.findIndex(p=>p.slug===(container?routeSlug():initialSection({hash:location.hash,storage,referrer:document.referrer}))));
 let position=active,target=active,velocity=0,settled=true,raf=0,lastTime=0,drag=null,suppressClick=0,disposed=false,layoutFrame=0;
 let l,overlay,engine=null,route,hostHeight,tiltX=0,tiltY=0,frameCount=0,fpsSince=0,frameTime=0,idle=0,qaPaused=false;
-let shell=null,engineBooted=false,suspended=false,interactive=true,wheelGuard=0;
+let engineBooted=false;
 const pointer={x:-999,y:-999,power:0,down:false,type:'mouse'};
 const wheel={time:0,delta:0,used:false,sign:0,stepTime:-Infinity};
 const titleMetrics=new Map(),measure=document.createElement('canvas').getContext('2d');
 const cards=PAGES.map((p,i)=>{
- const card=document.createElement('a');card.className='card';card.href=container?routePath({id:p.id,view:'page'}):p.url;if(!container)card.target='_top';card.draggable=false;card.dataset.page=p.slug;card.setAttribute('aria-label',`Apri ${p.label}`);
+ const card=document.createElement('a');card.className='card';card.href=container?('/'+p.slug+'/'):p.url;if(!container)card.target='_top';card.draggable=false;card.dataset.page=p.slug;card.setAttribute('aria-label',`Apri ${p.label}`);
  card.innerHTML=`<img src="${import.meta.env.BASE_URL}assets/scenes/${p.slug}-768.webp" srcset="${import.meta.env.BASE_URL}assets/scenes/${p.slug}-768.webp 768w,${import.meta.env.BASE_URL}assets/scenes/${p.slug}-1536.webp 1536w" sizes="88vw" alt="${p.alt}" width="1536" height="1024" draggable="false" decoding="async" ${Math.abs(relative(i,active))<1.5?'fetchpriority="high"':'loading="lazy"'}><h2 aria-hidden="true">${[...p.title].map(c=>`<span>${c}</span>`).join('')}</h2>`;
  scene.append(card);
  on(card,'click',event=>{
   if(event.button||event.metaKey||event.ctrlKey||event.shiftKey||event.altKey)return;
   if(performance.now()<suppressClick){event.preventDefault();return;}
-  if(!interactive){event.preventDefault();return;}
   if(i!==active||!settled){event.preventDefault();select(nearest(i,position));}
-  else if(container){event.preventDefault();shell.openSection(p.id);}
-  else{route?.notify(p.slug);}
+  else if(!container){route?.notify(p.slug);}
  });
  return {el:card,title:card.querySelector('h2'),letters:[...card.querySelectorAll('h2 span')],pose:null};
 });
@@ -51,10 +45,7 @@ const cards=PAGES.map((p,i)=>{
 // The START's background (Ghost Fibers, its own canvas and 30 fps budget) sits behind; touches are one shared field.
 const touches=new TouchPulseField();
 const stopBackground=params.get('bkg')==='0'?()=>{}:startBackground(document.getElementById('bkg'));
-// The tab engine starts with the world. A direct link to a section opens the page first and builds the world only
-// when the visitor comes back to it.
-// The renderer (Three.js) is its own chunk: a direct link to a page does not download it until the world is needed;
-// the home preloads it (scripts/routes.mjs). Until it is ready, and on any failure, the DOM navigation is complete.
+// The Home alone loads its carousel renderer. Native section entries load only their own content.
 function bootEngine(){
  if(engineBooted||disposed)return;engineBooted=true;
  const fallback=()=>{canvas.hidden=true;document.body.dataset.renderer='fallback';document.documentElement.classList.remove('vfx-boot');};
@@ -68,9 +59,8 @@ function bootEngine(){
    wake:()=>wake()
   });
   if(engine)document.body.dataset.renderer='webgl-boot';else fallback();
-  if(engine&&!engine.lost&&!container)overlay?.setAttribute('blur','off');
+  if(engine&&!engine.lost)overlay?.setAttribute('blur','off');
   if(l)fit();
-  shell?.stationChanged(PAGES[active].id);
  }).catch(error=>{console.warn('World renderer unavailable:',error?.message||error);fallback();});
 }
 
@@ -89,14 +79,17 @@ function fit(){
  engine?.resize(l,sizes);loadVisible();drawPoses();wake();
 }
 function scheduleFit(){if(!layoutFrame)layoutFrame=requestAnimationFrame(()=>{layoutFrame=0;fit();});}
-function loadVisible(){if(!engine||!l||suspended)return;for(let i=0;i<5;i++)if(Math.abs(relative(i,active))<1.7)engine.loadScene(i,l.width*(engine.dpr||1));}
+function loadVisible(){if(!engine||!l)return;for(let i=0;i<5;i++)if(Math.abs(relative(i,active))<1.7)engine.loadScene(i,l.width*(engine.dpr||1));}
 function updateActive(next,history=true){
  active=wrap(next);cards.forEach((c,i)=>{c.el.tabIndex=i===active?0:-1;if(i===active)c.el.setAttribute('aria-current','page');else c.el.removeAttribute('aria-current');});
  $('status').textContent=`${PAGES[active].label}. Sezione ${active+1} di 5. Attiva per aprire.`;hub.dataset.active=PAGES[active].slug;
- if(!container){overlay?.setActive(PAGES[active].id);document.title=`${PAGES[active].label} — Memento`;}
- // Inside the container the world's URL keeps the selected station (/#projects) without new history entries.
- if(container){if(shell?.phase==='world'){document.title=`${PAGES[active].label} — Memento`;if(history)window.history.replaceState(window.history.state,'',routePath({id:PAGES[active].id,view:'world'}));}shell?.stationChanged(PAGES[active].id);}
- else if(history){window.history.replaceState(null,'','#'+PAGES[active].slug);route?.notify(PAGES[active].slug);}loadVisible();
+ overlay?.setActive(PAGES[active].id);
+ if(history){
+  document.title=PAGES[active].label+' — Memento';
+  if(container)window.history.replaceState(window.history.state,'',routePath({id:PAGES[active].id,view:'world'}));
+  else{window.history.replaceState(null,'','#'+PAGES[active].slug);route?.notify(PAGES[active].slug);}
+ }
+ loadVisible();
 }
 function select(next,user=true){if(user)route?.markInteracted();target=next;settled=false;updateActive(Math.round(next));wake();}
 function drawPoses(){
@@ -125,7 +118,7 @@ function stepWorld(dt){
  return busy||moving||tilting;
 }
 function frame(now){
- raf=0;if(disposed||document.hidden||qaPaused||suspended)return;
+ raf=0;if(disposed||document.hidden||qaPaused)return;
  // high refresh screens are capped at 60 renders a second (V24); the frame is simply skipped
  if(lastTime&&now-lastTime<1000/NAV.fps-1){raf=requestAnimationFrame(frame);return;}
  const elapsed=lastTime?now-lastTime:16.67,dt=Math.min(elapsed/1000,.05);lastTime=now;
@@ -143,22 +136,19 @@ function frame(now){
  idle=active_?0:idle+dt;
  if(idle<NAV.idle)wake();
 }
-function wake(){idle=0;if(!raf&&!document.hidden&&!disposed&&!qaPaused&&!suspended){if(lastTime&&performance.now()-lastTime>100)lastTime=0;raf=requestAnimationFrame(frame);}}
+function wake(){idle=0;if(!raf&&!document.hidden&&!disposed&&!qaPaused){if(lastTime&&performance.now()-lastTime>100)lastTime=0;raf=requestAnimationFrame(frame);}}
 on($('previous'),'click',()=>select(queuedStep(position,target,-1)));
 on($('next'),'click',()=>select(queuedStep(position,target,1)));
-on(hub,'wheel',e=>{if(!interactive)return;
- // The tail of the gesture that left a page (trackpad inertia) must not turn the carousel again: it is absorbed until
- // the wheel has been quiet for a moment.
- const now=performance.now();if(now<wheelGuard){e.preventDefault();wheelGuard=Math.max(wheelGuard,now+260);return;}
+on(hub,'wheel',e=>{
  if(e.ctrlKey||e.metaKey||Math.abs(e.deltaX)>Math.abs(e.deltaY))return;e.preventDefault();const step=wheelStep(wheel,e.deltaY*(e.deltaMode===1?16:e.deltaMode===2?l.h:1),performance.now());if(step)select(queuedStep(position,target,step));},{passive:false});
 on(hub,'pointerdown',e=>{
- if(!interactive||!e.isPrimary||e.button||e.target.closest('button'))return;route?.markInteracted();pointer.x=e.clientX;pointer.y=e.clientY;pointer.down=true;pointer.power=1;pointer.type=e.pointerType;
+ if(!e.isPrimary||e.button||e.target.closest('button'))return;route?.markInteracted();pointer.x=e.clientX;pointer.y=e.clientY;pointer.down=true;pointer.power=1;pointer.type=e.pointerType;
  // a held finger never feeds the slow hover chain (V26): touch is one contact wave, recorded by listenForTouch
  if(e.pointerType==='mouse')engine?.input.move(e.clientX,e.clientY,false);else engine?.input.leave();
  drag={id:e.pointerId,x:e.clientX,y:e.clientY,start:position,lastY:e.clientY,lastTime:e.timeStamp,velocity:0,claimed:false};wake();
 });
 on(window,'pointermove',e=>{
- if(!e.isPrimary||!interactive)return;pointer.x=e.clientX;pointer.y=e.clientY;pointer.type=e.pointerType;pointer.power=e.pointerType==='mouse'||pointer.down?1:0;
+ if(!e.isPrimary)return;pointer.x=e.clientX;pointer.y=e.clientY;pointer.type=e.pointerType;pointer.power=e.pointerType==='mouse'||pointer.down?1:0;
  if(e.pointerType==='mouse')engine?.input.move(e.clientX,e.clientY,false);else engine?.input.leave();
  if(drag&&e.pointerId===drag.id){const dy=e.clientY-drag.y,dx=e.clientX-drag.x;
   if(!drag.claimed&&Math.abs(dy)>8&&Math.abs(dy)>Math.abs(dx)*1.1){drag.claimed=true;hub.setPointerCapture(e.pointerId);document.body.classList.add('dragging');settled=false;velocity=0;}
@@ -182,7 +172,7 @@ on(document,'focusin',e=>{const i=cards.findIndex(c=>c.el===e.target);if(i>=0&&e
 // GPU representation, the titles it reaches take their amber gradient for a moment instead (bounded, no loop).
 const lit=new Set(),litTimers=new Set();let fallbackContacts=0;
 function contact(x,y){
- if(!interactive||document.hidden||motionReduced()||matchMedia('(forced-colors: active)').matches)return;
+ if(document.hidden||motionReduced()||matchMedia('(forced-colors: active)').matches)return;
  const wave=engine?.touchAt(x,y);
  if(document.documentElement.classList.contains('vfx-live'))return;
  // the same timing, on the wall clock, for the DOM titles
@@ -196,7 +186,7 @@ function contact(x,y){
 }
 listenForTouch(window,contact,controller.signal);on(hub,'dragstart',e=>e.preventDefault());
 on(window,'keydown',e=>{
- if(!interactive||e.ctrlKey||e.metaKey||e.altKey||e.target.closest('input,textarea,select,[contenteditable]')||e.composedPath().includes(overlay))return;
+ if(e.ctrlKey||e.metaKey||e.altKey||e.target.closest('input,textarea,select,[contenteditable]')||e.composedPath().includes(overlay))return;
  if(['ArrowDown','ArrowRight','PageDown'].includes(e.key)){e.preventDefault();select(queuedStep(position,target,1));}
  else if(['ArrowUp','ArrowLeft','PageUp'].includes(e.key)){e.preventDefault();select(queuedStep(position,target,-1));}
  else if(e.key==='Home'){e.preventDefault();select(nearest(0,position));}
@@ -209,8 +199,8 @@ on(window,'pageshow',()=>{lastTime=0;wake();});
 on(window,'pagehide',e=>{cancelAnimationFrame(raf);raf=0;if(!e.persisted){disposed=true;controller.abort();cancelAnimationFrame(layoutFrame);engine?.dispose();stopBackground();litTimers.forEach(clearTimeout);}});
 on(reduced,'change',()=>{lastTime=0;wake();});
 // Any loss of the context returns the navigation to its DOM rendering at once.
-on(canvas,'webglcontextlost',e=>{e.preventDefault();if(engine)engine.lost=true;if(!container||shell?.phase==='world')overlay?.removeAttribute('blur');document.documentElement.classList.remove('vfx-live','vfx-boot');document.body.dataset.renderer='context-lost';});
-on(canvas,'webglcontextrestored',()=>{if(!engine)return;engine.restore();if(!container||shell?.phase==='world')overlay?.setAttribute('blur','off');if(engine.live)document.documentElement.classList.add('vfx-live');document.body.dataset.renderer='webgl';fit();});
+on(canvas,'webglcontextlost',e=>{e.preventDefault();if(engine)engine.lost=true;overlay?.removeAttribute('blur');document.documentElement.classList.remove('vfx-live','vfx-boot');document.body.dataset.renderer='context-lost';});
+on(canvas,'webglcontextrestored',()=>{if(!engine)return;engine.restore();overlay?.setAttribute('blur','off');if(engine.live)document.documentElement.classList.add('vfx-live');document.body.dataset.renderer='webgl';fit();});
 const VIEWPORT='memento:hub-viewport',HOSTS=['https://mementostudio.it','https://www.mementostudio.it'];
 if(!container)on(window,'message',event=>{const d=event.data;if(event.source!==window.parent||!HOSTS.includes(event.origin)||!d||d.channel!==VIEWPORT||d.version!==1||d.type!=='VIEWPORT'||!Number.isFinite(d.height)||d.height<160||d.height>10000)return;hostHeight=d.height;scheduleFit();});
 if(window.parent!==window)for(const origin of HOSTS)window.parent.postMessage({channel:VIEWPORT,version:1,type:'REQUEST'},origin);
@@ -224,35 +214,18 @@ function setupLab(){
  const reset=document.createElement('button');reset.textContent='Ripristina';on(reset,'click',()=>{Object.assign(settings,DEFAULTS);panel.querySelectorAll('input').forEach((el,i)=>{el.value=settings[options[i][0]];el.previousElementSibling.textContent=el.value;});wake();});panel.append(reset);const qa=document.createElement('output');qa.className='qa';panel.append(qa);
  on(button,'click',()=>{panel.hidden=!panel.hidden;button.setAttribute('aria-expanded',String(!panel.hidden));});document.body.append(button,panel);
 }
-// ---- container: the world as one of the shell's surfaces -----------------------------------------------------------
-const worldApi={
- selected:()=>PAGES[active].id,
- select(id,{jump=false}={}){const i=PAGES.findIndex(p=>p.id===id||p.slug===id);if(i<0)return;
-  if(jump){position=target=i;velocity=0;settled=true;drag=null;updateActive(i,false);drawPoses();wake();}
-  else if(i!==active||!settled)select(nearest(i,position),false);},
- step(direction){select(queuedStep(position,target,direction),false);},
- // Hidden behind a page: no loop, no texture uploads, no focusable cards.
- suspend(value){if(suspended===value)return;suspended=value;hub.inert=value;if(value){cancelAnimationFrame(raf);raf=0;cancelPointer();}else{lastTime=0;loadVisible();wake();}},
- setInteractive(value){if(value&&!interactive)wheelGuard=performance.now()+450;interactive=value;if(!value){pointer.power=0;engine?.input.leave();}hub.toggleAttribute('aria-busy',!value);},
- focus(){cards[active]?.el.focus({preventScroll:true});},
- boot:bootEngine,
- composesBlur:()=>Boolean(engine&&!engine.lost)
-};
-// The background is the same atmosphere for the world and for the pages (they are transparent inside the hub). A page's
-// dialog or expanded demo stops and blurs it, as each page does with its own background when it stands alone.
-const backgroundApi={setActive(value,{blur=!value}={}){const host=$('bkg');if(!host)return;host.classList.toggle('is-held',!value&&blur);if(window.__TIDE_VISIBLE__!==(value?undefined:false)){if(value)delete window.__TIDE_VISIBLE__;else window.__TIDE_VISIBLE__=false;document.dispatchEvent(new Event('memento:overlay-change'));}}};
-if(container){
- shell=createShell({world:worldApi,background:backgroundApi,storage,buildSources:import.meta.env.VITE_MEMENTO_SOURCES||''});
- const initialPage=location.pathname.split('/').filter(Boolean).length>0;
- if(!initialPage)bootEngine();
- fit();updateActive(active,false);shell.start();
-}else{bootEngine();fit();updateActive(active,false);}
+if(container)on(window,'hashchange',()=>{
+ const i=PAGES.findIndex(p=>p.slug===routeSlug());
+ if(i<0||i===active)return;
+ position=target=i;velocity=0;settled=true;updateActive(i,false);drawPoses();wake();
+});
+bootEngine();fit();updateActive(active,false);
 if(labMode)setupLab();
 document.fonts.ready.then(()=>{titleMetrics.clear();scheduleFit();});
 const navigationURL=new URL(`${import.meta.env.BASE_URL}navigation/navbar.mjs`,document.baseURI).href;
 import(/* @vite-ignore */ navigationURL).then(({mountNav})=>{
  overlay=mountNav({active:PAGES[active].id,mode:container?'host':'standalone'});
- if(container){shell.attachNav(overlay);scheduleFit();return;}
+ if(container){overlay.setAttribute('current','location');if(engine&&!engine.lost)overlay.setAttribute('blur','off');scheduleFit();return;}
  overlay.setAttribute('target','_top');
  if(engine&&!engine.lost)overlay.setAttribute('blur','off');
  on(overlay,'click',e=>{const link=e.composedPath().find(n=>n?.tagName==='A');if(link){const p=PAGES.find(p=>p.url===link.href);if(p){route.markInteracted();route.notify(p.slug);}}},{capture:true});scheduleFit();
@@ -267,8 +240,5 @@ if(params.has('qa'))window.__nav={
  pointer(x,y){pointer.x=x;pointer.y=y;pointer.type='mouse';pointer.power=1;engine?.input.move(x,y,false);},
  touch(x,y){contact(x,y);},
  leave(){pointer.power=0;engine?.input.leave();},
- get engine(){return engine;},
- get shell(){return shell?.snapshot();},
- get suspended(){return suspended;}
+ get engine(){return engine;}
 };
-if(params.has('qa')&&shell)window.__shell=shell;

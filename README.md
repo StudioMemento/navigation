@@ -1,34 +1,39 @@
-# Memento Hub R14 — contenitore Vercel (dalla NAV R13)
+# Sito Memento
 
-## Base di migrazione su Vercel
+Il progetto Vercel `mementonav` pubblica la Home e le pagine di [mementostudio.it](https://mementostudio.it/). Ogni sezione si aggiorna dalla propria repo GitHub.
 
-Questo pacchetto è associato al progetto di prova **mementonav-migrazione-r14** del team StudioMemento. Il sito pubblico e le pagine di Framer utilizzano i loro progetti attuali. [Apri il progetto di prova su Vercel](https://vercel.com/studio-memento-s-projects/mementonav-migrazione-r14)
+| Pagina | Indirizzo sul sito | Repository da clonare in GitHub Desktop |
+| --- | --- | --- |
+| Home e navigazione | `/` | [StudioMemento/navigation](https://github.com/StudioMemento/navigation) |
+| Studio 3D | `/studio/` | [StudioMemento/mementostudio](https://github.com/StudioMemento/mementostudio) |
+| Servizi | `/services/` | [StudioMemento/servizi](https://github.com/StudioMemento/servizi) |
+| Portfolio | `/projects/` | [StudioMemento/Portfolio](https://github.com/StudioMemento/Portfolio) |
+| LevelUp | `/levelup/` | [StudioMemento/mementolevelup](https://github.com/StudioMemento/mementolevelup) |
+| Start | `/start/` | [StudioMemento/mementostart](https://github.com/StudioMemento/mementostart) |
 
-Per la prima anteprima, una volta attiva la prova Pro o il piano Pro, estraete tutto lo ZIP, compresa la cartella nascosta `.vercel`. Aprite il terminale nella cartella che contiene `package.json`. Con la CLI Vercel autenticata nel team dello studio, eseguite:
+## Pubblicare una modifica con GitHub Desktop
 
-```sh
-vercel deploy --target=preview
-```
+1. Apri la repo della pagina e scegli **Fetch origin**, poi **Pull origin** se disponibile.
+2. Modifica i sorgenti nella cartella clonata. Se ricevi uno ZIP di aggiornamento, estrai i file indicati nella stessa cartella, al livello di `package.json`.
+3. Controlla l’elenco delle modifiche, scegli **Commit to main** e poi **Push origin**.
+4. Quando il deployment mostra **Ready** su Vercel, apri la pagina sul dominio pubblico. L’HTML delle sezioni viene conservato per un minuto nella cache di Vercel e può essere servito durante l’aggiornamento.
 
-La CLI legge la destinazione da `.vercel/project.json`. La configurazione locale è esclusa dai commit Git. La build usa Vite, `npm ci`, `npm run build` e la cartella di output `dist`. Il progetto e il pacchetto richiedono la major 22 di Node, a partire da 22.12.
+## Dove si regolano gli effetti
 
-Per provare anche le quattro pagine aggiornate, aprite l’URL specifico del deployment dell’hub che termina in `-studio-memento-s-projects.vercel.app`. Assegnate le preview di pagina con `memento-src-services`, `memento-src-projects`, `memento-src-levelup` e `memento-src-start`. In assenza di questi parametri l’hub carica le versioni pubblicate delle pagine. Studio usa il deploy esistente. I sorgenti di quest’ultimo sono nel [repository Studio](https://github.com/StudioMemento/mementostudio).
-
-**R14 (17 novembre 2026).** Aperto come documento principale (mementostudio.it, mementonav.vercel.app, preview, locale) il progetto è il **contenitore del sito**: mondo 3D in `/`, sezioni in `/studio`, `/services`, `/projects`, `/levelup`, `/start` caricate dal vivo dalle loro applicazioni, una navbar, un URL e una cronologia. Codice in `src/shell/` (`shell.mjs` stato e transizioni, `frames.mjs` iframe e sessioni, `sources.mjs` app per ambiente), `src/seo.mjs` e `scripts/routes.mjs` (HTML per route, 404, sitemap, robots). Incorporato in un altro sito (la home Framer fino al cambio di dominio) si comporta come la R13 qui sotto. Il renderer (Three.js) è un chunk caricato con il mondo. Build: `npm ci && npm run build` (Vite + `scripts/routes.mjs`), test `npm test` (37). Workspace, protocollo e verifiche: `README.md` e `docs/` alla radice del workspace.
-
----
-
-# Memento NAV R13 — VFX DNA, START V27
-
-Navigazione Vite + Three.js. La R12 ha portato gli effetti della START V23; la R13 la allinea alla START V27: sfondo Ghost Fibers, grade senza grana, tocco a catena su tab, titoli e bordi, scene a colori a riposo su telefono, ottimizzazioni mobile. Corregge inoltre gli effetti dei titoli di Projects e LevelUp, che nella R12 non si attivavano. Le cinque scene e l'ordine restano quelli della R11: Studio → Services → Projects → LevelUp → Start → Studio.
-
-Il DNA (regole, palette, tempi) è in `docs/dna/`. La sezione `applicazione-alle-pagine.md` riporta gli adattamenti della navigation, scritti prima del codice come chiede il DNA.
+- `src/vfx/config.mjs` controlla palette, tempi, effetti al tocco e al puntatore di Home, Servizi, Portfolio, LevelUp e Start.
+- `public/memento-ui/site.css` contiene la transizione fra le pagine e la variante per chi preferisce ridurre il movimento.
+- `public/navigation/` contiene la navbar comune. `src/background/` contiene lo sfondo e il suo preset.
+- Studio 3D usa lo stesso menu e la stessa transizione. La scena e i controlli 3D si modificano nella repo Studio.
 
 ## Avvio e build
 
-Node 22.12+ o 24. Eseguire `npm ci`, `npm run dev`. Per la distribuzione: `npm test`, `npm run build`. Su Vercel: framework Vite, comando `npm run build`, output `dist`. La cartella `dist/` inclusa è anche distribuibile come sito statico.
+Il progetto usa Node 22.12 o successivo della serie 22. `npm ci`, `npm test` e `npm run build` verificano e compilano i sorgenti. `npm run dev` avvia la Home in Vite. Per provare anche le cinque sezioni usa un’anteprima Vercel della repo.
 
-L'embed su mementostudio.it carica mementonav.vercel.app: per aggiornarlo basta distribuire questa build sul progetto NAV esistente. Tutti i link di destinazione mantengono mementostudio.it e il target `_top`. Il bridge iframe (sezione, altezza del viewport) è invariato.
+Vercel serve l’HTML della sezione tramite `api/section.js`. Il codice in `scripts/native-page.mjs` prepara i link, la navbar e gli effetti prima che l’HTML arrivi al browser. Le immagini, i modelli 3D e i contenuti restano gestiti dalla repo di ciascuna pagina.
+
+## Riferimento visivo della Home
+
+Le cinque stazioni seguono l’ordine Studio, Servizi, Portfolio, LevelUp e Start. Le note di design sono in `docs/dna/`.
 
 ## Cosa cambia nella R13
 

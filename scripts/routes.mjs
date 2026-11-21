@@ -1,6 +1,4 @@
-// After `vite build`: one HTML document per public route, so /services, /projects... answer with their own title,
-// description, canonical and heading on a direct visit or a refresh (no client-side guess, no 200 for unknown paths).
-// The page content itself stays in each application: the hub never copies it.
+// Generate the Home, error page, robots.txt and sitemap. Native sections are served by api/section.js.
 import { readFileSync, writeFileSync, rmSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { STATIONS, PUBLIC_ORIGIN } from '../src/kit/core.mjs';
@@ -32,21 +30,14 @@ const chunk = key => manifest[key] ? [manifest[key].file, ...(manifest[key].impo
 const worldChunks = [...new Set(chunk('src/renderer.js'))];
 if (!worldChunks.length) throw Error('renderer chunk missing from the manifest');
 const preload = html => html.replace('</head>', worldChunks.map(file => `<link rel="modulepreload" href="/${file}">`).join('') + '</head>');
-// A section page connects early to the application it shows.
-const preconnect = (html, origin) => html.replace('</head>', `<link rel="preconnect" href="${origin}"></head>`);
 writeFileSync(resolve(dist, 'index.html'), preload(render(routeMeta({ view: 'world' }))));
-const written = ['index.html'];
-for (const s of STATIONS) {
-  const file = s.path.slice(1) + '.html';               // served at /studio, /services... (vercel.json cleanUrls)
-  writeFileSync(resolve(dist, file), preconnect(render(routeMeta({ id: s.id, view: 'page' })), new URL(s.url).origin));
-  written.push(file);
-}
+const written=['index.html'];
 // Unknown paths: a real 404 with the same navigation, so the visitor can go on (served by Vercel with status 404).
 const notFound = { title: 'Pagina non trovata — Memento', description: 'Questa pagina non esiste. Torna al mondo Memento.', heading: 'Pagina non trovata', canonical: PUBLIC_ORIGIN + '/' };
 writeFileSync(resolve(dist, '404.html'), preload(render(notFound, { robots: 'noindex', status: '404' })));
 written.push('404.html');
 const today = new Date().toISOString().slice(0, 10);
-const urls = ['/', ...STATIONS.map(s => s.path)].map(path => `  <url><loc>${PUBLIC_ORIGIN}${path === '/' ? '/' : path}</loc><lastmod>${today}</lastmod></url>`);
+const urls = ['/', ...STATIONS.map(s => s.path + '/')].map(path => `  <url><loc>${PUBLIC_ORIGIN}${path === '/' ? '/' : path}</loc><lastmod>${today}</lastmod></url>`);
 writeFileSync(resolve(dist, 'sitemap.xml'), `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.join('\n')}\n</urlset>\n`);
 // Previews and the technical domains are excluded by the X-Robots-Tag header in vercel.json, not by this file.
 writeFileSync(resolve(dist, 'robots.txt'), `User-agent: *\nAllow: /\n\nSitemap: ${PUBLIC_ORIGIN}/sitemap.xml\n`);
