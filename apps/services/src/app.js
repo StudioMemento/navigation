@@ -13,8 +13,8 @@ const bundles = catalogue.bundles;
 let vfx = null,
   vfxModule = null;
 const motion = () => vfx?.motion();
-$('#bundle-boards').innerHTML = `<div class="carousel-stage">${bundles.map(cover).join('')}</div>`;
-$('#bundle-controls').innerHTML = dots(bundles.map((item) => item.title));
+if (!$('#bundle-boards').firstElementChild) $('#bundle-boards').innerHTML = `<div class="carousel-stage">${bundles.map(cover).join('')}</div>`;
+if (!$('#bundle-controls').firstElementChild) $('#bundle-controls').innerHTML = dots(bundles.map((item) => item.title));
 $('#bundle-controls').setAttribute('role', 'group');
 $('#bundle-controls').setAttribute('aria-label', 'Scegli un bundle');
 const bundleCarousel = new Carousel($('#bundle-boards'), {
@@ -47,7 +47,7 @@ const dialogs = createDialogs(bundleCarousel, {
   },
 });
 
-$('#category-sections').innerHTML = categories();
+if (!$('#category-sections').firstElementChild) $('#category-sections').innerHTML = categories();
 catalogue.categories.forEach((section) => {
   const items = section.featured.map(getItem);
   const carousel = new Carousel($(`#carousel-${section.id}`), {
@@ -62,9 +62,9 @@ catalogue.categories.forEach((section) => {
 });
 
 let medium = 'digital';
-function renderCatalogue() {
+function renderCatalogue(initial = false) {
   const { html, announcement } = grid(medium);
-  $('#catalogue-groups').innerHTML = html;
+  if (!initial || !$('#catalogue-groups').firstElementChild) $('#catalogue-groups').innerHTML = html;
   $('.catalogue-filters').dataset.selected = medium;
   document
     .querySelectorAll('[data-medium]')
@@ -82,7 +82,7 @@ $('.catalogue-filters').addEventListener('click', (event) => {
     renderCatalogue();
   }
 });
-renderCatalogue();
+renderCatalogue(true);
 $('#start-link').href = catalogue.config.startUrl;
 enhanceVisuals();
 vfxModule = import('../vfx/memento-vfx.js');
