@@ -1,22 +1,10 @@
 // Generate the Home, error page, robots.txt and sitemap. Native sections are served by api/section.js.
 import { readFileSync, writeFileSync, rmSync } from 'node:fs';
 import { resolve } from 'node:path';
-import { build } from 'vite';
 import { STATIONS, PUBLIC_ORIGIN } from '../src/kit/core.mjs';
 import { routeMeta, OG_IMAGE } from '../src/seo.mjs';
 
 const dist = resolve(import.meta.dirname, '../dist');
-// Ship the small motion cue with its original vector. Navigation also works before this script loads.
-const ui = resolve(import.meta.dirname, '../public/memento-ui');
-await build({
-  configFile: false,
-  publicDir: false,
-  define: {'import.meta.mementoIcon': JSON.stringify(readFileSync(resolve(ui, 'memento-icon.svg'), 'utf8'))},
-  build: {
-    target: 'es2022', outDir: dist, emptyOutDir: false, minify: true,
-    lib: {entry: resolve(ui, 'viewport.js'), formats: ['iife'], name: 'MementoViewport', fileName: () => 'memento-ui/viewport.js'}
-  }
-});
 const base = readFileSync(resolve(dist, 'index.html'), 'utf8');
 const escape = value => String(value).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
 function render(meta, { robots = '', status = '' } = {}) {
@@ -41,7 +29,7 @@ const manifest = JSON.parse(readFileSync(resolve(dist, '.vite/manifest.json'), '
 const chunk = key => manifest[key] ? [manifest[key].file, ...(manifest[key].imports || []).flatMap(chunk)] : [];
 const worldChunks = [...new Set(chunk('src/renderer.js'))];
 if (!worldChunks.length) throw Error('renderer chunk missing from the manifest');
-const preload = html => html.replace('</head>', worldChunks.map(file => `<link rel="modulepreload" href="/${file}">`).join('') + '</head>');
+const preload = html => html.replace('</head>', worldChunks.filter(file => !html.includes(`href="/${file}"`)).map(file => `<link rel="modulepreload" href="/${file}">`).join('') + '</head>');
 writeFileSync(resolve(dist, 'index.html'), preload(render(routeMeta({ view: 'world' }))));
 const written=['index.html'];
 // Unknown paths: a real 404 with the same navigation, so the visitor can go on (served by Vercel with status 404).

@@ -21,7 +21,7 @@ test('each native section has a single navbar and effect module, and preserves a
   assert(!html.includes('navigation/bootstrap.js'));assert(!html.includes('rel="modulepreload"'));
   assert(html.indexOf('type="importmap"')<html.indexOf('src="src/app.js"'));
   assert.equal(attr(all(doc,'iframe')[0],'src'),'https://knives.vercel.app/');
-  assert.equal(attr(all(doc,'a')[0],'href'),'#dettaglio');
+  assert(all(doc,'a').some(a=>attr(a,'href')==='#dettaglio'));
   const native=routes.rewrites.findIndex(r=>r.source===s.path+'/'),assets=routes.rewrites.findIndex(r=>r.source===s.path+'/:file+');
   assert(native>=0 && assets>native);
  }
@@ -51,33 +51,22 @@ test('reprocessing an existing native entry leaves one shared runtime and import
  assert.equal(all(doc,'div').filter(n=>attr(n,'id')==='site-atmosphere').length,1);
 });
 
-test('routes follow immediately and only internal arrivals suppress the local intro', () => {
-  const script=readFileSync(new URL('../public/memento-ui/viewport.js',import.meta.url),'utf8');
-  function visit(referrer,type='navigate',reduced=false) {
-    const root={dataset:{},clientWidth:390,style:{setProperty(){}}};
-    const document=Object.assign(new EventTarget(),{documentElement:root,referrer});
-    const window=Object.assign(new EventTarget(),{innerHeight:844});
-    window.top=window;
-    const followed=[];
-    const location=new URL('https://mementostudio.it/services/');
-    location.assign=href=>followed.push(href);
-    const matchMedia=()=>Object.assign(new EventTarget(),{matches:reduced});
-    runInNewContext(script,{window,document,location,URL,matchMedia,performance:{getEntriesByType:()=>[{type}]}});
-    return {window,root,followed};
-  }
-  const from='https://mementostudio.it/start/';
-  for (const quiet of [true,false]) {
-    const {window,root,followed}=visit(from,'navigate',quiet);
-    assert.equal(root.dataset.mementoArrival,'page');
-    assert.equal(window.mementoPageReveal,undefined);
-    window.mementoGo('/projects/');window.mementoGo('/start/');
-    assert.deepEqual(followed,['/projects/','/start/']);
-    const click=new Event('click',{cancelable:true});
-    assert.equal(window.dispatchEvent(click),true);
-  }
-  for(const [ref,type] of [['','navigate'],['https://example.com/','navigate'],[from,'reload'],['https://mementostudio.it/services/#catalogo','navigate']]) {
-    assert.equal(visit(ref,type).root.dataset.mementoArrival,undefined);
-  }
-  assert.equal(visit('','back_forward').root.dataset.mementoArrival,'page');
-  assert.match(nativePage(source,'start'), /<script defer="" src="\/memento-ui\/viewport.js">/);
+test('a single cross-document scene owns the transition, and requesting a link stays native', () => {
+  const doc = parse(nativePage(source,'services'));
+  const scene = all(doc,'script').find(n => attr(n,'id') === 'memento-scene-navigation');
+  const css = all(doc,'style').find(n => attr(n,'id') === 'memento-scene-shape').childNodes[0].value;
+  assert.match(css, /@view-transition\s*\{navigation:auto/);
+  assert.match(css, /::view-transition-old\(root\)/);
+  assert.match(css, /::view-transition-new\(root\)/);
+  const script=scene.childNodes[0].value;
+  const root={clientWidth:400,dataset:{},style:{setProperty(){}}};
+  const document=Object.assign(new EventTarget(),{documentElement:root,referrer:'',body:{}});
+  const window=Object.assign(new EventTarget(),{innerHeight:800});window.top=window;
+  const followed=[];const location=new URL('https://mementostudio.it/services/');location.assign=href=>followed.push(href);
+  runInNewContext(script,{window,document,location,URL,innerHeight:800,performance:{getEntriesByType:()=>[{type:'navigate'}]},matchMedia:()=>Object.assign(new EventTarget(),{matches:false})});
+  window.mementoGo('/projects/');assert.deepEqual(followed,['https://mementostudio.it/projects/']);
+  assert.doesNotMatch(script,/startViewTransition|speculationrules/);
+  assert.match(script,/link.href===pending/);
+  assert.equal(all(doc,'script').filter(n=>attr(n,'src')==='/memento-ui/viewport.js').length,0);
+  const nav=all(doc,'memento-nav')[0];assert.equal(attr(nav.childNodes[0],'shadowrootmode'),'open');
 });

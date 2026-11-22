@@ -1,7 +1,7 @@
-import { iconAssets } from './icon-assets.mjs?v=12.0.0';
-import { mementoPaths } from './memento-paths.mjs?v=12.0.0';
+import { iconAssets } from './icon-assets.mjs';
+import { mementoPaths } from './memento-paths.mjs';
 let iconSequence=0;
-export function iconSVG(id) {
+export function iconSVG(id,hosted=false) {
   if(id==='memento'){
     const key='mm-metal-'+(++iconSequence);
     return `<svg class="mm-symbol mm-symbol--memento" viewBox="26.474 41.273 166.741 166.741" preserveAspectRatio="xMidYMid meet" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg">
@@ -36,5 +36,5 @@ export function iconSVG(id) {
   }
   const asset=iconAssets[id];
   if(!asset)throw new TypeError('Unknown Memento icon: '+id);
-  return `<svg class="mm-symbol mm-symbol--${id}" style="--mm-icon-gain:${asset.gain||1}" viewBox="${asset.viewBox}" preserveAspectRatio="xMidYMid meet" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg"><image href="${asset.src}" x="0" y="0" width="${asset.width}" height="${asset.height}"/></svg>`;
+  return `<svg class="mm-symbol mm-symbol--${id}" style="--mm-icon-gain:${asset.gain||1}" viewBox="${asset.viewBox}" preserveAspectRatio="xMidYMid meet" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg"><image href="${hosted?'/navigation/assets/'+asset.src.split('/').pop():asset.src}" x="0" y="0" width="${asset.width}" height="${asset.height}"/></svg>`;
 }

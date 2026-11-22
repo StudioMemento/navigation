@@ -89,7 +89,7 @@ export function bindSurfaceCanvas(canvas: HTMLCanvasElement, registry: SurfaceRe
     stopTouch = installTouchFeedback(touches);
     Promise.all([import('./engine'), afterFirstPaint()]).then(([{VfxEngine}]) => {
       if (current !== generation) return;
-      const intro = !document.documentElement.hasAttribute('data-memento-arrival') && options.intro !== false;
+      const intro = !document.documentElement.hasAttribute('data-memento-native') && options.intro !== false;
       renderer = VfxEngine.create(canvas, registry, touches, {...options,intro,offset:dialog,bands:!dialog});
       if (!renderer) fallback();
     }).catch(() => { if (current === generation) fallback(); });

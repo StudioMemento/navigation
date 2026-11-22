@@ -1,8 +1,6 @@
-import { STATIONS,DEFAULT_HUB,PUBLIC_ORIGIN,station,publicRouteURL,routePath } from './core.mjs?v=12.0.0';
-import { overlayCSS,legacyHostLayoutCSS } from './styles.mjs?v=12.0.0';
-import { edgeMarkup } from './blur.mjs?v=12.0.0';
-import { iconSVG } from './icons.mjs?v=12.0.0';
-import { wordmarkMarkup } from './wordmark.mjs?v=12.0.0';
+import { STATIONS,DEFAULT_HUB,PUBLIC_ORIGIN,station,publicRouteURL,routePath } from './core.mjs';
+import { legacyHostLayoutCSS } from './styles.mjs';
+import { navContents } from './markup.mjs';
 
 export const KIT_VERSION = '12.0.0';
 export function safeHub(input=DEFAULT_HUB) {
@@ -15,10 +13,8 @@ export class MementoNav extends HTMLElement {
   static observedAttributes=['active','target','mode','current'];
   constructor() {
     super();
-    const root=this.attachShadow({mode:'open'});
-    root.innerHTML=`<style>${overlayCSS}</style>${edgeMarkup('top')}${edgeMarkup('bottom')}
-      <a class="mm-wordmark" data-id="memento" data-view="world" href="${PUBLIC_ORIGIN}/" aria-label="Memento — torna alla home">${wordmarkMarkup()}</a>
-      <nav class="mm-dock" aria-label="Navigazione Memento">${STATIONS.map(item=>`<a class="mm-link" data-id="${item.id}" data-view="page" href="${publicRouteURL({id:item.id,view:'page'})}" aria-label="${item.label}"><span class="mm-tile" aria-hidden="true">${iconSVG(item.id)}</span></a>`).join('')}</nav>`;
+    const root=this.shadowRoot||this.attachShadow({mode:'open'});
+    if (!root.firstElementChild) root.innerHTML=navContents();
     root.addEventListener('click',event=>{
       const link=event.target.closest?.('a[data-id]');
       if(!link||event.defaultPrevented||event.button!==0||event.metaKey||event.ctrlKey||event.shiftKey||event.altKey||(link.target&&link.target!=='_self'))return;
