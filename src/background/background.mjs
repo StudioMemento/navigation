@@ -1,9 +1,9 @@
 import { NAV_BACKGROUND } from './preset.mjs';
 
-/** Let real content paint before optional GPU work. Navigation never waits for this promise. */
+/** Warm the optional renderer while the formed emblem covers the incoming first frame. */
 export function afterFirstPaint() {
   return new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)))
-    .then(() => window.mementoSceneSettled || document.activeViewTransition?.finished)
+    .then(() => window.mementoSceneCovered)
     .catch(() => {});
 }
 
@@ -22,7 +22,7 @@ export function startBackground(host) {
     renderer?.dispose();
     renderer = null;
     host.classList.remove('is-live');
-    if (quiet.matches || typeof WebGL2RenderingContext === 'undefined') return;
+    if (quiet.matches || document.documentElement.hasAttribute('data-mm-software') || typeof WebGL2RenderingContext === 'undefined') return;
     try {
       const [{ mountGhostFibers }] = await Promise.all([import('./ghost-fibers.mjs'), afterFirstPaint()]);
       if (request !== generation) return;

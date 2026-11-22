@@ -1,3 +1,4 @@
+import { staticArtwork } from '../graphics.mjs';
 import {
   BufferAttribute, BufferGeometry, CanvasTexture, DataTexture, DoubleSide, DynamicDrawUsage, GLSL3, HalfFloatType, InstancedBufferGeometry,
   InstancedInterleavedBuffer, InterleavedBufferAttribute, LinearFilter, Mesh, NoColorSpace, PerspectiveCamera,
@@ -127,6 +128,7 @@ const barycentric = (triangles: number) => {
  */
 export class VfxEngine {
   static create(canvas: HTMLCanvasElement, registry: SurfaceRegistry, touches = new TouchPulseField(), options: EngineOptions = {}): VfxEngine | null {
+    if (root().hasAttribute('data-mm-software')) return null;
     try {
       return new VfxEngine(canvas, registry, touches, options);
     } catch (error) {
@@ -201,6 +203,7 @@ export class VfxEngine {
     const gl = renderer.getContext();
     const info = gl.getExtension('WEBGL_debug_renderer_info');
     const gpu = info ? String(gl.getParameter(info.UNMASKED_RENDERER_WEBGL)) : '';
+    if (staticArtwork(gpu)) { renderer.dispose(); throw new Error('Software graphics: using the rendered page surfaces'); }
     if (/swiftshader|llvmpipe|software|basic render/i.test(gpu)) this.quality = 'low';
     else if (matchMedia('(pointer: coarse)').matches) this.quality = 'medium';
     // ?vfx=high|medium|low pins a quality profile (useful when comparing devices)
@@ -1086,7 +1089,7 @@ export class VfxEngine {
 
   /** LevelUp: the demo player covers the page; Servizi: a dialog does (its own surfaces aside). Nothing here is visible. */
   private covered() {
-    return this.loaded && !this.active();
+    return this.loaded && (!this.active() || (root().hasAttribute('data-mm-phase') && root().classList.contains('vfx-live')));
   }
 
   private animate = (time: number) => {

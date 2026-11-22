@@ -1,3 +1,4 @@
+import { staticArtwork } from './graphics.mjs';
 import {
   BufferAttribute, BufferGeometry, CanvasTexture, DataTexture, DoubleSide, DynamicDrawUsage, GLSL3, Group, HalfFloatType,
   InstancedBufferGeometry, InstancedInterleavedBuffer, InterleavedBufferAttribute, LinearFilter, Matrix4, Mesh, NoBlending,
@@ -43,6 +44,7 @@ function sdTab(x, y, w, h, cut) {
  */
 export class VfxRenderer {
   static create(canvas, pages, hooks) {
+    if (root().hasAttribute('data-mm-software')) return null;
     try { return new VfxRenderer(canvas, pages, hooks); }
     catch (error) { console.warn('Memento VFX disabled:', error?.message || error); root().classList.remove('vfx-boot', 'vfx-live'); root().classList.add('vfx-off'); return null; }
   }
@@ -55,6 +57,7 @@ export class VfxRenderer {
     renderer.autoClear = false; renderer.setClearColor(0x000000, 0);
     const gl = renderer.getContext(), info = gl.getExtension('WEBGL_debug_renderer_info');
     this.gpu = info ? String(gl.getParameter(info.UNMASKED_RENDERER_WEBGL)) : '';
+    if (staticArtwork(this.gpu)) { renderer.dispose(); throw new Error('Software graphics: using the rendered navigation cards'); }
     this.quality = /swiftshader|llvmpipe|software|basic render/i.test(this.gpu) ? 'low' : matchMedia('(pointer: coarse)').matches ? 'medium' : 'high';
     const pin = new URLSearchParams(location.search).get('vfx');
     this.pinned = !!(pin && pin in VFX.quality); if (this.pinned) this.quality = pin;

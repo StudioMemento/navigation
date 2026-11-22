@@ -13,7 +13,7 @@ export const overlayCSS = `
 }
 :host([hidden]) { display:none !important; }
 *,*::before,*::after { box-sizing:border-box; }
-.mm-edge { position:absolute; inset-inline:0; height:clamp(90px,18%,160px); z-index:0; pointer-events:none; background:transparent; }
+.mm-edge { display:var(--memento-edge-display,block); position:absolute; inset-inline:0; height:clamp(90px,18%,160px); z-index:0; pointer-events:none; background:transparent; }
 .mm-edge--top { top:-1px; }
 .mm-edge--bottom { bottom:-1px; }
 .mm-filter { position:absolute; inset:0; border-radius:0; pointer-events:none; opacity:1; background:transparent;
