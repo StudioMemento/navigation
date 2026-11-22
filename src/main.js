@@ -130,6 +130,7 @@ function stepWorld(dt){
 }
 function frame(now){
  raf=0;if(disposed||document.hidden||qaPaused)return;
+ if(engine?.live && document.documentElement.hasAttribute('data-mm-phase')){lastTime=0;return;}
  // high refresh screens are capped at 60 renders a second (V24); the frame is simply skipped
  if(lastTime&&now-lastTime<1000/NAV.fps-1){raf=requestAnimationFrame(frame);return;}
  const elapsed=lastTime?now-lastTime:16.67,dt=Math.min(elapsed/1000,.05);lastTime=now;
@@ -205,6 +206,7 @@ on(window,'keydown',e=>{
  else if(e.key==='Escape')cancelPointer();
 });
 on(window,'resize',scheduleFit);if(visualViewport)on(visualViewport,'resize',scheduleFit);
+on(document,'memento:surface-visibility',wake);
 on(document,'visibilitychange',()=>{if(document.hidden){cancelAnimationFrame(raf);raf=0;lastTime=0;}else{lastTime=0;wake();}});
 on(window,'pageshow',()=>{lastTime=0;wake();});
 on(window,'pagehide',e=>{cancelAnimationFrame(raf);raf=0;if(!e.persisted){disposed=true;controller.abort();cancelAnimationFrame(layoutFrame);engine?.dispose();stopBackground();litTimers.forEach(clearTimeout);}});

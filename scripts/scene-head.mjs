@@ -1,6 +1,7 @@
 import { createMaterial } from './scene-material.mjs';
 
-const css = `@media (prefers-reduced-motion:no-preference) and (forced-colors:none){
+const css = `:root[data-mm-software],:root[data-mm-phase]{--memento-edge-display:none}
+@media (prefers-reduced-motion:no-preference) and (forced-colors:none){
 @view-transition{navigation:auto}
 .mm-weave{display:block;fill:none;stroke:none;position:fixed;inset:0;width:100%;height:100%;z-index:2147483647;pointer-events:none;overflow:hidden;view-transition-name:mm-material}
 .mm-weave>canvas{display:block;width:100%;height:100%;position:absolute;inset:0;pointer-events:none}
@@ -34,6 +35,9 @@ function observeScene(createMaterial) {
   window.mementoGo=href=>location.assign(new URL(href,location.href).href);
   if(window.top!==window)return;
   const motion=matchMedia('(prefers-reduced-motion:no-preference) and (forced-colors:none)');
+  try{
+    if(sessionStorage.getItem('memento.artwork.software')==='1' && !['low','medium','high'].includes(new URL(location.href).searchParams.get('vfx')))root.setAttribute('data-mm-software','');
+  }catch{}
   const sections=new Set(['/','/studio','/memento','/services','/projects','/levelup','/start']);
   const path=url=>url.pathname.replace(/\/+$/,'')||'/';
   const key='memento.weave.v1', gather=740, rest=230, unfold=840;
@@ -70,6 +74,7 @@ function observeScene(createMaterial) {
     if(s.transition){s.transition.ready.catch(()=>{});s.transition.skipTransition();}
     delete root.dataset.mmPhase;delete root.dataset.mmFeed;
     window.mementoSceneCovered=undefined;
+    document.dispatchEvent(new Event('memento:surface-visibility'));
   }
   function start(boxes,p){
     const material=createMaterial();material.sources(boxes);
@@ -133,7 +138,11 @@ function observeScene(createMaterial) {
   }
   window.addEventListener('pageswap',e=>{
     e.viewTransition?.ready.catch(()=>{});
-    remember(e.activation?.entry?.url||pending);stop();
+    const dest=e.activation?.entry?.url||pending;
+    remember(dest);
+    // When the whole emblem is already visible there are no old page pixels to capture.
+    if(crossing(location.href,dest) && session?.progress===1)e.viewTransition?.skipTransition();
+    stop();
   });
   window.addEventListener('pagehide',()=>{if(pending)remember(pending);stop();});
 
@@ -156,8 +165,12 @@ function observeScene(createMaterial) {
       const url=getComputedStyle(poster,'::before').backgroundImage.match(/^url\(["']?(.*?)["']?\)$/);
       if(url){const img=new Image();img.src=url[1];images.push(img);}
     }
-    await Promise.allSettled([document.fonts?.load('400 16px Inter'),...images.map(img=>img.decode())]);
+    // Budget unresponsive network resources, never count a slow compositor frame as a loading failure.
+    const decoded=Promise.allSettled([document.fonts?.load('400 16px Inter'),...images.map(img=>img.decode())]);
+    let status=await bounded(decoded,6000,signal);
+    if(status==='timeout' && images.every(img=>img.complete && img.naturalWidth))status=await bounded(decoded,450,signal);
     if(!signal.aborted)await frames();
+    return status;
   }
   function bounded(promise,ms,signal){
     return new Promise(resolve=>{
@@ -198,7 +211,7 @@ function observeScene(createMaterial) {
     window.mementoSceneCovered=new Promise(r=>{s.cover=r;});
     const signal=s.abort.signal;
     root.dataset.mmPhase='gather';root.dataset.mmFeed='old';
-    const view=bounded(firstView(signal),6000,signal).then(status=>{if(!signal.aborted)mark(status==='timeout'?'view-fallback':'view-ready');});
+    const view=firstView(signal).then(status=>{if(!signal.aborted)mark(status==='timeout'?'view-fallback':'view-ready');});
     try{
       if(transition){
         try{await transition.ready;}catch{s.progress=1;s.material.draw(1);s.transition=null;}

@@ -1,3 +1,4 @@
+import { staticArtwork } from '../graphics.mjs';
 /**
 * Ghost Fibers by David Haz / React Bits (MIT, docs/ReactBits-LICENSE.md), as integrated in Memento START V27:
 * budgeted background rendering and host lifecycle. NAV R13: generated from the V27 component as a vanilla mount
@@ -647,6 +648,11 @@ export function mountGhostFibers(container, props = {}, onFirstFrame) {
 		canvas.remove();
 		return null;
 	}
+	const info = gl.getExtension("WEBGL_debug_renderer_info");
+	if (info && staticArtwork(String(gl.getParameter(info.UNMASKED_RENDERER_WEBGL)))) {
+		canvas.remove();
+		return null;
+	}
 	const floatTargets = !!gl.getExtension("EXT_color_buffer_float");
 	const dots = link(gl, DOT_VERTEX, DOT_FRAGMENT, DOT_UNIFORMS);
 	const dust = link(gl, DUST_VERTEX, DOT_FRAGMENT, DUST_UNIFORMS);
@@ -745,7 +751,8 @@ export function mountGhostFibers(container, props = {}, onFirstFrame) {
 	let renderedAt = 0;
 	let adaptiveScale = 1;
 	let budgetFrames = 0, slowFrames = 0;
-	const hostActive = () => window.__TIDE_VISIBLE__ !== false && !document.documentElement.hasAttribute('data-memento-modal');
+	const hostActive = () => window.__TIDE_VISIBLE__ !== false && !document.documentElement.hasAttribute('data-memento-modal')
+		&& (onFirstFrame || !document.documentElement.hasAttribute('data-mm-phase'));
 	const toRgb = (value, fallback) => {
 		if (!probeContext || !value) return fallback;
 		const css = /^[0-9a-f]{3,8}$/i.test(value) ? `#${value}` : value;
