@@ -91,7 +91,7 @@ export function nativePage(source, slug) {
       if (index < 0) continue;
       const src = attr(parent.childNodes[index],'src');
       head.childNodes.push(...parseFragment(`<link rel="modulepreload" href="${escape(src)}">`).childNodes);
-      const entry = `<script type="module">await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));await (window.mementoSceneSettled || document.activeViewTransition?.finished)?.catch(()=>{});import(${JSON.stringify(src).replaceAll('<','\\u003c')});</script>`;
+      const entry = `<script type="module">await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));await window.mementoSceneCovered?.catch(()=>{});import(${JSON.stringify(src).replaceAll('<','\\u003c')});</script>`;
       parent.childNodes.splice(index,1,...parseFragment(entry).childNodes);
       break;
     }

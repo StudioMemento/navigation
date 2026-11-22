@@ -1,73 +1,112 @@
-// The three closed contours of DEV_20_Icon.svg. Collinear vertices on the slash
-// let it open into a six-sided band. Together the open faces tile the viewport.
-const faces = [
-  {open:[[0,0],[84,0],[72,12],[42,42],[18,66],[0,84]], mark:[[49.61,49.60],[106.30,106.30],[95.67,116.93],[63.78,85.04],[63.78,148.82],[49.61,162.99]]},
-  {open:[[0,84],[0,100],[16,100],[100,16],[100,0],[84,0]], mark:[[49.61,170.08],[49.61,185],[49.61,191.34],[170.08,70.87],[170.08,56],[170.08,49.61]]},
-  {open:[[100,100],[16,100],[28,88],[58,58],[82,34],[100,16]], mark:[[170.08,191.34],[113.39,134.64],[124.02,124.01],[155.91,155.91],[155.91,92.12],[170.08,77.95]]}
-];
-const center = [109.845,120.47];
-const rounded = value => +value.toFixed(3);
-function pointsAt(t) {
-  const contours = faces.map(face => face.open.map((point,i) => point.map((edge,axis) => {
-    const percent = rounded(edge+(50-edge)*t);
-    const units = rounded((face.mark[i][axis]-center[axis])*t);
-    return units ? `calc(${percent}% ${units<0?'-':'+'} ${Math.abs(units)} * var(--mm-unit))` : `${percent}%`;
-  }).join(' ')));
-  // Walk each contour out and back on the same zero-width bridge (CSS polygon has one path).
-  const anchor = contours[0][0];
-  return contours.flatMap(points => [...points,points[0],anchor]).join(',');
-}
-const icon = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="49.61 49.60 120.47 141.74"><g fill="#fae4cd">${faces.map(face=>`<polygon points="${face.mark.map(p=>p.join(',')).join(' ')}"/>`).join('')}</g></svg>`;
-const iconUrl = `url("data:image/svg+xml,${encodeURIComponent(icon)}")`;
-const stages = [['open',0],['touch',.085],['icon-shape',1]];
-const shapes = stages.map(([name,t])=>`--mm-${name}:${pointsAt(t)};`).join('');
+import { createMaterial } from './scene-material.mjs';
+
 const css = `@media (prefers-reduced-motion:no-preference) and (forced-colors:none){
 @view-transition{navigation:auto}
-:root{--mm-unit:clamp(.88px,.175vmin,1.42px);--mm-icon:${iconUrl};--mm-field:#121110;${shapes}}
-::view-transition{pointer-events:none;background:var(--mm-field) var(--mm-icon) center/calc(120.47 * var(--mm-unit)) calc(141.74 * var(--mm-unit)) no-repeat}
-::view-transition-group(root){animation:none}
-::view-transition-image-pair(root){isolation:isolate}
-::view-transition-old(root),::view-transition-new(root){width:100%;height:100%;mix-blend-mode:normal;object-position:center;animation-duration:760ms;animation-timing-function:linear;animation-delay:var(--mm-offset,0ms);animation-fill-mode:both}
-::view-transition-old(root){z-index:1;animation-name:mm-gather}
-::view-transition-new(root){z-index:2;animation-name:mm-unfold}
-@keyframes mm-gather{0%{clip-path:polygon(evenodd,var(--mm-open));opacity:1}14%{clip-path:polygon(evenodd,var(--mm-touch));animation-timing-function:cubic-bezier(.45,.02,.22,1)}37%{clip-path:polygon(evenodd,var(--mm-icon-shape));opacity:1}43%,100%{clip-path:polygon(evenodd,var(--mm-icon-shape));opacity:0}}
-@keyframes mm-unfold{0%,58%{clip-path:polygon(evenodd,var(--mm-icon-shape));opacity:0}63%{clip-path:polygon(evenodd,var(--mm-icon-shape));opacity:1;animation-timing-function:cubic-bezier(.38,.02,.22,1)}100%{clip-path:polygon(evenodd,var(--mm-open));opacity:1}}
-.mm-iris-veil,.mm-iris-imprint{position:fixed;inset:0;pointer-events:none;z-index:2147483647;contain:strict}
-.mm-iris-veil{background:var(--mm-field);--mm-rim:0% 0%,100% 0%,100% 100%,0% 100%,0% 0%}
-.mm-iris-veil[data-phase=depart]{animation:mm-touch 104ms linear both}
-@keyframes mm-touch{from{clip-path:polygon(evenodd,var(--mm-rim),var(--mm-open),0% 0%)}to{clip-path:polygon(evenodd,var(--mm-rim),var(--mm-touch),0% 0%)}}
-.mm-iris-veil[data-phase=arrive]{animation:mm-in 390ms cubic-bezier(.38,.02,.22,1) both}
-@keyframes mm-in{0%,12%{clip-path:polygon(evenodd,var(--mm-rim),var(--mm-icon-shape),0% 0%)}100%{clip-path:polygon(evenodd,var(--mm-rim),var(--mm-open),0% 0%)}}
-.mm-iris-imprint{background:var(--mm-icon) center/calc(120.47 * var(--mm-unit)) calc(141.74 * var(--mm-unit)) no-repeat;animation:mm-ink 160ms ease-out both}
-@keyframes mm-ink{0%,34%{opacity:1}100%{opacity:0}}
-}`;
+.mm-weave{display:block;fill:none;stroke:none;position:fixed;inset:0;width:100%;height:100%;z-index:2147483647;pointer-events:none;overflow:hidden;view-transition-name:mm-material}
+.mm-weave>canvas{display:block;width:100%;height:100%;position:absolute;inset:0;pointer-events:none}
+.mm-weave .mm-seal,.mm-weave .mm-glow{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);pointer-events:none}
+.mm-weave .mm-glow{background:radial-gradient(ellipse at center,rgba(251,159,68,.22),rgba(226,112,42,.075) 36%,transparent 69%)}
+.mm-weave .mm-seal{overflow:visible;filter:drop-shadow(0 0 3px #f49b4c)}
+::view-transition{pointer-events:none}
+::view-transition-group(root){animation:mm-keep 12s step-end both}
+@keyframes mm-keep{from,to{opacity:1}}
+::view-transition-image-pair(root),::view-transition-image-pair(mm-material){isolation:isolate}
+::view-transition-old(root),::view-transition-new(root),::view-transition-new(mm-material){animation:none;mix-blend-mode:normal;width:100%;height:100%}
+::view-transition-old(root){z-index:1;opacity:1}
+:root[data-mm-feed="new"]::view-transition-old(root){opacity:0}
+::view-transition-group(mm-material){animation:none;z-index:2;pointer-events:none}
+::view-transition-new(mm-material){opacity:1}
+:root[data-mm-phase="hold"] .mm-weave .mm-glow{animation:mm-ember 2.2s ease-in-out infinite alternate}
+@keyframes mm-ember{from{opacity:.68}to{opacity:1}}
+}
+@media (prefers-reduced-motion:reduce),(forced-colors:active){.mm-weave{display:none!important}}`;
 
-// Register before pagereveal (including a bfcache restore). This function is embedded in the head.
-function observeScene() {
+// Runs in the head of all six routes, before pagereveal and deferred page scripts.
+function observeScene(createMaterial) {
   const root=document.documentElement;
   let width=-1,height=-1;
-  function fit() {
-    const w=root.clientWidth || innerWidth, h=Math.round(window.visualViewport?.height || innerHeight);
+  function fit(){
+    const w=root.clientWidth||innerWidth,h=Math.round(window.visualViewport?.height||innerHeight);
     if(w!==width){width=w;const wide=Math.max(0,Math.min(1,(w-768)/256));root.style.setProperty('--layout-wide',String(wide));root.style.setProperty('--board-ratio',String(1+wide));}
     if(h!==height){height=h;root.style.setProperty('--memento-nav-height',h+'px');}
   }
   fit();window.addEventListener('resize',fit,{passive:true});window.visualViewport?.addEventListener('resize',fit,{passive:true});
-  window.mementoGo=href=>location.assign(href);
+  window.mementoGo=href=>location.assign(new URL(href,location.href).href);
   if(window.top!==window)return;
   const motion=matchMedia('(prefers-reduced-motion:no-preference) and (forced-colors:none)');
-  const key='memento.scene.v3';
   const sections=new Set(['/','/studio','/memento','/services','/projects','/levelup','/start']);
   const path=url=>url.pathname.replace(/\/+$/,'')||'/';
-  function crossing(source,dest) {
+  const key='memento.weave.v1', gather=740, rest=230, unfold=840;
+  let session=null,pending='';
+  function crossing(source,dest){
     if(!source || !dest)return false;
-    try {const a=new URL(source,location.href), b=new URL(dest,location.href);
+    try{const a=new URL(source,location.href),b=new URL(dest,location.href);
       return a.origin===location.origin && b.origin===a.origin && path(a)!==path(b) && sections.has(path(a)) && sections.has(path(b));
-    } catch {return false;}
+    }catch{return false;}
   }
-  let veil,imprint,began=0,pending='';
-  function clear(){veil?.remove();imprint?.remove();veil=imprint=null;began=0;pending='';}
-  // The destination is assigned once, including a rapid second tap or a CTA that also has a native href.
-  window.mementoGo=href=>{const target=new URL(href,location.href).href;if(target===pending || target===location.href)return;if(!window.navigation)outgoing(target);location.assign(target);};
+  const mark=name=>performance.mark?.('memento:'+name);
+  const frames=()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
+  function sampledBoxes(){
+    const nav=document.querySelector('memento-nav')?.shadowRoot;
+    const boxes=[];
+    function take(elements,limit){
+      for(const el of elements){
+        const r=el.getBoundingClientRect();
+        const l=Math.max(0,r.left),t=Math.max(0,r.top),w=Math.min(width,r.right)-l,h=Math.min(height,r.bottom)-t;
+        if(w<12 || h<8 || getComputedStyle(el).visibility==='hidden')continue;
+        boxes.push([l/width,t/height,w/width,h/height].map(n=>Math.round(n*1000)/1000));
+        if(--limit===0)break;
+      }
+    }
+    take(document.querySelectorAll('main h1,main h2,main h3,#hub .card[data-slot="active"] h2'),6);
+    take(document.querySelectorAll('main [data-vfx="card"],.project-tile,.bundle-card,#hub .card:not([hidden]),#experience canvas'),6);
+    if(nav)take(nav.querySelectorAll('a'),6);
+    return boxes;
+  }
+  function stop(){
+    const s=session;session=null;pending='';
+    if(!s)return;
+    cancelAnimationFrame(s.raf);clearTimeout(s.watch);s.abort.abort();s.cover?.();s.material.remove();
+    if(s.transition){s.transition.ready.catch(()=>{});s.transition.skipTransition();}
+    delete root.dataset.mmPhase;delete root.dataset.mmFeed;
+    window.mementoSceneCovered=undefined;
+  }
+  function start(boxes,p){
+    const material=createMaterial();material.sources(boxes);
+    const s={material,boxes,progress:p,raf:0,watch:0,heldAt:0,abort:new AbortController()};
+    session=s;material.draw(p);return s;
+  }
+  function step(s,target,duration,done){
+    cancelAnimationFrame(s.raf);
+    const from=s.progress,at=performance.now(),length=Math.abs(target-from)*duration;
+    const frame=now=>{
+      if(session!==s)return;
+      const t=length?Math.min(1,Math.max(0,(now-at)/length)):1;
+      s.progress=from+(target-from)*t;s.material.draw(s.progress);
+      if(t<1)s.raf=requestAnimationFrame(frame);else{ s.raf=0;done(); }
+    };
+    frame(at);
+  }
+  function hold(s){
+    if(!s.heldAt)s.heldAt=Date.now();
+    root.dataset.mmPhase='hold';s.cover?.();mark('emblem');
+  }
+  function outgoing(to){
+    if(!crossing(location.href,to))return;
+    if(pending===to)return;
+    const p=session?.progress||0;stop();pending=new URL(to,location.href).href;
+    if(!motion.matches || !document.body)return;
+    const s=start(sampledBoxes(),p);
+    root.dataset.mmPhase='gather';mark('depart');step(s,1,gather,()=>hold(s));
+    // A canceled or broken network request must also leave the original links usable.
+    s.watch=setTimeout(()=>{if(session===s)stop();},8000);
+  }
+  window.mementoGo=href=>{
+    const target=new URL(href,location.href).href;
+    if(target===pending || target===location.href)return;
+    if(!window.navigation)outgoing(target);
+    location.assign(target);
+  };
   window.addEventListener('click',e=>{
     if(e.button || e.ctrlKey || e.shiftKey || e.metaKey || e.altKey || e.defaultPrevented)return;
     const link=e.composedPath().find(node=>node instanceof HTMLAnchorElement);
@@ -75,54 +114,115 @@ function observeScene() {
     const dock=link.getRootNode()?.host?.localName==='memento-nav';
     if(link.href===pending || (dock && link.href===location.href)){e.preventDefault();e.stopPropagation();}
   },true);
-  function add(className){const el=document.createElement('div');el.className=className;el.setAttribute('aria-hidden','true');document.body.append(el);return el;}
-  function outgoing(to){
-    if(!crossing(location.href,to))return;
-    if(veil && veil.dataset.phase!=='depart')clear();
-    pending=new URL(to,location.href).href;
-    if(!motion.matches || !document.body)return;
-    if(!veil){began=performance.now();veil=add('mm-iris-veil');veil.dataset.phase='depart';}
-  }
-  function fallback(){
-    if(!motion.matches || !document.body)return;
-    clear();veil=add('mm-iris-veil');veil.dataset.phase='arrive';imprint=add('mm-iris-imprint');
-    const shown=veil,animation=shown.getAnimations()[0];
-    window.mementoSceneSettled=animation?.finished.catch(()=>{});
-    if(animation)animation.finished.then(()=>{if(veil===shown)clear();},()=>{});else clear();
-  }
   if(window.navigation){
     window.navigation.addEventListener('navigate',e=>{
       if(e.defaultPrevented || e.hashChange || e.navigationType==='reload' || e.downloadRequest!=null || e.formData)return;
-      if(!crossing(location.href,e.destination.url)){clear();return;}
-      outgoing(e.destination.url);e.signal.addEventListener('abort',clear,{once:true});
+      if(!crossing(location.href,e.destination.url)){stop();return;}
+      outgoing(e.destination.url);
+      const current=session;e.signal.addEventListener('abort',()=>{if(current===session)stop();},{once:true});
     });
-    window.navigation.addEventListener('navigateerror',clear);
+    window.navigation.addEventListener('navigateerror',stop);
   }else window.addEventListener('click',e=>{
-    const a=e.composedPath().find(el=>el instanceof HTMLAnchorElement);
+    const a=e.composedPath().find(n=>n instanceof HTMLAnchorElement);
     if(a && !e.defaultPrevented && !e.button && !e.metaKey && !e.ctrlKey && !e.shiftKey && !e.altKey && !a.hasAttribute('download') && ['','_self','_top','_parent'].includes(a.target))outgoing(a.href);
   });
+  function remember(dest){
+    if(!crossing(location.href,dest))return;
+    const s=session;
+    try{sessionStorage.setItem(key,JSON.stringify({to:dest,time:Date.now(),p:s?.progress||0,held:s?.heldAt||0,boxes:s?.boxes||[]}));}catch{}
+  }
   window.addEventListener('pageswap',e=>{
     e.viewTransition?.ready.catch(()=>{});
-    const dest=e.activation?.entry?.url;
-    if(crossing(location.href,dest))try{sessionStorage.setItem(key,JSON.stringify([dest,Math.min(104,began?performance.now()-began:0),Date.now()]));}catch{}
-    clear();
+    remember(e.activation?.entry?.url||pending);stop();
   });
-  function reveal(transition){
-    clear();const activation=window.navigation?.activation;
+  window.addEventListener('pagehide',()=>{if(pending)remember(pending);stop();});
+
+  // Only media that will actually occupy the first viewport participates in the handoff.
+  async function firstView(signal){
+    if(document.readyState==='loading')await new Promise(r=>document.addEventListener('DOMContentLoaded',r,{once:true,signal}));
+    if(signal.aborted)return;
+    await frames();
+    const images=[];
+    for(const img of document.images){
+      if(!img.currentSrc && !img.getAttribute('src'))continue;
+      const r=img.getBoundingClientRect();
+      if(r.width<38 || r.height<30 || r.right<=0 || r.bottom<=0 || r.left>=width || r.top>=height || getComputedStyle(img).visibility==='hidden')continue;
+      if(images.some(other=>other.currentSrc && other.currentSrc===img.currentSrc))continue;
+      images.push(img);if(images.length===6)break;
+    }
+    // Studio's first exterior camera frame is inline CSS while the interactive model streams.
+    const poster=document.querySelector('#experience #loading');
+    if(poster && !document.body.classList.contains('ready')){
+      const url=getComputedStyle(poster,'::before').backgroundImage.match(/^url\(["']?(.*?)["']?\)$/);
+      if(url){const img=new Image();img.src=url[1];images.push(img);}
+    }
+    await Promise.allSettled([document.fonts?.load('400 16px Inter'),...images.map(img=>img.decode())]);
+    if(!signal.aborted)await frames();
+  }
+  function bounded(promise,ms,signal){
+    return new Promise(resolve=>{
+      const finish=value=>{clearTimeout(timer);signal.removeEventListener('abort',abort);resolve(value);};
+      const abort=()=>finish('canceled');
+      const timer=setTimeout(()=>finish('timeout'),ms);
+      signal.addEventListener('abort',abort,{once:true});
+      promise.then(()=>finish('ready'),()=>finish('error'));
+      if(signal.aborted)abort();
+    });
+  }
+  async function warmFrame(s){
+    const studio=root.dataset.mementoNative==='studio';
+    const target=studio?document.body:root;
+    const ready=()=>studio?target.classList.contains('ready'):
+      target.classList.contains('vfx-live') || target.classList.contains('vfx-off') || document.body.dataset.renderer==='fallback';
+    if(ready())return;
+    let observer;
+    const change=new Promise(resolve=>{
+      observer=new MutationObserver(()=>{if(ready())resolve();});
+      observer.observe(target,{attributes:true,attributeFilter:['class']});
+    });
+    try{await bounded(change,studio?980:400,s.abort.signal);}finally{observer.disconnect();}
+  }
+  async function reveal(transition){
+    stop();
+    const activation=window.navigation?.activation;
     const type=activation?.navigationType || performance.getEntriesByType('navigation')[0]?.type;
     let record;try{record=JSON.parse(sessionStorage.getItem(key));sessionStorage.removeItem(key);}catch{}
-    const matched=Array.isArray(record) && record[0]===location.href && Date.now()-record[2]<15000;
-    const from=activation ? activation.from?.url : window.history?.length>1 ? document.referrer : '';
-    const internal=type!=='reload' && (matched||crossing(from,location.href));
-    if(!internal || !motion.matches){if(transition){transition.ready.catch(()=>{});transition.skipTransition();}return;}
-    root.dataset.mementoArrival='page';root.style.setProperty('--mm-offset',`-${matched?record[1]:0}ms`);
-    if(!transition){fallback();return;}
-    window.mementoSceneSettled=transition.finished.catch(()=>{});
-    transition.ready.catch(()=>{if(!document.hidden && !began)fallback();});
+    const matched=record?.to===location.href && Date.now()-record.time<20000;
+    const from=activation?activation.from?.url:window.history?.length>1?document.referrer:'';
+    if(type==='reload' || !(matched||crossing(from,location.href)) || !motion.matches || !document.body){
+      if(transition){transition.ready.catch(()=>{});transition.skipTransition();}return;
+    }
+    root.dataset.mementoArrival='page';
+    const s=start(matched?record.boxes:sampledBoxes(),transition?(matched?record.p:0):1);
+    s.heldAt=matched?record.held:0;s.transition=transition;
+    window.mementoSceneCovered=new Promise(r=>{s.cover=r;});
+    const signal=s.abort.signal;
+    root.dataset.mmPhase='gather';root.dataset.mmFeed='old';
+    const view=bounded(firstView(signal),6000,signal).then(status=>{if(!signal.aborted)mark(status==='timeout'?'view-fallback':'view-ready');});
+    try{
+      if(transition){
+        try{await transition.ready;}catch{s.progress=1;s.material.draw(1);s.transition=null;}
+      }
+      if(session!==s)return;
+      const covered=window.mementoSceneCovered;
+      step(s,1,gather,()=>hold(s));await covered;
+      if(session!==s)return;
+      root.dataset.mmFeed='new';
+      // Once the emblem covers every pixel the outgoing snapshot has done its job.
+      // Let the incoming document paint, decode images and warm its renderer normally.
+      if(s.transition){s.transition.skipTransition();s.transition=null;}
+      const dwell=Math.max(0,rest-(Date.now()-s.heldAt));
+      await Promise.all([view,warmFrame(s),new Promise(r=>setTimeout(r,dwell))]);
+      if(session!==s)return;
+      s.material.sources(sampledBoxes());s.material.draw(1);
+      await frames();if(session!==s)return;
+      root.dataset.mmPhase='unfold';mark('open');
+      step(s,0,unfold,()=>{mark('done');stop();});
+    }catch{if(session===s)stop();}
   }
   if('onpagereveal' in window)window.addEventListener('pagereveal',e=>reveal(e.viewTransition));
   else window.addEventListener('pageshow',()=>reveal(null));
-  window.addEventListener('pagehide',clear);window.addEventListener('keydown',e=>{if(e.key==='Escape')clear();});
-  motion.addEventListener('change',clear);
+  window.addEventListener('keydown',e=>{if(e.key==='Escape')stop();});
+  motion.addEventListener('change',stop);
 }
-export const sceneHead=`<style id="memento-scene-shape">${css}</style><script id="memento-scene-navigation">(${observeScene.toString()})()</script>`;
+export const sceneHead=`<style id="memento-scene-shape">${css}</style><script id="memento-scene-navigation">(${observeScene.toString()})(${createMaterial.toString()})</script>`;

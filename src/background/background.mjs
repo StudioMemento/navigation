@@ -1,9 +1,9 @@
 import { NAV_BACKGROUND } from './preset.mjs';
 
-/** Let real content paint before optional GPU work. Navigation never waits for this promise. */
+/** Warm the optional renderer while the formed emblem covers the incoming first frame. */
 export function afterFirstPaint() {
   return new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)))
-    .then(() => window.mementoSceneSettled || document.activeViewTransition?.finished)
+    .then(() => window.mementoSceneCovered)
     .catch(() => {});
 }
 
