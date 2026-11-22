@@ -108,6 +108,7 @@ test('the START background: five distinct layers, red/amber preset, no grain any
   assert.equal(START_BACKGROUND.grain, 0); assert.equal(VFX.post.grain, 0);
   assert.equal(START_BACKGROUND.glowColor, '#ef4444'); assert.equal(START_BACKGROUND.threads, 160);
   assert.equal(NAV_BACKGROUND.dpr, 1); assert.equal(NAV_BACKGROUND.soft, 1);
+  assert.equal(NAV_BACKGROUND.intro, false);
   const src = readFileSync(new URL('../src/background/ghost-fibers.mjs', import.meta.url), 'utf8');
   assert.match(src, /1e3 \/ 30|1000 \/ 30/);                                  // 30 drawings a second
   assert.match(src, /uSoft/);                                                  // the navigation's band blur

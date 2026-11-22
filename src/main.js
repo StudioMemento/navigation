@@ -44,7 +44,9 @@ const cards=PAGES.map((p,i)=>{
 // One WebGL2 context, the START's VFX engine. Any failure leaves the plain DOM navigation (images and titles).
 // The START's background (Ghost Fibers, its own canvas and 30 fps budget) sits behind; touches are one shared field.
 const touches=new TouchPulseField();
-const stopBackground=params.get('bkg')==='0'?()=>{}:startBackground(document.getElementById('bkg'));
+const backdrop=document.getElementById('bkg');
+backdrop.hidden=params.get('bkg')==='0';
+const stopBackground=backdrop.hidden?()=>{}:startBackground(backdrop);
 // The Home alone loads its carousel renderer. Native section entries load only their own content.
 function bootEngine(){
  if(engineBooted||disposed)return;engineBooted=true;

@@ -175,7 +175,7 @@ export class VfxRenderer {
     this.live = true;
     root().classList.add('vfx-live'); root().classList.remove('vfx-boot');
     this.hooks.onLive?.();
-    if (this.reduced) { this.load = 1; this.loaded = true; }
+    if (this.reduced || root().hasAttribute('data-memento-arrival')) { this.load = 1; this.loaded = true; }
     this.wakeUp();
   }
 

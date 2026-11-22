@@ -3,7 +3,6 @@ import { navigationLink, STATIONS, station } from '/navigation/core.mjs?v=12.0.0
 
 const root = document.documentElement;
 const section = station(root.dataset.mementoNative);
-const reduced = matchMedia('(prefers-reduced-motion: reduce)');
 const pageUrl = (id, view = 'page') => view === 'world' ? '/#'+station(id).slug : station(id).path+'/';
 const modalOpen = () => root.dataset.demoExpanded === 'true' || root.dataset.overlayOpen === 'true' ||
   document.body.classList.contains('modal-open') || !!document.querySelector('dialog[open],[aria-modal="true"]:not([hidden]):not([aria-hidden="true"])');
@@ -43,7 +42,7 @@ if (section) {
   document.addEventListener('toggle',event=>{if(event.target instanceof HTMLDialogElement)syncOverlay();},true);
   window.addEventListener('pageshow',syncOverlay);
   syncOverlay();
-  if(section.id==='start' && !reduced.matches && !matchMedia('(forced-colors: active)').matches) {
+  if(section.id==='start') {
     import('/memento-ui/effects.mjs').then(fx=>fx.mountBackground()).catch(()=>{});
   }
   // Retain explicit return and intentional overscroll at the end of a new gesture.

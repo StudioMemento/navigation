@@ -11,5 +11,5 @@ export const START_BACKGROUND = Object.freeze({
   pulseOnClick: true, intro: true, lightMode: false,
 });
 
-/** Navigation framing: DPR 1 like the START, and the navigation's blur of the outer 20% on the background too. */
-export const NAV_BACKGROUND = Object.freeze({ ...START_BACKGROUND, dpr: 1, soft: 1 });
+/** The native site starts on the composed fibres, with the same framing as its stills. */
+export const NAV_BACKGROUND = Object.freeze({ ...START_BACKGROUND, intro: false, dpr: 1, soft: 1 });
