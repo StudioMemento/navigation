@@ -101,14 +101,14 @@ test('rapid touches are bounded; one passive contact event, never duplicated by 
   abort.abort(); fire('pointerdown'); assert.equal(f.started, 1);
 });
 
-test('the START background: five distinct layers, red/amber preset, no grain anywhere', () => {
-  assert.equal(layerCount(START_BACKGROUND.layers), 5);
-  assert.equal(new Set(FIBER_LAYERS.map(l => l.place.join(','))).size, 5);
-  assert.equal(layerCount(100), 5); assert.equal(layerCount(-1), 1);
+test('the START background: seven distinct depth planes, red/amber preset, no grain anywhere', () => {
+  assert.equal(layerCount(START_BACKGROUND.layers), 7);
+  assert.equal(new Set(FIBER_LAYERS.map(l => l.place[1])).size, 7);
+  assert.equal(layerCount(100), 7); assert.equal(layerCount(-1), 1);
   assert.equal(START_BACKGROUND.grain, 0); assert.equal(VFX.post.grain, 0);
   assert.equal(START_BACKGROUND.glowColor, '#ef4444'); assert.equal(START_BACKGROUND.threads, 160);
   assert.equal(NAV_BACKGROUND.dpr, 1); assert.equal(NAV_BACKGROUND.soft, 1);
-  assert.equal(NAV_BACKGROUND.intro, false);
+  assert.equal(NAV_BACKGROUND.intro, false); assert.equal(NAV_BACKGROUND.volume, 0); assert.equal(NAV_BACKGROUND.perspective, 0);
   const src = readFileSync(new URL('../src/background/ghost-fibers.mjs', import.meta.url), 'utf8');
   assert.match(src, /1e3 \/ 30|1000 \/ 30/);                                  // 30 drawings a second
   assert.match(src, /uSoft/);                                                  // the navigation's band blur

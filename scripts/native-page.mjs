@@ -95,8 +95,7 @@ export function nativePage(source, slug) {
   // Import maps must precede all modules, including modulepreload.
   const firstResource = head.childNodes.findIndex(n => ['script','link','style'].includes(n.tagName));
   head.childNodes.splice(firstResource < 0 ? head.childNodes.length : firstResource, 0, ...parseFragment(tags.join('')).childNodes);
-  // Studio fills the viewport with its own 3D scene. The other sections share the atmospheric backdrop.
-  if (slug !== 'studio') body.childNodes.unshift(...parseFragment('<div id="site-atmosphere" aria-hidden="true"></div>').childNodes);
+  body.childNodes.unshift(...parseFragment('<div id="site-atmosphere" aria-hidden="true"></div>').childNodes);
   body.childNodes.push(...parseFragment('<memento-nav active="'+section.id+'" mode="host" current="page"></memento-nav>').childNodes);
   const staticLinks = ['<a href="/">Home</a>', ...STATIONS.map(s=>'<a href="'+s.path+'/">'+escape(s.label)+'</a>')];
   body.childNodes.push(...parseFragment('<noscript data-memento-static-nav><nav class="memento-static-nav" aria-label="Navigazione Memento">'+staticLinks.join(' ')+'</nav></noscript>').childNodes);

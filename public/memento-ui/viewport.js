@@ -17,96 +17,102 @@
       root.style.setProperty('--memento-nav-height', height + 'px');
     }
   }
-  // An ordinary document navigation keeps its native timing, focus, history and scroll.
-  // Play the reveal on the destination once its content can actually be painted.
-  const quiet = matchMedia('(prefers-reduced-motion: reduce), (forced-colors: active)');
-  let paintFrame = 0;
-  let release, paintObserver;
-  function clearReveal() {
-    cancelAnimationFrame(paintFrame);
-    paintObserver?.disconnect();
-    delete root.dataset.mementoPreparing;
-    delete root.dataset.mementoEnter;
-    delete root.dataset.mementoLeave;
-    release?.();
-    release = undefined;
-  }
-  function acknowledge(destination) {
-    if (quiet.matches || !destination) return;
-    const url = new URL(destination, location.href);
-    if (url.origin === location.origin && url.pathname !== location.pathname) root.dataset.mementoLeave = '';
-  }
-  if (window.navigation) {
-    window.navigation.addEventListener('navigate', event => {
-      if (event.defaultPrevented || event.hashChange || event.downloadRequest != null || event.formData) return;
-      acknowledge(event.destination.url);
-      event.signal.addEventListener('abort', () => { delete root.dataset.mementoLeave; }, {once:true});
-    });
-  } else {
-    window.addEventListener('click', event => {
-      if (event.defaultPrevented || event.button || event.metaKey || event.ctrlKey || event.altKey || event.shiftKey) return;
-      const link = event.composedPath().find(node => node instanceof HTMLAnchorElement);
-      if (link && !link.hasAttribute('download') && ['', '_self', '_top', '_parent'].includes(link.target)) acknowledge(link.href);
-    });
-  }
-  function prepareArrival(restored = false) {
-    clearReveal();
-    delete root.dataset.mementoArrival;
-    const activation = window.navigation?.activation;
-    const type = restored ? 'traverse' : activation?.navigationType || performance.getEntriesByType('navigation')[0]?.type;
-    if (type === 'reload') return;
-    const previous = activation?.from?.url || document.referrer;
-    const historyVisit = type === 'traverse' || type === 'back_forward';
-    if (previous) {
-      const from = new URL(previous);
-      if (from.origin !== location.origin || (!historyVisit && from.pathname === location.pathname)) return;
-    } else if (!historyVisit) return;
-    const direction = historyVisit && activation?.from && activation.from.index > activation.entry?.index ? 'back' : 'forward';
-    // Keep this marker for late-loading renderers, including the Home when returning from a section.
-    root.dataset.mementoArrival = direction;
-    if (quiet.matches) return;
-    window.mementoPageReveal = new Promise(resolve => { release = resolve; });
-    let queued = false;
-    function present() {
-      if (queued || !release) return;
-      queued = true;
-      paintObserver?.disconnect();
-      paintFrame = requestAnimationFrame(() => {
-        // Give the edge a composited frame before its clock starts.
-        root.dataset.mementoPreparing = direction;
-        paintFrame = requestAnimationFrame(() => {
-          delete root.dataset.mementoPreparing;
-          root.dataset.mementoEnter = direction;
-          if (document.getAnimations && !document.getAnimations().some(a => a.animationName === 'memento-page-reveal')) clearReveal();
-        });
-      });
-    }
-    function contentReady() {
-      if (!release) return;
-      if (restored || !window.PerformanceObserver?.supportedEntryTypes?.includes('paint') ||
-          performance.getEntriesByName('first-contentful-paint').length) { present(); return; }
-      paintObserver = new PerformanceObserver(list => {
-        if (list.getEntriesByName('first-contentful-paint').length) present();
-      });
-      paintObserver.observe({type:'paint', buffered:true});
-      window.addEventListener('pageshow', present, {once:true});
-      if (document.readyState === 'complete') present();
-    }
-    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', contentReady, {once:true});
-    else contentReady();
-  }
-  function finishAnimation(event) {
-    if (event.target !== root) return;
-    if (event.animationName === 'memento-page-reveal') clearReveal();
-    if (event.animationName === 'memento-page-leave') delete root.dataset.mementoLeave;
-  }
-  document.addEventListener('animationend', finishAnimation);
-  document.addEventListener('animationcancel', finishAnimation);
-  window.addEventListener('pagehide', clearReveal);
-  window.addEventListener('pageshow', event => { if (event.persisted) prepareArrival(true); });
-  quiet.addEventListener('change', () => { if (quiet.matches) clearReveal(); });
-  prepareArrival();
   fit();
   window.addEventListener('resize', fit, {passive:true});
   window.visualViewport?.addEventListener('resize', fit, {passive:true});
+})();
+
+// Register before first paint, including on a document restored from the history cache.
+(() => {
+  const root=document.documentElement;
+  const quiet=matchMedia('(prefers-reduced-motion: reduce), (forced-colors: active)');
+  const routes=new Set(['/','/studio','/memento','/services','/projects','/levelup','/start']);
+  const route=path=>path.replace(/\/+$/,'')||'/';
+  const sameSite=url=>url.origin===location.origin && routes.has(route(url.pathname));
+  let engine,current,incoming,pending,parkTimer;
+  const module=()=>engine??=(import('/memento-ui/scene.mjs').catch(error=>{engine=undefined;throw error;}));
+  function settle(){incoming?.resolve();incoming=undefined;}
+  function stop(){
+    current?.abort();current=undefined;pending=undefined;
+    clearTimeout(parkTimer);root.removeAttribute('data-memento-parked');settle();
+  }
+  async function animate(phase,historyTransition){
+    current?.abort();const task=new AbortController();current=task;
+    // Native navigation must still finish if a shader, a stylesheet, a frame or the module stalls.
+    const timer=setTimeout(()=>task.abort(),phase==='pair'?2100:1250);
+    const cancelled=new Promise(resolve=>task.signal.addEventListener('abort',resolve,{once:true}));
+    try{await Promise.race([module().then(m=>m.playScene(phase,task.signal,historyTransition)),cancelled]);}
+    catch{historyTransition?.skipTransition();}
+    finally{clearTimeout(timer);if(current===task)current=undefined;}
+  }
+  function arrival(restored=false){
+    const activation=window.navigation?.activation;
+    const type=restored?'traverse':activation?.navigationType||performance.getEntriesByType('navigation')[0]?.type;
+    const history=type==='traverse'||type==='back_forward';
+    if(type==='reload'||!sameSite(new URL(location.href)))return;
+    const previous=activation?.from?.url||(!history&&document.referrer);
+    if(previous){const from=new URL(previous);if(!sameSite(from)||route(from.pathname)===route(location.pathname))return;}
+    else if(!history)return;
+    const direction=history&&activation?.from?.index>activation?.entry?.index?'back':'forward';
+    root.dataset.mementoArrival=direction;
+    if(quiet.matches)return;
+    let resolve;window.mementoPageReveal=new Promise(done=>{resolve=done;});
+    incoming={history,resolve,started:false};
+    // Native history captures the uncovered destination. Clicks carry the same icon across documents.
+    if(!history||!('onpagereveal' in window))root.setAttribute('data-memento-parked','');
+  }
+  function enter(transition){
+    const run=incoming;if(!run||run.started||document.hidden)return;
+    run.started=true;
+    if(!transition)root.setAttribute('data-memento-parked','');
+    const launch=()=>{
+      if(incoming!==run)return;
+      if(quiet.matches){stop();return;}
+      void animate(transition?'pair':'in',transition).finally(()=>{
+        if(incoming===run){root.removeAttribute('data-memento-parked');settle();}
+      });
+    };
+    if(document.readyState==='loading'&&!transition)document.addEventListener('DOMContentLoaded',launch,{once:true});
+    else launch();
+  }
+  window.addEventListener('pagereveal',event=>{
+    if(!incoming && window.navigation?.activation?.navigationType==='traverse')arrival(true);
+    if(event.viewTransition && incoming?.history && !quiet.matches){enter(event.viewTransition);}
+    else {event.viewTransition?.skipTransition();enter();}
+  });
+  window.addEventListener('pageshow',event=>{
+    if(event.persisted && !incoming)arrival(true);
+    enter();
+  });
+  document.addEventListener('visibilitychange',()=>{if(!document.hidden)enter();});
+  function follow(url){
+    location.assign(url.href);
+    // A cancelled or failed browser navigation must release the original page.
+    clearTimeout(parkTimer);parkTimer=setTimeout(stop,4000);
+  }
+  window.mementoGo=value=>{
+    const url=new URL(value,location.href);
+    if(!sameSite(url)||route(url.pathname)===route(location.pathname)||quiet.matches||document.hidden){location.assign(url.href);return;}
+    if(pending){pending.url=url;return;}
+    stop();const next={url};pending=next;
+    const hint=document.createElement('link');hint.rel='prefetch';hint.as='document';hint.href=url.href.split('#')[0];document.head.append(hint);
+    void animate('out').then(()=>{
+      hint.remove();if(pending!==next)return;
+      root.setAttribute('data-memento-parked','');follow(next.url);
+    });
+  };
+  window.addEventListener('click',event=>{
+    if(event.defaultPrevented||event.button!==0||event.metaKey||event.ctrlKey||event.shiftKey||event.altKey||quiet.matches)return;
+    const a=event.composedPath().find(node=>node instanceof HTMLAnchorElement);
+    if(!a||a.hasAttribute('download')||!['','_self','_top','_parent'].includes(a.target)||window.top!==window)return;
+    const url=new URL(a.href);if(!sameSite(url)||route(url.pathname)===route(location.pathname))return;
+    event.preventDefault();window.mementoGo(url.href);
+  });
+  window.addEventListener('pageswap',event=>{if(pending||quiet.matches||event.activation?.navigationType!=='traverse')event.viewTransition?.skipTransition();});
+  window.addEventListener('pagehide',stop);
+  quiet.addEventListener('change',()=>{if(quiet.matches){const next=pending?.url;stop();if(next)follow(next);}});
+  arrival();
+  if(incoming&&!incoming.history)enter();
+  if(incoming?.history&&!('onpagereveal' in window))enter();
+  if(!quiet.matches){const warm=()=>module().then(m=>m.prepareSymbol()).catch(()=>{});if(incoming)warm();else window.addEventListener('pageshow',warm,{once:true});}
 })();
