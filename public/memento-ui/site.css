@@ -8,18 +8,20 @@ html[data-memento-native] {scroll-padding-top:var(--memento-safe-top);scroll-pad
 html[data-memento-native] [data-memento-content-insets] {padding-top:var(--memento-safe-top);padding-bottom:var(--memento-safe-bottom)}
 /* One lit edge uncovers the destination. The site stays visible and interactive underneath. */
 @media screen {
-  html:is([data-memento-enter],[data-memento-leave])::after {
+  html:is([data-memento-preparing],[data-memento-enter],[data-memento-leave])::after {
     content: "";
     position: fixed;
     inset: 0;
     z-index: 2147483647;
     pointer-events: none;
+    will-change: transform;
     background:
       linear-gradient(180deg,transparent 1%,#ffb188 27%,#ff7950 68%,transparent 99%) left / 2px 100% no-repeat,
       linear-gradient(90deg,rgba(255,121,80,.32),rgba(255,121,80,.06) 8%,transparent 20%),
       linear-gradient(90deg,rgba(17,16,15,.90),rgba(19,18,17,.67) 58%,rgba(16,16,16,.22));
-    animation: memento-page-reveal 520ms cubic-bezier(.42,0,.24,1) both;
+    transform: translate3d(0,0,0) scaleX(var(--reveal-facing,1));
   }
+  html[data-memento-enter]::after {animation:memento-page-reveal 520ms cubic-bezier(.42,0,.24,1) both}
   html[data-memento-leave]::after {
     right: auto;
     width: min(12vw,100px);
@@ -27,14 +29,14 @@ html[data-memento-native] [data-memento-content-insets] {padding-top:var(--memen
     animation: memento-page-leave 650ms ease-out both;
   }
   @keyframes memento-page-leave {0% {opacity:.55} 22%,55% {opacity:1} 100% {opacity:0}}
-  html[data-memento-enter="back"]::after {--reveal-end:-102%;--reveal-facing:-1}
+  html:is([data-memento-preparing="back"],[data-memento-enter="back"])::after {--reveal-end:-102%;--reveal-facing:-1}
   @keyframes memento-page-reveal {
     from {transform:translate3d(0,0,0) scaleX(var(--reveal-facing,1))}
     to {transform:translate3d(var(--reveal-end,102%),0,0) scaleX(var(--reveal-facing,1))}
   }
 }
 @media (prefers-reduced-motion: reduce), (forced-colors: active) {
-  html:is([data-memento-enter],[data-memento-leave])::after {content:none;animation:none}
+  html:is([data-memento-preparing],[data-memento-enter],[data-memento-leave])::after {content:none;animation:none}
 }
 html[data-memento-native] memento-nav:not(:defined){visibility:hidden}
 html[data-memento-modal] memento-nav {visibility:hidden;pointer-events:none}

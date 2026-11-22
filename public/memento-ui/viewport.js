@@ -21,10 +21,15 @@
   // Play the reveal on the destination once its content can actually be painted.
   const quiet = matchMedia('(prefers-reduced-motion: reduce), (forced-colors: active)');
   let paintFrame = 0;
+  let release, paintObserver;
   function clearReveal() {
     cancelAnimationFrame(paintFrame);
+    paintObserver?.disconnect();
+    delete root.dataset.mementoPreparing;
     delete root.dataset.mementoEnter;
     delete root.dataset.mementoLeave;
+    release?.();
+    release = undefined;
   }
   function acknowledge(destination) {
     if (quiet.matches || !destination) return;
@@ -60,19 +65,43 @@
     // Keep this marker for late-loading renderers, including the Home when returning from a section.
     root.dataset.mementoArrival = direction;
     if (quiet.matches) return;
-    function reveal() {
+    window.mementoPageReveal = new Promise(resolve => { release = resolve; });
+    let queued = false;
+    function present() {
+      if (queued || !release) return;
+      queued = true;
+      paintObserver?.disconnect();
       paintFrame = requestAnimationFrame(() => {
-        if (!quiet.matches) root.dataset.mementoEnter = direction;
+        // Give the edge a composited frame before its clock starts.
+        root.dataset.mementoPreparing = direction;
+        paintFrame = requestAnimationFrame(() => {
+          delete root.dataset.mementoPreparing;
+          root.dataset.mementoEnter = direction;
+          if (document.getAnimations && !document.getAnimations().some(a => a.animationName === 'memento-page-reveal')) clearReveal();
+        });
       });
     }
-    if (document.readyState === 'loading') document.addEventListener('readystatechange', reveal, {once:true});
-    else reveal();
+    function contentReady() {
+      if (!release) return;
+      if (restored || !window.PerformanceObserver?.supportedEntryTypes?.includes('paint') ||
+          performance.getEntriesByName('first-contentful-paint').length) { present(); return; }
+      paintObserver = new PerformanceObserver(list => {
+        if (list.getEntriesByName('first-contentful-paint').length) present();
+      });
+      paintObserver.observe({type:'paint', buffered:true});
+      window.addEventListener('pageshow', present, {once:true});
+      if (document.readyState === 'complete') present();
+    }
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', contentReady, {once:true});
+    else contentReady();
   }
-  document.addEventListener('animationend', event => {
+  function finishAnimation(event) {
     if (event.target !== root) return;
-    if (event.animationName === 'memento-page-reveal') delete root.dataset.mementoEnter;
+    if (event.animationName === 'memento-page-reveal') clearReveal();
     if (event.animationName === 'memento-page-leave') delete root.dataset.mementoLeave;
-  });
+  }
+  document.addEventListener('animationend', finishAnimation);
+  document.addEventListener('animationcancel', finishAnimation);
   window.addEventListener('pagehide', clearReveal);
   window.addEventListener('pageshow', event => { if (event.persisted) prepareArrival(true); });
   quiet.addEventListener('change', () => { if (quiet.matches) clearReveal(); });

@@ -54,16 +54,32 @@ test('reprocessing an existing native entry leaves one shared runtime and import
 test('the destination reveals once, also on browsers without native page transitions', () => {
   const script = readFileSync(new URL('../public/memento-ui/viewport.js', import.meta.url), 'utf8');
   const location = new URL('https://mementostudio.it/services/');
-  function visit(referrer, type = 'navigate', reduced = false) {
+  function visit(referrer, type = 'navigate', reduced = false, paint) {
     const root = {dataset:{}, style:{setProperty(){}}, clientWidth:390};
     const document = Object.assign(new EventTarget(), {documentElement:root, readyState:'interactive', referrer});
-    const window = Object.assign(new EventTarget(), {innerHeight:844});
+    const window = Object.assign(new EventTarget(), {innerHeight:844, PerformanceObserver:paint?.Observer});
     const media = Object.assign(new EventTarget(), {matches:reduced});
-    runInNewContext(script, {window,document,location,URL,matchMedia:()=>media,
-      performance:{getEntriesByType:()=>[{type}]}, requestAnimationFrame:fn=>{fn();return 1;}, cancelAnimationFrame(){}});
+    runInNewContext(script, {window,document,location,URL,matchMedia:()=>media, PerformanceObserver:window.PerformanceObserver,
+      performance:{getEntriesByType:()=>[{type}], getEntriesByName:()=>[]},
+      requestAnimationFrame:fn=>{if(paint) paint.frames.push(fn); else fn(); return 1;}, cancelAnimationFrame(){}});
     return {root,window};
   }
   const from = 'https://mementostudio.it/start/';
+  // A slow destination must still have the whole reveal ahead of it at first paint.
+  let notifyPaint;
+  const paint = {frames:[], Observer:class {
+    static supportedEntryTypes = ['paint'];
+    constructor(callback) { notifyPaint = callback; }
+    observe() {} disconnect() {}
+  }};
+  const slow = visit(from,'navigate',false,paint);
+  assert.equal(paint.frames.length,0);
+  notifyPaint({getEntriesByName:()=>[{}]});
+  paint.frames.shift()();
+  assert.equal(slow.root.dataset.mementoPreparing,'forward');
+  assert.equal(slow.root.dataset.mementoEnter,undefined);
+  paint.frames.shift()();
+  assert.equal(slow.root.dataset.mementoEnter,'forward');
   const {root,window} = visit(from);
   assert.equal(root.dataset.mementoEnter,'forward');
   window.dispatchEvent(new Event('pagehide'));
