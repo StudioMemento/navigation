@@ -88,7 +88,7 @@ export function nativePage(source, slug) {
     '<meta property="og:title" content="'+escape(meta.title)+'"><meta property="og:description" content="'+escape(meta.description)+'">',
     '<meta property="og:url" content="'+canonical+'"><meta property="og:image" content="'+escape(OG_IMAGE)+'"><meta name="twitter:card" content="summary_large_image">',
     '<script type="importmap" data-memento-imports>'+JSON.stringify(spec)+'</script>',
-    '<link rel="stylesheet" href="/memento-ui/site.css"><script src="/memento-ui/viewport.js"></script>',
+    '<link rel="stylesheet" href="/memento-ui/site.css"><script defer src="/memento-ui/viewport.js"></script>',
     '<script type="module" src="/memento-ui/site.mjs"></script>'
   ];
   if (!desc) tags.push('<meta name="description" content="'+escape(meta.description)+'">');

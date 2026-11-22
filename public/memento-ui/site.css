@@ -6,28 +6,16 @@
 }
 html[data-memento-native] {scroll-padding-top:var(--memento-safe-top);scroll-padding-bottom:var(--memento-safe-bottom)}
 html[data-memento-native] [data-memento-content-insets] {padding-top:var(--memento-safe-top);padding-bottom:var(--memento-safe-bottom)}
-/* The parked frame uses the exact same SVG and size as the moving fragments. */
-@view-transition {navigation:auto}
-:root {--memento-plate:clamp(172px,42vmin,338px)}
-html[data-memento-parked]::after {
-  content:"";position:fixed;inset:0;z-index:2147483647;pointer-events:none;
-  background:#1d1d1b var(--memento-symbol,url('/memento-ui/memento-icon.svg')) center / var(--memento-plate) var(--memento-plate) no-repeat;
+/* Only the two strokes move. The page below stays at full contrast and accepts input. */
+.memento-route-mark {
+  display:block;position:fixed;z-index:2147483647;
+  top:max(46px,calc(env(safe-area-inset-top,0px) + 35px));left:50%;
+  width:clamp(30px,4.2vmin,44px);height:auto;transform:translateX(-50%);
+  overflow:visible;pointer-events:none;color:#f5f4f2;
 }
-svg[data-memento-scene-defs] {position:fixed;width:0;height:0;overflow:hidden;pointer-events:none}
-.memento-scene-overlay {position:fixed;inset:0;width:100%;height:100%;max-width:none;max-height:none;margin:0;padding:0;border:0;background:transparent;overflow:hidden;z-index:2147483647;pointer-events:none}
-.memento-scene-overlay::backdrop {background:transparent;pointer-events:none}
-html[data-memento-scene-native]::view-transition {background:#1d1d1b;pointer-events:none}
-html[data-memento-scene-native]::view-transition-group(root) {animation:memento-snapshot 2300ms linear both}
-@keyframes memento-snapshot {from{opacity:1}to{opacity:1}}
-html[data-memento-scene-native]::view-transition-old(root), html[data-memento-scene-native]::view-transition-new(root) {
-  animation:none;mix-blend-mode:normal;object-fit:fill;object-position:0 0;
-}
-html[data-memento-face="old"]::view-transition-old(root),html[data-memento-face="new"]::view-transition-new(root) {filter:var(--memento-fragments);opacity:1}
-html[data-memento-face="old"]::view-transition-new(root),html[data-memento-face="new"]::view-transition-old(root) {opacity:0}
-@media (prefers-reduced-motion:reduce),(forced-colors:active) {
-  @view-transition {navigation:none}
-  html[data-memento-parked]::after {content:none}
-  .memento-scene-overlay {display:none}
+.memento-route-mark > * {fill:currentColor;opacity:0;transform-box:fill-box;transform-origin:center}
+@media (prefers-reduced-motion:reduce),(forced-colors:active),print {
+  .memento-route-mark {display:none}
 }
 html[data-memento-native] memento-nav:not(:defined){visibility:hidden}
 html[data-memento-modal] memento-nav {visibility:hidden;pointer-events:none}
