@@ -21,13 +21,14 @@ export const atlasSurface=(body+`vec4 atlasSurface(float uMode,float uA,float uB
  vec3 fn=normalize(cross(dFdx(vP),dFdy(vP)));if(dot(fn,n)<0.)fn=-fn;
 `+surface).replaceAll('vP','vStudio').replaceAll('vBary','vStudioBary').replace(/\bhash\(/g,'atlasHash(').replace(/\bnoise\(/g,'atlasNoise(').replace(/\bstudio\(/g,'atlasReflections(').replace(/\blines\(/g,'atlasLines(');
 
-// Postprocess the original source with a coverage mask: black stays exactly black.
+// Preserve geometry coverage, including black materials, over the native site backdrop.
 export const atlasPost=screenFragment
  .replace('uniform sampler2D uScene;','uniform sampler2D uScene;uniform float uFade;')
  .replace('void main(){vec2 uv=vUv;', 'void main(){vec2 uv=vUv;')
- .replace('vec4 raw=texture2D(uScene,uv);','vec4 raw=texture2D(uScene,uv);if(raw.a<.001){gl_FragColor=vec4(0.,0.,0.,1.);return;}')
+ .replace('vec4 raw=texture2D(uScene,uv);','vec4 raw=texture2D(uScene,uv);if(raw.a<.001){gl_FragColor=vec4(0.);return;}')
  .replace(' gl_FragColor=vec4(clamp(col,0.,1.),raw.a);',`
  if(uMode==24.){float l=lum(col);vec2 p=gl_FragCoord.xy/uDpr;float h=step(.75,fract((p.x+p.y)/5.));l*=1.-h*(1.-l)*.32;col=mix(vec3(.015,.055,.15),vec3(.80,.90,.94),smoothstep(.05,.95,l));}
  if(uMode==26.){float l=lum(col);vec2 p=fract(gl_FragCoord.xy/(uA*uDpr))-.5;float dotMask=1.-smoothstep(sqrt(max(.01,1.-l))*.48,sqrt(max(.01,1.-l))*.48+.07,length(p));col=mix(vec3(.85,.82,.76),vec3(.022,.025,.03),dotMask);}
- gl_FragColor=vec4(clamp(col*uFade,0.,1.)*smoothstep(0.,.65,raw.a),1.);
+ float coverage=smoothstep(0.,.65,raw.a);
+ gl_FragColor=vec4(clamp(col*uFade,0.,1.)*coverage,coverage);
 `);

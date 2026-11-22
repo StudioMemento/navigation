@@ -94,7 +94,7 @@ function tick(stamp){
  if(revealAge>5){frameAverage=frameAverage*.90+Math.min(elapsed,.5)*1000*.10;adaptiveAge+=elapsed;frameCount++;if(adaptiveAge>3&&frameCount>5){if(frameAverage>36&&dpr>1){dpr=Math.max(1,dpr-.15);resize();}adaptiveAge=0;frameCount=0;}}
 }
 async function init(){
- try{renderer=new T.WebGLRenderer({canvas,antialias:false,powerPreference:'high-performance',alpha:false});}
+ try{renderer=new T.WebGLRenderer({canvas,antialias:false,powerPreference:'high-performance',alpha:true});}
  catch(error){console.error(error);ui.error('La grafica 3D non è disponibile in questo browser. Attiva l’accelerazione hardware o apri la pagina in un browser compatibile.');return;}
  try{
   renderer.setClearColor(0x000000,0);renderer.outputColorSpace=T.SRGBColorSpace;renderer.toneMapping=T.ACESFilmicToneMapping;renderer.shadowMap.enabled=true;renderer.shadowMap.type=T.PCFSoftShadowMap;renderer.shadowMap.autoUpdate=false;renderer.shadowMap.needsUpdate=true;
