@@ -25,7 +25,7 @@ if (section) {
   window.MementoNavigation = {navigate(value) {
     const href=internalHref(value);
     if(!href)return false;
-    window.mementoGo(href);
+    location.assign(href);
     return true;
   }};
   // Let authored click handlers finish choosing the destination before the browser follows it.
@@ -46,7 +46,7 @@ if (section) {
     import('/memento-ui/effects.mjs').then(fx=>fx.mountBackground()).catch(()=>{});
   }
   // Retain explicit return and intentional overscroll at the end of a new gesture.
-  const home=(end=false)=>{const index=STATIONS.indexOf(section);window.mementoGo(pageUrl(end?STATIONS[(index+1)%STATIONS.length].id:section.id,'world'));};
+  const home=(end=false)=>{const index=STATIONS.indexOf(section);location.assign(pageUrl(end?STATIONS[(index+1)%STATIONS.length].id:section.id,'world'));};
   const blocked=e=>e.defaultPrevented||modalOpen()||e.target?.closest?.('input,select,textarea,[contenteditable="true"],[role=slider],canvas,iframe,video,[data-memento-gesture-lock]');
   function atEdge(target,sign){
     for(let n=target instanceof Element?target:null;n;n=n.parentElement){

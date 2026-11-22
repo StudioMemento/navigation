@@ -51,24 +51,33 @@ test('reprocessing an existing native entry leaves one shared runtime and import
  assert.equal(all(doc,'div').filter(n=>attr(n,'id')==='site-atmosphere').length,1);
 });
 
-test('a document visit parks on the icon only for an internal page change with motion enabled', () => {
+test('routes follow immediately and only internal arrivals suppress the local intro', () => {
   const script=readFileSync(new URL('../public/memento-ui/viewport.js',import.meta.url),'utf8');
-  function visit(referrer,type='navigate',reduced=false){
-    const attributes=new Set();
-    const root={dataset:{},clientWidth:390,style:{setProperty(){}},
-      setAttribute(name){attributes.add(name);},removeAttribute(name){attributes.delete(name);}};
-    const document=Object.assign(new EventTarget(),{documentElement:root,readyState:'loading',referrer});
+  function visit(referrer,type='navigate',reduced=false) {
+    const root={dataset:{},clientWidth:390,style:{setProperty(){}}};
+    const document=Object.assign(new EventTarget(),{documentElement:root,referrer});
     const window=Object.assign(new EventTarget(),{innerHeight:844});
+    window.top=window;
+    const followed=[];
+    const location=new URL('https://mementostudio.it/services/');
+    location.assign=href=>followed.push(href);
     const matchMedia=()=>Object.assign(new EventTarget(),{matches:reduced});
-    runInNewContext(script,{root,window,document,location:new URL('https://mementostudio.it/services/'),URL,Promise,
-      clearTimeout,matchMedia,performance:{getEntriesByType:()=>[{type}]}});
-    return {window,root,attributes};
+    runInNewContext(script,{window,document,location,URL,matchMedia,performance:{getEntriesByType:()=>[{type}]}});
+    return {window,root,followed};
   }
   const from='https://mementostudio.it/start/';
-  const nav=visit(from);assert.equal(nav.root.dataset.mementoArrival,'forward');assert(nav.attributes.has('data-memento-parked'));
-  nav.window.dispatchEvent(new Event('pagehide'));assert(!nav.attributes.has('data-memento-parked'));
-  for(const [ref,type,quiet] of [['','navigate'],['https://example.com/','navigate'],[from,'reload'],['https://mementostudio.it/services/#catalogo','navigate'],[from,'navigate',true]]) {
-    assert(!visit(ref,type,quiet).attributes.has('data-memento-parked'));
+  for (const quiet of [true,false]) {
+    const {window,root,followed}=visit(from,'navigate',quiet);
+    assert.equal(root.dataset.mementoArrival,'page');
+    assert.equal(window.mementoPageReveal,undefined);
+    window.mementoGo('/projects/');window.mementoGo('/start/');
+    assert.deepEqual(followed,['/projects/','/start/']);
+    const click=new Event('click',{cancelable:true});
+    assert.equal(window.dispatchEvent(click),true);
   }
-  assert(visit(from,'back_forward').attributes.has('data-memento-parked'));
+  for(const [ref,type] of [['','navigate'],['https://example.com/','navigate'],[from,'reload'],['https://mementostudio.it/services/#catalogo','navigate']]) {
+    assert.equal(visit(ref,type).root.dataset.mementoArrival,undefined);
+  }
+  assert.equal(visit('','back_forward').root.dataset.mementoArrival,'page');
+  assert.match(nativePage(source,'start'), /<script defer="" src="\/memento-ui\/viewport.js">/);
 });

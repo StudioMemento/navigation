@@ -6,15 +6,14 @@ import { STATIONS, PUBLIC_ORIGIN } from '../src/kit/core.mjs';
 import { routeMeta, OG_IMAGE } from '../src/seo.mjs';
 
 const dist = resolve(import.meta.dirname, '../dist');
-// An immediate first click must already have the compositor and the vector, even on a cold connection.
-// The classic head script also decides whether the first paint is a direct visit or a page handoff.
+// Ship the small motion cue with its original vector. Navigation also works before this script loads.
 const ui = resolve(import.meta.dirname, '../public/memento-ui');
 await build({
   configFile: false,
   publicDir: false,
   define: {'import.meta.mementoIcon': JSON.stringify(readFileSync(resolve(ui, 'memento-icon.svg'), 'utf8'))},
   build: {
-    target: 'es2022', outDir: dist, emptyOutDir: false, minify: false,
+    target: 'es2022', outDir: dist, emptyOutDir: false, minify: true,
     lib: {entry: resolve(ui, 'viewport.js'), formats: ['iife'], name: 'MementoViewport', fileName: () => 'memento-ui/viewport.js'}
   }
 });
