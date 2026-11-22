@@ -5,7 +5,7 @@ import {initialSection,installRouteSync} from './route-state.mjs';
 import {settings,DEFAULTS} from './settings.js';
 import {NAV} from './vfx/config.mjs';
 import {TouchPulseField,listenForTouch,touchArrival} from './vfx/touch.mjs';
-import {startBackground} from './background/background.mjs';
+import {afterPageReveal,startBackground} from './background/background.mjs';
 import {routePath} from './kit/core.mjs';
 
 // The public site uses native page navigation. Legacy Framer embeds can still open links in the top window.
@@ -44,12 +44,14 @@ const cards=PAGES.map((p,i)=>{
 // One WebGL2 context, the START's VFX engine. Any failure leaves the plain DOM navigation (images and titles).
 // The START's background (Ghost Fibers, its own canvas and 30 fps budget) sits behind; touches are one shared field.
 const touches=new TouchPulseField();
-const stopBackground=params.get('bkg')==='0'?()=>{}:startBackground(document.getElementById('bkg'));
+const backdrop=document.getElementById('bkg');
+backdrop.hidden=params.get('bkg')==='0';
+const stopBackground=backdrop.hidden?()=>{}:startBackground(backdrop);
 // The Home alone loads its carousel renderer. Native section entries load only their own content.
 function bootEngine(){
  if(engineBooted||disposed)return;engineBooted=true;
  const fallback=()=>{canvas.hidden=true;document.body.dataset.renderer='fallback';document.documentElement.classList.remove('vfx-boot');};
- import('./renderer.js').then(({VfxRenderer})=>{
+ Promise.all([import('./renderer.js'),afterPageReveal()]).then(([{VfxRenderer}])=>{
   if(disposed)return;
   engine=VfxRenderer.create(canvas,PAGES,{
    touches,

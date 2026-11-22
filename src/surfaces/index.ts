@@ -2,7 +2,7 @@ import { SurfaceRegistry, type SurfaceKind, type SurfaceOptions } from './regist
 import { TouchPulseField } from './touch';
 import { installTouchFeedback } from './touch-feedback';
 import type { EngineOptions, VfxEngine } from './engine';
-import { startBackground } from '../background/background.mjs';
+import { afterPageReveal, startBackground } from '../background/background.mjs';
 
 /**
  * Memento VFX for pages without React (LevelUp, Servizi). The same engine as START V27: one canvas behind the content, one engine,
@@ -70,7 +70,6 @@ export interface MountOptions {
   engine?: EngineOptions;
 }
 
-const quiet = () => matchMedia('(forced-colors: active), (prefers-reduced-motion: reduce)').matches;
 function fallback() {
   document.documentElement.classList.remove('vfx-boot','vfx-live');
   document.documentElement.classList.add('vfx-off');
@@ -88,9 +87,10 @@ export function bindSurfaceCanvas(canvas: HTMLCanvasElement, registry: SurfaceRe
     document.documentElement.classList.remove('vfx-off');
     const touches = new TouchPulseField();
     stopTouch = installTouchFeedback(touches);
-    import('./engine').then(({VfxEngine}) => {
+    Promise.all([import('./engine'), afterPageReveal()]).then(([{VfxEngine}]) => {
       if (current !== generation) return;
-      renderer = VfxEngine.create(canvas, registry, touches, {...options,offset:dialog,bands:!dialog});
+      const intro = !document.documentElement.hasAttribute('data-memento-arrival') && options.intro !== false;
+      renderer = VfxEngine.create(canvas, registry, touches, {...options,intro,offset:dialog,bands:!dialog});
       if (!renderer) fallback();
     }).catch(() => { if (current === generation) fallback(); });
   }
@@ -171,12 +171,14 @@ export function mountVfx({root=document,parent=document.body,engine}: MountOptio
 let stopAtmosphere: (()=>void) | undefined;
 export async function mountBackground(): Promise<()=>void> {
   if (stopAtmosphere) return stopAtmosphere;
-  if (quiet() || typeof WebGL2RenderingContext === 'undefined') return () => {};
-  const host = document.createElement('div');
-  host.id = 'site-atmosphere'; host.setAttribute('aria-hidden','true');
-  document.body.prepend(host);
+  const existing = document.getElementById('site-atmosphere');
+  const host = existing ?? document.createElement('div');
+  if (!existing) {
+    host.id = 'site-atmosphere'; host.setAttribute('aria-hidden','true');
+    document.body.prepend(host);
+  }
   const stop = startBackground(host);
-  const cleanup = () => {stop();host.remove();stopAtmosphere=undefined;};
+  const cleanup = () => {stop();if (!existing) host.remove();stopAtmosphere=undefined;};
   stopAtmosphere = cleanup;
   window.addEventListener('pagehide',e=>{if(!e.persisted)cleanup();});
   return cleanup;
