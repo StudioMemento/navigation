@@ -1,3 +1,4 @@
+import { escape, lines, board, image, benefitMarkup } from './benefit-markup.js';
 import { benefits, experiences, visions, steps, contactUrl, serviceUrl } from './content.js';
 import { Carousel } from './carousel.js';
 import { enhanceVisuals } from './visuals.js';
@@ -5,19 +6,9 @@ import { DemoPlayer } from './player.js';
 import { mountStart } from './ready-to-start.js';
 
 const $ = selector => document.querySelector(selector);
-const escape = value => String(value).replace(/[&<>"']/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]));
-const lines = items => items.map(text => `<span>${escape(text)}</span>`).join(' ');
-// Carousel boards are VFX cards drawn through their own 3D transform, clipped and faded by the carousel.
-const board = 'data-vfx="card" data-vfx-transform data-vfx-clip=".carousel" data-vfx-focus data-vfx-photo=".card-art"';
-// The VFX engine (START V27) loads after the content; until then, and on any failure, the DOM page is complete.
 let vfx = null;
-const image = (item, eager = false) => `<img class="card-art" src="${item.asset}" srcset="${item.asset.replace('.webp','-640.webp')} 640w, ${item.asset} ${item.domain ? 1280 : 1536}w" sizes="${item.domain ? '(max-width:767px) 90vw, 60vw' : '(max-width:767px) 70vw, 40vw'}" alt="${escape(item.alt || '')}" width="${item.domain ? 1280 : 1536}" height="${item.domain ? 1280 : 1024}" loading="${eager ? 'eager' : 'lazy'}" decoding="async" ${eager ? 'fetchpriority="high"' : ''} draggable="false">`;
-
-$('#benefits .carousel-stage').innerHTML = benefits.map((item,i) => `
-  <article class="showcase-card cut-frame" ${board} data-slide="${i}" role="group" aria-roledescription="slide" aria-label="${i+1} di ${benefits.length}: ${escape(item.title.join(' '))}">
-    ${image(item,i===0)}<div class="benefit-copy"><h2 class="gradient-text">${lines(item.title)}</h2><p>${escape(item.copy)}</p></div>
-    <a class="domain-link" data-domain-link data-slide-control href="${serviceUrl(item)}" target="_top" aria-label="Esplora i servizi ${item.domain}"><span>${item.domain}</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 5 7 7-7 7"/></svg></a>
-  </article>`).join('');
+const initialBenefits = $('#benefits .carousel-stage');
+if (!initialBenefits.firstElementChild) initialBenefits.innerHTML = benefitMarkup();
 $('#portfolio .carousel-stage').innerHTML = experiences.map((item,i) => `
   <article class="showcase-card cut-frame" ${board} data-slide="${i}" role="group" aria-roledescription="slide" aria-label="${escape(item.title)}, ${escape(item.categories.join(', '))}">
     ${image(item)}<ul class="project-category" role="list">${item.categories.map(category=>`<li><span aria-hidden="true">–</span>${escape(category)}</li>`).join('')}</ul>

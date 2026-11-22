@@ -43,6 +43,7 @@ export class Carousel {
     this.observer.observe(element);
     this.observer.observe(this.cards[0]);
     this.measure();
+    element.querySelector('.carousel-stage').dataset.positioned = '';
     listen(element, 'dragstart', (e) => e.preventDefault());
     listen(element, 'pointerdown', (e) => this.down(e));
     listen(element, 'pointermove', (e) => this.move(e), { passive: false });
