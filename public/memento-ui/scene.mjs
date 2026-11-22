@@ -2,7 +2,6 @@
 // belong to the same image. Only the facet masks and offsets move; no page elements are cloned.
 const NS = 'http://www.w3.org/2000/svg';
 const XLINK = 'http://www.w3.org/1999/xlink';
-const symbolURL = new URL('./memento-icon.svg', import.meta.url).href;
 const OUT = 440, HOLD = 95, IN = 480;
 const clamp = x => Math.max(0, Math.min(1, x));
 const ease = x => { x = clamp(x); return x*x*(3-2*x); };
@@ -21,10 +20,15 @@ function imageSource(node, url) {
 
 // Read both the midpoint image and its landing coordinates from the supplied vector.
 let symbol;
+async function iconSource() {
+  // Production embeds the supplied SVG in the entry script. The unbundled module also runs directly.
+  if (import.meta.mementoIcon) return import.meta.mementoIcon;
+  const response = await fetch('/memento-ui/memento-icon.svg');
+  if (!response.ok) throw Error('Memento icon unavailable');
+  return response.text();
+}
 export function prepareSymbol() {
-  return symbol ??= fetch(symbolURL).then(async response => {
-    if (!response.ok) throw Error('Memento icon unavailable');
-    const source = await response.text();
+  return symbol ??= iconSource().then(source => {
     const art = new DOMParser().parseFromString(source, 'image/svg+xml');
     const vectors = art.getElementById('V_E_C');
     const [left,top,width,height] = art.documentElement.getAttribute('viewBox').split(/\s+/).map(Number);
@@ -45,7 +49,9 @@ export function prepareSymbol() {
     }
     if (!points.length) throw Error('Empty Memento icon');
     points.sort((a,b)=>Math.atan2(a.y,a.x)-Math.atan2(b.y,b.x));
-    return {image:svgURL(new XMLSerializer().serializeToString(art.documentElement)),points};
+    const image=svgURL(new XMLSerializer().serializeToString(art.documentElement));
+    root.style.setProperty('--memento-symbol','url("'+image+'")');
+    return {image,points};
   }).catch(error => {symbol=undefined;throw error;});
 }
 
