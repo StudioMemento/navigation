@@ -30,7 +30,7 @@
   const route=path=>path.replace(/\/+$/,'')||'/';
   const sameSite=url=>url.origin===location.origin && routes.has(route(url.pathname));
   let engine,current,incoming,pending,parkTimer;
-  const module=()=>engine??=(import('/memento-ui/scene.mjs').catch(error=>{engine=undefined;throw error;}));
+  const module=()=>engine??=(import('./scene.mjs').catch(error=>{engine=undefined;throw error;}));
   function settle(){incoming?.resolve();incoming=undefined;}
   function stop(){
     current?.abort();current=undefined;pending=undefined;

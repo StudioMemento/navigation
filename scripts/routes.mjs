@@ -1,10 +1,23 @@
 // Generate the Home, error page, robots.txt and sitemap. Native sections are served by api/section.js.
 import { readFileSync, writeFileSync, rmSync } from 'node:fs';
 import { resolve } from 'node:path';
+import { build } from 'vite';
 import { STATIONS, PUBLIC_ORIGIN } from '../src/kit/core.mjs';
 import { routeMeta, OG_IMAGE } from '../src/seo.mjs';
 
 const dist = resolve(import.meta.dirname, '../dist');
+// An immediate first click must already have the compositor and the vector, even on a cold connection.
+// The classic head script also decides whether the first paint is a direct visit or a page handoff.
+const ui = resolve(import.meta.dirname, '../public/memento-ui');
+await build({
+  configFile: false,
+  publicDir: false,
+  define: {'import.meta.mementoIcon': JSON.stringify(readFileSync(resolve(ui, 'memento-icon.svg'), 'utf8'))},
+  build: {
+    target: 'es2022', outDir: dist, emptyOutDir: false, minify: false,
+    lib: {entry: resolve(ui, 'viewport.js'), formats: ['iife'], name: 'MementoViewport', fileName: () => 'memento-ui/viewport.js'}
+  }
+});
 const base = readFileSync(resolve(dist, 'index.html'), 'utf8');
 const escape = value => String(value).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
 function render(meta, { robots = '', status = '' } = {}) {
