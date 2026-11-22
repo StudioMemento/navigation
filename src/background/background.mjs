@@ -1,13 +1,8 @@
 import { NAV_BACKGROUND } from './preset.mjs';
 
 /** Fetch renderers immediately, but keep shader compilation out of the page reveal. */
-export async function afterPageReveal() {
-  const root = document.documentElement;
-  if (!root.hasAttribute('data-memento-arrival') || !document.getAnimations) return;
-  // The head script starts the CSS animation on the first parsed frame.
-  await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
-  const reveal = document.getAnimations().find(animation => animation.animationName === 'memento-page-reveal');
-  if (reveal) await reveal.finished.catch(() => {});
+export function afterPageReveal() {
+  return window.mementoPageReveal;
 }
 
 // The still paints with the HTML. Swap it for the first complete WebGL frame.
