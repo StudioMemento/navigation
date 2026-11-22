@@ -5,7 +5,7 @@ import { Carousel } from '../src/carousel.js';
 
 test('The START V27 VFX is wired on every surface of the page, after the content', async () => {
   const html = await readFile('dist/index.html', 'utf8');
-  const app = await readFile('dist/src/app.js', 'utf8');
+  const app = (await Promise.all(['app.js','benefit-markup.js'].map(name=>readFile('dist/src/'+name,'utf8')))).join('\n');
   // the four section headings are title surfaces
   for (const id of ['page-title', 'experiences-title', 'vision-title', 'steps-title'])
     assert.match(html, new RegExp(`id="${id}" class="gradient-text fitted-heading" data-vfx="title"`));
