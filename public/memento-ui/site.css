@@ -6,21 +6,10 @@
 }
 html[data-memento-native] {scroll-padding-top:var(--memento-safe-top);scroll-padding-bottom:var(--memento-safe-bottom)}
 html[data-memento-native] [data-memento-content-insets] {padding-top:var(--memento-safe-top);padding-bottom:var(--memento-safe-bottom)}
-/* Only the two strokes move. The page below stays at full contrast and accepts input. */
-.memento-route-mark {
-  display:block;position:fixed;z-index:2147483647;
-  top:max(46px,calc(env(safe-area-inset-top,0px) + 35px));left:50%;
-  width:clamp(30px,4.2vmin,44px);height:auto;transform:translateX(-50%);
-  overflow:visible;pointer-events:none;color:#f5f4f2;
-}
-.memento-route-mark > * {fill:currentColor;opacity:0;transform-box:fill-box;transform-origin:center}
-@media (prefers-reduced-motion:reduce),(forced-colors:active),print {
-  .memento-route-mark {display:none}
-}
-html[data-memento-native] memento-nav:not(:defined){visibility:hidden}
 html[data-memento-modal] memento-nav {visibility:hidden;pointer-events:none}
 #site-atmosphere {position:fixed;inset:0;height:100lvh;z-index:-1;pointer-events:none;overflow:hidden}
 #site-atmosphere .ghost-fibers-canvas {display:block;width:100%;height:100%}
+:is(#bkg,#site-atmosphere):not(.is-live) canvas {visibility:hidden}
 /* Small stills from the actual shader render in the first paint, without another request. */
 @media screen {
   :is(#bkg,#site-atmosphere):not(.is-live) {

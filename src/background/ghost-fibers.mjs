@@ -587,7 +587,7 @@ const applyMat3 = (m, v) => [
 * Vanilla mount of the START V27 component (same shaders, same loop, same budget): a container with its own canvas
 * and WebGL2 context, 30 drawings a second at most, DPR 1, adaptive resolution. Returns null without WebGL2.
 */
-export function mountGhostFibers(container, props = {}) {
+export function mountGhostFibers(container, props = {}, onFirstFrame) {
 	const { glowColor = "#8b5cf6", lineColor, secondaryColor, gradient = "depth", speed = .5, scale = 1, rotation = 18, rollSpeed = .15, layers = 3, waves = 1, twist = 1.2, threads = 72, volume = .7, spread = 1, density = 1, thickness = 1, flow = .4, fiberStyle = "dots", tips = 0, foldGlow = 1, perspective = .65, depthOfField = .85, focusDepth = 0, particles = .5, sparkle = .5, glow = .8, brightness = 1, vignette = .3, grain = .06, mouseInteraction = true, hoverEffect = "focus", mouseStrength = 1, pulseOnClick = true, intro = true, lightMode = false, paused = false, dpr, soft = 0 } = props;
 	const settings = {
 		glowColor: String(glowColor),
@@ -1073,6 +1073,7 @@ export function mountGhostFibers(container, props = {}) {
 		}
 		state.focus += (focusGoal - state.focus) * (1 - Math.exp(-dt / .35));
 		render();
+		if (onFirstFrame) { onFirstFrame(); onFirstFrame = null; }
 		const settling = Math.abs(goal - hover.presence) > .002 || Math.abs(lookX - look.x) > 2e-4 || Math.abs(lookY - look.y) > 2e-4 || Math.abs(focusGoal - state.focus) > .001 || state.pulse.strength > .001;
 		if (moving || settling) raf = requestAnimationFrame(frame);
 		else last = 0;

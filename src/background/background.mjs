@@ -2,7 +2,9 @@ import { NAV_BACKGROUND } from './preset.mjs';
 
 /** Let real content paint before optional GPU work. Navigation never waits for this promise. */
 export function afterFirstPaint() {
-  return new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+  return new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)))
+    .then(() => window.mementoSceneSettled || document.activeViewTransition?.finished)
+    .catch(() => {});
 }
 
 // The still paints with the HTML. Swap it for the first complete WebGL frame.
@@ -28,8 +30,9 @@ export function startBackground(host) {
         idle = 0;
         if (request !== generation) return;
         try {
-          renderer = mountGhostFibers(host, NAV_BACKGROUND);
-          if (renderer) host.classList.add('is-live');
+          renderer = mountGhostFibers(host, NAV_BACKGROUND, () => {
+            if (request === generation) host.classList.add('is-live');
+          });
         } catch (error) { console.warn('Background disabled:', error); }
       };
       if (window.requestIdleCallback) idle = window.requestIdleCallback(mount, {timeout: 650});

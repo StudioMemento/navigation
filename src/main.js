@@ -29,9 +29,9 @@ const pointer={x:-999,y:-999,power:0,down:false,type:'mouse'};
 const wheel={time:0,delta:0,used:false,sign:0,stepTime:-Infinity};
 const titleMetrics=new Map(),measure=document.createElement('canvas').getContext('2d');
 const cards=PAGES.map((p,i)=>{
- const card=document.createElement('a');card.className='card';card.href=container?('/'+p.slug+'/'):p.url;if(!container)card.target='_top';card.draggable=false;card.dataset.page=p.slug;card.setAttribute('aria-label',`Apri ${p.label}`);
- card.innerHTML=`<img src="${import.meta.env.BASE_URL}assets/scenes/${p.slug}-768.webp" srcset="${import.meta.env.BASE_URL}assets/scenes/${p.slug}-768.webp 768w,${import.meta.env.BASE_URL}assets/scenes/${p.slug}-1536.webp 1536w" sizes="88vw" alt="${p.alt}" width="1536" height="1024" draggable="false" decoding="async" ${Math.abs(relative(i,active))<1.5?'fetchpriority="high"':'loading="lazy"'}><h2 aria-hidden="true">${[...p.title].map(c=>`<span>${c}</span>`).join('')}</h2>`;
- scene.append(card);
+ const card=scene.querySelector(`[data-page="${p.slug}"]`);
+ if(!container){card.href=p.url;card.target='_top';}
+ on(card.querySelector('img'),'load',()=>{if(engine)engine.loadScene(i,card.querySelector('img'));});
  on(card,'click',event=>{
   if(event.button||event.metaKey||event.ctrlKey||event.shiftKey||event.altKey)return;
   if(performance.now()<suppressClick){event.preventDefault();return;}
@@ -81,7 +81,16 @@ function fit(){
  engine?.resize(l,sizes);loadVisible();drawPoses();wake();
 }
 function scheduleFit(){if(!layoutFrame)layoutFrame=requestAnimationFrame(()=>{layoutFrame=0;fit();});}
-function loadVisible(){if(!engine||!l)return;for(let i=0;i<5;i++)if(Math.abs(relative(i,active))<1.7)engine.loadScene(i,l.width*(engine.dpr||1));}
+function loadVisible(){
+ if(!l)return;
+ cards.forEach((card,i)=>{
+  if(Math.abs(relative(i,active))>=1.7)return;
+  const img=card.el.querySelector('img');
+  img.sizes=Math.round(l.width)+'px';
+  if(!img.hasAttribute('srcset')){img.srcset=img.dataset.srcset;img.src=img.dataset.src;}
+  engine?.loadScene(i,img);
+ });
+}
 function updateActive(next,history=true){
  active=wrap(next);cards.forEach((c,i)=>{c.el.tabIndex=i===active?0:-1;if(i===active)c.el.setAttribute('aria-current','page');else c.el.removeAttribute('aria-current');});
  $('status').textContent=`${PAGES[active].label}. Sezione ${active+1} di 5. Attiva per aprire.`;hub.dataset.active=PAGES[active].slug;

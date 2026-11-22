@@ -1,7 +1,7 @@
 import {
   BufferAttribute, BufferGeometry, CanvasTexture, DataTexture, DoubleSide, DynamicDrawUsage, GLSL3, Group, HalfFloatType,
   InstancedBufferGeometry, InstancedInterleavedBuffer, InterleavedBufferAttribute, LinearFilter, Matrix4, Mesh, NoBlending,
-  NoColorSpace, PerspectiveCamera, RawShaderMaterial, RedFormat, Scene, Sphere, TextureLoader, UnsignedByteType, Vector2,
+  NoColorSpace, PerspectiveCamera, RawShaderMaterial, RedFormat, Scene, Sphere, Texture, UnsignedByteType, Vector2,
   Vector3, Vector4, WebGLRenderTarget, WebGLRenderer,
 } from 'three';
 import { BorderLight, outline } from './vfx/border.mjs';
@@ -72,7 +72,6 @@ export class VfxRenderer {
       uAmb: u([...hexToRgb(A.deep), ...hexToRgb(A.mid), ...hexToRgb(A.hot), ...hexToRgb(A.core)]),
     };
     this.setupParticles(); this.setupPost();
-    this.loader = new TextureLoader();
     this.cards = pages.map((page, i) => this.makeCard(page, i));
     this.ray = { o: new Vector3(), d: new Vector3() }; this.tmp = new Vector3(); this.tmp2 = new Vector3(); this.inv = new Matrix4(); this.pm = new Matrix4();
     this.hovered = null; this.layout = null;
@@ -120,7 +119,7 @@ export class VfxRenderer {
       index: i, slug: page.slug, text: page.title, group, content, overlay, titleMesh: title, u: card, titleOffset,
       net: null, chain: null, touch: null, energy: null, netKey: '', border: new BorderLight(), edgeCells: [], born: null, delays: null,
       t: null, titleKey: '', canvas: document.createElement('canvas'), ink: null, dist: null, titleSize: 0,
-      tex: null, quality: 0, loading: false, loaded: false,
+      tex: null, imageUrl: null, loading: false, loaded: false,
       pose: null, d: 0, strength: 0, exit: 0, dir: 1, lx: -1e4, ly: -1e4, hit: false, t0: Infinity,
       hover: 0, near: 0, warm: 0, inside: false, tinside: false, debt: 0, tdebt: 0, budget: 0, hot: false, thot: false, arrived: false,
     };
@@ -173,29 +172,32 @@ export class VfxRenderer {
     for (let t = 0; !ready() && t < 1400; t += 40) await wait(40);
     if (this.disposed || this.lost) return;
     this.live = true;
-    root().classList.add('vfx-live'); root().classList.remove('vfx-boot');
-    this.hooks.onLive?.();
-    if (this.reduced || root().hasAttribute('data-memento-arrival')) { this.load = 1; this.loaded = true; }
+    this.publishFrame = true;
+    if (this.reduced || root().dataset.hubRole === 'container') { this.load = 1; this.loaded = true; }
     this.wakeUp();
   }
 
   firstCards() { return this.cards.filter(c => Math.abs(c.d) < 1.5); }
   wakeUp() { this.hooks.wake?.(); }
 
-  async loadScene(index, width) {
-    const card = this.cards[index], quality = width > 700 ? 1536 : 768;
-    if (card.loading || card.quality >= quality || this.disposed) return;
+  async loadScene(index, image) {
+    const card = this.cards[index];
+    if (card.loading || this.disposed || (image.currentSrc && card.imageUrl === image.currentSrc)) return;
     card.loading = true;
     try {
-      const tex = await this.loader.loadAsync(`${import.meta.env.BASE_URL}assets/scenes/${card.slug}-${quality}.webp`);
-      if (this.disposed) { tex.dispose(); return; }
-      // the DNA works on sRGB values (palette, ramps, gradients are sRGB): no decode, no re-encode
-      tex.colorSpace = NoColorSpace; tex.anisotropy = Math.min(4, this.renderer.capabilities.getMaxAnisotropy());
-      card.tex?.dispose(); card.tex = tex;
-      card.u.uImage.value = tex; card.u.uHasImg.value = 1; card.u.uTextureSize.value.set(tex.image.width, tex.image.height);
-      card.quality = quality; card.loaded = true;
+      await image.decode();
+      if (this.disposed || !image.naturalWidth) return;
+      // Upload the exact bitmap selected by the browser's srcset, including after a resize.
+      const tex = new Texture(image);
+      tex.colorSpace = NoColorSpace;
+      tex.anisotropy = Math.min(4, this.renderer.capabilities.getMaxAnisotropy());
+      tex.needsUpdate = true;
+      card.tex?.dispose(); card.tex = tex; card.imageUrl = image.currentSrc;
+      card.u.uImage.value = tex; card.u.uHasImg.value = 1;
+      card.u.uTextureSize.value.set(image.naturalWidth, image.naturalHeight);
+      card.loaded = true;
       this.hooks.onImage?.(index); this.wakeUp();
-    } catch (error) { console.warn(`Scene unavailable: ${card.slug}`, error?.message); }
+    } catch { /* The DOM image remains available if decoding or a responsive swap is pending. */ }
     finally { card.loading = false; }
   }
 
@@ -726,6 +728,11 @@ export class VfxRenderer {
     U.uMix.value.set(glow ? VFX.bloom.strength * settings.bloom : 0, glow ? Q.streak * settings.streak : 0, Q.vignette, 0);
     U.uLens.value.set(this.profile().bloom ? Q.aberration * r.getPixelRatio() : 0, Q.shoulder, 1);
     this.fsMesh.material = this.grade; r.setRenderTarget(null); r.render(this.post, this.camera);
+    if (this.publishFrame) {
+      this.publishFrame = false;
+      root().classList.add('vfx-live'); root().classList.remove('vfx-boot');
+      this.hooks.onLive?.();
+    }
   }
 
   blurPass(from, to, x, y) {

@@ -336,9 +336,10 @@ export class VfxEngine {
     root().classList.add('vfx-off');
   }
 
-  private goLive() { if (this.failed) return; root().classList.add('vfx-live'); root().classList.remove('vfx-boot'); this.renderDirty = true; }
+  private publishFrame = false;
+  private goLive() { if (!this.failed) { this.publishFrame = true; this.renderDirty = true; } }
   /** Any failure returns the page to its plain DOM rendering at once. */
-  private goDom() { root().classList.remove('vfx-live', 'vfx-boot'); }
+  private goDom() { this.publishFrame = false; root().classList.remove('vfx-live', 'vfx-boot'); }
 
   private listen() {
     const signal = this.abort.signal, passive = { passive: true, signal } as const;
@@ -1348,6 +1349,11 @@ export class VfxEngine {
     u.uFrame.value = this.reduced ? 0 : Math.floor(this.clock * 24) % 4096;
     this.fsMesh.material = this.grade;
     r.setRenderTarget(null); r.render(this.post, this.camera);
+    if (this.publishFrame) {
+      this.publishFrame = false;
+      root().classList.add('vfx-live');
+      root().classList.remove('vfx-boot');
+    }
   }
 
   /** One separable gaussian pass. */
