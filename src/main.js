@@ -5,7 +5,7 @@ import {initialSection,installRouteSync} from './route-state.mjs';
 import {settings,DEFAULTS} from './settings.js';
 import {NAV} from './vfx/config.mjs';
 import {TouchPulseField,listenForTouch,touchArrival} from './vfx/touch.mjs';
-import {startBackground} from './background/background.mjs';
+import {afterPageReveal,startBackground} from './background/background.mjs';
 import {routePath} from './kit/core.mjs';
 
 // The public site uses native page navigation. Legacy Framer embeds can still open links in the top window.
@@ -51,7 +51,7 @@ const stopBackground=backdrop.hidden?()=>{}:startBackground(backdrop);
 function bootEngine(){
  if(engineBooted||disposed)return;engineBooted=true;
  const fallback=()=>{canvas.hidden=true;document.body.dataset.renderer='fallback';document.documentElement.classList.remove('vfx-boot');};
- import('./renderer.js').then(({VfxRenderer})=>{
+ Promise.all([import('./renderer.js'),afterPageReveal()]).then(([{VfxRenderer}])=>{
   if(disposed)return;
   engine=VfxRenderer.create(canvas,PAGES,{
    touches,

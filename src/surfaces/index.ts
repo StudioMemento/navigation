@@ -2,7 +2,7 @@ import { SurfaceRegistry, type SurfaceKind, type SurfaceOptions } from './regist
 import { TouchPulseField } from './touch';
 import { installTouchFeedback } from './touch-feedback';
 import type { EngineOptions, VfxEngine } from './engine';
-import { startBackground } from '../background/background.mjs';
+import { afterPageReveal, startBackground } from '../background/background.mjs';
 
 /**
  * Memento VFX for pages without React (LevelUp, Servizi). The same engine as START V27: one canvas behind the content, one engine,
@@ -87,7 +87,7 @@ export function bindSurfaceCanvas(canvas: HTMLCanvasElement, registry: SurfaceRe
     document.documentElement.classList.remove('vfx-off');
     const touches = new TouchPulseField();
     stopTouch = installTouchFeedback(touches);
-    import('./engine').then(({VfxEngine}) => {
+    Promise.all([import('./engine'), afterPageReveal()]).then(([{VfxEngine}]) => {
       if (current !== generation) return;
       const intro = !document.documentElement.hasAttribute('data-memento-arrival') && options.intro !== false;
       renderer = VfxEngine.create(canvas, registry, touches, {...options,intro,offset:dialog,bands:!dialog});

@@ -1,5 +1,15 @@
 import { NAV_BACKGROUND } from './preset.mjs';
 
+/** Fetch renderers immediately, but keep shader compilation out of the page reveal. */
+export async function afterPageReveal() {
+  const root = document.documentElement;
+  if (!root.hasAttribute('data-memento-arrival') || !document.getAnimations) return;
+  // The head script starts the CSS animation on the first parsed frame.
+  await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+  const reveal = document.getAnimations().find(animation => animation.animationName === 'memento-page-reveal');
+  if (reveal) await reveal.finished.catch(() => {});
+}
+
 // The still paints with the HTML. Swap it for the first complete WebGL frame.
 export function startBackground(host) {
   if (!host) return () => {};
@@ -13,7 +23,7 @@ export function startBackground(host) {
     host.classList.remove('is-live');
     if (quiet.matches || typeof WebGL2RenderingContext === 'undefined') return;
     try {
-      const { mountGhostFibers } = await import('./ghost-fibers.mjs');
+      const [{ mountGhostFibers }] = await Promise.all([import('./ghost-fibers.mjs'), afterPageReveal()]);
       if (request !== generation) return;
       // Give the browser a paint opportunity before compiling decorative shaders.
       paintFrame = requestAnimationFrame(() => {

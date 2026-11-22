@@ -637,6 +637,7 @@ export function mountGhostFibers(container, props = {}) {
 	container.appendChild(canvas);
 	const gl = canvas?.getContext("webgl2", {
 		alpha: true,
+		failIfMajorPerformanceCaveat: true,
 		premultipliedAlpha: true,
 		antialias: false,
 		depth: false,
