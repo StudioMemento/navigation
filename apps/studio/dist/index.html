@@ -2,8 +2,22 @@
 <html lang="it"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#000000">
 <title>Memento / Studio</title><meta name="description" content="Studio Memento. Un’esperienza di materia, luce e movimento.">
+<script>
+  // Start the matching model while the viewer code and styles are downloading.
+  if (typeof WebGL2RenderingContext !== 'undefined') {
+    const studioAsset = document.createElement('link');
+    const studioLod = matchMedia('(pointer:coarse)').matches || innerWidth < 700 ? 'mobile' : 'desktop';
+    const studioSuffix = typeof DecompressionStream === 'undefined' ? '.glb' : '.glb.gz';
+    studioAsset.id = 'studio-model';
+    studioAsset.rel = 'preload';
+    studioAsset.as = 'fetch';
+    studioAsset.crossOrigin = 'anonymous';
+    studioAsset.href = './assets/studio-v4-' + studioLod + studioSuffix;
+    document.head.append(studioAsset);
+  }
+</script>
 <link rel="stylesheet" href="./style.css">
-<link rel="stylesheet" href="./studio-overlay.css?v=12.0.0">
+<link rel="stylesheet" href="./studio-overlay.css?v=first-frame">
 </head><body>
 <main id="experience" aria-label="Studio Memento interattivo" data-memento-gesture-lock>
 <canvas id="scene" aria-label="Studio 3D. Trascina per esplorare, doppio clic per il fuoco, Escape per tornare alla vista isometrica." tabindex="0"></canvas>
@@ -17,7 +31,7 @@
 </div></div>
 <div id="joystick" role="group" aria-label="Movimento touch"><div id="stick" role="button" tabindex="0" aria-label="Joystick: trascina per muoverti"><i id="stick-knob"></i></div></div>
 </div><span id="status" class="sr-only" aria-live="polite"></span>
-</main><script type="module" src="./app.bundle.js"></script>
+</main><script type="module" src="./app.bundle.js?v=first-frame"></script>
 <script type="module" src="./studio-overlay.mjs?v=12.0.0"></script>
 <script defer src="./navigation/bootstrap.js?v=12.0.0" data-memento-page="memento" data-memento-hub="https://mementostudio.it"></script>
 </body></html>
