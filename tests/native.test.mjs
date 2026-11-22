@@ -15,7 +15,7 @@ test('each native section has a single navbar and effect module, and preserves a
   const html=nativePage(source,s.slug),doc=parse(html);
   assert.equal(attr(all(doc,'html')[0],'data-memento-native'),s.slug);
   assert.equal(all(doc,'memento-nav').length,1);
-  assert.equal(all(doc,'div').filter(n=>attr(n,'id')==='site-atmosphere').length, s.slug==='studio'?0:1);
+  assert.equal(all(doc,'div').filter(n=>attr(n,'id')==='site-atmosphere').length, 1);
   assert.equal(all(doc,'link').filter(n=>attr(n,'rel')==='canonical').map(n=>attr(n,'href')).join(),'https://mementostudio.it/'+s.slug+'/');
   assert.equal(all(doc,'link').filter(n=>attr(n,'href')==='a.webp').length,1);
   assert(!html.includes('navigation/bootstrap.js'));assert(!html.includes('rel="modulepreload"'));
@@ -51,42 +51,24 @@ test('reprocessing an existing native entry leaves one shared runtime and import
  assert.equal(all(doc,'div').filter(n=>attr(n,'id')==='site-atmosphere').length,1);
 });
 
-test('the destination reveals once, also on browsers without native page transitions', () => {
-  const script = readFileSync(new URL('../public/memento-ui/viewport.js', import.meta.url), 'utf8');
-  const location = new URL('https://mementostudio.it/services/');
-  function visit(referrer, type = 'navigate', reduced = false, paint) {
-    const root = {dataset:{}, style:{setProperty(){}}, clientWidth:390};
-    const document = Object.assign(new EventTarget(), {documentElement:root, readyState:'interactive', referrer});
-    const window = Object.assign(new EventTarget(), {innerHeight:844, PerformanceObserver:paint?.Observer});
-    const media = Object.assign(new EventTarget(), {matches:reduced});
-    runInNewContext(script, {window,document,location,URL,matchMedia:()=>media, PerformanceObserver:window.PerformanceObserver,
-      performance:{getEntriesByType:()=>[{type}], getEntriesByName:()=>[]},
-      requestAnimationFrame:fn=>{if(paint) paint.frames.push(fn); else fn(); return 1;}, cancelAnimationFrame(){}});
-    return {root,window};
+test('a document visit parks on the icon only for an internal page change with motion enabled', () => {
+  const script=readFileSync(new URL('../public/memento-ui/viewport.js',import.meta.url),'utf8');
+  function visit(referrer,type='navigate',reduced=false){
+    const attributes=new Set();
+    const root={dataset:{},clientWidth:390,style:{setProperty(){}},
+      setAttribute(name){attributes.add(name);},removeAttribute(name){attributes.delete(name);}};
+    const document=Object.assign(new EventTarget(),{documentElement:root,readyState:'loading',referrer});
+    const window=Object.assign(new EventTarget(),{innerHeight:844});
+    const matchMedia=()=>Object.assign(new EventTarget(),{matches:reduced});
+    runInNewContext(script,{root,window,document,location:new URL('https://mementostudio.it/services/'),URL,Promise,
+      clearTimeout,matchMedia,performance:{getEntriesByType:()=>[{type}]}});
+    return {window,root,attributes};
   }
-  const from = 'https://mementostudio.it/start/';
-  // A slow destination must still have the whole reveal ahead of it at first paint.
-  let notifyPaint;
-  const paint = {frames:[], Observer:class {
-    static supportedEntryTypes = ['paint'];
-    constructor(callback) { notifyPaint = callback; }
-    observe() {} disconnect() {}
-  }};
-  const slow = visit(from,'navigate',false,paint);
-  assert.equal(paint.frames.length,0);
-  notifyPaint({getEntriesByName:()=>[{}]});
-  paint.frames.shift()();
-  assert.equal(slow.root.dataset.mementoPreparing,'forward');
-  assert.equal(slow.root.dataset.mementoEnter,undefined);
-  paint.frames.shift()();
-  assert.equal(slow.root.dataset.mementoEnter,'forward');
-  const {root,window} = visit(from);
-  assert.equal(root.dataset.mementoEnter,'forward');
-  window.dispatchEvent(new Event('pagehide'));
-  assert.equal(root.dataset.mementoEnter,undefined);
-  window.dispatchEvent(Object.assign(new Event('pageshow'),{persisted:true}));
-  assert.equal(root.dataset.mementoEnter,'forward');
-  for (const [ref,type,quiet] of [['','navigate'],['https://example.com/','navigate'],[from,'reload'],[location.href+'#catalogo','navigate'],[from,'navigate',true]]) {
-    assert.equal(visit(ref,type,quiet).root.dataset.mementoEnter,undefined);
+  const from='https://mementostudio.it/start/';
+  const nav=visit(from);assert.equal(nav.root.dataset.mementoArrival,'forward');assert(nav.attributes.has('data-memento-parked'));
+  nav.window.dispatchEvent(new Event('pagehide'));assert(!nav.attributes.has('data-memento-parked'));
+  for(const [ref,type,quiet] of [['','navigate'],['https://example.com/','navigate'],[from,'reload'],['https://mementostudio.it/services/#catalogo','navigate'],[from,'navigate',true]]) {
+    assert(!visit(ref,type,quiet).attributes.has('data-memento-parked'));
   }
+  assert(visit(from,'back_forward').attributes.has('data-memento-parked'));
 });
