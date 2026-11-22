@@ -19,6 +19,8 @@ import {setupUI} from './studio/ui.js';
 import {damp,ease,dysonAngle} from './studio/config.js';
 
 const canvas=document.getElementById('scene');
+const nativeEntry=document.documentElement.dataset.mementoNative==='studio';
+let firstFrame=true;
 const coarse=matchMedia('(pointer:coarse)').matches,mobile=coarse||innerWidth<700;
 const reduce=matchMedia('(prefers-reduced-motion: reduce)');let paused=reduce.matches,ready=false;
 let nav,lighting,materials,model,fields,renderer,composer,camera,focusPass,outputPass;
@@ -38,8 +40,11 @@ const ui=setupUI({
 reduce.addEventListener('change',()=>{paused=reduce.matches;ui.motion(paused);});
 
 async function fetchModel(){
- const lod=mobile?'mobile':'desktop',compressed=typeof DecompressionStream!=='undefined';
- const res=await fetch(`./assets/studio-v4-${lod}.glb${compressed?'.gz':''}`);if(!res.ok)throw new Error('Asset HTTP '+res.status);
+ const lod=mobile?'mobile':'desktop';
+ const fallback='./assets/studio-v4-'+lod+'.glb'+(typeof DecompressionStream==='undefined'?'':'.gz');
+ const url=document.getElementById('studio-model')?.href||fallback;
+ const compressed=url.endsWith('.gz');
+ const res=await fetch(url);if(!res.ok)throw new Error('Asset HTTP '+res.status);
  const expected=Number(res.headers.get('content-length'))||(mobile?5233250:6096729);let raw;
  if(res.body){const chunks=[];let length=0;const reader=res.body.getReader();while(true){const {done,value}=await reader.read();if(done)break;chunks.push(value);length+=value.length;ui.progress(Math.min(.72,length/expected*.72));}raw=new Uint8Array(length);let offset=0;for(const b of chunks){raw.set(b,offset);offset+=b.length;}}
  else raw=new Uint8Array(await res.arrayBuffer());
@@ -82,7 +87,7 @@ function buildRaycasts(){let index=0;const chunk=deadline=>{let count=0;while(in
 function tick(stamp){
  requestAnimationFrame(tick);if(document.hidden||!ready)return;
  const elapsed=lastTime?(stamp-lastTime)/1000:1/60;lastTime=stamp;const dt=Math.min(elapsed,.05);
- if(!paused)time+=elapsed;uniforms.uTime.value=time;revealAge+=elapsed;uniforms.uReveal.value=reduce.matches?1:ease(Math.min(1,revealAge/2.3));
+ if(!paused)time+=elapsed;uniforms.uTime.value=time;revealAge+=elapsed;uniforms.uReveal.value=nativeEntry||reduce.matches?1:ease(Math.min(1,revealAge/2.3));
  nav.update(dt,reduce.matches,elapsed);uniforms.uPerspective.value=nav.perspective;uniforms.uProjectionDistance.value=camera.userData.projectionDistance;uniforms.uShell.value=nav.shell;
  materials.update(elapsed,reduce.matches);lighting.update(elapsed,nav.shell,reduce.matches,time);fields?.update();ui.rendered(uniforms.uMode.value,materials.progress<1,lighting.age>2);
  if(model.dyson&&!paused)model.dyson.rotation.y=dysonAngle(time);
@@ -90,6 +95,7 @@ function tick(stamp){
  if(stamp-hoverAt>90){hoverAt=stamp;const h=pointerOver&&!dragged&&!nav.transition?pick():null;hoverMesh=h?.object||null;canvas.classList.toggle('light-hover',!!hoverMesh?.userData.lightGroup);}
  focusPass.uniforms.inverseProjection.value.copy(camera.projectionMatrixInverse);focusPass.enabled=nav.focusAmount>.005;focusPass.uniforms.amount.value=nav.focusAmount;focusPass.uniforms.focusDistance.value=nav.focusDistance;focusPass.uniforms.focusRange.value=nav.focusRange;
  composer.render(dt);
+ if(firstFrame){firstFrame=false;ui.ready();}
  // Reduce resolution only after a sustained slow interval; never run device benchmarks on load.
  if(revealAge>5){frameAverage=frameAverage*.90+Math.min(elapsed,.5)*1000*.10;adaptiveAge+=elapsed;frameCount++;if(adaptiveAge>3&&frameCount>5){if(frameAverage>36&&dpr>1){dpr=Math.max(1,dpr-.15);resize();}adaptiveAge=0;frameCount=0;}}
 }
@@ -111,7 +117,7 @@ async function init(){
   nav=new StudioNavigation(camera,new WalkGrid(gridData),{onChange:n=>ui.navigation(n),onFocus:o=>ui.focus(o)});resize();nav.update(.016);bindInput();
   // Compile once with all material families; roof opacity is zero until the interior is entered.
   lighting.update(1,0,true,0);materials.update(.016);await renderer.compileAsync(scene,camera);ui.progress(.97);
-  ready=true;ui.ready();ui.navigation(nav);requestAnimationFrame(tick);
+  ready=true;ui.navigation(nav);requestAnimationFrame(tick);
 
   buildRaycasts();
   canvas.addEventListener('webglcontextlost',e=>{e.preventDefault();ready=false;ui.error('La sessione 3D è stata interrotta. Ricarica lo studio per riprendere.');});
