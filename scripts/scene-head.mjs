@@ -1,12 +1,10 @@
-import { createMaterial, seal } from './scene-material.mjs';
+import { createMaterial, seal, weave } from './scene-material.mjs';
 
 const css = `@media (prefers-reduced-motion:no-preference) and (forced-colors:none){
   @view-transition {navigation:auto}
   .mm-weave {position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:2147483647;view-transition-name:mm-material}
-  .mm-veil {position:absolute;inset:0;background:#000;opacity:0}
-  .mm-seal,.mm-weave i {position:absolute;top:50%;left:50%;opacity:0}
-  .mm-seal {width:clamp(72px,12vmin,128px);height:auto;transform:translate(-50%,-50%);filter:drop-shadow(0 0 9px #ff8a3838)}
-  .mm-weave i {width:8px;height:5px;background:#eda664;clip-path:polygon(0 100%,34% 0,100% 72%)}
+  .mm-cells {position:absolute;inset:0;width:100%;height:100%}
+  .mm-seal {position:absolute;top:50%;left:50%;opacity:0;width:clamp(72px,12vmin,128px);height:auto;transform:translate(-50%,-50%);filter:drop-shadow(0 0 9px #ff8a3838)}
   ::view-transition {pointer-events:none}
   ::view-transition-group(root) {animation:mm-hold 5s step-end both}
   @keyframes mm-hold {from,to {opacity:1}}
@@ -17,7 +15,7 @@ const css = `@media (prefers-reduced-motion:no-preference) and (forced-colors:no
 }
 @media (prefers-reduced-motion:reduce),(forced-colors:active){.mm-weave {display:none}}`;
 
-function observeScene(createMaterial, seal) {
+function observeScene(createMaterial, seal, weave) {
   const root = document.documentElement;
   if (['services','levelup'].includes(root.dataset.mementoNative)) root.dataset.overlayScrollbar = 'true';
   let width, height;
@@ -37,10 +35,12 @@ function observeScene(createMaterial, seal) {
   const motion = matchMedia('(prefers-reduced-motion:no-preference) and (forced-colors:none)');
   const sections = new Set(['/', '/studio', '/memento', '/services', '/projects', '/levelup', '/start']);
   const path = url => url.pathname.replace(/\/+$/, '') || '/';
-  const key = 'memento.route.handoff.v3';
-  const gather = 260, unfold = 260;
+  const key = 'memento.route.handoff.v4';
+  // R16: the interface comes apart into the seal (gather), the seal composes the next one (unfold). Was 260 + 260 ms
+  const gather = 560, unfold = 700;
   const fallbackBox = [.16, .22, .68, .56];
-  let active = null;
+  let active = null, lastPoint = null;
+  window.addEventListener('pointerdown', e => {lastPoint = [e.clientX / innerWidth, e.clientY / innerHeight, performance.now()];}, {capture:true, passive:true});
 
   function crossing(from, to) {
     if (!from || !to) return false;
@@ -48,12 +48,17 @@ function observeScene(createMaterial, seal) {
     return a.origin === location.origin && b.origin === a.origin && path(a) !== path(b) && sections.has(path(a)) && sections.has(path(b));
   }
   function mark(name) {performance.mark?.('memento:' + name);}
-  function bounds(el) {
-    if (!el) return fallbackBox;
-    const r = el.getBoundingClientRect();
-    const x = Math.max(0, r.left), y = Math.max(0, r.top);
-    const w = Math.min(innerWidth, r.right) - x, h = Math.min(innerHeight, r.bottom) - y;
-    return w > 8 && h > 8 ? [x/innerWidth, y/innerHeight, w/innerWidth, h/innerHeight] : fallbackBox;
+  // the interface on screen, in viewport fractions: the cells over it are the ones that become fragments
+  function sceneOf(origin) {
+    const vw = innerWidth, vh = innerHeight, rects = [];
+    for (const el of document.querySelectorAll('[data-vfx], #scene .card[data-slot], main img, main h1, main h2, main canvas, #experience, memento-nav')) {
+      const r = el.getBoundingClientRect();
+      if (r.width * r.height < 900 || r.bottom < 0 || r.top > vh || r.right < 0 || r.left > vw) continue;
+      rects.push([r.left / vw, r.top / vh, r.width / vw, r.height / vh, r.width * r.height]);
+    }
+    rects.sort((a, b) => b[4] - a[4]);
+    if (!rects.length) rects.push([...fallbackBox, 0]);
+    return {origin, rects: rects.slice(0, 28).map(q => q.slice(0, 4).map(v => Math.round(v * 1e4) / 1e4))};
   }
   function firstElement() {
     const selectors = {studio:'#experience #loading', services:'#bundle-boards [data-slide="0"] img',
@@ -86,7 +91,7 @@ function observeScene(createMaterial, seal) {
   }
   function begin(destination, phase) {
     release();
-    const s = {destination, box:fallbackBox, frame:0};
+    const s = {destination, scene:{origin:[.5,.5], rects:[]}, frame:0};
     window.mementoSceneFinished = new Promise(resolve => {s.finish = resolve;});
     active = s;
     root.dataset.mmPhase = phase;
@@ -94,9 +99,9 @@ function observeScene(createMaterial, seal) {
     return s;
   }
   function play(s, covering, fraction) {
-    s.layer ??= createMaterial(seal);
+    s.layer ??= createMaterial(seal, weave);
     s.run?.cancel();
-    s.run = s.layer.play(covering, fraction, covering ? gather : unfold, s.box);
+    s.run = s.layer.play(covering, fraction, covering ? gather : unfold, s.scene);
     return s.run.done.catch(() => {});
   }
   function depart(to) {
@@ -107,7 +112,9 @@ function observeScene(createMaterial, seal) {
     s.frame = requestAnimationFrame(() => {
       if (s !== active) return;
       try {
-        s.box = bounds(firstElement());
+        // the decomposition starts where the page was touched (keyboard and history: the middle)
+        const origin = lastPoint && performance.now() - lastPoint[2] < 2000 ? lastPoint.slice(0, 2) : [.5, .5];
+        s.scene = sceneOf(origin);
         play(s, true, 0).then(() => {if (active === s) root.dataset.mmPhase = 'hold';});
       } catch {release();}
     });
@@ -115,7 +122,7 @@ function observeScene(createMaterial, seal) {
   function save() {
     const s = active;
     if (!s?.destination) return;
-    try {sessionStorage.setItem(key, JSON.stringify({to:s.destination, at:Date.now(), fraction:s.run?.fraction() || 0, box:s.box}));} catch {}
+    try {sessionStorage.setItem(key, JSON.stringify({to:s.destination, at:Date.now(), fraction:s.run?.fraction() || 0, scene:s.scene}));} catch {}
   }
   function read() {
     try {
@@ -148,7 +155,7 @@ function observeScene(createMaterial, seal) {
       if (document.readyState === 'loading') await new Promise(resolve => document.addEventListener('DOMContentLoaded', resolve, {once:true}));
       if (s !== active) return;
       const target = firstElement();
-      s.nextBox = bounds(target);
+      s.nextScene = sceneOf([.5, .5]);
       if (target instanceof HTMLImageElement && (target.currentSrc || target.getAttribute('src'))) await target.decode();
       else if (root.dataset.mementoNative === 'studio' && target && !document.body.classList.contains('ready')) {
         const poster = getComputedStyle(target,'::before').backgroundImage.match(/^url\(["']?(.*?)["']?\)$/);
@@ -170,7 +177,7 @@ function observeScene(createMaterial, seal) {
     const s = begin(null, 'gather');
     s.transition = vt;
     root.dataset.mmFeed = 'old';
-    s.box = saved?.box || fallbackBox;
+    s.scene = saved?.scene || {origin:[.5, .5], rects:[]};
     const first = readyView(s);
     try {
       // An incoming document with no old snapshot must start fully covered, before its first paint.
@@ -180,7 +187,7 @@ function observeScene(createMaterial, seal) {
       if (s !== active) return;
       root.dataset.mmFeed = 'new';
       root.dataset.mmPhase = 'unfold';
-      s.box = s.nextBox || fallbackBox;
+      s.scene = s.nextScene || sceneOf([.5, .5]);
       mark('open');
       await play(s, false, 0);
       if (active === s) {mark('done');release();}
@@ -191,4 +198,4 @@ function observeScene(createMaterial, seal) {
   motion.addEventListener('change', release);
 }
 
-export const sceneHead = `<style id="memento-scene-shape">${css}</style><script id="memento-scene-navigation">(${observeScene.toString()})(${createMaterial.toString()},${JSON.stringify(seal)})</script>`;
+export const sceneHead = `<style id="memento-scene-shape">${css}</style><script id="memento-scene-navigation">(${observeScene.toString()})(${createMaterial.toString()},${JSON.stringify(seal)},${JSON.stringify(weave)})</script>`;

@@ -295,7 +295,7 @@ export class VfxRenderer {
     const chain = new ChainField(net, C);
     chain.onIgnite = (cell, strength) => this.emitFrom(c, cell, strength, false);
     c.net = net; c.chain = chain; c.energy = energy;
-    c.touch = new TouchReaction(net);
+    c.touch = new TouchReaction(net); c.touch.owner = c;
     c.touch.chain.onIgnite = (cell, strength) => this.emitFrom(c, cell, strength, false, true);
     c.delays = new Float32Array(net.faces); c.born = new Uint8Array(net.faces);
     for (let f = 0; f < net.faces; f++) c.delays[f] = loadingDelay(net.cx[f] + c.u.uNoise.value.x, net.cy[f] + c.u.uNoise.value.y, net.seed[f]);
@@ -362,7 +362,7 @@ export class VfxRenderer {
     c.titleOffset.value.set(t.box.x, t.box.y);
     const chain = new ChainField(net, T);
     chain.onIgnite = (cell, strength) => this.emitFrom(c, cell, strength, true);
-    const touch = new TouchReaction(net);
+    const touch = new TouchReaction(net); touch.owner = c;
     touch.chain.onIgnite = (cell, strength) => this.emitFrom(c, cell, strength, true, true);
     c.t = { layout: t, net, chain, energy, touch, coverage: m, margin, born: new Uint8Array(net.faces), delays: new Float32Array(net.faces) };
     for (let k = 0; k < net.faces; k++) c.t.delays[k] = loadingDelay(t.box.x + net.cx[k] + c.u.uNoise.value.x, t.box.y + net.cy[k] + c.u.uNoise.value.y, net.seed[k]);
@@ -526,6 +526,19 @@ export class VfxRenderer {
       const lx = c.lx, ly = c.ly;
       if (inside) {
         if (!c.inside) for (let i = 0; i < P.enterBurst; i++) ch.igniteAt(lx, ly, R * 0.45, rand(0.85, 1));
+        // R16: with a mouse the hover travels like a touch: paths through this card's cells (scene and title), from
+        // where the pointer enters and again as it moves, feeding the outline (the slow hover chain stays under it)
+        if (!reduced && !input.touch) {
+          const W = P.wave;
+          if (!c.inside) { c.waveTravel = 0; c.waveAt = this.clockMs; this.touches.start(input.x, input.y, l.w, l.h, this.clockMs, c, W.gain[0]); }
+          else {
+            c.waveTravel = (c.waveTravel || 0) + input.speed * dt;
+            if (c.waveTravel >= W.every && this.clockMs - (c.waveAt || 0) >= W.gap * 1000) {
+              c.waveTravel = 0; c.waveAt = this.clockMs;
+              this.touches.start(input.x, input.y, l.w, l.h, this.clockMs, c, W.gain[1]);
+            }
+          }
+        }
         const rate = (reduced ? 1.5 : (still ? P.stillRate : P.hoverRate) + input.speed * P.moveRate) * VFX.chain.card.rate;
         c.debt += rate * dt;
         while (c.debt >= 1) { c.debt -= 1; ch.igniteAt(lx, ly, R * P.jitter, rand(0.75, 1)); }

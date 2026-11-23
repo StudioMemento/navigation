@@ -13,6 +13,9 @@ uniform float uTime;
 uniform float uMotion;        // 0 with prefers-reduced-motion
 uniform vec3 uAmb[4];         // amber scale: deep, mid, hot, core
 uniform float uEmissive;      // 1 while rendering the emission-only pass that feeds the bloom
+/* R16: the pointer's light on a scene: strength of the highlight (screen blend) and its radius (card px) */
+#define PHOTO_SPOT .5
+#define PHOTO_SPOT_R 230.
 float h11(float p){ p=fract(p*.1031); p*=p+33.33; p*=p+p; return fract(p); }
 float h21(vec2 p){ vec3 p3=fract(vec3(p.xyx)*.1031); p3+=dot(p3,p3.yzx+33.33); return fract((p3.x+p3.y)*p3.z); }
 float vnoise(vec2 p){
@@ -309,12 +312,12 @@ void main(){
   float sweep=exp(-be*3.4);
   vec2 dp=p-uPointer.xy;
 
-  // 1 · the scene in its own colours, already lit in the house palette: 80% saturation across the card under the
-  //     gesture (base), 100% in the cells the range and the reaction reach. Black stays black: no image box shows
-  float lift=clamp(uHover*.72+Ev*.8,0.,1.)*uGain+uNear*.32*exp(-dot(dp,dp)/(uWake.x*uWake.x*2.6));
-  float gA=ia*min(lift*1.35,1.)*smoothstep(.015,.12,lum);
-  float reach=clamp(Ev*1.25+E*.4,0.,1.);
-  vec3 graded=mix(vec3(lum),phRGB,.8+.2*reach)*(.94+.3*E*sweep)*mix(.21,1.,uActive);
+  // 1 · R16: the scene in its own colours, whole (they are already warm: no extra amber). Under the pointer a soft
+  //     highlight, a light and not a tint (the colour screened with itself). Black stays black: no image box shows
+  float lift=clamp(uHover+Ev*.8,0.,1.)*uGain+uNear*.32*exp(-dot(dp,dp)/(uWake.x*uWake.x*2.6));
+  float gA=ia*min(lift,1.)*smoothstep(.015,.12,lum);
+  float spot=exp(-dot(dp,dp)/(PHOTO_SPOT_R*PHOTO_SPOT_R))*uHover*uGain;
+  vec3 graded=mix(phRGB,1.-(1.-phRGB)*(1.-phRGB),PHOTO_SPOT*spot)*(1.+.06*E*sweep)*mix(.21,1.,uActive);
 
   // 2 · one set of cells of one scale, gathered along the outline, each with its own visibility. The pointer wakes
   //     them where it is (from outside too, on the side facing it); the reaction travels through the same cells
@@ -326,9 +329,10 @@ void main(){
   float beat=.62+.38*sin(uTime*(.22+.3*h)+h2*6.283)*uMotion;
   float L=clamp(vis*wake*beat*uTopo+E*(.45+.8*max(vis,.35)),0.,1.);
   float sat=.3+.7*h2;
-  float fA=inside*L*(.05+.24*h)*(.3+.7*sweep)*(1.-ia*.4*smoothstep(.04,.3,lum));
+  // R16: over the photograph the cells stay light and close to neutral; the amber lives on the black and the outline
+  float fA=inside*L*(.05+.24*h)*(.3+.7*sweep)*(1.-ia*.7*smoothstep(.04,.3,lum));
   vec3 facet=ramp(.24+.44*L*sweep);
-  facet=mix(vec3(dot(facet,vec3(.3333))),facet,sat)*(.45+.9*sweep);
+  facet=mix(vec3(dot(facet,vec3(.3333))),facet,sat*(1.-.6*ia))*(.45+.9*sweep);
   // the seams: hairlines (under half a pixel per side), never summed at a corner
   float edges=max(max(hair(vBary.x)*step(.45,h2),hair(vBary.y)*step(.45,h3)),hair(vBary.z)*step(.45,h));
   vec3 wc=ramp(.6+.32*L);
@@ -347,7 +351,8 @@ void main(){
   c*=(1.-ink.a)*vFade;
   if(uEmissive>.5){
     float lamp=lampAt(phUV,phRaw)*ia*min(lift,1.)*uLights*uActive;
-    o=vec4((graded*gA*smoothstep(.4,.9,lum)*.4+facet*fA*.7+wire+phRGB*lamp*.9)*(1.-ink.a)*vFade+glow,0.);
+    // the scene glows only a little, where the pointer lights it; its lamps keep a softer halo (R16)
+    o=vec4((graded*gA*smoothstep(.45,.95,lum)*(.04+.16*spot)+facet*fA*.7+wire+phRGB*lamp*.2)*(1.-ink.a)*vFade+glow,0.);
     return;
   }
   o=vec4(c.rgb+glow,c.a);

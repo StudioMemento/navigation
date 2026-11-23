@@ -77,7 +77,7 @@ export function planTouchSeeds(net, place, wave) {
   return [...selected].map(cell => ({
     cell,
     at: parent[cell] === -1 ? touchArrival(wave, sx[cell], sy[cell], net.seed[cell]) : base + depth[cell] * 23 + noise(cell + wave.id * 7) * 28,
-    strength: 0.88 + 0.12 * noise(net.seed[cell] * 73 + wave.id),
+    strength: (0.88 + 0.12 * noise(net.seed[cell] * 73 + wave.id)) * (wave.gain ?? 1),
   })).sort((a, b) => a.at - b.at);
 }
 
@@ -85,9 +85,10 @@ export function planTouchSeeds(net, place, wave) {
 export class TouchPulseField {
   constructor() { this.waves = []; this.started = 0; this.frame = 0; }
   get active() { return this.waves.length > 0; }
-  start(x, y, width, height, now) {
+  /** R16: `scope` keeps a desktop hover wave inside one card (its owner); `gain` softens its cells. */
+  start(x, y, width, height, now, scope = undefined, gain = 1) {
     this.update(now);
-    const wave = { id: ++this.started, x, y, width, height, start: now, frame: 0, observed: now,
+    const wave = { id: ++this.started, x, y, width, height, start: now, frame: 0, observed: now, scope, gain,
       reach: Math.max(1, Math.hypot(Math.max(x, width - x), Math.max(y, height - y))) };
     if (this.waves.length >= TOUCH_POOL) this.waves.shift();
     this.waves.push(wave);
@@ -113,6 +114,8 @@ export class TouchReaction {
     this.chain = new ChainField({ ...net, cond: new Float32Array(net.faces) }, TOUCH_CHAIN, random);
     this.energy = new Float32Array(net.faces * 6);
     this.seen = 0; this.pending = [];
+    /** R16: the card this reaction belongs to: hover waves scoped to another card pass by */
+    this.owner = undefined;
   }
   get active() { return this.pending.length > 0 || this.chain.active; }
   get level() { return this.chain.level; }
@@ -124,6 +127,7 @@ export class TouchReaction {
     for (const w of field.waves) {
       if (w.id <= this.seen) continue;
       this.seen = w.id;
+      if (w.scope !== undefined && w.scope !== this.owner) continue;
       for (let i = 0; i < this.net.faces; i++) this.chain.net.cond[i] = this.net.weight[i] > 0.015 ? 0.85 + 0.15 * this.net.cond[i] : 0;
       if (w.frame === field.frame && w.frame > 0) this.pending.push(...planTouchSeeds(this.net, placeOf(w), w));
     }

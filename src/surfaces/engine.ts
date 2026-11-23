@@ -58,6 +58,8 @@ interface Surface {
   photoOpacity: number; veilEl: HTMLElement | null; veilImg: HTMLImageElement | null; veilBox: [number, number, number, number];
   veilFit: { objectFit: string; objectPosition: string }; veilBlur: number; frameMask: boolean;
   hover: number; near: number; inside: boolean; debt: number; budget: number; hot: boolean;
+  /** R16: px the pointer travelled over the surface since its last hover wave, and when that wave started (ms) */
+  waveTravel: number; waveAt: number;
   version: number;
   ready: boolean;
   /** START V24: measured and painted again only when its size or content changed. */
@@ -814,7 +816,7 @@ export class VfxEngine {
       photoEl: null, photo2El: null, img2: null, img2Src: '', photoFit: { objectFit: 'fill', objectPosition: '50% 50%' }, photoBox: [0, 0, 1, 1],
       range: null, rangeBox: [0, 1], imgDirty: false, photoVersion: 0,
       photoOpacity: 1, veilEl: null, veilImg: null, veilBox: [0, 0, 1, 1], veilFit: { objectFit: 'fill', objectPosition: '50% 50%' }, veilBlur: 0, frameMask: false,
-      hover: 0, near: 0, inside: false, debt: 0, budget: 0, hot: false, version: 0, ready: false, dirty: true };
+      hover: 0, near: 0, inside: false, debt: 0, budget: 0, hot: false, waveTravel: 0, waveAt: 0, version: 0, ready: false, dirty: true };
   }
 
   private dropSurface(s: Surface) {
@@ -1047,7 +1049,7 @@ export class VfxEngine {
     const profile: ChainProfile = title ? C.title : C.card;
     const chain = new ChainField(net, profile);
     chain.onIgnite = (cell, strength) => this.emitFrom(s, cell, strength);
-    s.net = net; s.chain = chain; s.touch = new TouchReaction(net); s.energy = energy;
+    s.net = net; s.chain = chain; s.touch = new TouchReaction(net); s.touch.owner = s; s.energy = energy;
     s.touch.chain.onIgnite = (cell, strength) => this.emitFrom(s, cell, strength, true);
     s.delays = new Float32Array(net.faces); s.born = new Uint8Array(net.faces);
     for (let f = 0; f < net.faces; f++) s.delays[f] = loadingDelay(s.x + net.cx[f], s.y + net.cy[f], net.seed[f]);
@@ -1247,6 +1249,19 @@ export class VfxEngine {
       const prox = present && !inside && s.shown && this.inClip(s, px, py) ? clamp(1 - Math.hypot(dx, dy) / R, 0, 1) * s.opacity : 0;
       if (inside) {
         if (!s.inside) for (let i = 0; i < P.enterBurst; i++) ch.igniteAt(lx, ly, R * 0.45, rand(0.85, 1));
+        // R16: with a mouse the hover travels like a touch: connected paths through this surface's own cells, from
+        // where the pointer enters and again as it moves, feeding the outline (the slow hover chain stays under it)
+        if (!this.reduced && !this.touchOnly.matches) {
+          const W = P.wave;
+          if (!s.inside) { s.waveTravel = 0; s.waveAt = time; this.touches.start(input.x, input.y, root().clientWidth, innerHeight, time, s, W.gain[0]); }
+          else {
+            s.waveTravel += input.speed * dt;
+            if (s.waveTravel >= W.every && time - s.waveAt >= W.gap * 1000) {
+              s.waveTravel = 0; s.waveAt = time;
+              this.touches.start(input.x, input.y, root().clientWidth, innerHeight, time, s, W.gain[1]);
+            }
+          }
+        }
         // a surface with an energy source (the studio on the map): slow pulses start from it and travel through the cells
         if (s.opt.source) {
           if (!s.inside) s.sourceDebt = 1;

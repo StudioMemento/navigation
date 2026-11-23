@@ -22,7 +22,8 @@ Il progetto Vercel `mementonav` pubblica la Home e le pagine di [mementostudio.i
 
 - `src/vfx/config.mjs` controlla palette, tempi, effetti al tocco e al puntatore di Home, Servizi, Portfolio, LevelUp e Start. `VFX.runtime` regola il riposo del loop (`idle`, 1 s) e la cadenza dell’hover fermo (`calmFps`, 30); `VFX.quality` i profili e il budget di pixel.
 - `src/vfx/policy.mjs` decide per ogni visita se gli effetti partono: `?vfx=off`, Save-Data e dispositivi sotto i 2 GB mostrano la pagina HTML.
-- `scripts/scene-head.mjs` segue la navigazione nativa. `scripts/scene-material.mjs` anima il sigillo Memento con un velo e otto frammenti.
+- `scripts/scene-head.mjs` segue la navigazione nativa. `scripts/scene-material.mjs` scompone la pagina in celle che formano il sigillo Memento e ricompone la successiva dal reticolato (R16).
+- Hover con il mouse: `VFX.pointer.wave`. Luce del cursore sulle foto: `PHOTO_SPOT` in `src/surfaces/shaders.ts` e `src/shaders.js`.
 - `public/navigation/` contiene la navbar comune. Le pagine usano un fondo nero uniforme.
 - Studio 3D usa lo stesso menu e la stessa transizione. La scena e i controlli 3D si modificano nella repo Studio.
 
@@ -45,6 +46,12 @@ Dalla R15 la Home e le pagine Start, Servizi, Portfolio e LevelUp hanno di nuovo
 Le note delle release precedenti e i riferimenti artistici sono in `docs/`.
 
 ## Archivio delle release
+
+### R16
+
+- **Hover desktop come la catena dei telefoni.** Onde che corrono nelle celle della card dall'ingresso del cursore e mentre si muove, solo nella superficie sotto il mouse.
+- **Foto nei loro colori in hover**, con una luce morbida intorno al cursore; niente gradazione ambra, bloom e lampade ridotti.
+- **Cambio pagina dal reticolato.** L'interfaccia si scompone dal punto toccato, i frammenti formano il sigillo; il sigillo si rompe e la pagina nuova si compone cella per cella (560 + 700 ms). Dettagli in `docs/R16_NOTES.md`.
 
 ### R15
 

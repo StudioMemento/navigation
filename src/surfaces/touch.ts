@@ -14,6 +14,10 @@ export const TOUCH_CHAIN: ChainProfile = {
 export interface TouchWave {
   id: number; x: number; y: number; width: number; height: number; reach: number; start: number;
   frame: number; observed: number;
+  /** R16: a desktop hover wave travels through one surface only (its owner); a touch reaches every visible surface */
+  scope?: unknown;
+  /** R16: strength of the wave's cells (a hover wave is a little softer than a touch) */
+  gain?: number;
 }
 export interface SurfaceRect {
   /** Viewport px of the surface's top-left (flat surfaces). */
@@ -90,7 +94,7 @@ export function planTouchSeeds(net: CellNetwork, rect: SurfaceRect, wave: TouchW
   const base = Math.max(wave.start, wave.observed) + (touchArrival(wave, sx[root], sy[root], net.seed[root]) - wave.start);
   return [...selected].map(cell => ({ cell,
     at: parent[cell] === -1 ? touchArrival(wave, sx[cell], sy[cell], net.seed[cell]) : base + depth[cell] * 23 + noise(cell + wave.id * 7) * 28,
-    strength: .88 + .12 * noise(net.seed[cell] * 73 + wave.id),
+    strength: (.88 + .12 * noise(net.seed[cell] * 73 + wave.id)) * (wave.gain ?? 1),
   })).sort((a, b) => a.at - b.at);
 }
 
@@ -99,9 +103,9 @@ export class TouchPulseField {
   started = 0;
   frame = 0;
   get active() { return this.waves.length > 0; }
-  start(x: number, y: number, width: number, height: number, now: number) {
+  start(x: number, y: number, width: number, height: number, now: number, scope?: unknown, gain = 1) {
     this.update(now);
-    const wave = { id: ++this.started, x, y, width, height, start: now, frame: 0, observed: now,
+    const wave: TouchWave = { id: ++this.started, x, y, width, height, start: now, frame: 0, observed: now, scope, gain,
       reach: Math.max(1, Math.hypot(Math.max(x, width - x), Math.max(y, height - y))) };
     if (this.waves.length >= TOUCH_POOL) this.waves.shift();
     this.waves.push(wave);
@@ -125,6 +129,8 @@ export class TouchReaction {
   readonly energy: Float32Array;
   private seen = 0;
   private pending: TouchSeed[] = [];
+  /** R16: the surface this reaction belongs to: hover waves scoped to another surface pass by */
+  owner?: unknown;
   constructor(readonly net: CellNetwork, random?: () => number) {
     this.chain = new ChainField({ ...net, cond: new Float32Array(net.faces) }, TOUCH_CHAIN, random);
     this.energy = new Float32Array(net.faces * 6);
@@ -135,6 +141,7 @@ export class TouchReaction {
     for (const w of field.waves) {
       if (w.id <= this.seen) continue;
       this.seen = w.id;
+      if (w.scope !== undefined && w.scope !== this.owner) continue;
       for (let i = 0; i < this.net.faces; i++) this.chain.net.cond[i] = this.net.weight[i] > .015 ? .85 + .15 * this.net.cond[i] : 0;
       // One opportunity per rendered frame, not a 100 ms deadline that slow phones can miss.
       if (w.frame === field.frame && w.frame > 0) this.pending.push(...planTouchSeeds(this.net, rect, w));

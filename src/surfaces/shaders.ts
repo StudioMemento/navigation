@@ -11,6 +11,9 @@ uniform float uMotion;        // 0 with prefers-reduced-motion
 uniform vec3 uAmb[4];         // amber scale: deep, mid, hot, core
 uniform float uEmissive;      // 1 while rendering the emission-only pass that feeds the bloom
 
+/* R16: the pointer's light on a photograph: strength of the highlight (screen blend) and its radius (px) */
+#define PHOTO_SPOT .5
+#define PHOTO_SPOT_R 210.
 float h11(float p){ p=fract(p*.1031); p*=p+33.33; p*=p+p; return fract(p); }
 float h21(vec2 p){ vec3 p3=fract(vec3(p.xyx)*.1031); p3+=dot(p3,p3.yzx+33.33); return fract((p3.x+p3.y)*p3.z); }
 float vnoise(vec2 p){
@@ -442,15 +445,13 @@ void main(){
   float sweep=exp(-be*3.4);
   vec2 dp=p-uPointer.xy;
 
-  // 1 · the photograph lit from within: a warm grade of its own luminance, never a flat tint over it.
-  //     A neighbour in range warms a little, on the side facing the pointer
-  float lift=clamp(uHover*.72+Ev*.8,0.,1.)*uGain+uNear*.32*exp(-dot(dp,dp)/(uWake.x*uWake.x*2.6));
-  float gA=ia*min(lift*(1.+.35*uOwn),1.)*(1.-ph.z*.5)*smoothstep(.015,.12,lum);   // black stays black: no visible image box
-  // contained: the light lives on the crests of the object, its brightest core never burns out
-  float l=pow(lum,1.05);
-  vec3 graded=ramp(clamp(l*1.12+.1,0.,.84))*(l*1.7);
-  graded*=1.+E*(.24*sweep-.08+.18*(h-.5));                 // each lit cell grades a little differently
-  graded=mix(graded,phRGB*(.94+.3*E*sweep),uOwn);
+  // 1 · R16: on hover the photograph shows its own colours (they are already warm: no amber grade over them).
+  //     Under the pointer a soft highlight, a light and not a tint: the colour screened with itself, so hues stay and
+  //     nothing burns out. A neighbour in range takes some colour on the side facing the pointer
+  float lift=clamp(uHover+Ev*.8,0.,1.)*uGain+uNear*.32*exp(-dot(dp,dp)/(uWake.x*uWake.x*2.6));
+  float gA=ia*min(lift,1.)*(1.-ph.z*.5)*smoothstep(.015,.12,lum);   // black stays black: no visible image box
+  float spot=exp(-dot(dp,dp)/(PHOTO_SPOT_R*PHOTO_SPOT_R))*uHover*uGain;
+  vec3 graded=mix(phRGB,1.-(1.-phRGB)*(1.-phRGB),PHOTO_SPOT*spot)*(1.+.06*E*sweep);
 
   // 2 · one set of cells, of every size, gathered along the outline. Each cell has its own visibility: strong, faint,
   //     barely there, none. The pointer wakes them where it is (from outside too, on the side facing it) and the
@@ -464,9 +465,10 @@ void main(){
   // no still field of triangles: they show where the reaction passes and close to the pointer, nowhere else
   float L=clamp(vis*wake*beat*uTopo+E*(.45+.8*max(vis,.35)),0.,1.);
   float sat=.3+.7*h2;                                        // some cells deep amber, others close to neutral
-  float fA=inside*L*(.05+.24*h)*(.3+.7*sweep)*(1.-ia*.4*smoothstep(.04,.3,lum));   // the object, not its box
+  // R16: over the photograph the cells stay light and close to neutral; the amber lives on the black and the outline
+  float fA=inside*L*(.05+.24*h)*(.3+.7*sweep)*(1.-ia*.7*smoothstep(.04,.3,lum));   // the object, not its box
   vec3 facet=ramp(.24+.44*L*sweep);
-  facet=mix(vec3(dot(facet,vec3(.3333))),facet,sat)*(.45+.9*sweep);
+  facet=mix(vec3(dot(facet,vec3(.3333))),facet,sat*(1.-.6*ia))*(.45+.9*sweep);
   // the seams: hairlines (under half a pixel per side, so a shared edge stays under a pixel), never summed at a corner
   float edges=max(max(hair(vBary.x)*step(.45,h2),hair(vBary.y)*step(.45,h3)),hair(vBary.z)*step(.45,h));
   vec3 wc=ramp(.6+.32*L);
@@ -485,7 +487,8 @@ void main(){
   c*=(1.-ink.a)*vFade;
   float veil=1.-uVeil*inside;
   float lay=layer();
-  if(uEmissive>.5){ o=vec4((graded*gA*smoothstep(.4,.9,lum)*.4+facet*fA*.7+wire)*(1.-ink.a)*vFade*veil+glow,0.)*lay; return; }
+  // the photograph glows only a little, and only where the pointer lights it
+  if(uEmissive>.5){ o=vec4((graded*gA*smoothstep(.45,.95,lum)*(.04+.16*spot)+facet*fA*.7+wire)*(1.-ink.a)*vFade*veil+glow,0.)*lay; return; }
   o=vec4(c.rgb*veil+glow,c.a)*lay;
 }`;
 

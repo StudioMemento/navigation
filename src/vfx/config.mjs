@@ -43,6 +43,12 @@ export const VFX = Object.freeze(/** @type {const} */ ({
   pointer: {
     radius: 230, touchRadius: 110, attack: 0.12, neighbour: 0.25,
     hoverRate: 7, stillRate: 2.4, moveRate: 1 / 85, jitter: 0.32, enterBurst: 5, proximityRate: 3, sourceEvery: 1.6,
+    /**
+     * R16: with a mouse the hover travels through the lattice like a touch (the chain reaction of the phones): one wave
+     * from where the pointer enters a card or a title, then one every `every` px it travels, never closer than `gap` s.
+     * The waves stay inside that surface; `gain`: strength of the entry and of the travel waves.
+     */
+    wave: { every: 150, gap: 0.3, gain: [1, 0.78] },
   },
   border: { bins: 96, decay: 3.2, reach: 46 },
   loading: { duration: 1.8, hurry: 3.2, ignite: 0.14 },
