@@ -1,12 +1,13 @@
 import './style.css';
 import {PAGES} from './config.mjs';
-import {clamp,wrap,relative,nearest,layout,viewportHeight,pose,dragSnap,slideStep,wheelStep,queuedStep} from './model.mjs';
+import {clamp,wrap,relative,nearest,layout,titleSize,viewportHeight,pose,dragSnap,slideStep,wheelStep,queuedStep} from './model.mjs';
 import {initialSection,installRouteSync} from './route-state.mjs';
 import {settings,DEFAULTS} from './settings.js';
 import {NAV} from './vfx/config.mjs';
 import {TouchPulseField,listenForTouch,touchArrival} from './vfx/touch.mjs';
-import {afterFirstPaint,startBackground} from './background/background.mjs';
+import {afterFirstPaint,whenIdle} from './paint.mjs';
 import {routePath} from './kit/core.mjs';
+import {vfxPolicy} from './vfx/policy.mjs';
 
 // The public site uses native page navigation. Legacy Framer embeds can still open links in the top window.
 let embeddedLegacy=false;try{embeddedLegacy=window.top!==window;}catch{embeddedLegacy=true;}
@@ -23,11 +24,12 @@ let storage;try{storage=sessionStorage;}catch{}
 const routeSlug=()=>{const segment=location.pathname.split('/').filter(Boolean)[0]?.replace(/\.html$/,'');const page=PAGES.find(p=>p.slug===segment||(segment==='memento'&&p.id==='memento'));return page?.slug||initialSection({hash:location.hash,storage,referrer:''});};
 let active=Math.max(0,PAGES.findIndex(p=>p.slug===(container?routeSlug():initialSection({hash:location.hash,storage,referrer:document.referrer}))));
 let position=active,target=active,velocity=0,settled=true,raf=0,lastTime=0,drag=null,suppressClick=0,disposed=false,layoutFrame=0;
-let l,overlay,engine=null,route,hostHeight,tiltX=0,tiltY=0,frameCount=0,fpsSince=0,frameTime=0,idle=0,qaPaused=false;
+let l,overlay,engine=null,route,hostHeight,tiltX=0,tiltY=0,frameCount=0,fpsSince=0,frameTime=0,idle=0,qaPaused=false,calm=false,moved=false;
+// R15: one decision per visit (query, Save-Data, device memory); `?vfx=off` keeps the HTML carousel
+const policy=vfxPolicy();
 let engineBooted=false;
 const pointer={x:-999,y:-999,power:0,down:false,type:'mouse'};
 const wheel={time:0,delta:0,used:false,sign:0,stepTime:-Infinity};
-const titleMetrics=new Map(),measure=document.createElement('canvas').getContext('2d');
 const cards=PAGES.map((p,i)=>{
  const card=scene.querySelector(`[data-page="${p.slug}"]`);
  if(!container){card.href=p.url;card.target='_top';}
@@ -35,33 +37,30 @@ const cards=PAGES.map((p,i)=>{
  on(card,'click',event=>{
   if(event.button||event.metaKey||event.ctrlKey||event.shiftKey||event.altKey)return;
   if(performance.now()<suppressClick){event.preventDefault();return;}
-  if(i!==active||!settled){event.preventDefault();select(nearest(i,position));}
+  if(i!==active){event.preventDefault();select(nearest(i,position));}
   else if(!container){route?.notify(p.slug);}
  });
- return {el:card,title:card.querySelector('h2'),letters:[...card.querySelectorAll('h2 span')],pose:null};
+ return {el:card,title:card.querySelector('h2'),pose:null};
 });
 
-// One WebGL2 context, the START's VFX engine. Any failure leaves the plain DOM navigation (images and titles).
-// The START's background (Ghost Fibers, its own canvas and 30 fps budget) sits behind; touches are one shared field.
-const touches=new TouchPulseField();
-const backdrop=document.getElementById('bkg');
-backdrop.hidden=params.get('bkg')==='0';
-const stopBackground=backdrop.hidden?()=>{}:startBackground(backdrop);
-// The Home alone loads its carousel renderer. Native section entries load only their own content.
+const touches = new TouchPulseField();
+// R15: the Home carousel gets the START's effects again. The HTML carousel paints first and stays the fallback; the
+// renderer is downloaded after the first paint and created in the first idle period, then takes over card by card.
 function bootEngine(){
  if(engineBooted||disposed)return;engineBooted=true;
- const fallback=()=>{canvas.hidden=true;document.body.dataset.renderer='fallback';document.documentElement.classList.remove('vfx-boot');};
- Promise.all([import('./renderer.js'),afterFirstPaint()]).then(([{VfxRenderer}])=>{
+ const fallback=()=>{canvas.hidden=true;document.body.dataset.renderer='fallback';delete document.documentElement.dataset.worldRenderer;document.documentElement.classList.remove('vfx-boot');};
+ afterFirstPaint().then(()=>Promise.all([import('./renderer.js'),whenIdle()])).then(([{VfxRenderer}])=>{
   if(disposed)return;
   engine=VfxRenderer.create(canvas,PAGES,{
-   touches,
+   touches,policy,
    onImage:i=>{cards[i].el.classList.add('image-ready');wake();},
    onTitle:i=>{cards[i].el.classList.add('title-ready');wake();},
-   onLive:()=>{document.body.dataset.renderer='webgl';wake();},
+   // the navbar's CSS blur steps aside in the frame the canvas takes over (the renderer composes the same blur)
+   // (the HTML carousel's own hover feedback stays until then: data-world-renderer is set here)
+   onLive:()=>{document.body.dataset.renderer='webgl';document.documentElement.dataset.worldRenderer='effects';overlay?.setAttribute('blur','off');wake();},
    wake:()=>wake()
   });
-  if(engine)document.body.dataset.renderer='webgl-boot';else fallback();
-  if(engine&&!engine.lost)overlay?.setAttribute('blur','off');
+  if(engine){document.body.dataset.renderer='webgl-boot';canvas.hidden=false;}else fallback();
   if(l)fit();
  }).catch(error=>{console.warn('World renderer unavailable:',error?.message||error);fallback();});
 }
@@ -77,7 +76,11 @@ function fit(){
  for(const [k,v] of Object.entries({'vh':height,'card-w':l.width,'card-h':l.height,'padding':l.padding,'cut':l.cut,'previous-y':l.previousY,'next-y':l.nextY}))root.setProperty('--'+k,v+'px');
  root.setProperty('--nav-viewport-height',height+'px');
  scene.style.perspective=l.perspective+'px';
- const sizes=cards.map(c=>{let metric=titleMetrics.get(c.title.textContent);if(!metric){measure.font='280 100px Inter';metric=c.letters.reduce((sum,el)=>sum+measure.measureText(el.textContent).width,0)/100;titleMetrics.set(c.title.textContent,metric);}const available=l.width-l.padding*2,size=Math.min(l.height*.27,available/(metric+(c.letters.length-1)*.23));c.el.style.setProperty('--title-size',size+'px');return size;});
+ const sizes=cards.map((card, i) => {
+  const size=titleSize(l, PAGES[i].titleEm);
+  card.el.style.setProperty('--title-size', size+'px');
+  return size;
+ });
  engine?.resize(l,sizes);loadVisible();drawPoses();wake();
 }
 function scheduleFit(){if(!layoutFrame)layoutFrame=requestAnimationFrame(()=>{layoutFrame=0;fit();});}
@@ -118,25 +121,26 @@ function drawPoses(){
  });
 }
 function stepWorld(dt){
- const moving=!settled||!!drag?.claimed;
+ const moving=!settled||!!drag?.claimed;moved=moving;
  if(!drag?.claimed&&!settled)({position,velocity,settled}=slideStep(position,velocity,target,dt,motionReduced()));
  const k=1-Math.exp(-dt*6),amount=pointer.power&&!motionReduced()?1:0;
  const tx=clamp((pointer.x-l.cx)/(l.width*.65),-1,1)*amount,ty=clamp((pointer.y-l.cy)/(l.height*.85),-1,1)*amount;
  const tilting=Math.abs(tx-tiltX)+Math.abs(ty-tiltY)>.002;
- tiltX+=(tx-tiltX)*k;tiltY+=(ty-tiltY)*k;
- const poses=drawPoses();
- const busy=engine?engine.update(dt,poses,motionReduced(),moving):false;
+ tiltX+=(tx-tiltX)*k;tiltY+=(ty-tiltY)*k;moved=moving||tilting;
+ const poses=(moving||tilting||engine)?drawPoses():[];
+ const busy=engine?engine.update(dt,poses,motionReduced(),moving,calm):false;
  return busy||moving||tilting;
 }
 function frame(now){
  raf=0;if(disposed||document.hidden||qaPaused)return;
- if(engine?.live && document.documentElement.hasAttribute('data-mm-phase')){lastTime=0;return;}
- // high refresh screens are capped at 60 renders a second (V24); the frame is simply skipped
- if(lastTime&&now-lastTime<1000/NAV.fps-1){raf=requestAnimationFrame(frame);return;}
+ if(document.documentElement.hasAttribute('data-mm-phase')){lastTime=0;return;}
+ // high refresh screens are capped at 60 renders a second (V24), a held hover at NAV.calmFps (R15); the frame is skipped
+ if(lastTime&&now-lastTime<1000/(calm?NAV.calmFps:NAV.fps)-1){raf=requestAnimationFrame(frame);return;}
  const elapsed=lastTime?now-lastTime:16.67,dt=Math.min(elapsed/1000,.05);lastTime=now;
  const begin=performance.now();
  const active_=stepWorld(dt);
- engine?.render();frameTime+=performance.now()-begin;frameCount++;
+ // nothing is drawn before the renderer goes live: the HTML carousel is on screen until then
+ if(engine?.live)engine.render();frameTime+=performance.now()-begin;frameCount++;
  if(!fpsSince)fpsSince=now;
  if(now-fpsSince>1500){
   const fps=+(frameCount*1000/(now-fpsSince)).toFixed(1),e=engine?.stats();
@@ -144,11 +148,12 @@ function frame(now){
   hub.dataset.stats=JSON.stringify(stats);const output=document.querySelector('.lab .qa');if(output)output.textContent=`${stats.renderer} · ${fps} fps · ${e?.quality||'-'} · DPR ${e?.dpr||'-'}\n${e?.scenes||0}/5 scene · ${e?.titles||0}/5 titoli · ${l.w} × ${l.h}\nDNA Memento VFX · ${stats.motion}`;
   frameCount=0;frameTime=0;fpsSince=now;
  }
- // At rest the surface loop sleeps a moment after the last reaction; the background keeps its own 30 fps loop.
+ // At rest the carousel loop sleeps until the next interaction (R15: one second, as on the pages; nothing moves at rest).
  idle=active_?0:idle+dt;
- if(idle<NAV.idle)wake();
+ calm=!!engine?.calm&&!moved&&!drag;
+ if(active_ || (engine && idle<NAV.idle))raf=requestAnimationFrame(frame);
 }
-function wake(){idle=0;if(!raf&&!document.hidden&&!disposed&&!qaPaused){if(lastTime&&performance.now()-lastTime>100)lastTime=0;raf=requestAnimationFrame(frame);}}
+function wake(){idle=0;if(!raf&&!document.hidden&&!disposed&&!qaPaused){if(lastTime&&performance.now()-lastTime>100){lastTime=0;engine?.settle();}calm=false;raf=requestAnimationFrame(frame);}}
 on($('previous'),'click',()=>select(queuedStep(position,target,-1)));
 on($('next'),'click',()=>select(queuedStep(position,target,1)));
 on(hub,'wheel',e=>{
@@ -209,11 +214,11 @@ on(window,'resize',scheduleFit);if(visualViewport)on(visualViewport,'resize',sch
 on(document,'memento:surface-visibility',wake);
 on(document,'visibilitychange',()=>{if(document.hidden){cancelAnimationFrame(raf);raf=0;lastTime=0;}else{lastTime=0;wake();}});
 on(window,'pageshow',()=>{lastTime=0;wake();});
-on(window,'pagehide',e=>{cancelAnimationFrame(raf);raf=0;if(!e.persisted){disposed=true;controller.abort();cancelAnimationFrame(layoutFrame);engine?.dispose();stopBackground();litTimers.forEach(clearTimeout);}});
+on(window,'pagehide',e=>{cancelAnimationFrame(raf);raf=0;if(!e.persisted){disposed=true;controller.abort();cancelAnimationFrame(layoutFrame);engine?.dispose();litTimers.forEach(clearTimeout);}});
 on(reduced,'change',()=>{lastTime=0;wake();});
 // Any loss of the context returns the navigation to its DOM rendering at once.
-on(canvas,'webglcontextlost',e=>{e.preventDefault();if(engine)engine.lost=true;overlay?.removeAttribute('blur');document.documentElement.classList.remove('vfx-live','vfx-boot');document.body.dataset.renderer='context-lost';});
-on(canvas,'webglcontextrestored',()=>{if(!engine)return;engine.restore();overlay?.setAttribute('blur','off');if(engine.live)document.documentElement.classList.add('vfx-live');document.body.dataset.renderer='webgl';fit();});
+on(canvas,'webglcontextlost',e=>{e.preventDefault();if(engine)engine.lost=true;overlay?.removeAttribute('blur');document.documentElement.classList.remove('vfx-live','vfx-boot');delete document.documentElement.dataset.worldRenderer;document.body.dataset.renderer='context-lost';});
+on(canvas,'webglcontextrestored',()=>{if(!engine)return;engine.restore();if(engine.live){document.documentElement.dataset.worldRenderer='effects';overlay?.setAttribute('blur','off');document.documentElement.classList.add('vfx-live');}document.body.dataset.renderer='webgl';fit();wake();});
 const VIEWPORT='memento:hub-viewport',HOSTS=['https://mementostudio.it','https://www.mementostudio.it'];
 if(!container)on(window,'message',event=>{const d=event.data;if(event.source!==window.parent||!HOSTS.includes(event.origin)||!d||d.channel!==VIEWPORT||d.version!==1||d.type!=='VIEWPORT'||!Number.isFinite(d.height)||d.height<160||d.height>10000)return;hostHeight=d.height;scheduleFit();});
 if(window.parent!==window)for(const origin of HOSTS)window.parent.postMessage({channel:VIEWPORT,version:1,type:'REQUEST'},origin);
@@ -232,15 +237,20 @@ if(container)on(window,'hashchange',()=>{
  if(i<0||i===active)return;
  position=target=i;velocity=0;settled=true;updateActive(i,false);drawPoses();wake();
 });
-bootEngine();fit();updateActive(active,false);
+// The HTML carousel paints first (photos and titles of the build). R15: the renderer takes over unless the visit's
+// policy keeps the HTML carousel (?vfx=off, Save-Data, very low memory); software graphics are detected by the renderer.
+canvas.hidden=true;
+document.body.dataset.renderer='dom';
+if(policy.enabled)bootEngine();
+fit();updateActive(active,false);
 if(labMode)setupLab();
-document.fonts.ready.then(()=>{titleMetrics.clear();scheduleFit();});
+document.fonts.ready.then(scheduleFit);
 const navigationURL=new URL(`${import.meta.env.BASE_URL}navigation/navbar.mjs`,document.baseURI).href;
 import(/* @vite-ignore */ navigationURL).then(({mountNav})=>{
  overlay=mountNav({active:PAGES[active].id,mode:container?'host':'standalone'});
- if(container){overlay.setAttribute('current','location');if(engine&&!engine.lost)overlay.setAttribute('blur','off');scheduleFit();return;}
+ if(container){overlay.setAttribute('current','location');if(engine?.live&&!engine.lost)overlay.setAttribute('blur','off');scheduleFit();return;}
  overlay.setAttribute('target','_top');
- if(engine&&!engine.lost)overlay.setAttribute('blur','off');
+ if(engine?.live&&!engine.lost)overlay.setAttribute('blur','off');
  on(overlay,'click',e=>{const link=e.composedPath().find(n=>n?.tagName==='A');if(link){const p=PAGES.find(p=>p.url===link.href);if(p){route.markInteracted();route.notify(p.slug);}}},{capture:true});scheduleFit();
 }).catch(error=>console.warn('Overlay unavailable',error.message));
 wake();
@@ -253,5 +263,6 @@ if(params.has('qa'))window.__nav={
  pointer(x,y){pointer.x=x;pointer.y=y;pointer.type='mouse';pointer.power=1;engine?.input.move(x,y,false);},
  touch(x,y){contact(x,y);},
  leave(){pointer.power=0;engine?.input.leave();},
- get engine(){return engine;}
+ get engine(){return engine;},
+ get animating(){return !!raf;}
 };

@@ -12,6 +12,9 @@ export function viewportHeight(layoutHeight,visualHeight,scale=1,hostHeight){
  if(valid(hostHeight))height=Math.min(height,hostHeight);
  return Math.round(height*100)/100;
 }
+export function titleSize(frame, titleEm) {
+ return Math.min(frame.height * .27, (frame.width - frame.padding * 2) / titleEm);
+}
 export function layout(w,h,insets={}){
  const portrait=h>w*1.08;
  const ratio=portrait?(w<600?.8:1.08):2;

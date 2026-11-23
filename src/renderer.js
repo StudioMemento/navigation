@@ -7,7 +7,8 @@ import {
 } from 'three';
 import { BorderLight, outline } from './vfx/border.mjs';
 import { ChainField } from './vfx/chain.mjs';
-import { NAV, VFX, gradientRange, hexToRgb, titleRamp } from './vfx/config.mjs';
+import { NAV, VFX, gradientRange, hexToRgb, pixelRatio, titleRamp } from './vfx/config.mjs';
+import { startingQuality } from './vfx/policy.mjs';
 import { buildNetwork, hashString } from './vfx/geometry.mjs';
 import { PointerField } from './vfx/input.mjs';
 import { TouchPulseField, TouchReaction } from './vfx/touch.mjs';
@@ -41,6 +42,8 @@ function sdTab(x, y, w, h, cut) {
  * title) and two overlays of energy (the card's cells and outline, the title's range, lattice and glow), lit only by a
  * chain reaction that a gesture starts and that ends on its own. The carousel position takes cards apart as they leave.
  * There is no background: the frame is true black. The DOM keeps layout, semantics, focus and hit areas.
+ * R15: the Home carousel of the Vercel container uses this renderer again (it was kept for `?lab` only). The page loop
+ * (main.js) draws only while something changes and sleeps at rest; a held hover is drawn at `NAV.calmFps`.
  */
 export class VfxRenderer {
   static create(canvas, pages, hooks) {
@@ -59,6 +62,8 @@ export class VfxRenderer {
     this.gpu = info ? String(gl.getParameter(info.UNMASKED_RENDERER_WEBGL)) : '';
     if (staticArtwork(this.gpu)) { renderer.dispose(); throw new Error('Software graphics: using the rendered navigation cards'); }
     this.quality = /swiftshader|llvmpipe|software|basic render/i.test(this.gpu) ? 'low' : matchMedia('(pointer: coarse)').matches ? 'medium' : 'high';
+    // R15: the visit's policy can start lower (2 GB devices); ?vfx=high|medium|low pins a profile
+    this.quality = startingQuality(this.quality, hooks.policy && { quality: hooks.policy.quality, pinned: false });
     const pin = new URLSearchParams(location.search).get('vfx');
     this.pinned = !!(pin && pin in VFX.quality); if (this.pinned) this.quality = pin;
     this.reduced = false; this.lost = false; this.disposed = false; this.live = false; this.loaded = false;
@@ -173,6 +178,8 @@ export class VfxRenderer {
     await this.fontsReady;
     const ready = () => this.disposed || (this.layout && this.firstCards().every(c => c.loaded && c.t));
     for (let t = 0; !ready() && t < 1400; t += 40) await wait(40);
+    // R15: the shader programs are compiled before the takeover, in parallel where the GPU allows it
+    await Promise.race([this.precompile(), wait(1500)]);
     if (this.disposed || this.lost) return;
     this.live = true;
     this.publishFrame = true;
@@ -180,28 +187,46 @@ export class VfxRenderer {
     this.wakeUp();
   }
 
+  async precompile() {
+    try {
+      // without the extension the same programs are compiled at once, still before the takeover (the page is DOM)
+      const r = this.renderer, parallel = r.extensions.has('KHR_parallel_shader_compile');
+      const compile = async (scene) => { if (parallel) await r.compileAsync(scene, this.camera); else r.compile(scene, this.camera); };
+      await compile(this.scene);
+      for (const m of [this.blur, this.down, this.grade]) { this.fsMesh.material = m; await compile(this.post); }
+    } catch { /* a shader this GPU cannot link is reported by the first frame */ }
+  }
+
   firstCards() { return this.cards.filter(c => Math.abs(c.d) < 1.5); }
   wakeUp() { this.hooks.wake?.(); }
+  /** R15: the loop slept; the pointer's travel meanwhile is not a gesture. */
+  settle() { this.input.settle(); }
+  /** R15: a held hover only (pointer still, nothing travelling): the page loop may draw it at NAV.calmFps. */
+  get calm() { return this.live && this.loaded && this.input.still > 0.6 && !this.touches.active && this.parts.count === 0; }
 
   async loadScene(index, image) {
     const card = this.cards[index];
-    if (card.loading || this.disposed || (image.currentSrc && card.imageUrl === image.currentSrc)) return;
-    card.loading = true;
+    const url = image.currentSrc;
+    if (!url || this.disposed || card.imageUrl === url || card.pendingUrl === url) return;
+    card.pendingUrl = url;
     try {
-      await image.decode();
-      if (this.disposed || !image.naturalWidth) return;
-      // Upload the exact bitmap selected by the browser's srcset, including after a resize.
-      const tex = new Texture(image);
+      // A standalone image reports the bitmap dimensions, independent of responsive CSS density.
+      const bitmap = new Image();
+      bitmap.src = url;
+      await bitmap.decode();
+      if (this.disposed || card.pendingUrl !== url || image.currentSrc !== url) return;
+      const tex = new Texture(bitmap);
       tex.colorSpace = NoColorSpace;
       tex.anisotropy = Math.min(4, this.renderer.capabilities.getMaxAnisotropy());
       tex.needsUpdate = true;
-      card.tex?.dispose(); card.tex = tex; card.imageUrl = image.currentSrc;
+      this.renderer.initTexture(tex);
+      card.tex?.dispose(); card.tex = tex; card.imageUrl = url;
       card.u.uImage.value = tex; card.u.uHasImg.value = 1;
-      card.u.uTextureSize.value.set(image.naturalWidth, image.naturalHeight);
+      card.u.uTextureSize.value.set(bitmap.naturalWidth, bitmap.naturalHeight);
       card.loaded = true;
       this.hooks.onImage?.(index); this.wakeUp();
-    } catch { /* The DOM image remains available if decoding or a responsive swap is pending. */ }
-    finally { card.loading = false; }
+    } catch { /* The HTML or the previous texture stays visible. */ }
+    finally { if (card.pendingUrl === url) card.pendingUrl = ''; }
   }
 
   /* ------------------------------------------------------------------ layout */
@@ -209,8 +234,13 @@ export class VfxRenderer {
   resize(l, titleSizes) {
     this.layout = l;
     const q = this.profile();
-    const dpr = Math.min(devicePixelRatio || 1, q.dpr, l.small ? NAV.dprCap.small : NAV.dprCap.large);
+    // the profile's DPR, the carousel's caps (R11) and the pixel budget (R15, read on the screen's height: a mobile
+    // toolbar never changes the ratio)
+    const dpr = pixelRatio(devicePixelRatio, l.w, Math.max(l.h, screen.height || 0), q, l.small ? NAV.dprCap.small : NAV.dprCap.large);
     this.dpr = dpr;
+    // MSAA ×2 only on the high profile (V24): a profile stepped down also releases the multisampled buffer
+    const samples = this.quality === 'high' ? 2 : 0;
+    if (this.rtMain.samples !== samples) { this.rtMain.samples = samples; this.rtMain.dispose(); }
     const r = this.renderer;
     r.setPixelRatio(dpr); r.setSize(l.w, l.h, false);
     const gl = r.getContext(), W = gl.drawingBufferWidth, H = gl.drawingBufferHeight;
@@ -418,8 +448,8 @@ export class VfxRenderer {
 
   /* ------------------------------------------------------------------ loop */
 
-  /** Advances one frame. Returns true while anything is still moving or lit. */
-  update(dt, poses, reduced, moving = false) {
+  /** Advances one frame. Returns true while anything is still moving or lit. `calm`: drawn on the calm cadence. */
+  update(dt, poses, reduced, moving = false, calm = false) {
     if (this.disposed || !this.layout) return false;
     this.reduced = reduced;
     const g = this.globals, P = VFX.pointer, l = this.layout, input = this.input;
@@ -582,8 +612,8 @@ export class VfxRenderer {
     if (this.parts.count || this.touches.active) busy = true;
     if (drift.x > 0.001 && drift.x < NAV.fade * 2.5) busy = true;
 
-    // adaptive quality: sustained long frames step the profile down
-    this.frames++; if (dt * 1000 > VFX.slowFrame) this.slow++;
+    // adaptive quality: sustained long frames step the profile down (frames on the calm cadence are not counted)
+    if (!calm) { this.frames++; if (dt * 1000 > VFX.slowFrame) this.slow++; }
     if (this.frames >= 150) {
       if (this.slow > 70 && this.quality !== 'low' && !this.pinned) { this.quality = this.quality === 'high' ? 'medium' : 'low'; this.structKey = ''; this.resize(this.layout); }
       this.frames = 0; this.slow = 0;

@@ -1,10 +1,11 @@
+import { mediaAssets } from './scripts/media-assets.mjs';
 import { sceneHead } from './scripts/scene-head.mjs';
 import { defineConfig } from 'vite';
 import { resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 export default defineConfig({
   base: '/',
-  plugins: [{
+  plugins: [mediaAssets(), {
     name: 'memento-first-paint',
     async transformIndexHtml(html) {
       // Keep the same pure layout functions in the inline first frame and the client.
@@ -19,7 +20,7 @@ export default defineConfig({
     rolldownOptions: {
       input: {home:resolve('index.html'), effects:resolve('src/surfaces/index.ts')},
       preserveEntrySignatures: 'strict',
-      output: {entryFileNames: chunk => chunk.name === 'effects' ? 'memento-ui/effects.mjs' : 'assets/[name]-[hash].js'}
+      output: {entryFileNames: chunk => chunk.name === 'effects' ? 'memento-ui/effects.mjs' : 'assets/compiled/[name]-[hash].js',chunkFileNames:'assets/compiled/[name]-[hash].js',assetFileNames:'assets/compiled/[name]-[hash][extname]'}
     }
   },
   server: {host:'0.0.0.0',allowedHosts:true}

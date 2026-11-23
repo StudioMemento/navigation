@@ -1,6 +1,6 @@
 # Sito Memento
 
-Il progetto Vercel `mementonav` pubblica la Home e le pagine di [mementostudio.it](https://mementostudio.it/). Ogni sezione si aggiorna dalla propria repo GitHub.
+Il progetto Vercel `mementonav` pubblica la Home e le pagine di [mementostudio.it](https://mementostudio.it/). Il sito integra le versioni delle cinque sezioni indicate in `scripts/sections.lock.json`.
 
 | Pagina | Indirizzo sul sito | Repository da clonare in GitHub Desktop |
 | --- | --- | --- |
@@ -16,26 +16,44 @@ Il progetto Vercel `mementonav` pubblica la Home e le pagine di [mementostudio.i
 1. Apri la repo della pagina e scegli **Fetch origin**, poi **Pull origin** se disponibile.
 2. Modifica i sorgenti nella cartella clonata. Se ricevi uno ZIP di aggiornamento, estrai i file indicati nella stessa cartella, al livello di `package.json`.
 3. Controlla l’elenco delle modifiche, scegli **Commit to main** e poi **Push origin**.
-4. Quando il deployment mostra **Ready** su Vercel, apri la pagina sul dominio pubblico. L’HTML delle sezioni viene conservato per un minuto nella cache di Vercel e può essere servito durante l’aggiornamento.
+4. Nella repo navigation aggiorna il commit della sezione in `scripts/sections.lock.json` su un branch. La preview include pagine, immagini e codice di quelle versioni. Dopo la verifica puoi unire il branch per pubblicare il sito. Il rollback del deploy ripristina insieme i file delle sei pagine.
 
 ## Dove si regolano gli effetti
 
-- `src/vfx/config.mjs` controlla palette, tempi, effetti al tocco e al puntatore di Home, Servizi, Portfolio, LevelUp e Start.
-- `public/memento-ui/site.css` contiene la transizione fra le pagine e la variante per chi preferisce ridurre il movimento.
-- `public/navigation/` contiene la navbar comune. `src/background/` contiene lo sfondo e il suo preset.
+- `src/vfx/config.mjs` controlla palette, tempi, effetti al tocco e al puntatore di Home, Servizi, Portfolio, LevelUp e Start. `VFX.runtime` regola il riposo del loop (`idle`, 1 s) e la cadenza dell’hover fermo (`calmFps`, 30); `VFX.quality` i profili e il budget di pixel.
+- `src/vfx/policy.mjs` decide per ogni visita se gli effetti partono: `?vfx=off`, Save-Data e dispositivi sotto i 2 GB mostrano la pagina HTML.
+- `scripts/scene-head.mjs` segue la navigazione nativa. `scripts/scene-material.mjs` anima il sigillo Memento con un velo e otto frammenti.
+- `public/navigation/` contiene la navbar comune. Le pagine usano un fondo nero uniforme.
 - Studio 3D usa lo stesso menu e la stessa transizione. La scena e i controlli 3D si modificano nella repo Studio.
 
 ## Avvio e build
 
-Il progetto usa Node 22.12 o successivo della serie 22. `npm ci`, `npm test` e `npm run build` verificano e compilano i sorgenti. `npm run dev` avvia la Home in Vite. Per provare anche le cinque sezioni usa un’anteprima Vercel della repo.
+Il progetto usa Node 22.12 o successivo della serie 22. `npm ci`, `npm test` e `npm run build` verificano e compilano i sorgenti. `npm run dev` avvia la Home in Vite. Dopo la build, `npm run preview` serve tutte e sei le pagine.
 
-Vercel serve l’HTML della sezione tramite `api/section.js`. Il codice in `scripts/native-page.mjs` prepara i link, la navbar e gli effetti prima che l’HTML arrivi al browser. Le immagini, i modelli 3D e i contenuti restano gestiti dalla repo di ciascuna pagina.
+La build scarica i commit pubblici delle cinque repo, compila le sezioni e adatta l’HTML con `scripts/native-page.mjs`. La CDN serve direttamente pagine e asset. La build si interrompe se manca una revisione o se una sezione fallisce. La Home disegna subito foto e titoli HTML con la prospettiva del carosello; il renderer degli effetti li sostituisce quando è pronto. `?lab` apre la regia.
 
 ## Riferimento visivo della Home
 
 Le cinque stazioni seguono l’ordine Studio, Servizi, Portfolio, LevelUp e Start. Le note di design sono in `docs/dna/`.
 
-## Cosa cambia nella R13
+## Navigazione e rendering
+
+I link avviano subito la richiesta HTML. Dove sono disponibili le transizioni fra documenti, l’icona ambra accompagna il passaggio. All’apertura diretta, con movimento ridotto o con colori forzati, il browser mostra la pagina direttamente. I moduli della sezione collegano i controlli durante il cambio pagina. La prima schermata usa il contenuto HTML e le fotografie della build. Studio 3D mostra la vista esterna mentre prepara il primo frame del modello.
+
+Dalla R15 la Home e le pagine Start, Servizi, Portfolio e LevelUp hanno di nuovo gli effetti della START V28, senza sfondo. La pagina HTML compare per prima e resta il fallback: il renderer si scarica dopo il primo paint, nasce nel primo momento libero del browser, compila gli shader e poi prende il posto delle superfici. Disegna solo quando qualcosa cambia (puntatore, tocco, scroll, caricamento di un’immagine) e un secondo dopo l’ultimo cambiamento si ferma: a riposo la GPU non lavora. `?vfx=off` mostra la pagina HTML, `?vfx=low|medium|high` blocca un profilo, `?vfxdebug` espone `window.__vfx` con le metriche (`renders`, `sleeps`, `wakes`, `running`). Con grafica software, movimento ridotto (pagine) o colori forzati resta la pagina HTML. Le esperienze 3D e le demo interattive hanno renderer propri.
+
+Le note delle release precedenti e i riferimenti artistici sono in `docs/`.
+
+## Archivio delle release
+
+### R15
+
+- **Effetti della START V28 sulla navigazione ottimizzata, senza sfondo.** Home (carosello) e pagine native tornano a usare i due renderer esistenti; nessuno sfondo, nessun secondo contesto WebGL. Dettagli e verifica in `docs/R15_NOTES.md`.
+- **Riposo vero.** Il loop disegna solo quando qualcosa cambia e si ferma dopo 1 s (prima la pagina disegnava a 30 fps anche a riposo, a 60 fps con il mouse sulla finestra). Hover fermo a 30 fps.
+- **Presa in carico morbida.** Download dopo il primo paint, creazione nel primo momento libero, shader compilati prima di sostituire l’HTML (in parallelo dove la GPU lo consente).
+- **Budget di pixel per profilo**, MSAA rilasciato quando il profilo scende, nessun picco di velocità del puntatore al risveglio.
+
+### R13
 
 - **Titoli di Projects e LevelUp.** Nella R12 il renderer dipingeva solo i titoli delle tab sullo schermo all'avvio (Studio, Services, Start) e poi smetteva di controllare: Projects e LevelUp restavano con il titolo DOM, senza hover, range, reticolo né glow. Ora tutti e cinque i titoli vengono preparati, uno per frame, dalla tab più vicina.
 - **Sfondo della START.** Ghost Fibers con il preset della V27 (cinque layer, `#ef4444` / `#f97316`, grana 0), su un canvas proprio dietro alle tab: al massimo 30 disegni al secondo, DPR 1, risoluzione adattiva, caricato come chunk separato 350 ms dopo il primo paint. Il blur del 20% alto e basso vale anche per le fibre. `?bkg=0` lo spegne (verifiche, confronto).
@@ -44,7 +62,7 @@ Le cinque stazioni seguono l’ordine Studio, Servizi, Portfolio, LevelUp e Star
 - **Telefono e tablet.** Scene a colori anche a riposo (WebGL e fallback). Profili `medium`/`low` senza tagli a bloom, particelle o celle; MSAA ×2 solo su `high`. Loop delle tab limitato a 60 render al secondo sugli schermi ad alta frequenza. Icone della dock da 4–8 kB (`*-nav.webp`, come nel kit 12.1.0) al posto dei thumb da 0,4–0,75 MB. Blur del fallback con le maschere direzionali della V26.
 - **Primo paint.** La navigazione DOM è visibile subito; l'engine la sostituisce quando è pronto e costruisce le tab per celle.
 
-## Cosa cambiava nella R12 rispetto alla R11
+### R12
 
 - **Nero vero, nessuno sfondo.** Il reticolo di sfondo con il bagliore ambra che seguiva il puntatore e la scia di triangoli sono stati rimossi: per il DNA sono un disco che segue il cursore e ambra a riposo. Pagina, pannelli e primo paint sono `#000`.
 - **Quiete, base attiva, range.** A riposo la scena è in bianco e nero e il titolo ha il gradiente desaturato (luce dall'alto). Con il puntatore sulla tab la scena prende i suoi colori all'80% e il titolo il gradiente ambra con il reticolo dorato. Nelle celle raggiunte la scena va al 100% e il titolo al giallo caldo, con bordo interno, bagliore e un bloom leggero.
@@ -56,23 +74,3 @@ Le cinque stazioni seguono l’ordine Studio, Servizi, Portfolio, LevelUp e Star
 - **Schegge e scintille** solo dalle celle accese mentre il puntatore si muove, e durante il caricamento.
 - **Grade finale della START:** spalla delle luci, bloom selettivo con striatura anamorfica, vignettatura, grana, aberrazione cromatica verso i bordi, dithering. Il blur progressivo del 20% alto e basso resta composto in WebGL, come nella R11.
 - **Palette del DNA** anche in navbar, chevron e focus: ambra di riferimento `#FF7950`, rampa `#9E2208 → #FF5510 → #FF8A1C → #FFCB72`.
-
-## Regia e verifica
-
-- `?lab=1`: sette controlli (raggio del puntatore, bloom, striatura, profondità immagini, luce del bordo, sorgenti delle scene, schegge) e il riepilogo di renderer, profilo e fps. I valori di default sono in `src/settings.js`; colori, tempi e densità sono quelli del DNA (`src/vfx/config.mjs`).
-- `?vfx=high|medium|low` blocca un profilo di qualità; altrimenti il profilo scende da solo se i frame superano 30 ms.
-- `?motion=reduce` simula reduced motion: niente propagazione né tocco a catena, niente fasce, caricamento immediato, hover al 60%.
-- `?bkg=0` spegne lo sfondo.
-- `?qa=1` espone `window.__nav` (`advance`, `select`, `pointer`, `touch`) per avanzare il tempo in modo deterministico (screenshot su renderer lenti). Senza il parametro non esiste.
-
-## Rendering
-
-- Due contesti WebGL2, come nella START: lo sfondo con il suo budget, le tab con il loro loop. Ogni tab ha tre mesh sullo stesso piano: la struttura monocromatica (pannello, scena, cornice, titolo), l'overlay d'energia della tab, l'overlay del titolo. Il frame si compone in half float (MSAA ×2 sul profilo alto) e si gradua una volta sola verso lo schermo, trasparente sopra lo sfondo.
-- Il DOM resta la fonte di verità per layout, semantica, focus e click: quando l'engine è pronto aggiunge `html.vfx-live` e il DOM smette di dipingere immagini e titoli già disegnati dal canvas. Errore, perdita del contesto o assenza di WebGL2 riportano subito alla navigazione DOM (scene in bianco e nero, colore in hover, titoli con gradiente).
-- Dopo tre secondi senza reazioni il loop delle tab si ferma; qualsiasi input lo riprende. Lo sfondo si ferma solo quando la pagina non è visibile.
-
-## File
-
-`src/vfx/` contiene i moduli del DNA (configurazione, catena, tocco, bordo, rete, struttura, particelle, campo di distanza, puntatore, titoli). `src/background/` contiene Ghost Fibers (generato dal componente della V27 come modulo senza React), il preset e il montaggio. `src/shaders.js` e `src/renderer.js` contengono gli shader GLSL ES 3.0 e l'engine. `src/main.js` contiene carosello, input e regia. `public/navigation/` conserva logo e navbar del kit con la palette del DNA. `art/` contiene i cinque master PNG. `public/assets/scenes/` contiene le varianti WebP 768 e 1536. `docs/` contiene note, DNA, prompt e bridge Framer.
-
-Non sono richieste API key o librerie da CDN a runtime. Licenza di Ghost Fibers in `docs/ReactBits-LICENSE.md`.

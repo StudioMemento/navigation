@@ -40,7 +40,16 @@
   ],
   "headers": [
     {
-      "source": "/assets/(.*)",
+      "source": "/assets/photographs/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
+        }
+      ]
+    },
+    {
+      "source": "/assets/compiled/(.*)",
       "headers": [
         {
           "key": "Cache-Control",
@@ -97,48 +106,6 @@
           "value": "noindex"
         }
       ]
-    }
-  ],
-  "rewrites": [
-    {
-      "source": "/studio/",
-      "destination": "/api/section?station=studio"
-    },
-    {
-      "source": "/services/",
-      "destination": "/api/section?station=services"
-    },
-    {
-      "source": "/projects/",
-      "destination": "/api/section?station=projects"
-    },
-    {
-      "source": "/levelup/",
-      "destination": "/api/section?station=levelup"
-    },
-    {
-      "source": "/start/",
-      "destination": "/api/section?station=start"
-    },
-    {
-      "source": "/studio/:file+",
-      "destination": "https://mementostudio.vercel.app/:file+"
-    },
-    {
-      "source": "/services/:file+",
-      "destination": "https://mementoservizi.vercel.app/:file+"
-    },
-    {
-      "source": "/projects/:file+",
-      "destination": "https://mementoportfolio.vercel.app/:file+"
-    },
-    {
-      "source": "/levelup/:file+",
-      "destination": "https://mementolevelup.vercel.app/:file+"
-    },
-    {
-      "source": "/start/:file+",
-      "destination": "https://mementostart.vercel.app/:file+"
     }
   ]
 }

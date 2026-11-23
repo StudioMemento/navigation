@@ -25,5 +25,5 @@ export interface ChainProfile {
 }
 
 import { VFX } from '../vfx/config.mjs';
-export { VFX, hexToRgb, desaturate, titleRamp, gradientRange } from '../vfx/config.mjs';
+export { VFX, hexToRgb, desaturate, titleRamp, gradientRange, pixelRatio } from '../vfx/config.mjs';
 export type QualityName = keyof typeof VFX.quality;

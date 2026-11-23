@@ -1,0 +1,61 @@
+--- a/src/app.js
++++ b/src/app.js
+@@ -48,7 +48,7 @@
+ });
+
+ if (!$('#category-sections').firstElementChild) $('#category-sections').innerHTML = categories();
+-catalogue.categories.forEach((section) => {
++function mountCategory(section) {
+   const items = section.featured.map(getItem);
+   const carousel = new Carousel($(`#carousel-${section.id}`), {
+     onRender: motion,
+@@ -59,7 +59,27 @@
+     },
+   });
+   const update = bindDots($(`#controls-${section.id}`), carousel);
+-});
++}
++const categoryList = $('#category-sections');
++const pendingCategories = new Map(catalogue.categories.map(section => [section.id, section]));
++function activateCategory(element) {
++  const section = element && pendingCategories.get(element.id);
++  if (!section) return;
++  pendingCategories.delete(section.id);
++  nearCategory?.unobserve(element);
++  mountCategory(section);
++}
++const nearCategory = 'IntersectionObserver' in window ? new IntersectionObserver(entries => {
++  for (const entry of entries) if (entry.isIntersecting) activateCategory(entry.target);
++}, {rootMargin:'360px 0px'}) : null;
++for (const section of categoryList.querySelectorAll('.category-section')) {
++  if (nearCategory) nearCategory.observe(section);
++  else activateCategory(section);
++}
++// Focus or a direct gesture takes precedence over the next observer delivery.
++for (const type of ['focusin','pointerdown','click','keydown']) {
++  categoryList.addEventListener(type, event => activateCategory(event.target.closest('.category-section')), {capture:true, passive:true});
++}
+
+ let medium = 'digital';
+ function renderCatalogue(initial = false) {
+--- a/build.mjs
++++ b/build.mjs
+@@ -27,7 +27,17 @@
+   if (!slot.test(html)) throw new Error(`Missing initial view: ${id}`);
+   html = html.replace(slot, (_match, tag, end) => tag + markup + end);
+ }
+-populate('bundle-boards', `<div class="carousel-stage">${catalogue.bundles.map((item,i)=>{const html=cover(item,i);return i===1 || i===catalogue.bundles.length-1 ? html.replaceAll('data-src','src') : html;}).join('')}</div>`);
++// Size the mask before the first frame with the same projection used for swiping.
++function placeOpening(methods) {
++  const element = document.getElementById('bundle-boards');
++  const cards = element.querySelector('.carousel-stage').children;
++  const width = cards[0].offsetWidth, height = cards[0].offsetHeight;
++  const wide = Number(getComputedStyle(element).getPropertyValue('--layout-wide')) || 0;
++  methods.reserveBleed.call({...methods, element, width, height, wide, count:cards.length,
++    fan:true, stride:width * (.78 - .14 * wide), perspective:1100 + 900 * wide});
++}
++const openingLayout = `<script>(${placeOpening.toString()})({${Carousel.prototype.pose.toString()},${Carousel.prototype.reserveBleed.toString()}})</script>`;
++populate('bundle-boards', `<div class="carousel-stage">${catalogue.bundles.map((item,i)=>{const html=cover(item,i);return i===1 || i===catalogue.bundles.length-1 ? html.replaceAll('data-src','src') : html;}).join('')}</div>${openingLayout}`);
+ populate('bundle-controls', dots(catalogue.bundles.map(item => item.title)));
+ populate('category-sections', categories());
+ populate('catalogue-groups', grid('digital').html);

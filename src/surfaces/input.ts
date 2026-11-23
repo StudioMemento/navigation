@@ -20,6 +20,8 @@ export class PointerField {
   leave() { this.present = false; }
   /** Cancelled gesture: switch off cleanly. */
   cancel() { this.present = false; this.speed = 0; }
+  /** R15: the loop slept; the distance the pointer travelled meanwhile is not a flick (no speed spike on waking). */
+  settle() { this.speed = 0; this.lastX = this.present ? this.x : -9999; this.lastY = this.y; }
 
   update(dt: number) {
     if (this.present) {

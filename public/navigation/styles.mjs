@@ -19,6 +19,10 @@ export const overlayCSS = `
 .mm-filter { position:absolute; inset:0; border-radius:0; pointer-events:none; opacity:1; background:transparent;
   -webkit-backdrop-filter:blur(var(--mm-radius)); backdrop-filter:blur(var(--mm-radius));
   -webkit-mask-repeat:no-repeat; mask-repeat:no-repeat; -webkit-mask-size:100% 100%; mask-size:100% 100%; }
+/* Native pages use one fixed masked blur per edge, continuous through navigation. */
+:host([mode="host"]) .mm-filter:not(:last-child) {display:none}
+:host([mode="host"]) .mm-filter:last-child {--mm-radius:4px!important;mask-image:linear-gradient(to bottom,transparent 12%,#000)!important;-webkit-mask-image:linear-gradient(to bottom,transparent 12%,#000)!important}
+:host([mode="host"]) .mm-edge--top .mm-filter:last-child {mask-image:linear-gradient(to top,transparent 12%,#000)!important;-webkit-mask-image:linear-gradient(to top,transparent 12%,#000)!important}
 .mm-wordmark,.mm-dock { position:absolute; left:50%; width:var(--mm-rail); transform:translateX(-50%); z-index:20; }
 .mm-wordmark { top:var(--mm-top); display:flex; align-items:flex-start; min-height:44px; padding:3px 0 0; pointer-events:auto; color:inherit; text-decoration:none; }
 .mm-letter-row { display:flex; width:100%; height:var(--mm-glyph-height); justify-content:space-between; align-items:center; }

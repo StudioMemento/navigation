@@ -7,6 +7,8 @@ export class PointerField {
   move(x, y, touch) { this.x = x; this.y = y; this.present = true; this.touch = touch; }
   leave() { this.present = false; }
   cancel() { this.present = false; this.speed = 0; }
+  /** R15: the loop slept; the distance the pointer travelled meanwhile is not a flick (no speed spike on waking). */
+  settle() { this.speed = 0; this.lastX = this.present ? this.x : -9999; this.lastY = this.y; }
   update(dt) {
     if (this.present) {
       const dx = this.x - this.lastX, dy = this.y - this.lastY, d = Math.hypot(dx, dy);

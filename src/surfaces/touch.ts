@@ -170,6 +170,7 @@ export class TouchReaction {
 export function listenForTouch(target: EventTarget, start: (x: number, y: number) => void, signal: AbortSignal) {
   target.addEventListener('pointerdown', event => {
     const e = event as PointerEvent;
+    if (e.composedPath().some(node => node instanceof Element && node.localName === 'memento-nav')) return;
     if (e.pointerType === 'touch' || e.pointerType === 'pen') start(e.clientX, e.clientY);
   }, { capture: true, passive: true, signal });
 }

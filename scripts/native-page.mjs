@@ -38,6 +38,7 @@ function prune(node, slug) {
     }
     if (tag === 'style' && ['memento-first-paint','memento-native-font'].includes(attr(child,'id'))) return false;
     if (tag === 'link') {
+      if (attr(child,'data-mm-atlas') !== undefined) return false;
       const href = pathOf(attr(child, 'href'));
       if (href === '/memento-ui/site.css') return false;
       if (attr(child,'rel') === 'canonical' || href.startsWith('navigation/') || href === 'vfx/memento-vfx.js') return false;
@@ -51,7 +52,7 @@ function prune(node, slug) {
 }
 
 // Adapt the published section before it reaches the browser. The independent project keeps its original index.
-export function nativePage(source, slug) {
+export function nativePage(source, slug, release) {
   const section = STATIONS.find(s => s.slug === slug);
   if (!section) throw new Error('Unknown Memento section: ' + slug);
   const doc = parse(source);
@@ -61,6 +62,7 @@ export function nativePage(source, slug) {
   if (!head || !body) throw new Error('Section index has no head or body');
   prune(html,slug);
   set(html, 'data-memento-native', slug);
+  if(release)set(html, 'data-memento-release', release);
   set(html, 'data-memento-page', section.id);
   set(html, 'data-embedded', 'false');
   set(html, 'data-memento-surface', 'opaque');
@@ -84,18 +86,7 @@ export function nativePage(source, slug) {
     });
   }
   deduplicate(html);
-  // Download the Studio module alongside its model. GPU setup follows the scene handoff.
-  if (slug === 'studio') {
-    for (const parent of [head,body]) {
-      const index = parent.childNodes.findIndex(n => n.tagName === 'script' && attr(n,'type') === 'module' && /^app\.bundle\.js(?:[?#]|$)/.test(pathOf(attr(n,'src'))));
-      if (index < 0) continue;
-      const src = attr(parent.childNodes[index],'src');
-      head.childNodes.push(...parseFragment(`<link rel="modulepreload" href="${escape(src)}">`).childNodes);
-      const entry = `<script type="module">await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));await window.mementoSceneCovered?.catch(()=>{});import(${JSON.stringify(src).replaceAll('<','\\u003c')});</script>`;
-      parent.childNodes.splice(index,1,...parseFragment(entry).childNodes);
-      break;
-    }
-  }
+  // Keep the original module entry. Downloads and controls can start during the handoff.
   const spec = {imports:{[section.path+'/vfx/memento-vfx.js']:'/memento-ui/effects.mjs'}};
   const tags = [
     sceneHead,
@@ -112,7 +103,6 @@ export function nativePage(source, slug) {
   const firstResource = head.childNodes.findIndex(n => ['script','link','style'].includes(n.tagName));
   head.childNodes.splice(firstResource < 0 ? head.childNodes.length : firstResource, 0, ...parseFragment(tags.join('')).childNodes);
   head.childNodes.push(...parseFragment('<style id="memento-native-font">@font-face{font-family:Inter;src:url("/assets/fonts/InterVariable.woff2") format("woff2");font-weight:100 900;font-style:normal;font-display:swap}</style>').childNodes);
-  body.childNodes.unshift(...parseFragment('<div id="site-atmosphere" aria-hidden="true"></div>').childNodes);
   body.childNodes.push(...parseFragment(nativeNav(section.id,'page')).childNodes);
   const staticLinks = ['<a href="/">Home</a>', ...STATIONS.map(s=>'<a href="'+s.path+'/">'+escape(s.label)+'</a>')];
   body.childNodes.push(...parseFragment('<noscript data-memento-static-nav><nav class="memento-static-nav" aria-label="Navigazione Memento">'+staticLinks.join(' ')+'</nav></noscript>').childNodes);

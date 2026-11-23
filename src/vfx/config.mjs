@@ -58,14 +58,36 @@ export const VFX = Object.freeze(/** @type {const} */ ({
   bloom: { scale: 0.5, strength: 0.95 },
   /** V25: no film grain or animated dithering; the photographic and type grade stays clean. */
   post: { shoulder: 0.84, streak: 0.2, vignette: 0.26, grain: 0, aberration: 1.4 },
+  /**
+   * V24: lower profiles change resolution only; bloom and the cell scale stay. MSAA ×2 only on high (V24).
+   * R15: `pixels` caps the drawing buffer (device px of the overscanned frame). A 14" laptop keeps DPR 2; a 5K monitor
+   * or a 4K television no longer allocates 15–20 million half-float pixels. Never below DPR 1 (see `pixelRatio`).
+   */
   quality: {
-    high: { dpr: 2, bloom: true, particles: 1, cellScale: 1 },
-    /** V24: lower profiles change resolution only; bloom and the cell scale stay. MSAA ×2 only on high (V24). */
-    medium: { dpr: 1.5, bloom: true, particles: 1, cellScale: 1 },
-    low: { dpr: 1, bloom: true, particles: 1, cellScale: 1 },
+    high: { dpr: 2, bloom: true, particles: 1, cellScale: 1, pixels: 8.3e6 },
+    medium: { dpr: 1.5, bloom: true, particles: 1, cellScale: 1, pixels: 4.2e6 },
+    low: { dpr: 1, bloom: true, particles: 1, cellScale: 1, pixels: 2.4e6 },
   },
   slowFrame: 30,
+  /**
+   * R15, no background: the DNA's "a riposo nulla si muove" is now also true for the GPU. Every loop renders only while
+   * something changes and sleeps `idle` seconds after the last change; any input, scroll, resize or content change wakes
+   * it. With the pointer still (a held hover: slow breathing and the still-cursor pulses) frames are drawn at `calmFps`.
+   */
+  runtime: { fps: 60, calmFps: 30, idle: 1 },
 }));
+
+/**
+ * Device pixel ratio for a frame of `width` × `height` CSS px under a quality profile: the profile's DPR ceiling, then the
+ * pixel budget, never below 1 (the type is painted at this ratio).
+ * @param {number} devicePixelRatio @param {number} width @param {number} height
+ * @param {{dpr: number, pixels: number}} profile @param {number} [cap]
+ */
+export const pixelRatio = (devicePixelRatio, width, height, profile, cap = Infinity) => {
+  const ratio = Math.min(devicePixelRatio || 1, profile.dpr, cap);
+  const budget = Math.sqrt(profile.pixels / Math.max(1, width * height));
+  return Math.max(Math.min(1, devicePixelRatio || 1), Math.min(ratio, Math.floor(budget * 100) / 100));
+};
 
 /**
  * Navigation framing of the same rules. The carousel moves cards through the same 15/70/15 bands scroll moves content
@@ -79,10 +101,11 @@ export const NAV = Object.freeze({
   dprCap: { small: 1.35, large: 1.65 },
   /** The edge light of a card arriving in the reading position ("luce sugli spigoli al passaggio"). */
   arrival: { light: 0.55, width: 10, cells: 4, strength: 0.5 },
-  /** Seconds of complete rest before the surface loop sleeps (the background keeps its own 30 fps loop). */
-  idle: 3,
-  /** Surface loop ceiling on high refresh screens (V24). */
-  fps: 60,
+  /** Seconds of complete rest before the carousel loop sleeps (R15: no background, the same rest as the pages). */
+  idle: VFX.runtime.idle,
+  /** Loop ceiling on high refresh screens (V24), and while the pointer rests on a card (R15). */
+  fps: VFX.runtime.fps,
+  calmFps: VFX.runtime.calmFps,
   /** Devices without hover show the scenes in colour at rest (V25); same query as START V27. */
   touchOnly: '(hover: none), (pointer: coarse), (max-width: 767px)',
 });

@@ -1,5 +1,5 @@
 import { mountNav } from '/navigation/navbar.mjs';
-import { navigationLink, STATIONS, station } from '/navigation/core.mjs';
+import { navigationLink, station } from '/navigation/core.mjs';
 
 const root = document.documentElement;
 const section = station(root.dataset.mementoNative);
@@ -42,37 +42,12 @@ if (section) {
   document.addEventListener('toggle',event=>{if(event.target instanceof HTMLDialogElement)syncOverlay();},true);
   window.addEventListener('pageshow',syncOverlay);
   syncOverlay();
-  if(section.id==='start' || section.id==='memento') {
-    import('/memento-ui/effects.mjs').then(fx=>fx.mountBackground()).catch(()=>{});
-  }
-  // Retain explicit return and intentional overscroll at the end of a new gesture.
-  const home=(end=false)=>{const index=STATIONS.indexOf(section);window.mementoGo(pageUrl(end?STATIONS[(index+1)%STATIONS.length].id:section.id,'world'));};
-  const blocked=e=>e.defaultPrevented||modalOpen()||e.target?.closest?.('input,select,textarea,[contenteditable="true"],[role=slider],canvas,iframe,video,[data-memento-gesture-lock]');
-  function atEdge(target,sign){
-    for(let n=target instanceof Element?target:null;n;n=n.parentElement){
-      if(n===document.scrollingElement) break;
-      if(n.scrollHeight>n.clientHeight+3 && /(auto|scroll)/.test(getComputedStyle(n).overflowY) && (sign<0?n.scrollTop>2:n.scrollTop+n.clientHeight<n.scrollHeight-3))return false;
-    }
-    const s=document.scrollingElement;
-    return !!s && (sign<0?s.scrollTop<=2:s.scrollTop+s.clientHeight>=s.scrollHeight-3);
-  }
-  let since=performance.now(),previous=0,direction=0,debt=0,touch=null;
-  window.addEventListener('pageshow',()=>{since=performance.now();debt=0;previous=0;touch=null;});
-  window.addEventListener('keydown',e=>{if(e.defaultPrevented||modalOpen()||e.target?.closest?.('input,select,textarea,[contenteditable="true"]'))return;
-    if(e.key==='Escape' && !(section.id==='memento' && document.body.matches('.inside,.focused'))){e.preventDefault();home();}
-    else if(e.key==='PageUp'&&!blocked(e)&&atEdge(e.target,-1)){e.preventDefault();home();}
+  // Scrolling and Page Up belong to the document. Escape explicitly returns to its station.
+  window.addEventListener('keydown', event => {
+    if (event.key !== 'Escape' || event.defaultPrevented || modalOpen()) return;
+    if (event.target?.closest?.('input,select,textarea,[contenteditable="true"]')) return;
+    if (section.id === 'memento' && document.body.matches('.inside,.focused')) return;
+    event.preventDefault();
+    window.mementoGo(pageUrl(section.id, 'world'));
   });
-  if(section.id!=='memento'){
-    window.addEventListener('wheel',e=>{
-      if(blocked(e)||e.ctrlKey||Math.abs(e.deltaX)>Math.abs(e.deltaY)||!e.deltaY||performance.now()-since<900)return;
-      const dy=e.deltaY*(e.deltaMode===1?16:e.deltaMode===2?innerHeight:1),sign=Math.sign(dy),now=performance.now();
-      const fresh=now-previous>220||sign!==direction;previous=now;direction=sign;
-      if(!atEdge(e.target,sign)){debt=0;return;}
-      if(fresh)debt=Math.abs(dy);else if(debt)debt+=Math.abs(dy);
-      if(debt>=180){debt=0;home(sign>0);}
-    },{passive:true});
-    window.addEventListener('touchstart',e=>{const p=e.touches[0];touch=!blocked(e)&&e.touches.length===1&&performance.now()-since>=900?{x:p.clientX,y:p.clientY,top:atEdge(e.target,-1),bottom:atEdge(e.target,1)}:null;},{passive:true});
-    window.addEventListener('touchcancel',()=>{touch=null;},{passive:true});
-    window.addEventListener('touchend',e=>{const t=touch,p=e.changedTouches[0];touch=null;if(!t||!p||blocked(e))return;const dy=t.y-p.clientY;if(Math.abs(dy)>90&&Math.abs(dy)>Math.abs(t.x-p.clientX)*1.4&&((dy<0&&t.top)||(dy>0&&t.bottom)))home(dy>0);},{passive:true});
-  }
 }

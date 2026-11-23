@@ -1,4 +1,5 @@
-// Generate the Home, error page, robots.txt and sitemap. Native sections are served by api/section.js.
+// Assemble the six published routes in one deployment.
+import { buildSections } from './section-releases.mjs';
 import { readFileSync, writeFileSync, rmSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { STATIONS, PUBLIC_ORIGIN } from '../src/kit/core.mjs';
@@ -24,17 +25,11 @@ function render(meta, { robots = '', status = '' } = {}) {
   return html;
 }
 if (!base.includes('<!-- ROUTE_META_START -->')) throw Error('index.html: ROUTE_META markers missing');
-// The world's renderer chunk is preloaded only where the world is the first thing shown (home, 404).
-const manifest = JSON.parse(readFileSync(resolve(dist, '.vite/manifest.json'), 'utf8'));
-const chunk = key => manifest[key] ? [manifest[key].file, ...(manifest[key].imports || []).flatMap(chunk)] : [];
-const worldChunks = [...new Set(chunk('src/renderer.js'))];
-if (!worldChunks.length) throw Error('renderer chunk missing from the manifest');
-const preload = html => html.replace('</head>', worldChunks.filter(file => !html.includes(`href="/${file}"`)).map(file => `<link rel="modulepreload" href="/${file}">`).join('') + '</head>');
-writeFileSync(resolve(dist, 'index.html'), preload(render(routeMeta({ view: 'world' }))));
+writeFileSync(resolve(dist, 'index.html'), render(routeMeta({ view: 'world' })));
 const written=['index.html'];
 // Unknown paths: a real 404 with the same navigation, so the visitor can go on (served by Vercel with status 404).
 const notFound = { title: 'Pagina non trovata — Memento', description: 'Questa pagina non esiste. Torna al mondo Memento.', heading: 'Pagina non trovata', canonical: PUBLIC_ORIGIN + '/' };
-writeFileSync(resolve(dist, '404.html'), preload(render(notFound, { robots: 'noindex', status: '404' })));
+writeFileSync(resolve(dist, '404.html'), render(notFound, { robots: 'noindex', status: '404' }));
 written.push('404.html');
 const today = new Date().toISOString().slice(0, 10);
 const urls = ['/', ...STATIONS.map(s => s.path + '/')].map(path => `  <url><loc>${PUBLIC_ORIGIN}${path === '/' ? '/' : path}</loc><lastmod>${today}</lastmod></url>`);
@@ -43,4 +38,5 @@ writeFileSync(resolve(dist, 'sitemap.xml'), `<?xml version="1.0" encoding="UTF-8
 writeFileSync(resolve(dist, 'robots.txt'), `User-agent: *\nAllow: /\n\nSitemap: ${PUBLIC_ORIGIN}/sitemap.xml\n`);
 written.push('sitemap.xml', 'robots.txt');
 rmSync(resolve(dist, '.vite'), { recursive: true, force: true });   // build manifest: not published
-console.log('routes:', written.join(', '));
+await buildSections(dist);
+console.log('routes:', [...written,...STATIONS.map(s=>s.path+'/')].join(', '));

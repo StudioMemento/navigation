@@ -6,7 +6,8 @@ import {
 } from 'three';
 import { BorderLight, outline } from './border';
 import { ChainField } from './chain';
-import { VFX, gradientRange, hexToRgb, titleRamp, type ChainProfile, type QualityName } from './config';
+import { VFX, gradientRange, hexToRgb, pixelRatio, titleRamp, type ChainProfile, type QualityName } from './config';
+import { startingQuality } from '../vfx/policy.mjs';
 import { buildNetwork, hashString, type SurfaceNetwork } from './geometry';
 import { PointerField } from './input';
 import { TouchPulseField, TouchReaction, type SurfaceRect } from './touch';
@@ -75,6 +76,9 @@ export interface EngineOptions {
   intro?: boolean;
   /** The layer is not at the top of the document (inside a fixed dialog): the canvas is offset by its position. */
   offset?: boolean;
+  /** R15: the visit's starting profile (`vfxPolicy`), a floor under the device guess unless `pinned`. */
+  quality?: QualityName;
+  pinned?: boolean;
 }
 const pageActive = () => { const d = document.documentElement.dataset; return d.demoExpanded !== 'true' && d.overlayOpen !== 'true'; };
 /** Six alpha stops, flattened for a vec2[6] uniform (unused stops repeat the last). */
@@ -125,6 +129,11 @@ const barycentric = (triangles: number) => {
  *
  * The DOM stays the source of truth for layout, semantics and input. While the GPU representation is live
  * (`html.vfx-live`) the DOM paint of registered surfaces is switched off, so nothing is drawn twice.
+ *
+ * R15 (no background): a frame is drawn only when something changed — energy, hover, scroll, layout, a photograph or a
+ * glyph texture arriving. One second after the last change the loop stops and the canvas keeps its last frame; `wake()`
+ * restarts it from any input, scroll, resize or content change. A held hover (slow breathing, still-cursor pulses) is
+ * drawn at `VFX.runtime.calmFps`.
  */
 export class VfxEngine {
   static create(canvas: HTMLCanvasElement, registry: SurfaceRegistry, touches = new TouchPulseField(), options: EngineOptions = {}): VfxEngine | null {
@@ -174,7 +183,9 @@ export class VfxEngine {
   private viewportDirty = true; private viewW = 0; private pixelRatio = 0;
   private pad = 96; private surfaceObserver: ResizeObserver | null = null;
   private raf = 0; private lastTick = 0;
-  readonly metrics = { layouts: 0, rasterizations: 0, viewportResizes: 0, renders: 0, evictions: 0 };
+  /* R15: rest and wake. Seconds without any change, the first frame after a sleep, a held hover, the last carousel frame */
+  private restFor = 0; private resumed = false; private calm = false; private lastMotion = 0; private live = false;
+  readonly metrics = { layouts: 0, rasterizations: 0, viewportResizes: 0, renders: 0, evictions: 0, sleeps: 0, wakes: 0 };
   private quality: QualityName = 'high'; private pinned = false;
   private slow = 0; private frames = 0;
   private readonly reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -206,7 +217,8 @@ export class VfxEngine {
     if (staticArtwork(gpu)) { renderer.dispose(); throw new Error('Software graphics: using the rendered page surfaces'); }
     if (/swiftshader|llvmpipe|software|basic render/i.test(gpu)) this.quality = 'low';
     else if (matchMedia('(pointer: coarse)').matches) this.quality = 'medium';
-    // ?vfx=high|medium|low pins a quality profile (useful when comparing devices)
+    // R15: the visit's policy can start lower (2 GB devices); ?vfx=high|medium|low pins a profile (comparing devices)
+    this.quality = startingQuality(this.quality, { quality: options.quality, pinned: !!options.pinned }) as QualityName;
     const pin = new URLSearchParams(location.search).get('vfx');
     if (pin && pin in VFX.quality) { this.quality = pin as QualityName; this.pinned = true; }
 
@@ -257,7 +269,8 @@ export class VfxEngine {
     this.post.add(this.fsMesh);
 
     root().classList.add('vfx-ready');
-    this.scroll = new ScrollState(() => { this.renderDirty = true; });
+    // native scroll moves the overscanned canvas with the page; the frame is drawn again where the page now is
+    this.scroll = new ScrollState(() => { this.renderDirty = true; this.wake(); });
     this.listen();
     // ?vfxdebug exposes the engine for inspection (also in development builds)
     // Servizi: __vfx is the page's engine, __vfxEngines every engine (the dialog's comes second)
@@ -313,6 +326,9 @@ export class VfxEngine {
     if (this.destroyed) return;
     this.layout();
     await Promise.race([this.whenPainted(first), wait(400)]);
+    // R15: the shader programs are compiled before the takeover, in parallel where the GPU allows it
+    // (KHR_parallel_shader_compile): the first frame does not freeze the page while it compiles
+    await Promise.race([this.precompile(), wait(1500)]);
     // a page opened in the background goes live when it is shown (no frame is drawn while it is hidden)
     if (document.hidden) await new Promise(resolve => document.addEventListener('visibilitychange', resolve, { once: true, signal: this.abort.signal }));
     if (this.destroyed || this.lost || document.hidden) return;
@@ -322,6 +338,16 @@ export class VfxEngine {
     this.loading = true;
     const hurry = () => { this.loadRate = VFX.loading.hurry; };
     for (const type of ['pointerdown', 'wheel', 'keydown', 'touchstart'] as const) addEventListener(type, hurry, { once: true, passive: true, signal: this.abort.signal });
+  }
+
+  private async precompile() {
+    try {
+      // without the extension the same programs are compiled at once, still before the takeover (the page is DOM)
+      const r = this.renderer, parallel = r.extensions.has('KHR_parallel_shader_compile');
+      const compile = async (scene: Scene) => { if (parallel) await r.compileAsync(scene, this.camera); else r.compile(scene, this.camera); };
+      await compile(this.scene);
+      for (const m of [this.blur, this.grade]) { this.fsMesh.material = m; await compile(this.post); }
+    } catch { /* a shader this GPU cannot link is reported by the first frame (onShaderError) */ }
   }
 
   private whenPainted(list: Surface[]) {
@@ -339,10 +365,23 @@ export class VfxEngine {
     root().classList.add('vfx-off');
   }
 
+  /**
+   * R15: restarts a sleeping loop (input, scroll, resize, content). The first frame after a sleep runs at once; it draws
+   * only if something changed, and the loop goes back to sleep after `VFX.runtime.idle` seconds without changes.
+   */
+  wake = () => {
+    if (this.destroyed || this.failed || this.raf) return;
+    this.metrics.wakes++;
+    this.lastTick = 0;
+    this.raf = requestAnimationFrame(this.animate);
+  };
+  /** Something arrived outside the loop (a painted glyph texture, a photograph): draw it on the next frame. */
+  private redraw() { this.renderDirty = true; this.wake(); }
+
   private publishFrame = false;
-  private goLive() { if (!this.failed) { this.publishFrame = true; this.renderDirty = true; } }
-  /** Any failure returns the page to its plain DOM rendering at once. */
-  private goDom() { this.publishFrame = false; root().classList.remove('vfx-live', 'vfx-boot'); }
+  private goLive() { if (!this.failed) { this.publishFrame = true; this.live = true; this.redraw(); } }
+  /** Any failure returns the page to its plain DOM rendering at once (and nothing is drawn behind it meanwhile). */
+  private goDom() { this.publishFrame = false; this.live = false; root().classList.remove('vfx-live', 'vfx-boot'); }
 
   private listen() {
     const signal = this.abort.signal, passive = { passive: true, signal } as const;
@@ -350,38 +389,43 @@ export class VfxEngine {
     const trackMouse = (e: PointerEvent) => {
       if (e.pointerType === 'mouse') input.move(e.clientX, e.clientY, false);
       else input.leave(); // A held finger must not feed the slow, continuous hover chain.
+      this.wake();
     };
     addEventListener('pointermove', trackMouse, passive);
+    // START V27: one viewport wave is started on contact (touch-feedback.ts, a capture listener that runs first), even
+    // before WebGL is ready; this listener wakes the loop that reads it
     addEventListener('pointerdown', trackMouse, passive);
-    // START V27: one viewport wave is started on contact (touch-feedback.ts), even before WebGL is ready.
     // Native scrolling sends pointercancel: leave the pointer but let that wave finish.
-    addEventListener('pointerup', e => { if (e.pointerType !== 'mouse') input.leave(); }, passive);
-    addEventListener('pointercancel', () => input.cancel(), passive);
-    addEventListener('blur', () => input.leave(), passive);
-    root().addEventListener('mouseleave', () => input.leave(), passive);
-    document.addEventListener('pointerover', e => { if ((e.target as Element)?.tagName === 'IFRAME') input.leave(); }, passive);
+    addEventListener('pointerup', e => { if (e.pointerType !== 'mouse') input.leave(); this.wake(); }, passive);
+    addEventListener('pointercancel', () => { input.cancel(); this.wake(); }, passive);
+    addEventListener('blur', () => { input.leave(); this.wake(); }, passive);
+    root().addEventListener('mouseleave', () => { input.leave(); this.wake(); }, passive);
+    document.addEventListener('pointerover', e => { if ((e.target as Element)?.tagName === 'IFRAME') { input.leave(); this.wake(); } }, passive);
     // keyboard: a short accent where focus lands; the neutral focus ring is the DOM's own
     document.addEventListener('focusin', e => {
       const el = e.target as Element;
       if (!el.matches?.(':focus-visible')) return;
       const r = el.getBoundingClientRect();
       this.pulseAt(r.left + r.width / 2, r.top + r.height / 2 + scrollY, 0.7, 3);
+      this.wake();
     }, passive);
     // START V24: a height-only change (mobile toolbars) resizes the overscanned canvas, nothing is painted again
-    addEventListener('resize', () => { this.viewportDirty = true; if (root().clientWidth !== this.viewW) this.layoutDirty = true; }, passive);
-    const wake = () => { this.lastTick = 0; this.renderDirty = true; if (!this.raf && !this.destroyed) this.raf = requestAnimationFrame(this.animate); };
-    document.addEventListener('visibilitychange', wake, passive);
-    document.addEventListener('memento:overlay-change', wake, passive);
-    document.addEventListener('memento:surface-visibility', wake, passive);
+    const resized = () => { this.viewportDirty = true; if (root().clientWidth !== this.viewW) this.layoutDirty = true; this.wake(); };
+    addEventListener('resize', resized, passive);
+    const shown = () => { this.lastTick = 0; this.redraw(); };
+    document.addEventListener('visibilitychange', shown, passive);
+    document.addEventListener('memento:overlay-change', shown, passive);
+    document.addEventListener('memento:surface-visibility', shown, passive);
+    addEventListener('pageshow', shown, passive);
     addEventListener('beforeprint', () => this.goDom(), passive);
     addEventListener('afterprint', () => { if (this.loaded && !this.lost) this.goLive(); }, passive);
     const forced = matchMedia('(forced-colors: active)');
     forced.addEventListener('change', () => { if (forced.matches) this.goDom(); else if (this.loaded && !this.lost) this.goLive(); }, { signal });
     this.touchOnly.addEventListener('change', () => {
       this.globals.uPhotoColor.value = this.touchOnly.matches ? 1 : 0;
-      this.surfaces.forEach(s => { s.dirty = true; }); this.layoutDirty = true; this.renderDirty = true;
+      this.surfaces.forEach(s => { s.dirty = true; }); this.layoutDirty = true; this.redraw();
     }, { signal });
-    document.fonts.addEventListener?.('loadingdone', () => { this.surfaces.forEach(s => { s.dirty = true; }); this.layoutDirty = true; }, { signal });
+    document.fonts.addEventListener?.('loadingdone', () => { this.surfaces.forEach(s => { s.dirty = true; }); this.layoutDirty = true; this.wake(); }, { signal });
     this.canvas.addEventListener('webglcontextlost', e => {
       e.preventDefault(); this.lost = true; this.goDom();
       if (++this.losses >= 2) this.fail();
@@ -393,10 +437,11 @@ export class VfxEngine {
       this.surfaces.forEach(s => this.evict(s));
       this.viewportDirty = true; this.layoutDirty = true;
       if (this.loaded) this.goLive();
+      this.wake();
     }, { signal });
 
     // positions are read again when the page moves; a surface is painted again only when its own box changes
-    const observer = new ResizeObserver(() => { this.layoutDirty = true; });
+    const observer = new ResizeObserver(() => { this.layoutDirty = true; this.wake(); });
     const main = document.querySelector('main');
     if (main) observer.observe(main);
     this.surfaceObserver = new ResizeObserver(entries => {
@@ -404,7 +449,7 @@ export class VfxEngine {
         const surface = this.surfaces.get(entry.target as HTMLElement);
         // the border box ignores CSS transforms: a carousel board is compared with its flat measure
         const box = entry.borderBoxSize?.[0], w = box ? box.inlineSize : (entry.target as HTMLElement).offsetWidth, h = box ? box.blockSize : (entry.target as HTMLElement).offsetHeight;
-        if (surface && (Math.abs(surface.w - w) > .5 || Math.abs(surface.h - h) > .5)) { surface.dirty = true; this.layoutDirty = true; }
+        if (surface && (Math.abs(surface.w - w) > .5 || Math.abs(surface.h - h) > .5)) { surface.dirty = true; this.layoutDirty = true; this.wake(); }
       }
     });
     this.cleanups.push(() => { observer.disconnect(); this.surfaceObserver?.disconnect(); });
@@ -415,8 +460,9 @@ export class VfxEngine {
       this.layoutDirty = true;
     };
     this.cleanups.push(this.registry.subscribe((reason, target, strength) => {
+      this.wake();
       // a carousel frame moves boards: their matrices are read again, nothing is re-measured
-      if (reason === 'motion') { this.motionDirty = true; this.renderDirty = true; return; }
+      if (reason === 'motion') { this.motionDirty = true; this.renderDirty = true; this.lastMotion = performance.now(); return; }
       if (reason === 'surfaces') this.layoutDirty = true;
       else if (reason === 'layout') invalidate(target);
       if (reason === 'impulse' && target && strength) {
@@ -428,10 +474,10 @@ export class VfxEngine {
     document.addEventListener('load', e => {
       const img = e.target as Element;
       if (img?.tagName !== 'IMG') return;
-      for (const s of this.surfaces.values()) if (s.photoEl === img || s.photo2El === img) { s.imgDirty = true; this.renderDirty = true; }
+      for (const s of this.surfaces.values()) if (s.photoEl === img || s.photo2El === img) { s.imgDirty = true; this.redraw(); }
     }, { capture: true, signal });
     // a comparison's range moves its split
-    document.addEventListener('input', e => { if ((e.target as Element)?.matches?.('input[type=range]')) this.renderDirty = true; }, passive);
+    document.addEventListener('input', e => { if ((e.target as Element)?.matches?.('input[type=range]')) this.redraw(); }, passive);
   }
 
   /** One local impulse (touch, focus, accordion): lights cells under a document point; the chain does the rest. */
@@ -543,7 +589,7 @@ export class VfxEngine {
         vp.x = lod;
         (u.uVeilTexel.value as Vector2).set((0.5 * 2 ** lod) / nw, (0.5 * 2 ** lod) / nh);
       }
-      this.renderDirty = true;
+      this.redraw();
     });
   }
 
@@ -601,6 +647,7 @@ export class VfxEngine {
   private residency() {
     const vh = this.viewH, y = this.scroll.y, near = RESIDENCY.near * vh, far = RESIDENCY.far * vh;
     const t0 = performance.now();
+    let worked = false;
     for (let n = 0; n < 3; n++) {
       let pick: Surface | null = null, best = Infinity;
       for (const s of this.surfaces.values()) {
@@ -609,10 +656,12 @@ export class VfxEngine {
         if (gap > far) { if (n === 0 && (s.ready || s.ink || s.img)) this.evict(s); continue; }
         if (s.dirty && gap <= near && gap < best) { best = gap; pick = s; }
       }
-      if (!pick) return;
+      if (!pick) return worked;
       this.rasterize(pick);
-      if (best > 0 || performance.now() - t0 > 6) return;
+      worked = true;
+      if (best > 0 || performance.now() - t0 > 6) return worked;
     }
+    return worked;
   }
 
   /* ------------------------------------------------------------------ layout and surfaces */
@@ -626,7 +675,12 @@ export class VfxEngine {
   private resizeViewport() {
     this.viewportDirty = false;
     const w = root().clientWidth, h = innerHeight, q = this.profile();
-    const ratio = Math.min(devicePixelRatio || 1, q.dpr);
+    // R15: the profile's DPR, then its pixel budget over the overscanned frame (a 5K monitor no longer draws 15 MP).
+    // The budget reads the screen's height, not the window's: mobile toolbars never change the ratio (V24, no repaint)
+    const ratio = pixelRatio(devicePixelRatio, w, Math.max(h, screen.height || 0) + 256, q);
+    // MSAA ×2 only on the high profile (V24): a profile stepped down also releases the multisampled buffer
+    const samples = this.quality === 'high' ? 2 : 0;
+    if (this.rtMain.samples !== samples) { this.rtMain.samples = samples; this.rtMain.dispose(); this.renderDirty = true; }
     if (w === this.viewW && h === this.viewH && ratio === this.pixelRatio) return;
     this.metrics.viewportResizes++;
     if (w !== this.viewW || ratio !== this.pixelRatio) {
@@ -963,8 +1017,8 @@ export class VfxEngine {
       // Servizi: the pixels live on the GPU only; a lost context or a return from far away paints them again
       painted.width = painted.height = 0;
       s.content.visible = true; s.ready = true; s.el.dataset.vfxReady = 'true';
-      this.renderDirty = true;
-    }).catch(() => { s.ready = true; });
+      this.redraw();
+    }).catch(() => { s.ready = true; this.wake(); });
   }
 
   /** Energy cells: an irregular network over the surface and a margin, with its chain reaction. */
@@ -1089,20 +1143,28 @@ export class VfxEngine {
 
   /** LevelUp: the demo player covers the page; Servizi: a dialog does (its own surfaces aside). Nothing here is visible. */
   private covered() {
-    return this.loaded && (!this.active() || (root().hasAttribute('data-mm-phase') && root().classList.contains('vfx-live')));
+    return root().hasAttribute('data-mm-phase') || (this.loaded && !this.active());
   }
 
   private animate = (time: number) => {
+    this.raf = 0;
     if (this.destroyed) return;
-    if (this.failed) { this.raf = 0; this.destroy(); root().classList.add('vfx-off'); return; }
-    if (document.hidden || (window as { __TIDE_VISIBLE__?: boolean }).__TIDE_VISIBLE__ === false || this.covered()) { this.raf = 0; this.lastTick = 0; return; }
-    this.raf = requestAnimationFrame(this.animate);
-    // Cap high refresh screens without disconnecting the canvas from native scrolling.
-    const delta = this.lastTick ? time - this.lastTick : 1000 / 60;
-    if (delta < 1000 / 60 - 1) return;
+    if (this.failed) { this.destroy(); root().classList.add('vfx-off'); return; }
+    if (this.lost || document.hidden || (window as { __TIDE_VISIBLE__?: boolean }).__TIDE_VISIBLE__ === false || this.covered()) { this.lastTick = 0; this.resumed = true; return; }
+    // Cap high refresh screens without disconnecting the canvas from native scrolling; a held hover runs at calmFps.
+    const R = VFX.runtime, interval = 1000 / (this.calm ? R.calmFps : R.fps);
+    const delta = this.lastTick ? time - this.lastTick : 1000 / R.fps;
+    if (delta < interval - 1) { this.raf = requestAnimationFrame(this.animate); return; }
     this.lastTick = time;
     this.tick(time, delta);
+    if (this.destroyed || this.raf) return;
+    // R15: at rest the loop sleeps; the canvas keeps its last frame and wake() restarts the loop
+    if (this.loaded && this.restFor >= R.idle) { this.lastTick = 0; this.resumed = true; this.metrics.sleeps++; return; }
+    this.raf = requestAnimationFrame(this.animate);
   };
+
+  /** R15, for verification: whether the loop is running (false at rest). */
+  get running() { return this.raf !== 0; }
 
   private tick = (time: number, deltaMs: number) => {
     if (this.destroyed || this.lost || document.hidden) return;
@@ -1110,6 +1172,9 @@ export class VfxEngine {
     if (this.covered()) return;
     const dt = Math.min(0.05, deltaMs / 1000);       // a long frame slows the motion instead of skipping it
     this.clock += dt; this.frame++;
+    const calmFrame = this.calm;
+    // the first frame after a sleep: where the pointer went meanwhile is not a gesture
+    if (this.resumed) { this.resumed = false; this.input.settle(); }
     if (this.loading) {
       this.loadingElapsed += dt * this.loadRate;
       const p = Math.min(1, this.loadingElapsed / VFX.loading.duration);
@@ -1122,7 +1187,7 @@ export class VfxEngine {
     const g = this.globals, sc = this.scroll, input = this.input, P = VFX.pointer;
     sc.update(this.reduced);
     if (!this.bands) { sc.top = 0; sc.bottom = 0; }
-    this.residency();
+    const painting = this.residency();
     input.update(dt);
     this.touches.beginFrame(time);
 
@@ -1282,8 +1347,8 @@ export class VfxEngine {
     if (this.parts.count) this.partBuf.needsUpdate = true;
 
     // after the page stops, cells on their way out drift away; moving again brings the structure back at once
-    const drift = g.uDrift.value as Vector3;
-    if (sc.y !== this.lastScroll || this.reduced) { drift.x *= Math.exp(-dt * 10); this.still = 0; }
+    const drift = g.uDrift.value as Vector3, scrolled = sc.y !== this.lastScroll;
+    if (scrolled || this.reduced) { drift.x *= Math.exp(-dt * 10); this.still = 0; }
     else { this.still += dt; if (this.still > 0.12) drift.x = Math.min(VFX.scroll.fade * 2.5, drift.x + dt); }
     if (drift.x > 0.001 && drift.x < VFX.scroll.fade * 2.5) busy = true;
     this.lastScroll = sc.y;
@@ -1292,16 +1357,23 @@ export class VfxEngine {
     g.uScroll.value = sc.y; (g.uBandK.value as Vector2).set(sc.top, sc.bottom);
     g.uLoad.value = this.load.value;
 
-    // adaptive quality: sustained long frames step the profile down
-    this.frames++; if (deltaMs > VFX.slowFrame) this.slow++;
+    // adaptive quality: sustained long frames step the profile down (frames drawn on the calm cadence are not counted)
+    if (!calmFrame) { this.frames++; if (deltaMs > VFX.slowFrame) this.slow++; }
     if (this.frames >= 150) {
       if (this.slow > 70 && this.quality !== 'low' && !this.pinned) { this.quality = this.quality === 'high' ? 'medium' : 'low'; this.viewportDirty = true; }
       this.frames = 0; this.slow = 0;
     }
 
-    busy = busy || this.touches.active || this.parts.count > 0 || !this.loaded || this.renderDirty || present;
-    // at rest only the slow wave moves: every other frame is enough, and none at all with reduced motion
-    if (busy || (!this.reduced && this.frame % 2 === 0)) this.render(busy);
+    // R15: a frame is drawn only when something changes; at rest the loop sleeps (animate) and nothing is drawn.
+    // The pointer alone (present over the page, nothing lit near it) changes nothing on screen.
+    const changing = busy || scrolled || this.touches.active || this.parts.count > 0 || !this.loaded;
+    const draw = changing || this.renderDirty;
+    if (draw && this.live) this.render(draw);
+    else if (!this.live) this.renderDirty = false;
+    this.restFor = changing || painting || this.layoutDirty || this.viewportDirty ? 0 : this.restFor + dt;
+    // a held hover (pointer still, page still, nothing travelling): slow breathing and pulses, drawn at calmFps
+    this.calm = this.loaded && !scrolled && this.still > 0.25 && input.still > 0.6 && !this.touches.active &&
+      this.parts.count === 0 && performance.now() - this.lastMotion > 250;
   };
 
   private render(emissive: boolean) {

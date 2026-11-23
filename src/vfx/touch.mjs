@@ -157,6 +157,7 @@ export class TouchReaction {
 /** One passive contact event (touch or pen). Release and scroll cancellation never duplicate the reaction. */
 export function listenForTouch(target, start, signal) {
   target.addEventListener('pointerdown', e => {
+    if (e.composedPath().some(node => node.localName === 'memento-nav')) return;
     if (e.pointerType === 'touch' || e.pointerType === 'pen') start(e.clientX, e.clientY);
   }, { capture: true, passive: true, signal });
 }

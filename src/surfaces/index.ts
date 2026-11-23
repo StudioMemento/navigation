@@ -2,12 +2,15 @@ import { SurfaceRegistry, type SurfaceKind, type SurfaceOptions } from './regist
 import { TouchPulseField } from './touch';
 import { installTouchFeedback } from './touch-feedback';
 import type { EngineOptions, VfxEngine } from './engine';
-import { afterFirstPaint, startBackground } from '../background/background.mjs';
+import { afterFirstPaint, whenIdle } from '../paint.mjs';
+import { vfxPolicy } from '../vfx/policy.mjs';
 
 /**
- * Memento VFX for pages without React (LevelUp, Servizi). The same engine as START V27: one canvas behind the content, one engine,
- * loaded after the content, one touch wave field started on contact even before WebGL is ready. Surfaces are declared
- * in the markup:
+ * Memento VFX for the native pages (Start, Servizi, Portfolio, LevelUp). The same engine as START V27/V28 without its
+ * background: one canvas behind the content, one engine, created once the page is idle after its first paint, one touch
+ * wave field started on contact even before WebGL is ready. The DOM page is shown first and stays the fallback.
+ * R15: the effects are on again on the native pages (`vfxPolicy` decides; `?vfx=off` shows the DOM page). The engine
+ * draws only while something changes and sleeps at rest. Surfaces are declared in the markup:
  *
  *   data-vfx="title" | "card"          the kind (required)
  *   data-vfx-cut="both|tl|none"        cut corners of a card
@@ -70,6 +73,10 @@ export interface MountOptions {
   engine?: EngineOptions;
 }
 
+// R15: one decision per visit (query, Save-Data, device memory). Off leaves the plain DOM page and its touch feedback.
+const policy = vfxPolicy();
+const effectsOff = () => !policy.enabled;
+
 function fallback() {
   document.documentElement.classList.remove('vfx-boot','vfx-live');
   document.documentElement.classList.add('vfx-off');
@@ -77,6 +84,11 @@ function fallback() {
 
 /** Binds one renderer to a canvas. React can supply its existing registry and canvas. */
 export function bindSurfaceCanvas(canvas: HTMLCanvasElement, registry: SurfaceRegistry, options: EngineOptions = {}) {
+  if (effectsOff()) {
+    canvas.hidden = true;
+    document.documentElement.classList.add('vfx-off');
+    return {setDialog(_value: boolean) {}, destroy: installTouchFeedback(new TouchPulseField())};
+  }
   const media = matchMedia('(forced-colors: active), (prefers-reduced-motion: reduce)');
   let generation = 0, renderer: VfxEngine | null = null, stopTouch = () => {};
   let dialog = options.offset ?? false;
@@ -87,10 +99,14 @@ export function bindSurfaceCanvas(canvas: HTMLCanvasElement, registry: SurfaceRe
     document.documentElement.classList.remove('vfx-off');
     const touches = new TouchPulseField();
     stopTouch = installTouchFeedback(touches);
-    Promise.all([import('./engine'), afterFirstPaint()]).then(([{VfxEngine}]) => {
+    // the download starts after the first paint; the engine is created in the first idle period after it
+    afterFirstPaint().then(() => current === generation ? Promise.all([import('./engine'), whenIdle()]) : null).then(loaded => {
+      if (!loaded) return;
+      const [{ VfxEngine }] = loaded;
       if (current !== generation) return;
+      // a native page is already on screen: the engine takes over without the loading sequence
       const intro = !document.documentElement.hasAttribute('data-memento-native') && options.intro !== false;
-      renderer = VfxEngine.create(canvas, registry, touches, {...options,intro,offset:dialog,bands:!dialog});
+      renderer = VfxEngine.create(canvas, registry, touches, {...options,intro,offset:dialog,bands:!dialog,quality:policy.quality,pinned:policy.pinned});
       if (!renderer) fallback();
     }).catch(() => { if (current === generation) fallback(); });
   }
@@ -104,6 +120,7 @@ export function bindSurfaceCanvas(canvas: HTMLCanvasElement, registry: SurfaceRe
 
 type Scope = { root: ParentNode; parent: HTMLElement; options?: EngineOptions };
 function createPageSurfaces() {
+  const domOnly = effectsOff();
   const registry = new SurfaceRegistry();
   const layer = document.createElement('div');
   layer.className = 'vfx-layer'; layer.setAttribute('aria-hidden','true');
@@ -116,7 +133,7 @@ function createPageSurfaces() {
     active: () => active?.options?.active?.() ?? !document.documentElement.hasAttribute('data-memento-modal')
   });
   function scan(scope: Scope, from: ParentNode = scope.root) {
-    if (scope !== active) return;
+    if (domOnly || scope !== active) return;
     const seen = new Set<HTMLElement>();
     from.querySelectorAll<HTMLElement>('[data-vfx]').forEach(el => {
       if (scope.parent.tagName !== 'DIALOG' && el.closest('dialog')) return;
@@ -137,7 +154,7 @@ function createPageSurfaces() {
     for (const el of registry.surfaces.keys()) registry.remove(el);
     active = next;
     if (!active) { layer.remove(); return; }
-    active.parent.prepend(layer);
+    if (!domOnly) active.parent.prepend(layer);
     control.setDialog(active.parent instanceof HTMLDialogElement);
     scan(active);
     registry.invalidate();
@@ -168,18 +185,5 @@ export function mountVfx({root=document,parent=document.body,engine}: MountOptio
   return (pageSurfaces ??= createPageSurfaces()).attach({root,parent,options:engine});
 }
 
-let stopAtmosphere: (()=>void) | undefined;
-export async function mountBackground(): Promise<()=>void> {
-  if (stopAtmosphere) return stopAtmosphere;
-  const existing = document.getElementById('site-atmosphere');
-  const host = existing ?? document.createElement('div');
-  if (!existing) {
-    host.id = 'site-atmosphere'; host.setAttribute('aria-hidden','true');
-    document.body.prepend(host);
-  }
-  const stop = startBackground(host);
-  const cleanup = () => {stop();if (!existing) host.remove();stopAtmosphere=undefined;};
-  stopAtmosphere = cleanup;
-  window.addEventListener('pagehide',e=>{if(!e.persisted)cleanup();});
-  return cleanup;
-}
+// Compatibility with the published section modules that call mountBackground()?.
+export async function mountBackground(): Promise<() => void> { return () => {}; }

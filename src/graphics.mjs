@@ -1,4 +1,4 @@
-// The site's DOM and fibre still are the visual fallback when decoration would be
+// The site's DOM is the visual fallback when decoration would be
 // rasterised on the CPU. The interactive Studio model has its own independent renderer.
 export function staticArtwork(rendererName) {
   if (!/swiftshader|llvmpipe|softpipe|software|basic render|\bwarp\b/i.test(rendererName)) return false;

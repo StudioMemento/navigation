@@ -1,0 +1,7 @@
+{
+  "studio":   {"repository":"mementostudio",   "commit":"e4b447ccc3dcdb51df4d4750d581902609bceaac"},
+  "services": {"repository":"servizi",         "commit":"8be52606789da00473a59221d5cd384409db16d6"},
+  "projects": {"repository":"Portfolio",       "commit":"938220d8f1c95b4be8f2b999b9a37ffacc725cf2"},
+  "levelup":  {"repository":"mementolevelup",  "commit":"4ce47049357424018b53a2a03fd12f0c4a5eca0a"},
+  "start":    {"repository":"mementostart",    "commit":"5782a3d29007188173422392b42a60afd1515ab6"}
+}
