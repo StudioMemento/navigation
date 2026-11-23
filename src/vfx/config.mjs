@@ -51,7 +51,8 @@ export const VFX = Object.freeze(/** @type {const} */ ({
     wave: { every: 150, gap: 0.3, gain: [1, 0.78] },
   },
   border: { bins: 96, decay: 3.2, reach: 46 },
-  loading: { duration: 1.8, hurry: 3.2, ignite: 0.14 },
+  // R17 arrive: seconds of the sequence when it composes a page under the lifting page-change cover
+  loading: { duration: 1.8, hurry: 3.2, ignite: 0.14, arrive: 1.35 },
   particles: {
     pool: 180, curl: 110, perSecond: 16,
     spark: { size: [1.6, 4.4], life: [0.3, 0.65], speed: [40, 110] },

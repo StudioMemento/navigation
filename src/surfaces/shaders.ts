@@ -14,6 +14,8 @@ uniform float uEmissive;      // 1 while rendering the emission-only pass that f
 /* R16: the pointer's light on a photograph: strength of the highlight (screen blend) and its radius (px) */
 #define PHOTO_SPOT .5
 #define PHOTO_SPOT_R 210.
+/* R17: share of the still hover lattice (cells near the pointer, without a reaction): 0, the lattice is only live */
+#define HOVER_LATTICE 0.
 float h11(float p){ p=fract(p*.1031); p*=p+33.33; p*=p+p; return fract(p); }
 float h21(vec2 p){ vec3 p3=fract(vec3(p.xyx)*.1031); p3+=dot(p3,p3.yzx+33.33); return fract((p3.x+p3.y)*p3.z); }
 float vnoise(vec2 p){
@@ -134,6 +136,32 @@ uniform float uHasXf;
 vec4 placeH(vec2 l){ return uHasXf>.5?uXf*vec4(l,0.,1.):vec4(uOrigin+l,0.,1.); }
 vec2 docOf(vec2 l){ vec4 h=placeH(l); return h.xy/h.w; }
 vec4 clipAt(vec2 l){ vec4 h=placeH(l); vec4 c=clipOf(h.xy/h.w); return vec4(c.xy*h.w,0.,h.w); }
+`;
+
+const EXIT = /* glsl */ `
+/* R17 · page exit: the real interface comes apart. Each cell leaves in order of its distance from the touched point
+   (a little shuffled), flies to the seal at the centre of the screen on a bowed path, shrinking and turning, heats up
+   and fades as it arrives. uExit: progress (0 = none), origin (clip x, y), aspect of the canvas (w / h). */
+uniform vec4 uExit;
+float exitOf(vec4 cc, float seed){
+  if(uExit.x<=0.) return 0.;
+  vec2 q=(cc.xy/cc.w-uExit.yz)*vec2(uExit.w,1.);
+  // normalised by the farthest corner of the screen: every exit uses the whole movement, wherever it starts
+  float d=clamp(length(q)/length(vec2((1.+abs(uExit.y))*uExit.w,1.+abs(uExit.z))),0.,1.);
+  float s=.02+.46*d+.16*(seed-.5);
+  return smoothstep(s,s+.42,uExit.x);
+}
+vec4 exitTo(vec4 vc, vec4 cc, float k, float seed){
+  if(k<=0.) return vc;
+  float e=k*k*(3.-2.*k);
+  vec2 c=cc.xy/cc.w, n=vc.xy/vc.w, to=-c;
+  vec2 side=vec2(-to.y,to.x)*(h11(seed*29.)-.5)*1.2*sin(3.1416*e);
+  float a=(h11(seed*43.)-.5)*5.*e, ca=cos(a), sa=sin(a);
+  vec2 v=(n-c)*vec2(uExit.w,1.);
+  v=vec2(ca*v.x-sa*v.y,sa*v.x+ca*v.y)/vec2(uExit.w,1.);
+  vec2 m=c+v*(1.-.8*e)+(to+side)*e;
+  return vec4(m*vc.w,vc.z,vc.w);
+}
 `;
 
 /** Structure: mirrors structure.ts (fragmentation, loadingDelay, loadingAbsence). */
@@ -278,6 +306,7 @@ ${COMMON}
 ${CLIP}
 ${PLACE}
 ${STRUCT}
+${EXIT}
 in vec2 position;             // rest position, local px
 in vec2 cellCenter;
 in float seed;
@@ -285,7 +314,7 @@ in vec3 bary;
 uniform float uPush;
 uniform float uSolid;         // 1: never taken apart by scroll (the map)
 uniform vec3 uDrift;          // s since the page stopped (0 while it moves), drift speed (px/s), fade time (s)
-out vec2 vLocal; out vec3 vBary; out float vGone; out float vTrans; out float vOv;
+out vec2 vLocal; out vec3 vBary; out float vGone; out float vTrans; out float vOv; out float vHeat;
 vec2 curlAt(vec2 p){
   float e=.35, a=vnoise(p+vec2(0.,e)), b=vnoise(p-vec2(0.,e)), c=vnoise(p+vec2(e,0.)), d=vnoise(p-vec2(e,0.));
   vec2 v=vec2(a-b,-(c-d));
@@ -319,7 +348,10 @@ void main(){
   // how present the overlay is at this point (the same formula as OVERLAY_VERT's vFade, at the rest position)
   vec2 rd=docOf(position);
   vOv=(1.-smoothstep(.02,.3,fragAt(rd.y-uScroll)*(1.-uSolid)))*(1.-loadAbs(delayAt(rd,.5)));
-  gl_Position=clipAt(cellCenter+dv+off);
+  vec4 cc=clipAt(cellCenter+off), vc=clipAt(cellCenter+dv+off);
+  float ke=exitOf(cc,seed);
+  vGone=max(vGone,smoothstep(.62,1.,ke)); vHeat=ke;
+  gl_Position=exitTo(vc,cc,ke,seed);
 }`;
 
 export const SURFACE_FRAG = /* glsl */ `
@@ -342,7 +374,7 @@ uniform float uVeil;          // black veil over a card at rest (0..1), lifted o
 uniform vec4 uFrameLine;      // dir.xy, 1/length, stop count (none: an even frame)
 uniform vec2 uFrameStops[6];
 uniform vec2 uFrameRest;      // opacity at rest, lift (0 rest .. 1 hover)
-in vec2 vLocal; in vec3 vBary; in float vGone; in float vTrans; in float vOv;
+in vec2 vLocal; in vec3 vBary; in float vGone; in float vTrans; in float vOv; in float vHeat;
 out vec4 o;
 void main(){
   vec2 p=vLocal;
@@ -385,8 +417,10 @@ void main(){
   // structure stays monochrome: a cell in transition shows its own seams in grey, nothing lights up
   float seam=aa(min(vBary.x,min(vBary.y,vBary.z)));
   col.rgb=col.rgb*(1.-vTrans*.28)+vec3(.62)*seam*vTrans*col.a*.35;
+  // R17 exit: a leaving cell heats up on its way to the seal (it glows in the bloom too)
+  if(vHeat>0.){ float lum=dot(col.rgb,vec3(.299,.587,.114)); col.rgb=mix(col.rgb,ramp(.3+.6*lum)*(.35+1.3*lum)*col.a,smoothstep(.15,.8,vHeat)*.8); }
   float present=(1.-smoothstep(.5,.98,vGone))*layer();
-  if(uEmissive>.5){ o=vec4(0.,0.,0.,col.a*present); return; }
+  if(uEmissive>.5){ o=vec4(col.rgb*smoothstep(.25,.75,vHeat)*.7*present,col.a*present); return; }
   o=col*present;
 }`;
 
@@ -397,6 +431,7 @@ ${COMMON}
 ${CLIP}
 ${PLACE}
 ${STRUCT}
+${EXIT}
 in vec2 position;             // local px (the network extends into a margin around the surface)
 in vec3 bary;
 in vec4 cell;                 // seed, zone, sheen edge, -
@@ -409,7 +444,11 @@ void main(){
   // light belongs to content that is present: it fades where scroll or loading take the structure apart
   vFade=(1.-smoothstep(.02,.3,fragAt(d.y-uScroll)*(1.-uSolid)))*(1.-loadAbs(delayAt(d,.5)));
   vLocal=position; vBary=bary; vCell=cell; vE=energy.x; vEv=energy.y; vCentre=centre;
-  gl_Position=clipAt(position);
+  // R17 exit: the light leaves with its cells and goes out on the way
+  vec4 cc=clipAt(centre), vc=clipAt(position);
+  float ke=exitOf(cc,cell.x);
+  vFade*=1.-smoothstep(.4,.9,ke);
+  gl_Position=exitTo(vc,cc,ke,cell.x);
 }`;
 
 export const OVERLAY_CARD_FRAG = /* glsl */ `
@@ -463,7 +502,9 @@ void main(){
   float wake=uHover*uGain*(uWake.z+(1.-uWake.z)*exp(-dot(dc,dc)/(uWake.x*uWake.x)))+uNear*uWake.w*exp(-dot(dc,dc)/(uWake.y*uWake.y));
   float beat=.62+.38*sin(uTime*(.22+.3*h)+h2*6.283)*uMotion;
   // no still field of triangles: they show where the reaction passes and close to the pointer, nowhere else
-  float L=clamp(vis*wake*beat*uTopo+E*(.45+.8*max(vis,.35)),0.,1.);
+  // R17: no still lattice under the pointer (it read as a fixed picture): only the cells the reaction reaches light,
+  //      and it travels (hover waves, the chain around the pointer), so the lattice is drawn live
+  float L=clamp(vis*wake*beat*uTopo*HOVER_LATTICE+E*(.45+.8*max(vis,.35)),0.,1.);
   float sat=.3+.7*h2;                                        // some cells deep amber, others close to neutral
   // R16: over the photograph the cells stay light and close to neutral; the amber lives on the black and the outline
   float fA=inside*L*(.05+.24*h)*(.3+.7*sweep)*(1.-ia*.7*smoothstep(.04,.3,lum));   // the object, not its box

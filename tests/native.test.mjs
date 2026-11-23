@@ -42,11 +42,32 @@ test('a pinned release publishes native HTML and its own assets together',async(
  } finally {await rm(work,{recursive:true,force:true});}
 });
 
-test('LevelUp uses its real CTA as an effect surface and keeps interactive project demos',()=>{
- const html=nativePage('<a id="contact-link" href="/start?from=levelup">Ready to start?</a><iframe id="start-frame" data-src="ready-to-start/embed.html"></iframe><iframe title="Demo" src="https://knives.vercel.app/"></iframe>','levelup');
- const doc=parse(html);
- assert.equal(all(doc,'iframe').length,1);assert.equal(attr(all(doc,'a')[0],'data-vfx'),'card');
- assert.equal(attr(all(doc,'a')[0],'href'),'/start?from=levelup');
+// R17: Ready to start is the Servizi card everywhere: LevelUp's frame of visualfx.vercel.app and Portfolio's footer link
+// are replaced by it (LevelUp keeps id="contact-link": its app writes the destination with the chosen experience)
+test('LevelUp and Portfolio close with the Ready to start card of Servizi, without frames',()=>{
+ const levelup=parse(nativePage('<main><section class="contact-section page-width memento-start" id="contatto" aria-labelledby="start-title"><h2 class="sr-only" id="start-title">Ready to start?</h2><div class="start-embed" id="start-embed"><a class="start-embed__card" id="contact-link" href="https://mementostudio.it/start?from=levelup">Ready</a><iframe id="start-frame" data-src="ready-to-start/embed.html"></iframe></div></section><iframe title="Demo" src="https://knives.vercel.app/"></iframe></main>','levelup'));
+ assert.equal(all(levelup,'iframe').length,1);assert.equal(attr(all(levelup,'iframe')[0],'src'),'https://knives.vercel.app/');
+ const cta=all(levelup,'a').find(a=>attr(a,'id')==='contact-link');
+ assert.equal(attr(cta,'class'),'mm-ready-card');assert.equal(attr(cta,'data-vfx'),'card');assert.equal(attr(cta,'data-vfx-photo'),'.mm-ready-sparkle');
+ assert.equal(attr(cta,'href'),'/start/?from=levelup');
+ assert.equal(all(levelup,'section').filter(n=>attr(n,'id')==='contatto').length,1);
+ assert(all(levelup,'link').some(n=>attr(n,'href')==='/memento-ui/ready-to-start.css'));
+ const projects=parse(nativePage('<main><div id="grid-home"></div><footer class="footer"><a href="https://mementostart.vercel.app/" data-vfx="title">Ready to start?</a></footer></main>','projects'));
+ assert.equal(all(projects,'footer').length,0);
+ const card=all(projects,'a').find(a=>attr(a,'class')==='mm-ready-card');
+ assert.equal(attr(card,'href'),'/start/');assert.equal(attr(card,'data-vfx'),'card');
+ assert(!all(projects,'a').some(a=>(attr(a,'href')||'').includes('mementostart.vercel.app')));
+ // Servizi keeps its own card; the other pages get no extra stylesheet
+ assert(!all(parse(nativePage(source,'services')),'link').some(n=>attr(n,'href')==='/memento-ui/ready-to-start.css'));
+});
+test('pages with effects are marked for the page change, with their code to preload',()=>{
+ const preload=['/memento-ui/effects.mjs','/assets/compiled/engine-x.js'];
+ for (const s of STATIONS) {
+  const html=all(parse(nativePage(source,s.slug,'',{preload})),'html')[0];
+  const effects=['services','projects','levelup','start'].includes(s.slug);
+  assert.equal(attr(html,'data-mm-effects')!==undefined,effects,s.slug);
+  assert.equal(attr(html,'data-mm-preload'),effects && s.slug!=='start'?preload.join(' '):undefined,s.slug);
+ }
 });
 
 test('reprocessing an existing native entry leaves one shared runtime and import map',()=>{
@@ -65,7 +86,8 @@ test('a single cross-document scene owns the transition, and requesting a link s
   assert.match(css, /::view-transition-old\(root\)/);
   assert.match(css, /::view-transition-new\(root\)/);
   const script=scene.childNodes[0].value;
-  const root={clientWidth:400,dataset:{},style:{setProperty(){}}};
+  const flags=new Set();
+  const root={clientWidth:400,dataset:{},style:{setProperty(){}},classList:{contains:()=>false},hasAttribute:n=>flags.has(n),setAttribute:n=>flags.add(n),removeAttribute:n=>flags.delete(n)};
   const document=Object.assign(new EventTarget(),{documentElement:root,referrer:'',body:{}});
   const window=Object.assign(new EventTarget(),{innerHeight:800});window.top=window;
   const followed=[];const location=new URL('https://mementostudio.it/services/');location.assign=href=>followed.push(href);
@@ -75,8 +97,9 @@ test('a single cross-document scene owns the transition, and requesting a link s
   const capableWindow = Object.assign(new EventTarget(),{onpagereveal:null});capableWindow.top=capableWindow;
   runInNewContext(script,{window:capableWindow,document,location,URL,innerHeight:800,performance:{},Element:class {},matchMedia:()=>Object.assign(new EventTarget(),{matches:true})});
   capableWindow.mementoGo('/levelup/');assert.equal(followed.at(-1), 'https://mementostudio.it/levelup/');
-  assert.doesNotMatch(script,/startViewTransition|speculationrules/);
-  assert.doesNotMatch(script, /\.rel\s*=\s*['"]prefetch/);
+  assert.doesNotMatch(script,/startViewTransition/);
+  // R17: the next document is prefetched while the page comes apart, and the browser navigates when it is over
+  assert.match(script,/speculationrules/);
   assert.equal(all(doc,'link').filter(n=>attr(n,'data-mm-atlas')!==undefined).length,0);
   assert.equal(all(doc,'script').filter(n=>attr(n,'src')==='/memento-ui/viewport.js').length,0);
   const nav=all(doc,'memento-nav')[0];assert.equal(attr(nav.childNodes[0],'shadowrootmode'),'open');

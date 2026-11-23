@@ -14,11 +14,19 @@ const commands = {
   start:[['npm','ci','--include=dev','--no-audit','--no-fund'],['npm','run','build']]
 };
 
+// R17: the effects entry and the chunks it loads (engine first), as built by Vite: preloaded by the native pages
+async function effectsChunks(output) {
+  try {
+    const entry = await readFile(join(output,'memento-ui','effects.mjs'),'utf8');
+    const deps = (entry.match(/m\.f=\[([^\]]*)\]/)?.[1] || '').match(/"[^"]+"/g)?.map(d => '/' + JSON.parse(d)) || [];
+    return ['/memento-ui/effects.mjs', ...deps.filter(d => /\/(engine|delaunator|touch|preload-helper)-[\w-]+\.js$/.test(d))];
+  } catch { return []; }
+}
 export async function publishSection(slug, source, output) {
   const target=join(output,slug);
   await cp(source,target,{recursive:true});
   const index=join(target,'index.html');
-  await writeFile(index,nativePage(await readFile(index,'utf8'),slug,releases[slug].commit));
+  await writeFile(index,nativePage(await readFile(index,'utf8'),slug,releases[slug].commit,{preload:await effectsChunks(output)}));
 }
 
 export async function buildSections(output) {

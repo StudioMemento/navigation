@@ -187,6 +187,8 @@ export class VfxEngine {
   private raf = 0; private lastTick = 0;
   /* R15: rest and wake. Seconds without any change, the first frame after a sleep, a held hover, the last carousel frame */
   private restFor = 0; private resumed = false; private calm = false; private lastMotion = 0; private live = false;
+  /* R17: the page exit (performance.now() at its start, duration ms, origin as viewport fractions) */
+  private exitAt = 0; private exitMs = 0; private exitT = 0; private exitOrigin: [number, number] = [.5, .5];
   readonly metrics = { layouts: 0, rasterizations: 0, viewportResizes: 0, renders: 0, evictions: 0, sleeps: 0, wakes: 0 };
   private quality: QualityName = 'high'; private pinned = false;
   private slow = 0; private frames = 0;
@@ -234,6 +236,8 @@ export class VfxEngine {
       uBand: { value: 120 }, uBandK: { value: new Vector2(0, 0) }, uLoad: { value: 0 },
       uDrift: { value: new Vector3(0, VFX.scroll.drift, VFX.scroll.fade) },
       uFrag: { value: new Vector4(1, 1, 1, 0) },
+      // R17: the page exit (progress, origin in clip space, aspect of the canvas)
+      uExit: { value: new Vector4(0, 0, 0, 1) },
     };
 
     // particles
@@ -335,10 +339,14 @@ export class VfxEngine {
     if (document.hidden) await new Promise(resolve => document.addEventListener('visibilitychange', resolve, { once: true, signal: this.abort.signal }));
     if (this.destroyed || this.lost || document.hidden) return;
     this.goLive();
-    if (this.reduced || !this.intro) { this.load.value = 1; this.loaded = true; return; }
+    // R17: arriving under the page-change cover, the page composes when the cover lifts (and a little faster);
+    // an engine that goes live after the cover has lifted takes over at once, like on a page opened directly
+    const arrival = root().hasAttribute('data-mm-arrive');
+    if (this.reduced || !this.intro || (arrival && !this.held())) { this.load.value = 1; this.loaded = true; return; }
+    if (arrival) this.loadRate = VFX.loading.duration / VFX.loading.arrive;
     // Cellule > Unione > Assestamento > Presente. Any interaction shortens it; nothing is queued behind it.
     this.loading = true;
-    const hurry = () => { this.loadRate = VFX.loading.hurry; };
+    const hurry = () => { this.loadRate = Math.max(this.loadRate, VFX.loading.hurry); };
     for (const type of ['pointerdown', 'wheel', 'keydown', 'touchstart'] as const) addEventListener(type, hurry, { once: true, passive: true, signal: this.abort.signal });
   }
 
@@ -416,6 +424,16 @@ export class VfxEngine {
     addEventListener('resize', resized, passive);
     const shown = () => { this.lastTick = 0; this.redraw(); };
     document.addEventListener('visibilitychange', shown, passive);
+    // R17: the cover lifts (the loading sequence composes the page) or the page leaves
+    document.addEventListener('memento:scene-unfold', shown, passive);
+    // R17: the page came back (history, cancelled navigation): its cells are home again
+    document.addEventListener('memento:scene-reset', () => {
+      this.exitAt = 0; (this.globals.uExit.value as Vector4).set(0, 0, 0, 1); this.redraw();
+    }, passive);
+    document.addEventListener('memento:scene-exit', e => {
+      const d = (e as CustomEvent<{ origin: [number, number]; duration: number }>).detail;
+      if (d) this.exit(d.origin, d.duration);
+    }, passive);
     document.addEventListener('memento:overlay-change', shown, passive);
     document.addEventListener('memento:surface-visibility', shown, passive);
     addEventListener('pageshow', shown, passive);
@@ -1144,8 +1162,9 @@ export class VfxEngine {
   /* ------------------------------------------------------------------ loop */
 
   /** LevelUp: the demo player covers the page; Servizi: a dialog does (its own surfaces aside). Nothing here is visible. */
+  // R17: the page change no longer pauses the engine: it draws the exit, and it goes live under the cover
   private covered() {
-    return root().hasAttribute('data-mm-phase') || (this.loaded && !this.active());
+    return this.loaded && !this.active();
   }
 
   private animate = (time: number) => {
@@ -1177,7 +1196,8 @@ export class VfxEngine {
     const calmFrame = this.calm;
     // the first frame after a sleep: where the pointer went meanwhile is not a gesture
     if (this.resumed) { this.resumed = false; this.input.settle(); }
-    if (this.loading) {
+    const holding = this.loading && this.held();
+    if (this.loading && !holding) {
       this.loadingElapsed += dt * this.loadRate;
       const p = Math.min(1, this.loadingElapsed / VFX.loading.duration);
       // Exact quadratic power1.inOut ramp, without a second animation ticker.
@@ -1371,6 +1391,16 @@ export class VfxEngine {
     g.uTime.value = this.clock;
     g.uScroll.value = sc.y; (g.uBandK.value as Vector2).set(sc.top, sc.bottom);
     g.uLoad.value = this.load.value;
+    // R17: the exit, in the canvas's clip space (the canvas is overscanned by `pad` above and below the viewport)
+    let exiting = false;
+    if (this.exitAt) {
+      // a slow frame advances the movement by its clamped dt, never more than a quarter behind the clock
+      const t = this.exitT = Math.min(1, Math.max(this.exitT + dt * 1000 / this.exitMs, (performance.now() - this.exitAt) / this.exitMs - .25));
+      const renderH = this.viewH + this.pad * 2;
+      const [fx, fy] = this.exitOrigin;
+      (g.uExit.value as Vector4).set(Math.max(t, 1e-4), fx * 2 - 1, 1 - 2 * (this.pad + fy * this.viewH) / renderH, this.viewW / renderH);
+      exiting = t < 1;
+    }
 
     // adaptive quality: sustained long frames step the profile down (frames drawn on the calm cadence are not counted)
     if (!calmFrame) { this.frames++; if (deltaMs > VFX.slowFrame) this.slow++; }
@@ -1381,7 +1411,7 @@ export class VfxEngine {
 
     // R15: a frame is drawn only when something changes; at rest the loop sleeps (animate) and nothing is drawn.
     // The pointer alone (present over the page, nothing lit near it) changes nothing on screen.
-    const changing = busy || scrolled || this.touches.active || this.parts.count > 0 || !this.loaded;
+    const changing = busy || exiting || scrolled || this.touches.active || this.parts.count > 0 || (!this.loaded && !holding);
     const draw = changing || this.renderDirty;
     if (draw && this.live) this.render(draw);
     else if (!this.live) this.renderDirty = false;
@@ -1403,7 +1433,8 @@ export class VfxEngine {
     (g.uCanvas.value as Vector2).set(origin, this.viewH + this.pad * 2);
     // off-screen surfaces are skipped entirely
     const top = this.scroll.y - this.pad, bottom = this.scroll.y + this.viewH + this.pad;
-    let energy = this.parts.count > 0;
+    // R17: the leaving cells glow: the bloom runs for the whole exit
+    let energy = this.parts.count > 0 || this.exitAt > 0;
     this.surfaces.forEach(s => {
       const on = s.ready && s.shown && s.w > 2 && s.y < bottom && s.y + s.h > top;
       s.content.visible = on;
@@ -1443,7 +1474,25 @@ export class VfxEngine {
       this.publishFrame = false;
       root().classList.add('vfx-live');
       root().classList.remove('vfx-boot');
+      // R17: the page change waits for this before it reveals the page (no DOM frame, then a jump, then the effects)
+      document.dispatchEvent(new Event('memento:effects-live'));
     }
+  }
+
+  /**
+   * R17: the page is leaving. Its cells come apart from the touched point and fly into the seal (see EXIT in
+   * shaders.ts); scene-head navigates when the movement is over. `origin`: viewport fractions.
+   */
+  exit(origin: [number, number], duration: number) {
+    if (this.destroyed || this.failed || !this.live) return;
+    this.exitAt = performance.now(); this.exitMs = Math.max(1, duration); this.exitT = 0; this.exitOrigin = origin;
+    this.input.leave();
+    this.redraw();
+  }
+  /** R17: under the page-change cover the loading sequence waits; it composes the page when the cover lifts. */
+  private held() {
+    const phase = root().dataset.mmPhase;
+    return phase === 'gather' || phase === 'hold';
   }
 
   /** One separable gaussian pass. */

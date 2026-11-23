@@ -67,6 +67,7 @@ export class VfxRenderer {
     const pin = new URLSearchParams(location.search).get('vfx');
     this.pinned = !!(pin && pin in VFX.quality); if (this.pinned) this.quality = pin;
     this.reduced = false; this.lost = false; this.disposed = false; this.live = false; this.loaded = false;
+    this.exitAt = 0; this.exitMs = 1; this.exitT = 0; this.exitOrigin = [0.5, 0.5]; // R17: the page exit
     this.load = 0; this.loadSpeed = 1; this.clock = 0; this.clockMs = 0; this.frames = 0; this.slow = 0; this.idleFor = 0;
     this.input = new PointerField(); this.parts = new Particles();
     // contacts are recorded by the page (they also drive the DOM fallback) and read here on the first frame after them
@@ -75,6 +76,8 @@ export class VfxRenderer {
     this.scene = new Scene(); this.post = new Scene(); this.camera = new PerspectiveCamera(45, 1, 1, 20000);
     const A = VFX.color.amber;
     this.globals = {
+      // R17: the page exit (progress, origin in clip space, aspect of the canvas), see EXIT in shaders.js
+      uExit: u(new Vector4(0, 0, 0, 1)),
       uTime: u(0), uMotion: u(1), uEmissive: u(0), uLoad: u(0), uPhotoColor: u(this.touchOnly.matches ? 1 : 0),
       uView: u(new Vector2(1, 1)), uBand: u(120), uBandK: u(new Vector2(1, 1)), uDrift: u(new Vector3(0, NAV.drift, NAV.fade)),
       uAmb: u([...hexToRgb(A.deep), ...hexToRgb(A.mid), ...hexToRgb(A.hot), ...hexToRgb(A.core)]),
@@ -183,9 +186,26 @@ export class VfxRenderer {
     if (this.disposed || this.lost) return;
     this.live = true;
     this.publishFrame = true;
-    if (this.reduced || root().dataset.hubRole === 'container') { this.load = 1; this.loaded = true; }
+    // R17: arriving under the page-change cover, the carousel composes when the cover lifts; opened directly (or
+    // live after the cover has lifted) it takes over at once
+    const arrival = root().hasAttribute('data-mm-arrive');
+    if (arrival && this.held()) this.loadSpeed = VFX.loading.duration / VFX.loading.arrive;
+    else if (this.reduced || root().dataset.hubRole === 'container') { this.load = 1; this.loaded = true; }
     this.wakeUp();
   }
+
+  /** R17: under the page-change cover the loading sequence waits; it composes the carousel when the cover lifts. */
+  held() { const phase = root().dataset.mmPhase; return phase === 'gather' || phase === 'hold'; }
+
+  /** R17: the page is leaving: the cards' cells come apart from `origin` (viewport fractions) and fly into the seal. */
+  exit(origin, duration) {
+    if (this.disposed || !this.live) return;
+    this.exitAt = performance.now(); this.exitMs = Math.max(1, duration); this.exitT = 0; this.exitOrigin = origin;
+    this.input.leave?.();
+    this.wakeUp();
+  }
+  /** R17: the page came back (history): the cells are home again. */
+  resetExit() { this.exitAt = 0; this.globals.uExit.value.set(0, 0, 0, 1); this.wakeUp(); }
 
   async precompile() {
     try {
@@ -457,10 +477,19 @@ export class VfxRenderer {
     g.uTime.value = this.clock; g.uMotion.value = reduced ? 0 : 1;
     this.touches.beginFrame(this.clockMs);
     if (reduced) this.touches.clear();
-    if (this.live && !this.loaded) {
+    const holding = this.live && !this.loaded && !reduced && this.held();
+    if (this.live && !this.loaded && !holding) {
       if (reduced) this.load = 1;
       else this.load = Math.min(1, this.load + (dt / VFX.loading.duration) * this.loadSpeed);
       if (this.load >= 1) this.loaded = true;
+    }
+    let exiting = false;
+    if (this.exitAt) {
+      // a slow frame advances the movement by its clamped dt, never more than a quarter behind the clock
+      const t = this.exitT = Math.min(1, Math.max(this.exitT + dt * 1000 / this.exitMs, (performance.now() - this.exitAt) / this.exitMs - .25));
+      const [fx, fy] = this.exitOrigin;
+      g.uExit.value.set(Math.max(t, 1e-4), fx * 2 - 1, 1 - fy * 2, l.w / Math.max(1, l.h));
+      exiting = t < 1;
     }
     g.uLoad.value = this.live ? (reduced ? 1 : easeInOut(this.load)) : 0;
     const k = bandEnable(reduced); g.uBandK.value.set(k.top, k.bottom);
@@ -506,7 +535,7 @@ export class VfxRenderer {
     const attack = 1 - Math.exp(-dt / P.attack), ease = 1 - Math.exp(-dt * 3.5);
     const warmIn = 1 - Math.exp(-dt / 0.35), warmOut = 1 - Math.exp(-dt * 1.6);
     const still = input.still > 0.6;
-    let busy = loadingNow || !this.live;
+    let busy = (loadingNow && !holding) || !this.live || exiting;
 
     for (const c of this.cards) {
       const ch = c.chain, net = c.net;
@@ -753,7 +782,8 @@ export class VfxRenderer {
       c.content.visible = !!c.content.geometry.attributes.position;
       c.content.renderOrder = k * 4; c.overlay.renderOrder = k * 4 + 1; c.titleMesh.renderOrder = k * 4 + 2;
     });
-    let energy = this.parts.count > 0;
+    // R17: the leaving cells glow: the bloom runs for the whole exit
+    let energy = this.parts.count > 0 || this.exitAt > 0;
     for (const c of order) if (c.overlay.visible || c.titleMesh.visible) energy = true;
     const bloom = this.profile().bloom && settings.bloom > 0;
     g.uEmissive.value = 0;
@@ -778,6 +808,8 @@ export class VfxRenderer {
       this.publishFrame = false;
       root().classList.add('vfx-live'); root().classList.remove('vfx-boot');
       this.hooks.onLive?.();
+      // R17: the page change waits for this before it reveals the page
+      document.dispatchEvent(new Event('memento:effects-live'));
     }
   }
 

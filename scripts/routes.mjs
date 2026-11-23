@@ -21,7 +21,7 @@ function render(meta, { robots = '', status = '' } = {}) {
   ].filter(Boolean).join('');
   html = html.replace(/<!-- ROUTE_META_START -->[\s\S]*?<!-- ROUTE_META_END -->/, `<!-- ROUTE_META_START -->${tags}<!-- ROUTE_META_END -->`);
   html = html.replace(/<h1 class="sr-only" id="route-heading">[^<]*<\/h1>/, `<h1 class="sr-only" id="route-heading">${escape(meta.heading)}</h1>`);
-  if (status) html = html.replace('<html lang="it">', `<html lang="it" data-status="${status}">`);
+  if (status) html = html.replace('<html lang="it"', `<html lang="it" data-status="${status}"`);
   return html;
 }
 if (!base.includes('<!-- ROUTE_META_START -->')) throw Error('index.html: ROUTE_META markers missing');

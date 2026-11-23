@@ -10,7 +10,8 @@ export default defineConfig({
     async transformIndexHtml(html) {
       // Keep the same pure layout functions in the inline first frame and the client.
       const { homeMarkup, homeNav } = await import(pathToFileURL(resolve('scripts/home-markup.mjs')).href);
-      return html.replace('<!-- MEMENTO_SCENE -->', () => sceneHead)
+      // R17: the Home carousel draws effects (the page change waits for their first frame, scene-head)
+      return html.replace('<html lang="it">', '<html lang="it" data-mm-effects>').replace('<!-- MEMENTO_SCENE -->', () => sceneHead)
         .replace('<!-- MEMENTO_CARDS -->', homeMarkup)
         .replace('<!-- MEMENTO_NAV -->', homeNav);
     }

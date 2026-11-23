@@ -1,0 +1,144 @@
+/*
+ * R17 · Ready to start: the invitation that closes Servizi, also at the end of Portfolio and LevelUp (it replaces the
+ * visualfx.vercel.app frame and the old footer link). The same card as Servizi (#finale): the DOM card is the
+ * fallback; with the effects on, the engine draws it (data-vfx="card": cells, photograph, border light, the chain
+ * reaction under the pointer). Its own graphics will be developed further.
+ */
+.mm-ready {
+  --mm-ready-amber: #dfad6b;
+  --mm-ready-ease: cubic-bezier(.22, 1, .36, 1);
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 1680px;
+  margin-inline: auto;
+  padding: clamp(72px, 9vw, 144px) clamp(16px, 4vw, 64px)
+    max(90px, calc(var(--overlay-bottom, 0px) + 60px), calc(env(safe-area-inset-bottom, 0px) + 80px));
+  container-type: inline-size;
+}
+.mm-ready-card {
+  --corner-cut: 20px;
+  --cut: var(--corner-cut);
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-sizing: border-box;
+  width: 100%;
+  min-height: clamp(320px, 32cqi, 450px);
+  padding: clamp(20px, 4.4cqi, 76px);
+  gap: clamp(10px, 2.5cqi, 40px);
+  background: #07090a;
+  color: #eeeae3;
+  text-decoration: none;
+  -webkit-tap-highlight-color: transparent;
+  clip-path: polygon(var(--corner-cut) 0, 100% 0, 100% calc(100% - var(--corner-cut)), calc(100% - var(--corner-cut)) 100%, 0 100%, 0 var(--corner-cut));
+}
+/* the frame: a 1 px ring with the same cut corners */
+.mm-ready-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  pointer-events: none;
+  background: #c4c4be70;
+  clip-path: polygon(evenodd,
+    var(--corner-cut) 0, 100% 0, 100% calc(100% - var(--corner-cut)), calc(100% - var(--corner-cut)) 100%, 0 100%, 0 var(--corner-cut), var(--corner-cut) 0,
+    calc(var(--corner-cut) + .4142px) 1px, 1px calc(var(--corner-cut) + .4142px), 1px calc(100% - 1px),
+    calc(100% - var(--corner-cut) - .4142px) calc(100% - 1px), calc(100% - 1px) calc(100% - var(--corner-cut) - .4142px),
+    calc(100% - 1px) 1px, calc(var(--corner-cut) + .4142px) 1px);
+}
+.mm-ready-card:focus-visible {
+  outline: 2px solid var(--mm-ready-amber);
+  outline-offset: -5px;
+}
+.mm-ready-art {
+  position: absolute;
+  z-index: -1;
+  width: 46%;
+  height: 145%;
+  right: 7%;
+  top: -22%;
+  pointer-events: none;
+  opacity: .58;
+  -webkit-mask: linear-gradient(90deg, transparent, #000 25%);
+  mask: linear-gradient(90deg, transparent, #000 25%);
+  transition: opacity .75s var(--mm-ready-ease);
+}
+.mm-ready-sparkle {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  filter: grayscale(1) brightness(.8);
+  transition: filter .75s var(--mm-ready-ease);
+}
+.mm-ready-title {
+  position: relative;
+  z-index: 2;
+  flex: 0 1 auto;
+  min-width: 0;
+  margin: 0;
+  padding: .08em .05em .15em 0;
+  font-size: clamp(38px, 7.5cqi, 112px);
+  font-weight: 380;
+  letter-spacing: .012em;
+  line-height: 1.12;
+  color: #f0ede7;
+  transition: color .65s var(--mm-ready-ease);
+}
+.mm-ready-title > span,
+.mm-ready-question {
+  display: inline-block;
+}
+.mm-ready-chevron {
+  position: relative;
+  z-index: 2;
+  flex: 0 0 auto;
+  width: clamp(28px, 5cqi, 62px);
+  height: auto;
+  aspect-ratio: 48 / 80;
+  color: #ece8e0;
+  opacity: .9;
+  transition: color .65s var(--mm-ready-ease), translate .45s var(--mm-ready-ease);
+}
+.mm-ready-card:not([data-vfx-measuring]):is(:hover, :focus-visible) .mm-ready-art {opacity: .94}
+.mm-ready-card:not([data-vfx-measuring]):is(:hover, :focus-visible) .mm-ready-sparkle {filter: none}
+.mm-ready-card:not([data-vfx-measuring]):is(:hover, :focus-visible) :is(.mm-ready-title, .mm-ready-chevron) {color: var(--mm-ready-amber)}
+.mm-ready-card:not([data-vfx-measuring]):is(:hover, :focus-visible) .mm-ready-chevron {translate: 6px 0}
+
+@media (max-width: 767px) {
+  .mm-ready-card {
+    --corner-cut: 16px;
+    align-items: flex-end;
+  }
+  .mm-ready-art {
+    width: 92%;
+    height: 82%;
+    right: -4%;
+    top: -9%;
+  }
+  .mm-ready-chevron {margin-bottom: 7px}
+}
+@media (max-height: 600px) and (orientation: landscape) {
+  .mm-ready-card {align-items: center}
+  .mm-ready-art {
+    width: 45%;
+    height: 130%;
+    right: 8%;
+    top: -15%;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .mm-ready-card *, .mm-ready-card::before {transition: none !important}
+}
+@media (forced-colors: active) {
+  .mm-ready-art {display: none}
+  .mm-ready-card {
+    background: Canvas;
+    outline: 1px solid CanvasText;
+    outline-offset: -2px;
+  }
+  .mm-ready-title {color: CanvasText}
+}

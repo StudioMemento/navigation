@@ -13,6 +13,39 @@ const plain = node => (node.childNodes || []).map(n => n.value || '').join('');
 const pathOf = value => (value || '').split(/[?#]/)[0].replace(/^\.\//, '');
 const escape = text => String(text).replaceAll('&', '&amp;').replaceAll('"', '&quot;').replaceAll('<', '&lt;');
 
+/**
+ * R17: Ready to start, the card that closes Servizi (#finale), also at the end of Portfolio (in place of the footer
+ * link) and LevelUp (in place of the visualfx.vercel.app frame). LevelUp keeps id="contact-link": its app writes the
+ * destination with the experience chosen above. Styles: /memento-ui/ready-to-start.css.
+ */
+export function readyCard({ id = 'ready-link', href = '/start/' } = {}) {
+  return '<a class="mm-ready-card" id="' + id + '" href="' + escape(href) + '" data-vfx="card" data-vfx-photo=".mm-ready-sparkle" aria-label="Ready to start? Raccontaci la tua idea">' +
+    '<span class="mm-ready-art" aria-hidden="true"><img class="mm-ready-sparkle" src="/memento-ui/ready-to-start/sparkle.webp" alt="" width="1254" height="1254" loading="lazy" decoding="async"></span>' +
+    '<span class="mm-ready-title" aria-hidden="true"><span>Ready to</span> <span>start<span class="mm-ready-question">?</span></span></span>' +
+    '<svg class="mm-ready-chevron" viewBox="0 0 48 80" fill="none" aria-hidden="true"><path d="m12 14 26 26-26 26" stroke="currentColor" stroke-width="1.6" stroke-linecap="square" stroke-linejoin="miter"/></svg></a>';
+}
+const READY = {
+  projects: { match: n => n.tagName === 'footer' && attr(n,'class') === 'footer',
+    html: () => '<section class="mm-ready" aria-label="Ready to start?">' + readyCard() + '</section>' },
+  levelup: { match: n => n.tagName === 'section' && attr(n,'id') === 'contatto',
+    html: () => '<section class="mm-ready" id="contatto" aria-labelledby="start-title"><h2 class="sr-only" id="start-title">Ready to start?</h2>' +
+      readyCard({ id: 'contact-link', href: '/start/?from=levelup' }) + '</section>' },
+};
+/** Replaces the first node matching `match` with the markup; returns whether it found one. */
+function replace(node, match, markup) {
+  const list = node.childNodes || [];
+  for (let i = 0; i < list.length; i++) {
+    if (match(list[i])) {
+      const next = parseFragment(markup).childNodes;
+      for (const n of next) n.parentNode = node;
+      list.splice(i, 1, ...next);
+      return true;
+    }
+    if (replace(list[i], match, markup)) return true;
+  }
+  return false;
+}
+
 function prune(node, slug) {
   let oldOverlay = false;
   node.childNodes = (node.childNodes || []).filter(child => {
@@ -24,12 +57,6 @@ function prune(node, slug) {
     const tag = child.tagName;
     if (['memento-scene-shape','memento-scene-navigation'].includes(attr(child,'id'))) return false;
     if (tag === 'div' && attr(child,'id') === 'site-atmosphere') return false;
-    // In the native LevelUp CTA the existing accessible card renders its title with the common surface engine.
-    if (slug === 'levelup' && tag === 'iframe' && attr(child,'id') === 'start-frame' && attr(child,'data-src') === 'ready-to-start/embed.html') return false;
-    if (slug === 'levelup' && tag === 'a' && attr(child,'id') === 'contact-link') {
-      set(child,'data-vfx','card');
-      set(child,'data-vfx-panel','');
-    }
     if (tag === 'script') {
       const src = pathOf(attr(child, 'src'));
       if (src === '/memento-ui/viewport.js' || src === '/memento-ui/site.mjs' || attr(child,'data-memento-imports') !== undefined) return false;
@@ -52,7 +79,10 @@ function prune(node, slug) {
 }
 
 // Adapt the published section before it reaches the browser. The independent project keeps its original index.
-export function nativePage(source, slug, release) {
+// R17: the sections that draw the effects. `preload`: their code (the effects entry and its chunks), requested with the
+// document by scene-head when the visit will get them; the Start app ships its own renderer.
+const EFFECTS = new Set(['services', 'projects', 'levelup', 'start']);
+export function nativePage(source, slug, release, { preload = [] } = {}) {
   const section = STATIONS.find(s => s.slug === slug);
   if (!section) throw new Error('Unknown Memento section: ' + slug);
   const doc = parse(source);
@@ -61,12 +91,19 @@ export function nativePage(source, slug, release) {
   const body = html.childNodes.find(n => n.tagName === 'body');
   if (!head || !body) throw new Error('Section index has no head or body');
   prune(html,slug);
+  // R17: the Ready to start card (no iframe: the frame of visualfx.vercel.app is gone)
+  const ready = READY[slug];
+  if (ready && !replace(body, ready.match, ready.html())) console.warn('Ready to start: no place for the card in ' + slug);
   set(html, 'data-memento-native', slug);
   if(release)set(html, 'data-memento-release', release);
   set(html, 'data-memento-page', section.id);
   set(html, 'data-embedded', 'false');
   set(html, 'data-memento-surface', 'opaque');
   set(html, 'data-memento-navigation', 'standalone');
+  if (EFFECTS.has(slug)) {
+    set(html, 'data-mm-effects', '');
+    if (slug !== 'start' && preload.length) set(html, 'data-mm-preload', preload.join(' '));
+  }
   const meta = routeMeta({ view:'page', id:section.id });
   const canonical = PUBLIC_ORIGIN + section.path + '/';
   const pageTitle = head.childNodes.find(n => n.tagName === 'title');
@@ -96,6 +133,7 @@ export function nativePage(source, slug, release) {
     '<meta property="og:url" content="'+canonical+'"><meta property="og:image" content="'+escape(OG_IMAGE)+'"><meta name="twitter:card" content="summary_large_image">',
     '<script type="importmap" data-memento-imports>'+JSON.stringify(spec)+'</script>',
     '<link rel="stylesheet" href="/memento-ui/site.css">',
+    ...(ready ? ['<link rel="stylesheet" href="/memento-ui/ready-to-start.css">'] : []),
     '<script type="module" src="/memento-ui/site.mjs"></script>'
   ];
   if (!desc) tags.push('<meta name="description" content="'+escape(meta.description)+'">');

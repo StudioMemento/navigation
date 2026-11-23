@@ -5,7 +5,7 @@ import {initialSection,installRouteSync} from './route-state.mjs';
 import {settings,DEFAULTS} from './settings.js';
 import {NAV} from './vfx/config.mjs';
 import {TouchPulseField,listenForTouch,touchArrival} from './vfx/touch.mjs';
-import {afterFirstPaint,whenIdle} from './paint.mjs';
+import {afterFirstPaint,announceEffects,whenIdle} from './paint.mjs';
 import {routePath} from './kit/core.mjs';
 import {vfxPolicy} from './vfx/policy.mjs';
 
@@ -48,9 +48,11 @@ const touches = new TouchPulseField();
 // renderer is downloaded after the first paint and created in the first idle period, then takes over card by card.
 function bootEngine(){
  if(engineBooted||disposed)return;engineBooted=true;
- const fallback=()=>{canvas.hidden=true;document.body.dataset.renderer='fallback';delete document.documentElement.dataset.worldRenderer;document.documentElement.classList.remove('vfx-boot');};
+ // R17: the page change waits for the renderer's first frame (or its failure) before it reveals the carousel
+ const announced=announceEffects();
+ const fallback=()=>{announced();canvas.hidden=true;document.body.dataset.renderer='fallback';delete document.documentElement.dataset.worldRenderer;document.documentElement.classList.remove('vfx-boot');};
  afterFirstPaint().then(()=>Promise.all([import('./renderer.js'),whenIdle()])).then(([{VfxRenderer}])=>{
-  if(disposed)return;
+  if(disposed){announced();return;}
   engine=VfxRenderer.create(canvas,PAGES,{
    touches,policy,
    onImage:i=>{cards[i].el.classList.add('image-ready');wake();},
@@ -133,7 +135,7 @@ function stepWorld(dt){
 }
 function frame(now){
  raf=0;if(disposed||document.hidden||qaPaused)return;
- if(document.documentElement.hasAttribute('data-mm-phase')){lastTime=0;return;}
+ // R17: the page change no longer pauses the carousel: the renderer draws the exit and goes live under the cover
  // high refresh screens are capped at 60 renders a second (V24), a held hover at NAV.calmFps (R15); the frame is skipped
  if(lastTime&&now-lastTime<1000/(calm?NAV.calmFps:NAV.fps)-1){raf=requestAnimationFrame(frame);return;}
  const elapsed=lastTime?now-lastTime:16.67,dt=Math.min(elapsed/1000,.05);lastTime=now;
@@ -212,6 +214,10 @@ on(window,'keydown',e=>{
 });
 on(window,'resize',scheduleFit);if(visualViewport)on(visualViewport,'resize',scheduleFit);
 on(document,'memento:surface-visibility',wake);
+// R17: the page change (scene-head): the cards come apart into the seal; the cover lifts; the page came back
+on(document,'memento:scene-exit',e=>{if(e.detail)engine?.exit(e.detail.origin,e.detail.duration);wake();});
+on(document,'memento:scene-unfold',()=>{lastTime=0;wake();});
+on(document,'memento:scene-reset',()=>{engine?.resetExit();wake();});
 on(document,'visibilitychange',()=>{if(document.hidden){cancelAnimationFrame(raf);raf=0;lastTime=0;}else{lastTime=0;wake();}});
 on(window,'pageshow',()=>{lastTime=0;wake();});
 on(window,'pagehide',e=>{cancelAnimationFrame(raf);raf=0;if(!e.persisted){disposed=true;controller.abort();cancelAnimationFrame(layoutFrame);engine?.dispose();litTimers.forEach(clearTimeout);}});

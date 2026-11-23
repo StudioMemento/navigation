@@ -2,7 +2,7 @@ import { SurfaceRegistry, type SurfaceKind, type SurfaceOptions } from './regist
 import { TouchPulseField } from './touch';
 import { installTouchFeedback } from './touch-feedback';
 import type { EngineOptions, VfxEngine } from './engine';
-import { afterFirstPaint, whenIdle } from '../paint.mjs';
+import { afterFirstPaint, announceEffects, arriving, whenIdle } from '../paint.mjs';
 import { vfxPolicy } from '../vfx/policy.mjs';
 
 /**
@@ -99,16 +99,20 @@ export function bindSurfaceCanvas(canvas: HTMLCanvasElement, registry: SurfaceRe
     document.documentElement.classList.remove('vfx-off');
     const touches = new TouchPulseField();
     stopTouch = installTouchFeedback(touches);
+    // R17: the page change waits for the first frame of this engine (or its failure) before it lifts the cover
+    const announced = announceEffects();
     // the download starts after the first paint; the engine is created in the first idle period after it
+    // (under the page-change cover: at once)
     afterFirstPaint().then(() => current === generation ? Promise.all([import('./engine'), whenIdle()]) : null).then(loaded => {
-      if (!loaded) return;
+      if (!loaded) { announced(); return; }
       const [{ VfxEngine }] = loaded;
-      if (current !== generation) return;
-      // a native page is already on screen: the engine takes over without the loading sequence
-      const intro = !document.documentElement.hasAttribute('data-memento-native') && options.intro !== false;
+      if (current !== generation) { announced(); return; }
+      // a native page opened directly is already on screen: the engine takes over without the loading sequence.
+      // R17: arriving under the page-change cover, the loading sequence composes the page when the cover lifts.
+      const intro = arriving() || (!document.documentElement.hasAttribute('data-memento-native') && options.intro !== false);
       renderer = VfxEngine.create(canvas, registry, touches, {...options,intro,offset:dialog,bands:!dialog,quality:policy.quality,pinned:policy.pinned});
-      if (!renderer) fallback();
-    }).catch(() => { if (current === generation) fallback(); });
+      if (!renderer) { announced(); fallback(); }
+    }).catch(() => { announced(); if (current === generation) fallback(); });
   }
   refresh();
   media.addEventListener('change',refresh);

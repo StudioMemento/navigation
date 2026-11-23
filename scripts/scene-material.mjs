@@ -2,6 +2,9 @@
 // fragments fly into the Memento seal; the seal breaks, its fragments fly out to the new page, and the new interface
 // composes through the same lattice. One 2D canvas above the page, a pure function of the progress: the incoming
 // document draws exactly the frame the outgoing one would have drawn (the progress travels in sessionStorage).
+// R17: leaving, nothing closes over the page any more. The real interface comes apart (the engine's own cells fly
+// into the seal, see EXIT in the shaders; the DOM pieces dissolve, see scene-head); this layer only adds the cracks of
+// the lattice where it leaves, the sparks flying into the seal and, once the screen is empty, black behind the seal.
 import { mementoPaths } from '../public/navigation/memento-paths.mjs';
 
 export const seal = `<svg class="mm-seal" viewBox="44 44 131.69 152.94" aria-hidden="true"><defs><linearGradient id="mm-amber" x2=".7" y2="1"><stop stop-color="#ffe8b5"/><stop offset=".46" stop-color="#f8ad65"/><stop offset="1" stop-color="#cf632e"/></linearGradient><pattern id="mm-mesh" width="18" height="16" patternUnits="userSpaceOnUse"><path d="M0 0L18 16H0ZM0 0L9 4 18 0M9 4L5 16" stroke="#743e25" fill="none" stroke-width=".58"/></pattern></defs><g fill="url(#mm-amber)">${mementoPaths}</g><g fill="url(#mm-mesh)">${mementoPaths}</g></svg>`;
@@ -15,7 +18,11 @@ export const weave = {
   /** fragments flying to the seal and back out: at most this many (large and small screens) */
   shards: [340, 170],
   /** the seal: share of the movement where it forms (leaving) and where it breaks (arriving) */
-  form: [.6, .93], fade: [.02, .3],
+  form: [.6, .9], fade: [.02, .3],
+  /** R17 leaving: the screen behind the departing interface turns black only once it is empty */
+  veil: [.76, .96],
+  /** R17 leaving: when a cell leaves, by its distance from the touched point (the engine's EXIT uses the same) */
+  leave: [.02, .46, .16], crack: .2,
 };
 
 export function createMaterial(art, weave) {
@@ -24,6 +31,8 @@ export function createMaterial(art, weave) {
   layer.setAttribute('aria-hidden', 'true');
   layer.innerHTML = '<canvas class="mm-cells"></canvas>' + art;
   const canvas = layer.querySelector('canvas'), logo = layer.querySelector('svg');
+  // R17: the seal breathes while the next page gets ready; both documents take the phase from the clock: no jump
+  logo.style.animationDelay = -(Date.now() % 2400) + 'ms';
   document.body.append(layer);
   const W = innerWidth, H = innerHeight, dpr = Math.min(devicePixelRatio || 1, 1.5);
   canvas.width = Math.round(W * dpr); canvas.height = Math.round(H * dpr);
@@ -86,13 +95,17 @@ export function createMaterial(art, weave) {
     const t0 = new Float32Array(n), shards = [];
     const [ox, oy] = covering && scene.origin ? [scene.origin[0] * W, scene.origin[1] * H] : [W / 2, H / 2];
     const far = Math.max(Math.hypot(ox, oy), Math.hypot(W - ox, oy), Math.hypot(ox, H - oy), Math.hypot(W - ox, H - oy)) || 1;
+    const [l0, l1, lj] = weave.leave;
     for (let f = 0; f < n; f++) {
       const d = Math.hypot(cx[f] - ox, cy[f] - oy) / far;
-      t0[f] = covering ? .03 + .56 * d + .08 * (r[f] - .5) : .22 + .56 * d + .08 * (r[f] - .5);
+      t0[f] = covering ? l0 + l1 * d + lj * (r[f] - .5) : .22 + .56 * d + .08 * (r[f] - .5);
     }
     // fragments come from the interface (cards, photographs, type, the dock), a few from the black around it
     const rects = (scene.rects || []).map(([x, y, w, h]) => [x * W, y * H, (x + w) * W, (y + h) * H]);
     const inside = f => rects.some(q => cx[f] > q[0] && cx[f] < q[2] && cy[f] > q[1] && cy[f] < q[3]);
+    // R17 leaving: the cells over the interface, where the lattice cracks as it comes apart
+    const inner = [];
+    if (covering) for (let f = 0; f < n; f++) if (r[f] < .62 && inside(f)) inner.push(f);
     const max = W * H > 6e5 ? weave.shards[0] : weave.shards[1], pick = [];
     for (let f = 0; f < n; f++) {
       if (cx[f] < -S || cx[f] > W + S || cy[f] < -S || cy[f] > H + S) continue;
@@ -103,7 +116,8 @@ export function createMaterial(art, weave) {
     pick.length = Math.min(pick.length, max);
     pick.forEach((f, i) => {
       const q = (Math.floor(hash(f, 97) * points) % points) * 2, h = hash(f, 13);
-      if (covering) shards.push({ f, x0: cx[f], y0: cy[f], x1: targets[q], y1: targets[q + 1], a: t0[f], b: .64 + .16 * h, h, size: S * .42 });
+      // leaving, a fragment leaves with its cell and lands on the seal while it forms
+      if (covering) shards.push({ f, x0: cx[f], y0: cy[f], x1: targets[q], y1: targets[q + 1], a: Math.max(0, t0[f]), b: Math.min(.88, Math.max(t0[f] + .3, .6 + .2 * h)), h, size: S * .42 });
       else {
         const a = .02 + .12 * h, b = Math.max(a + .26, t0[f]);
         t0[f] = b;
@@ -112,7 +126,7 @@ export function createMaterial(art, weave) {
     });
     let first = 1, last = 0;
     for (let f = 0; f < n; f++) { first = Math.min(first, t0[f]); last = Math.max(last, t0[f]); }
-    return { covering, t0, shards, first, last };
+    return { covering, t0, shards, first, last, inner };
   }
 
   const amber = ['255,214,150', '255,170,88', '247,121,52'];
@@ -121,10 +135,20 @@ export function createMaterial(art, weave) {
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     ctx.clearRect(0, 0, W, H);
     ctx.fillStyle = '#000';
-    // cells: closed means black. Leaving, they close from the touch outward; arriving, they open from the seal outward
-    const shut = p.covering ? t >= p.last + span : t <= p.first;
-    const open = p.covering ? t <= p.first : t >= p.last + span;
     const fronts = [[], [], []];
+    if (p.covering) {
+      // R17: the interface leaves by itself; black comes in behind the seal once nothing is left to see
+      const veil = smooth(weave.veil[0], weave.veil[1], t);
+      if (veil > .001) { ctx.globalAlpha = veil; ctx.fillRect(0, 0, W, H); ctx.globalAlpha = 1; }
+      // the lattice cracks where the interface leaves: amber seams on its cells, for a moment, as they go
+      for (const f of p.inner) {
+        const k = (t - p.t0[f]) / weave.crack;
+        if (k > 0 && k < 1) fronts[Math.min(2, Math.floor(Math.sin(Math.PI * k) * 3))].push(f);
+      }
+    }
+    // cells: closed means black. Arriving, they open from the seal outward
+    const shut = !p.covering && t <= p.first;
+    const open = p.covering || t >= p.last + span;
     if (shut) ctx.fillRect(0, 0, W, H);
     else if (!open) {
       // one fill per cell: a single path of thousands of touching triangles rasterizes ten times slower
@@ -140,22 +164,22 @@ export function createMaterial(art, weave) {
         // seams on about half the cells of the front, brightest halfway: a lattice that moves, not a net over the page
         if (a > .06 && a < .9 && r[f] < .55) fronts[Math.min(2, Math.floor(Math.sin(Math.PI * a) * 3))].push(f);
       }
-      // the lattice shows where it moves: amber seams on the cells closing or opening, nowhere else
-      ctx.lineWidth = 1;
-      fronts.forEach((list, b) => {
-        if (!list.length) return;
-        ctx.beginPath();
-        for (const f of list) { const o = f * 6; ctx.moveTo(V[o], V[o + 1]); ctx.lineTo(V[o + 2], V[o + 3]); ctx.lineTo(V[o + 4], V[o + 5]); ctx.closePath(); }
-        ctx.strokeStyle = `rgba(255,150,72,${(.06 + .1 * b).toFixed(2)})`;
-        ctx.stroke();
-      });
     }
+    // the lattice shows where it moves: amber seams on the cells leaving, closing or opening, nowhere else
+    ctx.lineWidth = 1;
+    fronts.forEach((list, b) => {
+      if (!list.length) return;
+      ctx.beginPath();
+      for (const f of list) { const o = f * 6; ctx.moveTo(V[o], V[o + 1]); ctx.lineTo(V[o + 2], V[o + 3]); ctx.lineTo(V[o + 4], V[o + 5]); ctx.closePath(); }
+      ctx.strokeStyle = `rgba(255,150,72,${((p.covering ? .08 : .06) + .1 * b).toFixed(2)})`;
+      ctx.stroke();
+    });
     // fragments: small amber triangles on a bent path, spinning, smaller as they reach the seal (and larger leaving it)
     ctx.globalCompositeOperation = 'lighter';
     const batches = [[], [], []];
     for (const s of p.shards) {
       // leaving, a fragment lands on the seal and glows there while the seal appears; arriving, it fades into its cell
-      const hold = p.covering ? .14 : .02;
+      const hold = p.covering ? .1 : .02;
       if (t <= s.a || t >= s.b + hold) continue;
       const u = ease(Math.min(1, (t - s.a) / (s.b - s.a)));
       const dx = s.x1 - s.x0, dy = s.y1 - s.y0, bow = (s.h - .5) * .5 * Math.sin(Math.PI * u);
@@ -195,11 +219,14 @@ export function createMaterial(art, weave) {
     play(covering, fraction, duration, scene) {
       cancelAnimationFrame(loop);
       const p = plan(covering, scene || {}), start = performance.now();
-      let t = Math.max(0, Math.min(1, fraction)), finish;
+      let t = Math.max(0, Math.min(1, fraction)), last = start, finish;
       const done = new Promise(resolve => { finish = resolve; });
       draw(p, t);   // before the first paint of an incoming document: it starts on exactly this frame
+      // R17: a slow frame (the first one of a page change often is) does not skip the movement: it advances at most
+      // 50 ms of it, and the movement never falls more than a quarter behind the clock
       const frame = now => {
-        t = Math.min(1, fraction + (now - start) / duration);
+        const step = Math.min(50, Math.max(0, now - last)); last = now;
+        t = Math.min(1, Math.max(t + step / duration, fraction + (now - start) / duration - .25));
         draw(p, t);
         if (t < 1) loop = requestAnimationFrame(frame); else finish();
       };

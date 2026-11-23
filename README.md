@@ -22,7 +22,9 @@ Il progetto Vercel `mementonav` pubblica la Home e le pagine di [mementostudio.i
 
 - `src/vfx/config.mjs` controlla palette, tempi, effetti al tocco e al puntatore di Home, Servizi, Portfolio, LevelUp e Start. `VFX.runtime` regola il riposo del loop (`idle`, 1 s) e la cadenza dell’hover fermo (`calmFps`, 30); `VFX.quality` i profili e il budget di pixel.
 - `src/vfx/policy.mjs` decide per ogni visita se gli effetti partono: `?vfx=off`, Save-Data e dispositivi sotto i 2 GB mostrano la pagina HTML.
-- `scripts/scene-head.mjs` segue la navigazione nativa. `scripts/scene-material.mjs` scompone la pagina in celle che formano il sigillo Memento e ricompone la successiva dal reticolato (R16).
+- `scripts/scene-head.mjs` guida il cambio pagina: la pagina si scompone dalle sue celle reali prima che il browser navighi verso il documento già prefetchato, e la nuova si compone con gli effetti già attivi (R17). Durate: `exit`, `unfold`; attesa massima degli effetti: `patience`. `scripts/scene-material.mjs` disegna crepe, schegge e sigillo e apre il reticolato all'arrivo (`weave`).
+- Uscita delle celle negli shader: `EXIT` in `src/surfaces/shaders.ts` e `src/shaders.js`. Reticolato statico in hover: `HOVER_LATTICE` (0 dalla R17).
+- Ready to start su Portfolio e LevelUp: `readyCard` in `scripts/native-page.mjs`, stile in `public/memento-ui/ready-to-start.css`.
 - Hover con il mouse: `VFX.pointer.wave`. Luce del cursore sulle foto: `PHOTO_SPOT` in `src/surfaces/shaders.ts` e `src/shaders.js`.
 - `public/navigation/` contiene la navbar comune. Le pagine usano un fondo nero uniforme.
 - Studio 3D usa lo stesso menu e la stessa transizione. La scena e i controlli 3D si modificano nella repo Studio.
@@ -39,13 +41,20 @@ Le cinque stazioni seguono l’ordine Studio, Servizi, Portfolio, LevelUp e Star
 
 ## Navigazione e rendering
 
-I link avviano subito la richiesta HTML. Dove sono disponibili le transizioni fra documenti, l’icona ambra accompagna il passaggio. All’apertura diretta, con movimento ridotto o con colori forzati, il browser mostra la pagina direttamente. I moduli della sezione collegano i controlli durante il cambio pagina. La prima schermata usa il contenuto HTML e le fotografie della build. Studio 3D mostra la vista esterna mentre prepara il primo frame del modello.
+Dove sono disponibili le transizioni fra documenti, un link interno chiede subito il documento (prefetch) e la pagina si scompone dalle sue celle nel sigillo Memento. Il browser naviga quando il movimento finisce, poi la pagina nuova si compone dal sigillo con gli effetti già attivi. Dettagli in `docs/R17_NOTES.md`. All’apertura diretta, con movimento ridotto o con colori forzati, il browser mostra la pagina direttamente. I moduli della sezione collegano i controlli durante il cambio pagina. La prima schermata usa il contenuto HTML e le fotografie della build. Studio 3D mostra la vista esterna mentre prepara il primo frame del modello.
 
 Dalla R15 la Home e le pagine Start, Servizi, Portfolio e LevelUp hanno di nuovo gli effetti della START V28, senza sfondo. La pagina HTML compare per prima e resta il fallback: il renderer si scarica dopo il primo paint, nasce nel primo momento libero del browser, compila gli shader e poi prende il posto delle superfici. Disegna solo quando qualcosa cambia (puntatore, tocco, scroll, caricamento di un’immagine) e un secondo dopo l’ultimo cambiamento si ferma: a riposo la GPU non lavora. `?vfx=off` mostra la pagina HTML, `?vfx=low|medium|high` blocca un profilo, `?vfxdebug` espone `window.__vfx` con le metriche (`renders`, `sleeps`, `wakes`, `running`). Con grafica software, movimento ridotto (pagine) o colori forzati resta la pagina HTML. Le esperienze 3D e le demo interattive hanno renderer propri.
 
 Le note delle release precedenti e i riferimenti artistici sono in `docs/`.
 
 ## Archivio delle release
+
+### R17
+
+- **Cambio pagina dall'interfaccia reale, più lento.** Le celle vere di card, foto e titoli e i pezzi del DOM si staccano dal punto toccato e volano nel sigillo prima che il browser navighi. Il documento è già prefetchato. Uscita 1000 ms, ingresso 1150 ms. Il nero compare solo a schermo vuoto.
+- **Nessuno scatto all'arrivo.** Gli effetti della pagina nuova partono sotto il sigillo. Il sigillo aspetta il loro primo fotogramma e la sequenza di caricamento compone la pagina mentre si apre.
+- **Hover vivo.** Nessun reticolato statico sotto il cursore: solo la reazione a catena, come al tocco.
+- **Ready to start** di Servizi anche su Portfolio e LevelUp, al posto del link del footer e dell'iframe di visualfx.vercel.app. Dettagli e verifica in `docs/R17_NOTES.md`.
 
 ### R16
 
