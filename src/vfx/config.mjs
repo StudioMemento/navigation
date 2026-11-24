@@ -47,8 +47,10 @@ export const VFX = Object.freeze(/** @type {const} */ ({
      * R16: with a mouse the hover travels through the lattice like a touch (the chain reaction of the phones): one wave
      * from where the pointer enters a card or a title, then one every `every` px it travels, never closer than `gap` s.
      * The waves stay inside that surface; `gain`: strength of the entry and of the travel waves.
+     * R18: a little stronger and a little more frequent (was every 150 px, gain [1, 0.78]); the cells they light are
+     * drawn brighter too (HOVER_CELLS in the shaders).
      */
-    wave: { every: 150, gap: 0.3, gain: [1, 0.78] },
+    wave: { every: 120, gap: 0.26, gain: [1.2, 1] },
   },
   border: { bins: 96, decay: 3.2, reach: 46 },
   // R17 arrive: seconds of the sequence when it composes a page under the lifting page-change cover

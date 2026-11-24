@@ -16,6 +16,8 @@ uniform float uEmissive;      // 1 while rendering the emission-only pass that f
 #define PHOTO_SPOT_R 210.
 /* R17: share of the still hover lattice (cells near the pointer, without a reaction): 0, the lattice is only live */
 #define HOVER_LATTICE 0.
+/* R18: strength of the cells the hover and touch waves light (facets and seams): R16–R17 drew them at 1 */
+#define HOVER_CELLS 1.6
 float h11(float p){ p=fract(p*.1031); p*=p+33.33; p*=p+p; return fract(p); }
 float h21(vec2 p){ vec3 p3=fract(vec3(p.xyx)*.1031); p3+=dot(p3,p3.yzx+33.33); return fract((p3.x+p3.y)*p3.z); }
 float vnoise(vec2 p){
@@ -154,7 +156,8 @@ float exitOf(vec4 cc, float seed){
 vec4 exitTo(vec4 vc, vec4 cc, float k, float seed){
   if(k<=0.) return vc;
   float e=k*k*(3.-2.*k);
-  vec2 c=cc.xy/cc.w, n=vc.xy/vc.w, to=-c;
+  // R18: toward the line where the page's name composes (the middle of the screen, across most of its width)
+  vec2 c=cc.xy/cc.w, n=vc.xy/vc.w, to=vec2(-.45*c.x,-c.y);
   vec2 side=vec2(-to.y,to.x)*(h11(seed*29.)-.5)*1.2*sin(3.1416*e);
   float a=(h11(seed*43.)-.5)*5.*e, ca=cos(a), sa=sin(a);
   vec2 v=(n-c)*vec2(uExit.w,1.);
@@ -278,7 +281,8 @@ vec3 photo(vec2 p, float inside){
     // the veil layer (blurred image, black shade over it), then its mask and opacity, over the sharp photograph
     vec2 vb=p-uVeilBox.xy;
     float inV=step(0.,vb.x)*step(vb.x,uVeilBox.z)*step(0.,vb.y)*step(vb.y,uVeilBox.w);
-    float m=inV*uVeilP.y*veilMask(p)*inside;
+    // R18: the veil is a copy of the photograph: it fades on the same side, with the same curve
+    float m=inV*uVeilP.y*veilMask(p)*inside*maskA(p);
     float sh=veilShade(p);
     // a blurred edge: half covered on the box outline, gone two radii outside
     vec2 e=min(vq,1.-vq)*uVeilImg.zw;
@@ -507,13 +511,13 @@ void main(){
   float L=clamp(vis*wake*beat*uTopo*HOVER_LATTICE+E*(.45+.8*max(vis,.35)),0.,1.);
   float sat=.3+.7*h2;                                        // some cells deep amber, others close to neutral
   // R16: over the photograph the cells stay light and close to neutral; the amber lives on the black and the outline
-  float fA=inside*L*(.05+.24*h)*(.3+.7*sweep)*(1.-ia*.7*smoothstep(.04,.3,lum));   // the object, not its box
+  float fA=inside*L*(.05+.24*h)*HOVER_CELLS*(.3+.7*sweep)*(1.-ia*.5*smoothstep(.04,.3,lum));   // the object, not its box
   vec3 facet=ramp(.24+.44*L*sweep);
   facet=mix(vec3(dot(facet,vec3(.3333))),facet,sat*(1.-.6*ia))*(.45+.9*sweep);
   // the seams: hairlines (under half a pixel per side, so a shared edge stays under a pixel), never summed at a corner
   float edges=max(max(hair(vBary.x)*step(.45,h2),hair(vBary.y)*step(.45,h3)),hair(vBary.z)*step(.45,h));
   vec3 wc=ramp(.6+.32*L);
-  vec3 wire=mix(vec3(dot(wc,vec3(.3333))),wc,sat)*edges*L*(.34+.42*edgeK)*inside;   // one scale of cells: seams even, a little more along the outline
+  vec3 wire=mix(vec3(dot(wc,vec3(.3333))),wc,sat)*edges*L*(.34+.42*edgeK)*HOVER_CELLS*inside;   // one scale of cells: seams even, a little more along the outline
 
   // 3 · the outline lights by segment: a thin bright core and a soft local halo
   float Eb=bins(outlineAt(p));
@@ -539,6 +543,7 @@ ${AA}
 ${LATTICE}
 ${INK}
 ${WARMTH}
+${LAYER}
 uniform vec2 uSize;
 uniform sampler2D uDist;      // signed distance to the letters (0.5 on the outline, ±uRange px at 0 and 1), mapped like the ink
 uniform float uRange;         // px
@@ -612,9 +617,11 @@ void main(){
   vec3 rimC=ramp(.56+.2*g)*rim*local*vFade*.6*W;
   vec3 glow=ramp(.42+.2*g)*outer*(.04+.17*g)*vFade*W;
   // bloom: a touch of brilliance from the reached letters, the lattice and their rim, held low
-  if(uEmissive>.5){ o=vec4(((hot*a*fill*.09+facet*a*lit*.07)*vFade+rimC*.24+glow*.3)*W,0.); return; }
+  // R18: a card's own title fades, dims and clips with its board (layer() is 1 for a title on the page)
+  float lay=layer();
+  if(uEmissive>.5){ o=vec4(((hot*a*fill*.09+facet*a*lit*.07)*vFade+rimC*.24+glow*.3)*W*lay,0.); return; }
   // Touch changes existing ink by its colour delta, preserving anti-aliased coverage.
-  o=vec4(col*cov+(col-idle)*a*k*(W-W0)+rimC*k+glow,cov);
+  o=vec4(col*cov+(col-idle)*a*k*(W-W0)+rimC*k+glow,cov)*lay;
 }`;
 
 /* ------------------------------------------------------------------ particles */
@@ -710,6 +717,9 @@ void main(){
   col=shoulder(col);
   col*=1.-uMix.z*smoothstep(.42,1.05,r)*smoothstep(.42,1.05,r);
   // V25: no film grain or animated dithering; the photographic/text grade stays clean.
+  // R18: a fixed dither under one 8-bit step (the same pattern every frame: no grain, nothing moves) turns the steps
+  // of long dark gradients (photograph fades, glows, #090909 around them) into an even tone. Pure black stays black.
+  col+=(ign(gl_FragCoord.xy)+ign(gl_FragCoord.xy+vec2(41.,23.))-1.)/255.*step(.5/255.,max(col.r,max(col.g,col.b)));
   float a=s.a;
   if(a<1.) a=clamp(max(a,max(col.r,max(col.g,col.b))),0.,1.);
   o=vec4(max(col,0.),a);

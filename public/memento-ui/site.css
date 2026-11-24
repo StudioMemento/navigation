@@ -1,14 +1,17 @@
 :root {
   --memento-accent: #ff7950;
+  /* R18: one ground for the whole site (Home, pages, the page change). Cards and panels stay black on it. */
+  --memento-ground: #090909;
   --memento-safe-top: max(76px,calc(env(safe-area-inset-top,0px) + 60px));
   --memento-safe-bottom: max(96px,calc(env(safe-area-inset-bottom,0px) + 80px));
-  background-color: #000;
+  background-color: var(--memento-ground);
 }
 html[data-memento-native] {scroll-padding-top:var(--memento-safe-top);scroll-padding-bottom:var(--memento-safe-bottom)}
 html[data-memento-native] [data-memento-content-insets] {padding-top:var(--memento-safe-top);padding-bottom:var(--memento-safe-bottom)}
 html[data-memento-modal] memento-nav {visibility:hidden;pointer-events:none}
 /* Keep the reading surface and the gutters matte, including the first HTML frame. */
-html[data-memento-native][data-memento-surface="opaque"] {background:#000}
+html[data-memento-native][data-memento-surface="opaque"] {background:var(--memento-ground)!important}
+html[data-memento-native][data-memento-surface="opaque"] body {background-color:transparent!important}
 html[data-memento-native=start] .start-background {display:none}
 /* Inter 350 advances of the prerendered first headings. The fitted lines keep their height during hydration. */
 html[data-memento-native=levelup] #page-title {font-size:max(18px,calc((100cqw - 2px) / 8.74))}
@@ -23,5 +26,32 @@ html[data-memento-native=start] #start-title .hero-line:last-child {font-size:cl
 html[data-status="404"] .missing-page {display:block;position:fixed;inset:auto 0 16%;z-index:10;text-align:center;color:#fff}
 .missing-page a {color:var(--memento-accent)}
 
-.memento-static-nav {display:flex;flex-wrap:wrap;justify-content:center;gap:1em;padding:1.5em;color:#eee;background:#000}
+.memento-static-nav {display:flex;flex-wrap:wrap;justify-content:center;gap:1em;padding:1.5em;color:#eee;background:var(--memento-ground)}
 .memento-static-nav a {color:inherit}
+
+/* R18: the scroll cue of every page (scrollbar.mjs). The browser's scrollbar and the pages' own rails give way to one
+   thin Memento amber thumb that fades in from its top end, over the page, without a gutter. */
+html[data-memento-native] {scrollbar-width:none}
+html[data-memento-native]::-webkit-scrollbar {display:none;width:0;height:0}
+html[data-memento-native] .memento-scrollbar {display:none!important}
+.mm-scrollbar {position:fixed;z-index:998;top:6px;bottom:6px;right:0;width:16px;touch-action:none;cursor:default;-webkit-tap-highlight-color:transparent}
+.mm-scrollbar[hidden] {display:none}
+.mm-scrollbar-thumb {position:absolute;top:0;right:4px;width:2px;height:var(--scroll-size,40px);border-radius:2px;pointer-events:none;
+  transform:translateY(var(--scroll-top,0px));opacity:.86;
+  background:linear-gradient(180deg,#ff795000 0%,#ff79501f 22%,#ff795066 48%,#ff7950c2 74%,#ff8a5c 90%,#ffb487 100%);
+  box-shadow:0 6px 10px -4px #ff795059;
+  transition:opacity .35s ease,width .2s ease,right .2s ease,box-shadow .35s ease}
+.mm-scrollbar:is(:hover,:focus-visible,.is-scrolling,.is-dragging) .mm-scrollbar-thumb {opacity:1;width:3px;right:3.5px;box-shadow:0 8px 14px -4px #ff79508c}
+.mm-scrollbar:focus-visible {outline:1px solid #ff795080;outline-offset:-2px}
+@media (pointer:coarse) {
+  .mm-scrollbar {width:8px;pointer-events:none}
+  .mm-scrollbar-thumb {right:2px}
+}
+@media (forced-colors:active) {
+  html[data-memento-native] {scrollbar-width:auto}
+  html[data-memento-native]::-webkit-scrollbar {display:block;width:auto;height:auto}
+  .mm-scrollbar {display:none}
+}
+@media print {.mm-scrollbar {display:none}}
+/* Scroll areas inside a page (dialogs, long panels) keep a native scrollbar, thin and amber. */
+html[data-memento-native] * {scrollbar-color:#ff795080 transparent}

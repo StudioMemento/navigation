@@ -1,5 +1,6 @@
 import { mountNav } from '/navigation/navbar.mjs';
 import { navigationLink, station } from '/navigation/core.mjs';
+import { mountScrollbar } from '/memento-ui/scrollbar.mjs';
 
 const root = document.documentElement;
 const section = station(root.dataset.mementoNative);
@@ -42,6 +43,8 @@ if (section) {
   document.addEventListener('toggle',event=>{if(event.target instanceof HTMLDialogElement)syncOverlay();},true);
   window.addEventListener('pageshow',syncOverlay);
   syncOverlay();
+  // R18: one Memento scroll cue for every page that scrolls
+  mountScrollbar();
   // Scrolling and Page Up belong to the document. Escape explicitly returns to its station.
   window.addEventListener('keydown', event => {
     if (event.key !== 'Escape' || event.defaultPrevented || modalOpen()) return;

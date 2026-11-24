@@ -5,9 +5,13 @@
 // R17: leaving, nothing closes over the page any more. The real interface comes apart (the engine's own cells fly
 // into the seal, see EXIT in the shaders; the DOM pieces dissolve, see scene-head); this layer only adds the cracks of
 // the lattice where it leaves, the sparks flying into the seal and, once the screen is empty, black behind the seal.
-import { mementoPaths } from '../public/navigation/memento-paths.mjs';
+// R18: the seal is now the name of the page that opens, composed letter by letter in the type of the Start titles
+// (Inter, spread capitals, amber gradient, glow and a fine lattice inside the letters). The ground is #090909 and the
+// layer stays under the navigation: wordmark and dock never leave, only the content changes.
+import { STATIONS } from '../src/kit/core.mjs';
 
-export const seal = `<svg class="mm-seal" viewBox="44 44 131.69 152.94" aria-hidden="true"><defs><linearGradient id="mm-amber" x2=".7" y2="1"><stop stop-color="#ffe8b5"/><stop offset=".46" stop-color="#f8ad65"/><stop offset="1" stop-color="#cf632e"/></linearGradient><pattern id="mm-mesh" width="18" height="16" patternUnits="userSpaceOnUse"><path d="M0 0L18 16H0ZM0 0L9 4 18 0M9 4L5 16" stroke="#743e25" fill="none" stroke-width=".58"/></pattern></defs><g fill="url(#mm-amber)">${mementoPaths}</g><g fill="url(#mm-mesh)">${mementoPaths}</g></svg>`;
+/** R18: the name composed for each address (the Home: HOME). Shared by every page through scene-head. */
+export const names = Object.fromEntries([['/', 'HOME'], ['/memento', 'STUDIO'], ...STATIONS.map(s => [s.path, s.title])]);
 
 /** Timing of the two movements (s of progress 0..1) and their sizes. Shared by every page through scene-head. */
 export const weave = {
@@ -15,28 +19,31 @@ export const weave = {
   cell: [22, 42, 1400],
   /** a cell takes this share of the movement to close (leaving) or open (arriving): the width of the moving front */
   close: .15, open: .17,
-  /** fragments flying to the seal and back out: at most this many (large and small screens) */
+  /** fragments flying to the name and back out: at most this many (large and small screens) */
   shards: [340, 170],
-  /** the seal: share of the movement where it forms (leaving) and where it breaks (arriving) */
-  form: [.6, .9], fade: [.02, .3],
-  /** R17 leaving: the screen behind the departing interface turns black only once it is empty */
+  /** the name: share of the movement where it forms (leaving) and where it breaks (arriving); R18: letter by letter,
+   *  each over `letter` of the movement, the first at the start of the span, the last at its end */
+  form: [.5, .9], fade: [.02, .3], letter: [.22, .16],
+  /** R17 leaving: the screen behind the departing interface turns to the ground only once it is empty */
   veil: [.76, .96],
   /** R17 leaving: when a cell leaves, by its distance from the touched point (the engine's EXIT uses the same) */
   leave: [.02, .46, .16], crack: .2,
+  /** R18: the ground the page stands on (site.css --memento-ground) */
+  ground: '#090909',
 };
 
-export function createMaterial(art, weave) {
+export function createMaterial(name, weave) {
   const layer = document.createElement('div');
   layer.className = 'mm-weave';
   layer.setAttribute('aria-hidden', 'true');
-  layer.innerHTML = '<canvas class="mm-cells"></canvas>' + art;
-  const canvas = layer.querySelector('canvas'), logo = layer.querySelector('svg');
-  // R17: the seal breathes while the next page gets ready; both documents take the phase from the clock: no jump
-  logo.style.animationDelay = -(Date.now() % 2400) + 'ms';
+  layer.innerHTML = '<canvas class="mm-cells"></canvas><canvas class="mm-name"></canvas>';
+  const [canvas, title] = layer.querySelectorAll('canvas');
+  // R17: the name breathes while the next page gets ready; both documents take the phase from the clock: no jump
+  title.style.animationDelay = -(Date.now() % 2400) + 'ms';
   document.body.append(layer);
   const W = innerWidth, H = innerHeight, dpr = Math.min(devicePixelRatio || 1, 1.5);
-  canvas.width = Math.round(W * dpr); canvas.height = Math.round(H * dpr);
-  const ctx = canvas.getContext('2d');
+  canvas.width = title.width = Math.round(W * dpr); canvas.height = title.height = Math.round(H * dpr);
+  const ctx = canvas.getContext('2d'), tctx = title.getContext('2d');
   const hash = (a, b) => {
     let h = Math.imul(a ^ 0x9e3779b9, 0x85ebca6b) ^ Math.imul((b + 0x632be5ab) | 0, 0xc2b2ae35);
     h ^= h >>> 15; h = Math.imul(h, 0x2c1b3c6d); h ^= h >>> 12; h = Math.imul(h, 0x297a2d39); h ^= h >>> 15;
@@ -67,29 +74,81 @@ export function createMaterial(art, weave) {
   }
   const grow = 1 + 1.5 / S;   // a closed cell overlaps its neighbours by about a pixel: no seam shows the page
 
-  // the seal: where its fragments land (sampled once from its own paths, at its size on screen)
-  const lw = Math.max(72, Math.min(128, Math.min(W, H) * .12)), lh = lw * 152.94 / 131.69;
-  const targets = [];
-  try {
-    const off = document.createElement('canvas'), sw = Math.round(lw), sh = Math.round(lh);
-    off.width = sw; off.height = sh;
-    const o = off.getContext('2d', { willReadFrequently: true });
-    o.scale(sw / 131.69, sh / 152.94); o.translate(-44, -44);
-    for (const el of logo.querySelector('g').querySelectorAll('path,polygon')) {
-      let d = el.getAttribute('d');
-      if (el.localName === 'polygon') {
-        const v = el.getAttribute('points').trim().split(/[\s,]+/);
-        d = 'M' + v[0] + ' ' + v[1];
-        for (let i = 2; i + 1 < v.length; i += 2) d += 'L' + v[i] + ' ' + v[i + 1];
-        d += 'Z';
-      }
-      o.fill(new Path2D(d));
+  // R18: the name of the page, in the type of the Start titles. Each letter is painted once into its own sprite
+  // (glow, amber gradient, a fine lattice inside); the fragments land on the letters' own pixels
+  const word = String(name || 'MEMENTO').toUpperCase(), letters = [...word].filter(c => c !== ' ');
+  const count = Math.max(1, letters.length);
+  let sprites = [], targets = [], points = 1;
+  function compose() {
+    const font = px => `300 ${px}px Inter, "Helvetica Neue", Arial, sans-serif`;
+    const m = document.createElement('canvas').getContext('2d');
+    // as large as the screen allows: a capital about a sixth of the height, the word within 82% of the width,
+    // spread like the titles of the Home (justified capitals, a clear gap between them)
+    let size = Math.min(H * .17, W * .12), widths, gap;
+    for (let k = 0; k < 6; k++) {
+      m.font = font(size);
+      widths = letters.map(c => m.measureText(c).width);
+      const ink = widths.reduce((a, b) => a + b, 0), room = Math.min(W * .82, ink + size * .9 * (count - 1));
+      gap = count > 1 ? (room - ink) / (count - 1) : 0;
+      if (gap >= size * .28 || size < 18) break;
+      size *= .88;
     }
-    const data = o.getImageData(0, 0, sw, sh).data;
-    for (let y = 0; y < sh; y += 2) for (let x = 0; x < sw; x += 2) if (data[(y * sw + x) * 4 + 3] > 160) targets.push(W / 2 - sw / 2 + x, H / 2 - sh / 2 + y);
-  } catch {}
-  if (!targets.length) targets.push(W / 2, H / 2);
-  const points = targets.length / 2;
+    const total = widths.reduce((a, b) => a + b, 0) + gap * (count - 1);
+    const cap = size * .727, base = H / 2 + cap / 2, pad = Math.ceil(size * .34);
+    let x = (W - total) / 2;
+    sprites = letters.map((c, i) => {
+      const w = Math.ceil(widths[i]) + pad * 2, h = Math.ceil(cap) + pad * 2;
+      const sprite = document.createElement('canvas');
+      sprite.width = Math.ceil(w * dpr); sprite.height = Math.ceil(h * dpr);
+      const g = sprite.getContext('2d');
+      g.scale(dpr, dpr);
+      g.font = font(size); g.textBaseline = 'alphabetic';
+      const bx = pad, by = pad + cap;
+      // warm light around each letter: a wide soft glow, then a tight one
+      g.fillStyle = '#ff7950';
+      g.shadowColor = 'rgba(255,110,60,.5)'; g.shadowBlur = size * .2; g.fillText(c, bx, by);
+      g.shadowColor = 'rgba(255,170,96,.55)'; g.shadowBlur = size * .05; g.fillText(c, bx, by);
+      g.shadowColor = 'transparent'; g.shadowBlur = 0;
+      // the amber gradient of the titles: light from above, warm at the base
+      const grad = g.createLinearGradient(0, by - cap, 0, by);
+      [[0, '#fbefe8'], [.56, '#fbefe8'], [.68, '#f5d9c6'], [.8, '#ecb28c'], [.91, '#e2874f'], [1, '#d9682f']].forEach(([o, col]) => grad.addColorStop(o, col));
+      g.fillStyle = grad; g.fillText(c, bx, by);
+      // a fine lattice of triangles inside the letter, like the cells of the titles
+      g.globalCompositeOperation = 'source-atop';
+      g.strokeStyle = 'rgba(160,62,22,.32)'; g.lineWidth = Math.max(.5, size * .006);
+      const t = Math.max(7, size * .085), row = t * .866;
+      g.beginPath();
+      for (let yy = -row, j = 0; yy < h + row; yy += row, j++) for (let xx = -t + (j & 1) * t / 2; xx < w + t; xx += t) {
+        g.moveTo(xx, yy); g.lineTo(xx + t, yy); g.moveTo(xx, yy); g.lineTo(xx + t / 2, yy + row); g.lineTo(xx + t, yy);
+      }
+      g.stroke();
+      g.globalCompositeOperation = 'source-over';
+      const out = { sprite, x: x - pad, y: base - cap - pad, w, h };
+      x += widths[i] + gap;
+      return out;
+    });
+    // where the fragments land: the letters' own pixels (the core of each glyph, not its glow)
+    targets = [];
+    const step = Math.max(2, Math.round(size / 45));
+    letters.forEach((c, i) => {
+      const o = document.createElement('canvas'), q = sprites[i], ow = Math.ceil(q.w), oh = Math.ceil(q.h);
+      o.width = ow; o.height = oh;
+      const g = o.getContext('2d', { willReadFrequently: true });
+      g.font = font(size); g.fillStyle = '#fff'; g.fillText(c, pad, pad + cap);
+      try {
+        const data = g.getImageData(0, 0, ow, oh).data;
+        for (let y = 0; y < oh; y += step) for (let xx = 0; xx < ow; xx += step) if (data[(y * ow + xx) * 4 + 3] > 160) targets.push(q.x + xx, q.y + y, i);
+      } catch {}
+    });
+    if (!targets.length) targets.push(W / 2, H / 2, 0);
+    points = targets.length / 3;
+  }
+  compose();
+  // the incoming document may still be loading Inter: it composes again as soon as the face is there, and only then
+  // takes over from the outgoing frame (scene-head waits for `ready`)
+  const face = '300 64px Inter';
+  const ready = !document.fonts || document.fonts.check(face) ? Promise.resolve()
+    : Promise.race([document.fonts.load(face).then(() => { compose(); }), new Promise(r => setTimeout(r, 900))]);
 
   function plan(covering, scene) {
     const t0 = new Float32Array(n), shards = [];
@@ -115,11 +174,15 @@ export function createMaterial(art, weave) {
     pick.sort((a, b) => hash(a, 53) - hash(b, 53));
     pick.length = Math.min(pick.length, max);
     pick.forEach((f, i) => {
-      const q = (Math.floor(hash(f, 97) * points) % points) * 2, h = hash(f, 13);
-      // leaving, a fragment leaves with its cell and lands on the seal while it forms
-      if (covering) shards.push({ f, x0: cx[f], y0: cy[f], x1: targets[q], y1: targets[q + 1], a: Math.max(0, t0[f]), b: Math.min(.88, Math.max(t0[f] + .3, .6 + .2 * h)), h, size: S * .42 });
-      else {
-        const a = .02 + .12 * h, b = Math.max(a + .26, t0[f]);
+      const q = (Math.floor(hash(f, 97) * points) % points) * 3, h = hash(f, 13);
+      // R18: a fragment flies to a letter and lands while that letter composes; arriving, it leaves as its letter breaks
+      const li = targets[q + 2] / Math.max(1, count - 1);
+      if (covering) {
+        const at = weave.form[0] + (weave.form[1] - weave.form[0] - weave.letter[0]) * li;
+        shards.push({ f, x0: cx[f], y0: cy[f], x1: targets[q], y1: targets[q + 1], a: Math.max(0, t0[f]), b: Math.min(.92, Math.max(t0[f] + .26, at + weave.letter[0] * (.25 + .6 * h))), h, size: S * .42 });
+      } else {
+        const at = weave.fade[0] + (weave.fade[1] - weave.fade[0] - weave.letter[1]) * li;
+        const a = at + weave.letter[1] * .5 * h, b = Math.max(a + .26, t0[f]);
         t0[f] = b;
         shards.push({ f, x0: targets[q], y0: targets[q + 1], x1: cx[f], y1: cy[f], a, b, h, size: S * .42 });
       }
@@ -134,7 +197,7 @@ export function createMaterial(art, weave) {
     const span = p.covering ? weave.close : weave.open;
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     ctx.clearRect(0, 0, W, H);
-    ctx.fillStyle = '#000';
+    ctx.fillStyle = weave.ground;
     const fronts = [[], [], []];
     if (p.covering) {
       // R17: the interface leaves by itself; black comes in behind the seal once nothing is left to see
@@ -146,7 +209,7 @@ export function createMaterial(art, weave) {
         if (k > 0 && k < 1) fronts[Math.min(2, Math.floor(Math.sin(Math.PI * k) * 3))].push(f);
       }
     }
-    // cells: closed means black. Arriving, they open from the seal outward
+    // cells: closed means the ground. Arriving, they open from the name outward
     const shut = !p.covering && t <= p.first;
     const open = p.covering || t >= p.last + span;
     if (shut) ctx.fillRect(0, 0, W, H);
@@ -207,10 +270,20 @@ export function createMaterial(art, weave) {
       }
     });
     ctx.globalCompositeOperation = 'source-over';
-    // the seal forms as its fragments land; arriving, it breaks first and its fragments leave
-    const shown = p.covering ? smooth(weave.form[0], weave.form[1], t) : 1 - smooth(weave.fade[0], weave.fade[1], t);
-    logo.style.opacity = shown.toFixed(3);
-    logo.style.transform = `translate(-50%,-50%) scale(${(p.covering ? .9 + .1 * shown : 1 + .1 * (1 - shown)).toFixed(4)})`;
+    // R18: the name composes letter by letter as its fragments land (left to right); arriving, it breaks the same way
+    tctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    tctx.clearRect(0, 0, W, H);
+    const [a0, a1] = p.covering ? weave.form : weave.fade, each = p.covering ? weave.letter[0] : weave.letter[1];
+    sprites.forEach((q, i) => {
+      const at = a0 + (a1 - a0 - each) * (count > 1 ? i / (count - 1) : 0);
+      const k = smooth(at, at + each, t), shown = p.covering ? k : 1 - k;
+      if (shown < .004) return;
+      const scale = p.covering ? .92 + .08 * shown : 1 + .08 * (1 - shown), rise = (1 - shown) * q.h * (p.covering ? .06 : -.04);
+      const cx = q.x + q.w / 2, cy = q.y + q.h / 2;
+      tctx.globalAlpha = shown;
+      tctx.drawImage(q.sprite, cx - q.w * scale / 2, cy - q.h * scale / 2 + rise, q.w * scale, q.h * scale);
+    });
+    tctx.globalAlpha = 1;
   }
 
   let loop = 0;
@@ -233,6 +306,8 @@ export function createMaterial(art, weave) {
       if (t < 1) loop = requestAnimationFrame(frame); else finish();
       return { done, fraction: () => t, cancel() { cancelAnimationFrame(loop); } };
     },
-    remove() { cancelAnimationFrame(loop); layer.remove(); }
+    remove() { cancelAnimationFrame(loop); layer.remove(); },
+    /** R18: the name is composed in its own face (the incoming document may be loading Inter) */
+    ready
   };
 }

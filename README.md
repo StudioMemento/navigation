@@ -22,18 +22,18 @@ Il progetto Vercel `mementonav` pubblica la Home e le pagine di [mementostudio.i
 
 - `src/vfx/config.mjs` controlla palette, tempi, effetti al tocco e al puntatore di Home, Servizi, Portfolio, LevelUp e Start. `VFX.runtime` regola il riposo del loop (`idle`, 1 s) e la cadenza dell’hover fermo (`calmFps`, 30); `VFX.quality` i profili e il budget di pixel.
 - `src/vfx/policy.mjs` decide per ogni visita se gli effetti partono: `?vfx=off`, Save-Data e dispositivi sotto i 2 GB mostrano la pagina HTML.
-- `scripts/scene-head.mjs` guida il cambio pagina: la pagina si scompone dalle sue celle reali prima che il browser navighi verso il documento già prefetchato, e la nuova si compone con gli effetti già attivi (R17). Durate: `exit`, `unfold`; attesa massima degli effetti: `patience`. `scripts/scene-material.mjs` disegna crepe, schegge e sigillo e apre il reticolato all'arrivo (`weave`).
+- `scripts/scene-head.mjs` guida il cambio pagina: la pagina si scompone dalle sue celle reali prima che il browser navighi verso il documento già prefetchato, e la nuova si compone con gli effetti già attivi (R17). Durate: `exit`, `unfold`; attesa massima degli effetti: `patience`. `scripts/scene-material.mjs` disegna crepe, schegge e il nome della pagina (R18, `names`, `weave.letter`) e apre il reticolato all'arrivo (`weave`). Wordmark e navbar restano sopra la transizione.
 - Uscita delle celle negli shader: `EXIT` in `src/surfaces/shaders.ts` e `src/shaders.js`. Reticolato statico in hover: `HOVER_LATTICE` (0 dalla R17).
 - Ready to start su Portfolio e LevelUp: `readyCard` in `scripts/native-page.mjs`, stile in `public/memento-ui/ready-to-start.css`.
-- Hover con il mouse: `VFX.pointer.wave`. Luce del cursore sulle foto: `PHOTO_SPOT` in `src/surfaces/shaders.ts` e `src/shaders.js`.
-- `public/navigation/` contiene la navbar comune. Le pagine usano un fondo nero uniforme.
+- Hover con il mouse: `VFX.pointer.wave`; intensità delle celle accese: `HOVER_CELLS` (R18). Luce del cursore sulle foto: `PHOTO_SPOT` in `src/surfaces/shaders.ts` e `src/shaders.js`.
+- `public/navigation/` contiene la navbar comune. Le pagine usano un fondo uniforme `#090909` (`--memento-ground` in `public/memento-ui/site.css`) e lo stesso indicatore di scroll (`public/memento-ui/scrollbar.mjs`).
 - Studio 3D usa lo stesso menu e la stessa transizione. La scena e i controlli 3D si modificano nella repo Studio.
 
 ## Avvio e build
 
 Il progetto usa Node 22.12 o successivo della serie 22. `npm ci`, `npm test` e `npm run build` verificano e compilano i sorgenti. `npm run dev` avvia la Home in Vite. Dopo la build, `npm run preview` serve tutte e sei le pagine.
 
-La build scarica i commit pubblici delle cinque repo, compila le sezioni e adatta l’HTML con `scripts/native-page.mjs`. La CDN serve direttamente pagine e asset. La build si interrompe se manca una revisione o se una sezione fallisce. La Home disegna subito foto e titoli HTML con la prospettiva del carosello; il renderer degli effetti li sostituisce quando è pronto. `?lab` apre la regia.
+La build scarica i commit pubblici delle cinque repo, compila le sezioni e adatta l’HTML con `scripts/native-page.mjs`. Per provare commit non ancora pubblicati: `MEMENTO_SECTIONS=/cartella/con/i/cloni npm run build`. La CDN serve direttamente pagine e asset. La build si interrompe se manca una revisione o se una sezione fallisce. La Home disegna subito foto e titoli HTML con la prospettiva del carosello; il renderer degli effetti li sostituisce quando è pronto. `?lab` apre la regia.
 
 ## Riferimento visivo della Home
 
@@ -48,6 +48,17 @@ Dalla R15 la Home e le pagine Start, Servizi, Portfolio e LevelUp hanno di nuovo
 Le note delle release precedenti e i riferimenti artistici sono in `docs/`.
 
 ## Archivio delle release
+
+### R18
+
+- **Card di Servizi.** Sfumatura della foto a curva morbida su gran parte dell'immagine, senza spigoli; dithering fisso nel grade, così i neri non fanno gradini.
+- **Titoli delle card con il materiale dei titoli di Start** (`data-vfx="title"` dentro una card): seguono la card nel carosello e si scaldano con il suo hover.
+- **Hover più visibile** su tab e card (`HOVER_CELLS`, `VFX.pointer.wave`).
+- **Titoli delle categorie** di Servizi attaccati alle slide.
+- **Un solo indicatore di scroll** ambra per tutte le pagine (`public/memento-ui/scrollbar.mjs`).
+- **Slider di LevelUp** al centro.
+- **Cambio pagina**: il nome della pagina che si apre al posto del sigillo; wordmark e navbar sempre visibili.
+- **Fondo `#090909`** (`--memento-ground`). Dettagli e verifica in `docs/R18_NOTES.md`.
 
 ### R17
 

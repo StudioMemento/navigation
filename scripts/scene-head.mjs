@@ -1,23 +1,31 @@
-import { createMaterial, seal, weave } from './scene-material.mjs';
+import { createMaterial, names, weave } from './scene-material.mjs';
 
+// R18: the layer of the page change stays under the navigation (z-index 1000): wordmark and dock never leave, only the
+// content changes. Across the two documents the navigation is its own view-transition group, above the material: the
+// outgoing one until the new page opens, then the incoming one (the same bar, its new station lit). The incoming
+// material takes over from the outgoing frame once the page name is composed in its own face (data-mm-name).
 const css = `@media (prefers-reduced-motion:no-preference) and (forced-colors:none){
   @view-transition {navigation:auto}
-  .mm-weave {position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:2147483647;view-transition-name:mm-material}
-  .mm-cells {position:absolute;inset:0;width:100%;height:100%}
-  .mm-seal {position:absolute;top:50%;left:50%;opacity:0;width:clamp(72px,12vmin,128px);height:auto;transform:translate(-50%,-50%);filter:drop-shadow(0 0 9px #ff8a3838)}
-  :root[data-mm-phase="hold"] .mm-seal {animation:mm-breathe 2.4s ease-in-out infinite}
-  @keyframes mm-breathe {50% {filter:drop-shadow(0 0 15px #ff8a3866)}}
+  .mm-weave {position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:999;view-transition-name:mm-material}
+  .mm-cells,.mm-name {position:absolute;inset:0;width:100%;height:100%}
+  :root[data-mm-phase="hold"] .mm-name {animation:mm-breathe 2.4s ease-in-out infinite}
+  @keyframes mm-breathe {50% {filter:brightness(1.14)}}
+  memento-nav {view-transition-name:mm-nav}
   ::view-transition {pointer-events:none}
   ::view-transition-group(root) {animation:mm-hold 6s step-end both}
   @keyframes mm-hold {from,to {opacity:1}}
-  ::view-transition-old(root),::view-transition-new(root),::view-transition-group(mm-material),::view-transition-new(mm-material) {animation:none;mix-blend-mode:normal}
+  ::view-transition-old(root),::view-transition-new(root),::view-transition-group(mm-material),::view-transition-old(mm-material),::view-transition-new(mm-material),
+  ::view-transition-group(mm-nav),::view-transition-old(mm-nav),::view-transition-new(mm-nav) {animation:none;mix-blend-mode:normal}
   ::view-transition-old(root) {z-index:1;opacity:1}
-  :root[data-mm-feed="new"]::view-transition-old(root),::view-transition-old(mm-material) {opacity:0;animation:none}
+  :root[data-mm-feed="new"]::view-transition-old(root),:root[data-mm-name]::view-transition-old(mm-material),:root:not([data-mm-name])::view-transition-new(mm-material) {opacity:0}
   ::view-transition-group(mm-material) {z-index:2}
+  ::view-transition-group(mm-nav) {z-index:3}
+  ::view-transition-new(mm-nav),:root[data-mm-feed="new"]::view-transition-old(mm-nav) {opacity:0}
+  :root[data-mm-feed="new"]::view-transition-new(mm-nav) {opacity:1}
 }
 @media (prefers-reduced-motion:reduce),(forced-colors:active){.mm-weave {display:none}}`;
 
-function observeScene(createMaterial, seal, weave) {
+function observeScene(createMaterial, names, weave) {
   const root = document.documentElement;
   if (['services','levelup'].includes(root.dataset.mementoNative)) root.dataset.overlayScrollbar = 'true';
   let width, height;
@@ -94,10 +102,8 @@ function observeScene(createMaterial, seal, weave) {
   // the interface on screen, in viewport fractions: the cells over it are the ones that become fragments
   function sceneOf(origin) {
     const vw = innerWidth, vh = innerHeight, rects = [];
-    const nav = document.querySelector('memento-nav')?.shadowRoot;
-    // the navigation is a full-screen layer: its pieces are the wordmark and the dock
-    const parts = [...document.querySelectorAll('[data-vfx], #scene .card[data-slot], main img, main h1, main h2, main canvas, #experience'),
-      ...(nav ? nav.querySelectorAll('.mm-wordmark, .mm-dock') : [])];
+    // R18: the navigation stays on screen: only the content comes apart
+    const parts = document.querySelectorAll('[data-vfx], #scene .card[data-slot], main img, main h1, main h2, main canvas, #experience');
     for (const el of parts) {
       const r = el.getBoundingClientRect();
       if (r.width * r.height < 900 || r.bottom < 0 || r.top > vh || r.right < 0 || r.left > vw) continue;
@@ -148,7 +154,7 @@ function observeScene(createMaterial, seal, weave) {
 
   // R17: the pieces of the interface the DOM paints (type, photographs, the dock; what a GPU surface keeps as DOM).
   // The surfaces the engine draws come apart in the engine itself.
-  const leafy = 'img,picture,video,canvas,svg,h1,h2,h3,h4,h5,h6,p,li,dt,dd,button,a,label,input,select,textarea,figure,blockquote,pre,table,iframe,[data-vfx],memento-nav';
+  const leafy = 'img,picture,video,canvas,svg,h1,h2,h3,h4,h5,h6,p,li,dt,dd,button,a,label,input,select,textarea,figure,blockquote,pre,table,iframe,[data-vfx]';
   const artwork = '.vfx-layer,.mm-weave,canvas#world';
   const skip = artwork + ',script,style,link,meta,template,noscript';
   function pieces() {
@@ -165,9 +171,8 @@ function observeScene(createMaterial, seal, weave) {
         if (!r.width || !r.height) {if (depth < 9 && c.children.length) walk(c, depth + 1); continue;}
         if (r.bottom < 0 || r.top > vh || r.right < 0 || r.left > vw) continue;
         if (live && c.hasAttribute('data-vfx-ready')) {for (const d of c.querySelectorAll('[data-vfx-dom]')) if (out.length < 140) take(d); continue;}
-        // the navigation is a full-screen layer: the wordmark and the dock leave each in its turn
-        const shadow = c.localName === 'memento-nav' && c.shadowRoot?.querySelectorAll('.mm-wordmark, .mm-dock');
-        if (shadow?.length) {shadow.forEach(take); continue;}
+        // R18: the navigation (wordmark and dock) and the scroll cue stay: only the content leaves
+        if (c.localName === 'memento-nav' || c.matches('.mm-scrollbar')) continue;
         if (c.querySelector(artwork)) {walk(c, depth + 1); continue;}   // never the canvas that takes itself apart
         if (c.matches(leafy) || depth >= 8 || !c.children.length || r.width * r.height < vw * vh * .08) take(c);
         else walk(c, depth + 1);
@@ -212,6 +217,7 @@ function observeScene(createMaterial, seal, weave) {
   function settle() {
     delete root.dataset.mmPhase;
     delete root.dataset.mmFeed;
+    root.removeAttribute('data-mm-name');
     root.removeAttribute('data-mm-arrive');
     window.mementoSceneFinished = undefined;
     document.dispatchEvent(new Event('memento:surface-visibility'));
@@ -225,8 +231,10 @@ function observeScene(createMaterial, seal, weave) {
     s.timeout = setTimeout(release, 5200);
     return s;
   }
+  // R18: the name composed during the change is the page that opens (leaving: the destination; arriving: this page)
+  const nameOf = url => {try {return names[path(new URL(url, location.href))] || 'MEMENTO';} catch {return 'MEMENTO';}};
   function play(s, covering, fraction, duration) {
-    s.layer ??= createMaterial(seal, weave);
+    s.layer ??= createMaterial(nameOf(s.destination || location.href), weave);
     s.run?.cancel();
     s.run = s.layer.play(covering, fraction, duration, s.scene);
     return s.run.done.catch(() => {});
@@ -377,6 +385,8 @@ function observeScene(createMaterial, seal, weave) {
       // History commits earlier: the rest of the movement runs here, quicker, over the old page's last frame.
       const fraction = vt ? Math.max(0, Math.min(1, saved?.fraction ?? 1)) : 1;
       const covered = play(s, true, fraction, saved?.deferred ? exit : Math.min(exit, 420 / Math.max(.01, 1 - fraction)));
+      // R18: until the name is composed in its own face, the outgoing frame stays on screen (view transition)
+      s.layer.ready.then(() => {if (active === s) root.setAttribute('data-mm-name', '');});
       await Promise.all([covered, first, vt?.ready.catch(() => {})]);
       await effectsOf(started);
       if (s !== active) return;
@@ -395,4 +405,4 @@ function observeScene(createMaterial, seal, weave) {
   motion.addEventListener('change', release);
 }
 
-export const sceneHead = `<style id="memento-scene-shape">${css}</style><script id="memento-scene-navigation">(${observeScene.toString()})(${createMaterial.toString()},${JSON.stringify(seal)},${JSON.stringify(weave)})</script>`;
+export const sceneHead = `<style id="memento-scene-shape">${css}</style><script id="memento-scene-navigation">(${observeScene.toString()})(${createMaterial.toString()},${JSON.stringify(names)},${JSON.stringify(weave)})</script>`;

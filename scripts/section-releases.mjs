@@ -40,7 +40,10 @@ export async function buildSections(output) {
       const run=(command,args)=>execFileSync(command,args,{cwd,stdio:'inherit',env:{...process.env,GIT_TERMINAL_PROMPT:'0'}});
       console.log('Preparing '+slug+' at '+commit);
       run('git',['init','-q']);
-      run('git',['fetch','-q','--depth=1','https://github.com/StudioMemento/'+repository+'.git',commit]);
+      // MEMENTO_SECTIONS: a folder with local clones of the section repositories (named as on GitHub), to build and
+      // check unpublished commits before they are pushed. Unset (Vercel): the public repositories.
+      const origin = process.env.MEMENTO_SECTIONS ? join(process.env.MEMENTO_SECTIONS, repository) : 'https://github.com/StudioMemento/'+repository+'.git';
+      run('git',['fetch','-q','--depth=1',origin,commit]);
       run('git',['checkout','-q','--detach','FETCH_HEAD']);
       const head=execFileSync('git',['rev-parse','HEAD'],{cwd,encoding:'utf8'}).trim();
       if(head!==commit)throw Error('Release mismatch for '+slug);
