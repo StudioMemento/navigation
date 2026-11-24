@@ -1,3 +1,5 @@
+> **R18 (24 novembre 2026).** Foto delle tavole sfumate su una curva morbida su gran parte dell'immagine; i titoli delle tavole sono superfici `data-vfx="title"` (materiale dei titoli di Start, nel sito Memento); titoli delle categorie attaccati alle slide. Dettagli in `docs/R18_NOTES.md` della repo navigation.
+
 > **V45 (17 novembre 2026) — bridge 13.** Nucleo di navigazione condiviso con il contenitore Vercel (`navigation/core.mjs`, `navigation/child.mjs`, generati da `packages/navigation-kit`), `modulepreload` dei moduli del kit, `X-Robots-Tag: noindex, indexifembedded`. Contenuti, VFX, navbar 12.0.0 e grafica invariati. Nel contenitore (`?mementoEmbed=1` + `INIT`) la navbar è del contenitore e la CTA Start resta nel sito; da sola o in Framer funziona come la V44.1. Vedi `docs/PROTOCOLLO.md` del workspace.
 
 # Memento Servizi — V44.1 · Effetti, sfondo, touch e mobile di START V27

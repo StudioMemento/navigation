@@ -205,10 +205,20 @@ section[id] {
   --card-inset: clamp(20px, calc(var(--slide-width) * 0.044), 66px);
   --photo-width: calc(var(--slide-width) * (1 - 0.22 * var(--layout-wide)));
   --photo-height: min(var(--board-height), calc(var(--photo-width) / 1.5));
-  --photo-fade-left: calc(54% * var(--layout-wide));
+  /* R18: the photograph fades in over most of its width on an S-curve (smootherstep, six stops: the engine reads six).
+     It starts and ends flat, so no edge shows where the fade begins or ends and the black around it stays even. */
+  --photo-fade-left: calc(66% * var(--layout-wide));
   --photo-fade-top: calc(32% * (1 - var(--layout-wide)));
   --photo-mask:
-    linear-gradient(90deg, transparent, #000 var(--photo-fade-left)),
+    linear-gradient(
+      90deg,
+      transparent,
+      #0000000a calc(var(--photo-fade-left) * 0.18),
+      #0000004a calc(var(--photo-fade-left) * 0.38),
+      #000000ad calc(var(--photo-fade-left) * 0.6),
+      #000000f0 calc(var(--photo-fade-left) * 0.8),
+      #000 var(--photo-fade-left)
+    ),
     linear-gradient(
       180deg,
       transparent,
@@ -336,6 +346,11 @@ section[id] {
   object-fit: cover;
   object-position: center bottom;
   filter: blur(10px);
+  /* R18: a blurred copy of the photograph fades on the same side, with the same curve */
+  -webkit-mask: var(--photo-mask);
+  mask: var(--photo-mask);
+  -webkit-mask-composite: source-in;
+  mask-composite: intersect;
 }
 .mobile-title-veil::after {
   content: '';
@@ -767,7 +782,10 @@ section[id] {
 }
 .category-heading {
   width: var(--slide-width);
-  margin: 0 auto clamp(20px, 3vw, 48px);
+  /* R18: the title sits just above its boards. The capitals end 0.336em above the box (line box and padding below
+     the baseline): that space is taken back, so the visible gap is only clamp(12px, 1.2vw, 24px). On a full screen
+     the title stays readable while the boards are in view, outside the scroll band that takes it apart. */
+  margin: 0 auto calc(clamp(12px, 1.2vw, 24px) - var(--heading-size) * 0.336);
 }
 .spread-title {
   display: flex;
@@ -1754,7 +1772,16 @@ html[data-overlay-open='true'] :is(body > .vfx-layer .vfx-canvas, .memento-backg
 @media screen {
   /* The GPU representation is live: each surface the engine has drawn stops painting in the DOM. */
   html.vfx-live [data-vfx][data-vfx-ready],
-  html.vfx-live [data-vfx][data-vfx-ready] *:not(iframe, input, [data-vfx-dom], [data-vfx-dom] *) {
+  html.vfx-live
+    [data-vfx][data-vfx-ready]
+    *:not(
+      iframe,
+      input,
+      [data-vfx-dom],
+      [data-vfx-dom] *,
+      [data-vfx]:not([data-vfx-ready]),
+      [data-vfx]:not([data-vfx-ready]) *
+    ) {
     color: transparent !important;
     -webkit-text-fill-color: transparent !important;
     text-decoration-color: transparent !important;
