@@ -1,0 +1,41 @@
+export type SurfaceKind = 'title' | 'card';
+
+export interface SurfaceOptions {
+  kind: SurfaceKind;
+  /** Corners cut on a card: both (default), top-left only, or none. */
+  cut?: 'both' | 'tl' | 'none';
+  /** Response strength relative to a primary surface (default 1). */
+  gain?: number;
+  /** Never taken apart by scroll (an embedded map). */
+  solid?: boolean;
+  /** A large panel: on hover only the type near the pointer turns amber, not all of it. */
+  panel?: boolean;
+  /** Selector of an element inside the surface that is its energy source: on hover the reaction starts there too. */
+  source?: string;
+  /**
+   * On hover the photograph shows its own colours instead of the amber grade of its luminance: for an image that is
+   * already lit in the house palette (the night map). At rest it stays grey like every other photograph.
+   */
+  ownColour?: boolean;
+}
+
+type Listener = (reason: 'surfaces' | 'layout' | 'impulse', target?: Element, strength?: number) => void;
+
+/**
+ * Surface registry: the DOM elements that own a GPU representation.
+ * React fills it; the engine reads it. No React, no WebGL in here.
+ */
+export class SurfaceRegistry {
+  readonly surfaces = new Map<HTMLElement, SurfaceOptions>();
+  private listeners = new Set<Listener>();
+
+  add(el: HTMLElement, options: SurfaceOptions) { this.surfaces.set(el, options); this.emit('surfaces'); }
+  remove(el: HTMLElement) { if (this.surfaces.delete(el)) this.emit('surfaces'); }
+  /** Content or layout inside surfaces changed in a way observers cannot see (accordion, fitted type). */
+  invalidate = (target?: Element | null) => this.listeners.forEach(l => l('layout', target ?? undefined));
+  /** One short local impulse at an element (accordion opening, for instance). */
+  impulse = (target: Element, strength = 0.8) => this.listeners.forEach(l => l('impulse', target, strength));
+  subscribe(listener: Listener) { this.listeners.add(listener); return () => { this.listeners.delete(listener); }; }
+  get listenerCount() { return this.listeners.size; }
+  private emit(reason: 'surfaces' | 'layout' | 'impulse') { this.listeners.forEach(l => l(reason)); }
+}
