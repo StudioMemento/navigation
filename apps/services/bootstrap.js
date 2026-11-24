@@ -1,0 +1,67 @@
+/* CSS owns selection on page and modal surfaces. Preserve native editing
+   menus and dragging in fields while protecting the surrounding content. */
+(() => {
+  const editable =
+    'input, textarea, select, [contenteditable]:not([contenteditable="false"]), #request-preview';
+  const protectContent = (event) => {
+    const target = event.target instanceof Element ? event.target : event.target.parentElement;
+    if (!target?.closest(editable)) event.preventDefault();
+  };
+  for (const type of ['contextmenu', 'dragstart']) document.addEventListener(type, protectContent);
+})();
+
+/* START V25 surface, before the first paint: only a compatible host (?mementoEmbed=1) owns the background and
+   receives a transparent child; a plain embed (Framer) and the page on its own are opaque, with their own background.
+   Parent blur belongs to the hosting document. */
+(() => {
+  const embedded = window.parent !== window;
+  const hosted = embedded && new URLSearchParams(location.search).get('mementoEmbed') === '1';
+  document.documentElement.dataset.embedded = String(embedded);
+  document.documentElement.dataset.mementoSurface = hosted ? 'transparent' : 'opaque';
+  if (!embedded) return;
+
+  let parentOrigin = null;
+  try {
+    parentOrigin = new URL(document.referrer).origin;
+  } catch (_) {
+    /* Handshake below. */
+  }
+  let overlayOpen = false;
+  const announce = () => {
+    if (!parentOrigin || parentOrigin === 'null') return;
+    window.parent.postMessage(
+      { type: 'memento:services:surface', version: 1, overlayOpen },
+      parentOrigin,
+    );
+  };
+  window.addEventListener('message', (event) => {
+    if (event.source !== window.parent || event.origin === 'null') return;
+    if (event.data?.type !== 'memento:services:request-surface' || event.data.version !== 1) return;
+    if (parentOrigin && event.origin !== parentOrigin) return;
+    parentOrigin = event.origin;
+    announce();
+  });
+  document.addEventListener('memento:overlay-change', () => {
+    overlayOpen = Boolean(document.querySelector('dialog[open]'));
+    announce();
+  });
+  window.addEventListener('load', announce, { once: true });
+})();
+
+/* Share one continuous square-to-landscape ratio with CSS and the carousel.
+   Read the iframe's layout viewport, never the screen or the zoomed viewport. */
+(() => {
+  const root = document.documentElement;
+  let previousWidth = -1;
+  const update = () => {
+    const width = root.clientWidth || window.innerWidth;
+    if (width === previousWidth) return;
+    previousWidth = width;
+    const wide = Math.max(0, Math.min(1, (width - 768) / 256));
+    root.style.setProperty('--layout-wide', wide.toFixed(5));
+    root.style.setProperty('--board-ratio', (1 + wide).toFixed(5));
+  };
+  update();
+  window.addEventListener('resize', update, { passive: true });
+  new ResizeObserver(update).observe(root);
+})();
