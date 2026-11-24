@@ -34,10 +34,12 @@ test('freeze: a frame asked for before a freeze or the back/forward cache is ask
   assert.match(source('scripts/scene-material.mjs'), /const kick = \(\) => \{ if \(!document\.hidden && t < 1 && performance\.now\(\) - frameAt > 1000\)/);
 });
 
-test('one orange: #FF7950 and its light variant, no yellow or gold left in the site', () => {
+test('one orange: #FF7950 and its amber family (R22), nothing pink, nothing acid', () => {
   assert.equal(VFX.color.amber.base, '#FF7950');
-  assert.equal(VFX.color.amber.light, '#FFAF96');
+  assert.equal(VFX.color.amber.light, '#FFA94D');
   const accent = hue('ff7950').h;
+  // R22 "Ambra": from #FF7950 (hue 14) to its core #FFD285 (hue 39): never pinker than the orange, never past amber
+  const family = h => h > accent - 3 && h < hue('ffd285').h + 4;
   const files = ['src/style.css', 'src/shell/shell.css', 'src/vfx/config.mjs', 'public/memento-ui/site.css', 'public/memento-ui/ready-to-start.css',
     'public/memento-ui/letters.mjs', 'public/navigation/styles.mjs', 'public/navigation/icons.mjs', 'scripts/scene-material.mjs',
     'apps/services/styles.css', 'apps/services/src/visuals.js', 'apps/start/src/styles/start.css', 'apps/start/src/vfx/vfx.css',
@@ -47,11 +49,11 @@ test('one orange: #FF7950 and its light variant, no yellow or gold left in the s
     const { h, s, l } = hue(hex);
     // a warm colour (red to yellow) that is not grey must have the hue of #FF7950
     // (warm whites and creams, lighter than 80%, are the ink of the site, not its orange)
-    if (h >= 6 && h <= 60 && s > .3 && l > .2 && l < .8) assert.ok(Math.abs(h - accent) < 5, `${file}: #${hex} (hue ${h.toFixed(1)})`);
+    if (h >= 6 && h <= 60 && s > .3 && l > .2 && l < .8) assert.ok(family(h), `${file}: #${hex} (hue ${h.toFixed(1)})`);
   }
   // the energy and the title ramp are the same orange, darker and lighter; the titles at rest keep their greys
   for (const c of [...Object.values(VFX.color.amber), ...VFX.color.titleHot, ...VFX.color.titleAmber.map(([, c]) => c)])
-    assert.ok(Math.abs(hue(c.slice(1)).h - accent) < 5, c);
+    assert.ok(family(hue(c.slice(1)).h), c);
   const before = ['#fbefe8', '#fbefe8', '#f5d9c6', '#ecb28c', '#e2874f', '#d9682f'];
   VFX.color.titleAmber.forEach(([, c], i) => {
     const grey = n => parseInt(desaturate(n).slice(1, 3), 16);
@@ -93,7 +95,7 @@ test('background: the fade crosses the padding line; a click or a word sends one
   assert.match(js, /fade: \{ from: 0\.4, to: 1\.3, min: 20 \}/);
   assert.match(js, /function impulse\(bx, by, power = 1\)/);
   assert.match(js, /impulse\(x\[mid\], y\[mid\], 1\.15\);/);
-  assert.match(js, /addEventListener\('pointerdown', e => \{ if \(!still\(\)\) \{ impulse\(e\.clientX, e\.clientY\); start\(\); \} \}/);
+  assert.match(js, /if \(e\.pointerType === 'mouse'\) \{ impulse\(e\.clientX, e\.clientY\); start\(\); tap = null; \}/);
   // no disc: the front is torn by noise, the cells are sparse and each falls at its own pace
   assert.match(js, /tear: 0\.22/);
   assert.match(js, /share: \[0\.62, 0\.2\]/);
@@ -103,17 +105,14 @@ test('background: the fade crosses the padding line; a click or a word sends one
 });
 
 test('page change: the language of the cards, a crisp name', () => {
-  assert.deepEqual(weave.amber, ['#ff7950', '#ffaf96', '#ffd7ca']);
+  assert.deepEqual(weave.amber, ['#ff7950', '#ffa94d', '#ffd285']);
   const material = source('scripts/scene-material.mjs');
   // an irregular net of mixed sizes (shorter diagonal, some cells split in four), not a regular lattice
   assert.match(material, /function net\(x0, y0, w, h, S, salt\)/);
   assert.match(material, /if \(Math\.hypot\(X\[a\] - X\[d\], Y\[a\] - Y\[d\]\) < Math\.hypot\(X\[b\] - X\[c\], Y\[b\] - Y\[c\]\)\)/);
-  // the chain runs only over the content between the margins
+  // the fragments come from the content between the margins and land on the facets of the name
   assert.match(material, /inside\[f\] = cx\[f\] > P && cx\[f\] < W - P \? 1 : 0;/);
-  assert.match(material, /if \(inside\[f\] && \(over\(f\) \? r\[f\] < \.5 : r\[f\] < \.1\)\) chain\.push\(f\);/);
-  // obsidian fragments with a cooling edge, landing on the facets of the name
-  assert.match(material, /ctx\.fillStyle = '#141416'/);
-  assert.match(material, /shards\.push\(\{ f, k, x0: cx\[f\], y0: cy\[f\], a, b: Math\.max\(a \+ \.22, time\), h, size \}\);/);
+  assert.match(material, /shards\.push\(\{ f, k, x0: cx\[f\], y0: cy\[f\], a, b: Math\.max\(a \+ \.22, time\), h, size, c0: colourAt\(cx\[f\], cy\[f\]\), c1: tone\(k\) \}\);/);
   // the name at the screen's full resolution, one sprite pixel on one device pixel
   assert.match(material, /ndpr = Math\.min\(ratio, 3\)/);
   assert.match(material, /tctx\.drawImage\(q\.sprite, q\.x, q\.y, q\.sprite\.width \/ ndpr, q\.sprite\.height \/ ndpr\)/);

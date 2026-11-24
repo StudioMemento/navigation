@@ -63,7 +63,7 @@ img[data-src]{opacity:0}
 .project-tile.tall{grid-row:span 2}
 .tile-frame{display:block;position:absolute;inset:0;padding:1px;background:linear-gradient(#aaa7a160,#aaa7a122 70%,transparent);clip-path:var(--clip);transition:background .25s}
 .tile-visual{position:relative;width:100%;height:100%;display:block;clip-path:var(--clip);overflow:hidden;background:#080808}
-.tile-visual img{object-position:center;filter:grayscale(1);transition:filter .45s var(--ease),transform .7s var(--ease)}
+.tile-visual img{object-position:center;filter:grayscale(.5);transition:filter .45s var(--ease),transform .7s var(--ease)}
 .tile-visual::after{content:'';position:absolute;inset:0;background:linear-gradient(0deg,#000 0%,#0c0c0c80 12%,transparent 40%);pointer-events:none}
 .tile-meta{display:contents}
 .tile-name{position:absolute;z-index:3;left:22px;bottom:22px;right:20px;font-size:clamp(17px,1.75vw,29px);letter-spacing:-.025em;line-height:1.15;text-shadow:0 1px 14px #000}
@@ -152,7 +152,7 @@ img[data-src]{opacity:0}
   transition:transform .4s var(--ease);z-index:calc(10 - var(--abs,0));
 }
 .gallery-thumb[data-jump=true]{transition:none}
-.gallery-thumb img{filter:grayscale(1);opacity:.62;transition:filter .3s,opacity .3s}
+.gallery-thumb img{filter:grayscale(.5);opacity:.62;transition:filter .3s,opacity .3s}
 .gallery-thumb::after{content:'';position:absolute;inset:0;clip-path:var(--frame-ring);background:#ffffff70;transition:background .25s}
 .gallery-thumb[aria-pressed=true] img{filter:none;opacity:1}
 .gallery-thumb[aria-pressed=true]::after{background:var(--amber)}
@@ -174,7 +174,7 @@ img[data-src]{opacity:0}
 .experience-board{position:relative;width:100%;aspect-ratio:var(--exp-ratio,var(--board-ratio));background:#000;isolation:isolate;overflow:hidden}
 .experience-board[data-type=video]{aspect-ratio:var(--exp-ratio,16/9)}
 .experience-poster{position:absolute;inset:0}
-.experience-poster img{object-position:center;filter:grayscale(1);transition:filter .45s var(--ease)}
+.experience-poster img{object-position:center;filter:grayscale(.5);transition:filter .45s var(--ease)}
 .experience-poster::after{content:'';position:absolute;inset:0;background:linear-gradient(0deg,#000d 0%,#0008 38%,transparent 72%);pointer-events:none}
 @media(hover:hover) and (pointer:fine){.experience-board:hover .experience-poster img{filter:none}}
 @media(hover:none){.experience-poster img{filter:none}}

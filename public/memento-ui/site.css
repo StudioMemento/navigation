@@ -1,7 +1,7 @@
 :root {
   --memento-accent: #ff7950;
   /* R21: the one light variant of the orange, for highlights and UI */
-  --memento-accent-light: #ffaf96;
+  --memento-accent-light: #ffa94d;
   /* R18: one ground for the whole site (Home, pages, the page change). Cards and panels stay black on it. */
   --memento-ground: #090909;
   --memento-safe-top: max(76px,calc(env(safe-area-inset-top,0px) + 60px));
@@ -40,7 +40,7 @@ html[data-memento-native] .memento-scrollbar {display:none!important}
 .mm-scrollbar[hidden] {display:none}
 .mm-scrollbar-thumb {position:absolute;top:0;right:4px;width:2px;height:var(--scroll-size,40px);border-radius:2px;pointer-events:none;
   transform:translateY(var(--scroll-top,0px));opacity:.86;
-  background:linear-gradient(180deg,#ff795000 0%,#ff79501f 22%,#ff795066 48%,#ff7950c2 74%,#ff9473 90%,#ffaf96 100%);
+  background:linear-gradient(180deg,#ff795000 0%,#ff79501f 22%,#ff795066 48%,#ff7950c2 74%,#ff914f 90%,#ffa94d 100%);
   box-shadow:0 6px 10px -4px #ff795059;
   transition:opacity .35s ease,width .2s ease,right .2s ease,box-shadow .35s ease}
 .mm-scrollbar:is(:hover,:focus-visible,.is-scrolling,.is-dragging) .mm-scrollbar-thumb {opacity:1;width:3px;right:3.5px;box-shadow:0 8px 14px -4px #ff79508c}

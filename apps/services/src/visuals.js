@@ -90,8 +90,8 @@ export function enhanceVisuals() {
       gradientUnits: 'userSpaceOnUse',
     });
     [
-      ['0', '#ffd7ca', '1'],
-      ['.28', '#ffaf96', '.95'],
+      ['0', '#ffd285', '1'],
+      ['.28', '#ffa94d', '.95'],
       ['.68', '#ff7950', '.5'],
       ['1', '#ff7950', '0'],
     ].forEach(([offset, color, opacity]) =>

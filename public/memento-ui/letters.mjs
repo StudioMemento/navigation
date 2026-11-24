@@ -33,7 +33,7 @@ const WORD_KIND = WORD.map(c => KINDS.indexOf(c));
 export const LETTERS = Object.freeze({
   size: 8, spacing: 0.5, density: 0.25, base: 0.1, glitch: 0.5, speed: 0.05, flow: 0.5, radius: 400,
   /** R21: the site's orange and its light variant (site.css --memento-accent, --memento-accent-light) */
-  color: '#ff7950', hot: '#ffaf96',
+  color: '#ff7950', hot: '#ffa94d',
   /** glitch runs per second for every 1000 visible cells (speed 0.05, glitch amount 0.5) */
   rate: 5,
   /** R21: the fade, in shares of the margin P: full up to `from`·P from the screen's edge, gone at `to`·P (past P) */
@@ -77,6 +77,9 @@ export function fieldMask(d, P, fade = LETTERS.fade) {
 let mounted = null;
 export function mountLetters() {
   if (mounted || typeof document === 'undefined') return mounted;
+  // R22: every page runs it inline right after its layer (scene-head lettersLayer), so it draws from the first frame:
+  // one field per page, whichever copy comes first
+  if (window.__mementoLetters) return (mounted = window.__mementoLetters);
   const root = document.documentElement;
   const query = new URLSearchParams(location.search).get('vfx');
   const motion = matchMedia('(prefers-reduced-motion: reduce)');
@@ -372,8 +375,22 @@ export function mountLetters() {
     }
     start();
   }, { passive: true });
-  addEventListener('pointerdown', e => { if (!still()) { impulse(e.clientX, e.clientY); start(); } }, { passive: true, capture: true });
+  // R22: a click with the mouse at once, a tap on touch when the finger lifts without having scrolled; never on a link
+  // (the page change is on its way, with its own movement)
+  let tap = null;
+  const onLink = e => e.composedPath().some(n => n instanceof HTMLAnchorElement || n?.localName === 'button');
+  addEventListener('pointerdown', e => {
+    if (still() || onLink(e)) { tap = null; return; }
+    if (e.pointerType === 'mouse') { impulse(e.clientX, e.clientY); start(); tap = null; }
+    else tap = { x: e.clientX, y: e.clientY, t: performance.now() };
+  }, { passive: true, capture: true });
+  addEventListener('pointerup', e => {
+    if (!tap || Math.hypot(e.clientX - tap.x, e.clientY - tap.y) > 12 || performance.now() - tap.t > 450) { tap = null; return; }
+    tap = null; impulse(e.clientX, e.clientY); start();
+  }, { passive: true, capture: true });
+  addEventListener('pointercancel', () => { tap = null; }, { passive: true, capture: true });
   mounted = { layer, rebuild: build, impulse: (bx, by) => { impulse(bx, by); start(); } };
+  window.__mementoLetters = mounted;
   return mounted;
 }
 

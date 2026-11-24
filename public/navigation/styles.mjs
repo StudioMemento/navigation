@@ -36,9 +36,9 @@ export const overlayCSS = `
 .mm-tile::before,.mm-tile::after { content:""; position:absolute;
   opacity:0; pointer-events:none; transition:opacity 80ms ease-out; }
 .mm-tile::before { inset:0; border-radius:inherit;
-  background:radial-gradient(ellipse 80% 62% at 50% 115%,#ffaf96c7 0%,#ff79506b 35%,#ff79501f 58%,transparent 83%); }
+  background:radial-gradient(ellipse 80% 62% at 50% 115%,#ffa94dc7 0%,#ff79506b 35%,#ff79501f 58%,transparent 83%); }
 .mm-tile::after { left:12%; right:12%; bottom:-6px; height:16px;
-  background:radial-gradient(ellipse at 50% 70%,#ffaf9690 0%,#ff795050 32%,transparent 75%); filter:blur(5px); }
+  background:radial-gradient(ellipse at 50% 70%,#ffa94d90 0%,#ff795050 32%,transparent 75%); filter:blur(5px); }
 .mm-symbol { position:relative; z-index:1; display:block; width:34px; height:34px; overflow:hidden; opacity:.9; filter:grayscale(1) brightness(calc(.98 * var(--mm-icon-gain,1))); transition:filter 80ms ease-out,opacity 80ms ease-out; }
 .mm-memento-light { opacity:var(--mm-memento-light,0); transition:opacity 80ms ease-out; }
 .mm-link[aria-current] { --mm-memento-light:1; }

@@ -28,7 +28,7 @@ html[data-shell-modal=true] memento-nav{opacity:0;visibility:hidden;transition:o
 
 .shell-status{position:fixed;top:0;left:0;right:0;height:2px;z-index:1001;pointer-events:none;overflow:hidden;opacity:0;transition:opacity .3s var(--shell-ease)}
 .shell-status[data-visible=true]{opacity:1}
-.shell-status__bar{position:absolute;top:0;bottom:0;left:-40%;width:40%;background:linear-gradient(90deg,transparent,#ff7950 40%,#ffaf96 60%,transparent);animation:shell-progress 1.25s var(--shell-ease) infinite}
+.shell-status__bar{position:absolute;top:0;bottom:0;left:-40%;width:40%;background:linear-gradient(90deg,transparent,#ff7950 40%,#ffa94d 60%,transparent);animation:shell-progress 1.25s var(--shell-ease) infinite}
 @keyframes shell-progress{to{left:100%}}
 
 .shell-error{position:fixed;left:50%;top:50%;z-index:1002;transform:translate(-50%,-50%);width:min(440px,calc(100vw - 40px));padding:28px 26px 24px;background:#000;border:1px solid #ffffff24;color:#eeefed;font-family:Inter,Arial,sans-serif;
@@ -39,7 +39,7 @@ html[data-shell-modal=true] memento-nav{opacity:0;visibility:hidden;transition:o
 .shell-error__actions{display:flex;flex-wrap:wrap;gap:10px}
 .shell-error__actions :is(button,a){min-height:44px;padding:0 16px;display:inline-flex;align-items:center;border:1px solid #ffffff2b;background:#ffffff08;color:#eeefed;font:inherit;font-size:14px;text-decoration:none;cursor:pointer}
 .shell-error__actions :is(button,a):hover{border-color:#ff795080;color:#fff}
-.shell-error__actions :is(button,a):focus-visible{outline:2px solid #ffaf96;outline-offset:3px}
+.shell-error__actions :is(button,a):focus-visible{outline:2px solid #ffa94d;outline-offset:3px}
 
 @media(prefers-reduced-motion:reduce){
  :root{--shell-enter:120ms;--shell-exit:120ms}

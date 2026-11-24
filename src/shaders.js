@@ -259,9 +259,10 @@ void main(){
   float sd=sdTab(p), w=max(fwidth(sd),1e-3);
   float inside=1.-smoothstep(-.7*w,.3*w,sd);
   vec4 col=vec4(uPanelCol.rgb,1.)*uPanelCol.a*inside;
-  // at rest the scene is black and white (in colour on devices without hover); it lights the void panel
+  // the scene lights the void panel
   vec2 ph=photo(p,inside);
-  col.rgb=max(col.rgb,mix(vec3(ph.x),phRGB,uPhotoColor)*ph.y*mix(.21,1.,uActive));
+  // R22: at rest the scene keeps half its colour (all of it on devices without hover)
+  col.rgb=max(col.rgb,mix(vec3(ph.x),phRGB,max(uPhotoColor,.5))*ph.y*mix(.21,1.,uActive));
   // the thin frame with its sheen
   float frame=1.-smoothstep(0.,w,abs(sd+.7*w)-.15*w);
   float k=(p.x/uSize.x+p.y/uSize.y)*.5;
@@ -446,7 +447,8 @@ void main(){
   float a=uTitleAlpha>.001?ink.a/uTitleAlpha:0.;
   float lum=a>.003?dot(ink.rgb/ink.a,vec3(.299,.587,.114)):1.;
   float t=clamp((lum-uGray.x)/(uGray.y-uGray.x),0.,1.);
-  vec3 idle=vec3(lum), amber=amberOf(lum);
+  // R22: at rest the type already holds a little of its colour (30% of the amber gradient); hover brings the rest
+  vec3 idle=mix(vec3(lum),amberOf(lum),.3), amber=amberOf(lum);
   float fill=smoothstep(t-.3,t+.06,local*1.05);
   vec3 hot=t>.5?mix(uHot[1],uHot[0],(t-.5)*2.):mix(uHot[2],uHot[1],t*2.);
   float reach=max(local,base*.5);
@@ -459,7 +461,7 @@ void main(){
   vec3 col=amber;
   col=mix(col,hot,fill);
   col=mix(col,facet,lit*mix(.4,.55,clamp(local,0.,1.)));
-  col=mix(col,vec3(1.,.88,.85),wire*lit*.3);
+  col=mix(col,vec3(1.,.9,.75),wire*lit*.3);
   // the overlay takes over the share W of the type with its own coverage: the content pass has given up exactly that
   float k=vFade;
   float cov=a*k*W0;
@@ -568,7 +570,7 @@ void main(){
   float band=smoothstep(.60,1.,abs(vUv.y-.5)*2.)*uLens.z;
   if(band>0.){ vec4 soft=texture(uSoft,vUv); col=mix(col,soft.rgb,band); s.a=mix(s.a,soft.a,band); }
   if(uMix.x>0.) col+=texture(uBloom,vUv).rgb*uMix.x;
-  if(uMix.y>0.) col+=texture(uStreak,vUv).rgb*vec3(1.,.8,.73)*uMix.y;
+  if(uMix.y>0.) col+=texture(uStreak,vUv).rgb*vec3(1.,.84,.55)*uMix.y;
   col=shoulder(col);
   col*=1.-uMix.z*smoothstep(.42,1.05,r)*smoothstep(.42,1.05,r);
   // premultiplied over the background: panels are opaque, light added over the void keeps its own coverage

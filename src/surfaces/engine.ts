@@ -1557,8 +1557,10 @@ export class VfxEngine {
   /** R17: under the page-change cover the loading sequence waits; it composes the page when the cover lifts. */
   private held() {
     const phase = root().dataset.mmPhase;
-    return phase === 'gather' || phase === 'hold';
+    // R22: never held for good: a page change that lost its way does not keep the page from composing
+    return (phase === 'gather' || phase === 'hold') && performance.now() - this.bornAt < 5000;
   }
+  private readonly bornAt = performance.now();
 
   /** One separable gaussian pass. */
   private blurPass(from: WebGLRenderTarget, to: WebGLRenderTarget, x: number, y: number) {

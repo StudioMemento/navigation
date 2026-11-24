@@ -29,7 +29,7 @@ Le repo separate (mementostudio, servizi, Portfolio, mementolevelup, mementostar
 - Ready to start su Portfolio e LevelUp: `readyCard` in `scripts/native-page.mjs`, stile in `public/memento-ui/ready-to-start.css`.
 - Hover con il mouse: `VFX.pointer.wave`; intensità delle celle accese: `HOVER_CELLS` (R18). Luce del cursore sulle foto: `PHOTO_SPOT` in `src/surfaces/shaders.ts` e `src/shaders.js`.
 - Sfondo di lettere (R20, R21): `public/memento-ui/letters.mjs`. `LETTERS` contiene dimensione, densità, opacità, velocità, raggio del cursore, sfumatura (`fade`), impulso del click e dell'easter egg (`wave`) ed easter egg (`egg`: primo tentativo tra 7 e 13 s, poi ogni 16–30 s). I margini sono in `public/memento-ui/padding.mjs` (10/15/20/30%) e, per il contenuto, in `--mm-pad` di `site.css` (R21). Studio non ha lo sfondo: è una pagina a sé.
-- Colori (R21): `#FF7950` (`--memento-accent`) e la variante light `#FFAF96` (`--memento-accent-light`); energia degli effetti in `VFX.color.amber`.
+- Colori (R22, palette Ambra): `#FF7950` (`--memento-accent`), light `#FFA94D` (`--memento-accent-light`), core `#FFD285`; energia degli effetti in `VFX.color.amber`. Colore a riposo: foto al 50% (`.5` negli shader), titoli al 30% del gradiente (`idle` negli shader, `--title-gradient` nel DOM).
 - `public/navigation/` contiene la navbar comune. Le pagine usano un fondo uniforme `#090909` (`--memento-ground` in `public/memento-ui/site.css`) e lo stesso indicatore di scroll (`public/memento-ui/scrollbar.mjs`).
 - Le pagine non hanno motore effetti né navbar propri: usano `/memento-ui/effects.mjs` (da `src/surfaces`) e la navbar di `public/navigation`. Il contenuto di ogni pagina (markup, CSS, caroselli, testi, immagini) si modifica nella sua cartella `apps/`.
 - Studio 3D usa lo stesso menu e la stessa transizione. La scena e i controlli 3D si modificano in `apps/studio`.
@@ -55,6 +55,15 @@ Dalla R15 la Home e le pagine Start, Servizi, Portfolio e LevelUp hanno di nuovo
 Le note delle release precedenti e i riferimenti artistici sono in `docs/`.
 
 ## Archivio delle release
+
+### R22
+
+- **Palette Ambra:** base `#FF7950`, light `#FFA94D` e core `#FFD285` su tutto il sito, compresa l'energia del motore.
+- **Colore a riposo.** Foto al 50% (100% con gli effetti in hover), titoli con il 30% del gradiente ambra.
+- **Superficie controllata.** Niente selezione, menu contestuale, tasto centrale o trascinamento su ogni pagina.
+- **Sfondo di lettere** in linea in ogni pagina: è vivo dal primo fotogramma e la transizione non lo ferma più.
+- **Cambio pagina.** Triangoli pieni nei colori dell'interfaccia di partenza e di arrivo, ombreggiati mentre ruotano, senza contorni; attesa del nome fissa (280 ms) su ogni pagina.
+- **Nessuna transizione appesa.** Se la pagina nuova non arriva entro 4,5 s, torna quella attuale. Dettagli in `docs/R22_NOTES.md`.
 
 ### R21
 

@@ -97,7 +97,7 @@ export class Coverflow {
       card.style.visibility = hidden ? 'hidden' : 'visible';
       card.style.zIndex = String(100 - Math.round(a * 20));
       // the selected board is in colour; neighbours turn grey and darker with distance (read by the engine too)
-      card.style.filter = `grayscale(${smooth(fade).toFixed(4)}) brightness(${(1 - Math.min(a, 3.6) * .14).toFixed(4)})`;
+      card.style.filter = `grayscale(${(0.5 * smooth(fade)).toFixed(4)}) brightness(${(1 - Math.min(a, 3.6) * .14).toFixed(4)})`;
       card.style.setProperty('--slide-focus', Math.max(0, 1 - a * .3).toFixed(4));
       const isActive = index === active;
       card.dataset.active = String(isActive);

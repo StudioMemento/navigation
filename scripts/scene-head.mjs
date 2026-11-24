@@ -1,5 +1,6 @@
 import { createMaterial, names, weave } from './scene-material.mjs';
 import { paddingOf } from '../public/memento-ui/padding.mjs';
+import { readFileSync } from 'node:fs';
 
 // R18: the layer of the page change stays under the navigation (z-index 1000): wordmark and dock never leave, only the
 // content changes. R20: the background of letters stays too: during the change it rises over the material (999 over
@@ -32,10 +33,36 @@ const css = `@media (prefers-reduced-motion:no-preference) and (forced-colors:no
   ::view-transition-new(mm-nav),:root[data-mm-feed="new"]::view-transition-old(mm-nav) {opacity:0}
   :root[data-mm-feed="new"]::view-transition-new(mm-nav) {opacity:1}
 }
-@media (prefers-reduced-motion:reduce),(forced-colors:active){.mm-weave {display:none}}`;
+@media (prefers-reduced-motion:reduce),(forced-colors:active){.mm-weave {display:none}}
+html {-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+input,textarea,select,[contenteditable]:not([contenteditable="false"]) {-webkit-user-select:text;user-select:text}
+img,a,svg,canvas {-webkit-user-drag:none}`;
 
-/** R20: the background of letters (letters.mjs) is in every body from the first byte, so the page change captures it. */
-export const lettersLayer = '<div class="mm-letters" aria-hidden="true"><canvas class="mm-letters-field"></canvas><canvas class="mm-letters-light"></canvas></div>';
+/**
+ * R22: a controlled surface on every page (Studio included): no text selection, no context menu, no middle button
+ * (neither autoscroll nor a link opened in a new tab), no dragging images and links out of the page. Fields stay
+ * editable and selectable; the keyboard keeps every action.
+ */
+function guardInput() {
+  const field = t => t instanceof Element && !!t.closest('input,textarea,select,[contenteditable]:not([contenteditable="false"])');
+  addEventListener('contextmenu', e => { if (!field(e.target)) e.preventDefault(); }, {capture:true});
+  addEventListener('mousedown', e => { if (e.button === 1) e.preventDefault(); }, {capture:true});
+  addEventListener('auxclick', e => { if (e.button === 1) e.preventDefault(); }, {capture:true});
+  addEventListener('dragstart', e => { if (!field(e.target)) e.preventDefault(); }, {capture:true});
+  addEventListener('selectstart', e => { if (!field(e.target)) e.preventDefault(); }, {capture:true});
+}
+
+/**
+ * R20: the background of letters (letters.mjs) is in every body from the first byte, so the page change captures it.
+ * R22: and it runs right there, inline, while the page is still parsing: it draws before the first frame of a page
+ * that arrives through the page change, so the view transition hands the outgoing field over to a live one at once
+ * (it waited for the page's modules: the background stood still for a moment, then jumped).
+ */
+const lettersSource = readFileSync(new URL('../public/memento-ui/letters.mjs', import.meta.url), 'utf8')
+  .replace(/^import \{ paddingOf \} from '\/memento-ui\/padding\.mjs';\n/m, '')
+  .replace(/^export /gm, '');
+export const lettersLayer = '<div class="mm-letters" aria-hidden="true"><canvas class="mm-letters-field"></canvas><canvas class="mm-letters-light"></canvas></div>'
+  + `<script id="memento-letters">(()=>{${paddingOf.toString()}\n${lettersSource}})()</script>`;
 
 function observeScene(createMaterial, names, weave, paddingOf) {
   const root = document.documentElement;
@@ -61,6 +88,8 @@ function observeScene(createMaterial, names, weave, paddingOf) {
   // R17: slower, and from the real interface. Leaving, the page on screen comes apart into the seal before the browser
   // navigates (was 560 ms, over the frozen snapshot); arriving, the seal breaks and the next page composes (was 700)
   const exit = 1000, unfold = 1150;
+  // R22: how long the name holds, composed, before the next page opens: the same on every page
+  const hold = 280;
   // the longest the seal waits for the incoming page's effects (their first frame) before it lifts
   const patience = 2200;
   const fallbackBox = [.16, .22, .68, .56];
@@ -111,7 +140,30 @@ function observeScene(createMaterial, names, weave, paddingOf) {
     }
   }
 
-  // the interface on screen, in viewport fractions: the cells over it are the ones that become fragments
+  // the interface on screen, in viewport fractions: the cells over it are the ones that become fragments.
+  // R22: with its colours, a 3 × 3 grid of each photograph (the title's own gradient for type), so every fragment
+  // carries the piece of interface it broke from
+  let sampling = null;
+  const typeColours = [[246,241,235],[233,222,204],[210,187,160]];
+  function coloursOf(el) {
+    const img = el.localName === 'img' ? el : el.querySelector?.('img');
+    if (img?.complete && img.naturalWidth) {
+      try {
+        if (!sampling) {
+          const c = document.createElement('canvas');
+          c.width = c.height = 3;
+          sampling = c.getContext('2d', {willReadFrequently:true});
+        }
+        sampling.clearRect(0, 0, 3, 3);
+        sampling.drawImage(img, 0, 0, 3, 3);
+        const d = sampling.getImageData(0, 0, 3, 3).data, out = [];
+        for (let i = 0; i < 36; i += 4) out.push([d[i], d[i + 1], d[i + 2]]);
+        return out;
+      } catch {}
+    }
+    if (/^h[1-6]$/.test(el.localName) || el.dataset?.vfx === 'title') return typeColours;
+    return [[24,24,26]];
+  }
   function sceneOf(origin) {
     const vw = innerWidth, vh = innerHeight, rects = [];
     // R18: the navigation stays on screen: only the content comes apart
@@ -119,11 +171,12 @@ function observeScene(createMaterial, names, weave, paddingOf) {
     for (const el of parts) {
       const r = el.getBoundingClientRect();
       if (r.width * r.height < 900 || r.bottom < 0 || r.top > vh || r.right < 0 || r.left > vw) continue;
-      rects.push([r.left / vw, r.top / vh, r.width / vw, r.height / vh, r.width * r.height]);
+      rects.push([r.left / vw, r.top / vh, r.width / vw, r.height / vh, r.width * r.height, el]);
     }
     rects.sort((a, b) => b[4] - a[4]);
-    if (!rects.length) rects.push([...fallbackBox, 0]);
-    return {origin, rects: rects.slice(0, 28).map(q => q.slice(0, 4).map(v => Math.round(v * 1e4) / 1e4))};
+    if (!rects.length) rects.push([...fallbackBox, 0, null]);
+    const kept = rects.slice(0, 28);
+    return {origin, rects: kept.map(q => q.slice(0, 4).map(v => Math.round(v * 1e4) / 1e4)), colours: kept.map(q => q[5] ? coloursOf(q[5]) : [[24,24,26]])};
   }
   function firstElement() {
     const selectors = {studio:'#experience #loading', services:'#bundle-boards [data-slide="0"] img',
@@ -264,7 +317,9 @@ function observeScene(createMaterial, names, weave, paddingOf) {
     const go = () => {
       // from here the navigation is pending: its end (or its abort) closes the scene, not a timer
       clearTimeout(s.timeout);
-      s.timeout = setTimeout(release, window.navigation ? 30000 : 12000);
+      // R22: a next page that does not come within a few seconds (a slow network) gives this one back: the name no
+      // longer stands on an empty screen. The navigation goes on; the next page simply opens without the change.
+      s.timeout = setTimeout(release, 4500);
       passing = s.destination;
       replace ? location.replace(s.destination) : location.assign(s.destination);
     };
@@ -399,8 +454,13 @@ function observeScene(createMaterial, names, weave, paddingOf) {
       const covered = play(s, true, fraction, saved?.deferred ? exit : Math.min(exit, 420 / Math.max(.01, 1 - fraction)));
       // R18: until the name is composed in its own face, the outgoing frame stays on screen (view transition)
       s.layer.ready.then(() => {if (active === s) root.setAttribute('data-mm-name', '');});
-      await Promise.all([covered, first, vt?.ready.catch(() => {})]);
-      await effectsOf(started);
+      await Promise.all([covered, vt?.ready.catch(() => {})]);
+      // R22: the same rhythm on every page. The name holds `hold` ms once composed and the page opens, whatever it is
+      // still loading (photographs, the effects' first frame): it waited for the page, up to 3.4 s on a heavy one.
+      // What is not ready by then composes in place, as the cells open over it.
+      const composed = performance.now(), wait = ms => new Promise(resolve => setTimeout(resolve, ms));
+      await Promise.race([Promise.all([first, effectsOf(started)]), wait(hold)]);
+      await wait(Math.max(0, hold - (performance.now() - composed)));
       if (s !== active) return;
       root.dataset.mmFeed = 'new';
       root.dataset.mmPhase = 'unfold';
@@ -417,4 +477,4 @@ function observeScene(createMaterial, names, weave, paddingOf) {
   motion.addEventListener('change', release);
 }
 
-export const sceneHead = `<style id="memento-scene-shape">${css}</style><script id="memento-scene-navigation">(${observeScene.toString()})(${createMaterial.toString()},${JSON.stringify(names)},${JSON.stringify(weave)},${paddingOf.toString()})</script>`;
+export const sceneHead = `<style id="memento-scene-shape">${css}</style><script id="memento-guard">(${guardInput.toString()})()</script><script id="memento-scene-navigation">(${observeScene.toString()})(${createMaterial.toString()},${JSON.stringify(names)},${JSON.stringify(weave)},${paddingOf.toString()})</script>`;

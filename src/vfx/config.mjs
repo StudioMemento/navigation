@@ -13,9 +13,9 @@ export const desaturate = hex => {
 };
 
 /** One gradient over the whole title block (0 = cap line, 1 = baseline): light from above, shade only at the base. */
-// R21: one orange for the whole site, #FF7950 (and its light variant #FFAF96). The ramp keeps the luminance of each stop
+// R21: one orange for the whole site, #FF7950 (and its light variant #FFA94D). The ramp keeps the luminance of each stop
 // of the earlier amber one (cream, peach, amber, burnt), so the idle grey titles are the same; only the hue is unified.
-const TITLE_AMBER = Object.freeze([[0, '#ffece7'], [0.56, '#ffece7'], [0.68, '#ffd4c7'], [0.8, '#ffa88e'], [0.91, '#ff7950'], [1, '#d66643']]);
+const TITLE_AMBER = Object.freeze([[0, '#fff0d9'], [0.56, '#fff0d9'], [0.68, '#ffdb9f'], [0.8, '#ffb259'], [0.91, '#ff7950'], [1, '#d66643']]);
 
 export const VFX = Object.freeze(/** @type {const} */ ({
   color: {
@@ -25,13 +25,13 @@ export const VFX = Object.freeze(/** @type {const} */ ({
     panel: [0, 0, 0, 1],
     /**
      * Amber scale: deep > mid > hot > core. `base` is the reference tint (navbar, chevrons, focus).
-     * R21: every step is #FF7950 (`base`), darker or lighter at the luminance of the earlier step: no red, no yellow.
-     * `light` is the UI's light variant (site.css --memento-accent-light).
+     * R22 "Ambra": #FF7950 at the centre, warming toward amber as it gets lighter (light #FFA94D, core #FFD285), like
+     * metal heating up: never pink, never acid yellow. `light` is the UI's light variant (site.css --memento-accent-light).
      */
-    amber: { base: '#FF7950', light: '#FFAF96', deep: '#6F3523', mid: '#D16342', hot: '#FF7C55', core: '#FFBAA5' },
+    amber: { base: '#FF7950', light: '#FFA94D', deep: '#8C3510', mid: '#FF7950', hot: '#FFA94D', core: '#FFD285' },
     titleAmber: TITLE_AMBER,
     /** R21: the range of the titles in the same orange (it was yellow) */
-    titleHot: ['#ffe2d9', '#ffd0c1', '#ffaa90'],
+    titleHot: ['#ffe6be', '#ffd896', '#ffb259'],
     titleGradient: TITLE_AMBER.map(([t, c]) => [t, desaturate(c)]),
   },
   chain: {

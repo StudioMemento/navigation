@@ -14,8 +14,8 @@ export default defineConfig({
       return html.replace('<html lang="it">', '<html lang="it" data-mm-effects>').replace('<!-- MEMENTO_SCENE -->', () => sceneHead)
         .replace('<!-- MEMENTO_CARDS -->', homeMarkup)
         .replace('<!-- MEMENTO_NAV -->', homeNav)
-        // R20: the background of letters (public/memento-ui/letters.mjs, not bundled: the pages load the same file)
-        .replace('<!-- MEMENTO_LETTERS -->', () => lettersLayer + '<script type="module" src="/memento-ui/letters.mjs"></script>');
+        // R20/R22: the background of letters, inline right after its layer (scene-head lettersLayer)
+        .replace('<!-- MEMENTO_LETTERS -->', () => lettersLayer);
     }
   }],
   build: {

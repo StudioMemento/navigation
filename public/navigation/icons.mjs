@@ -10,7 +10,7 @@ export function iconSVG(id,hosted=false) {
         <linearGradient id="${key}-silver" gradientUnits="userSpaceOnUse" x1="49" y1="54" x2="169" y2="190"><stop stop-color="#ffffff"/><stop offset=".24" stop-color="#d2d9dd"/><stop offset=".49" stop-color="#828b93"/><stop offset=".67" stop-color="#f2f4f5"/><stop offset="1" stop-color="#b8c1c8"/></linearGradient>
         <linearGradient id="${key}-dark" gradientUnits="userSpaceOnUse" x1="65" y1="65" x2="160" y2="180"><stop stop-color="#687078"/><stop offset=".36" stop-color="#2b333b"/><stop offset=".76" stop-color="#48535e"/><stop offset="1" stop-color="#aeb7be"/></linearGradient>
         <linearGradient id="${key}-edge" gradientUnits="userSpaceOnUse" x1="54" y1="54" x2="158" y2="188"><stop stop-color="#fff"/><stop offset=".4" stop-color="#a4acb3"/><stop offset=".7" stop-color="#f0f1f1"/><stop offset="1" stop-color="#7a858d"/></linearGradient>
-        <radialGradient id="${key}-light" cx="50%" cy="110%" r="100%"><stop offset="0" stop-color="#ffd7ca"/><stop offset=".3" stop-color="#ff9473"/><stop offset=".58" stop-color="#ff7950" stop-opacity=".65"/><stop offset=".88" stop-color="#ff7950" stop-opacity="0"/></radialGradient>
+        <radialGradient id="${key}-light" cx="50%" cy="110%" r="100%"><stop offset="0" stop-color="#ffd285"/><stop offset=".3" stop-color="#ff914f"/><stop offset=".58" stop-color="#ff7950" stop-opacity=".65"/><stop offset=".88" stop-color="#ff7950" stop-opacity="0"/></radialGradient>
       </defs>
       <g fill="url(#${key}-dark)">${mementoPaths}</g>
       <g clip-path="url(#${key}-shape)">

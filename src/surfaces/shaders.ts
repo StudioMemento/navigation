@@ -387,7 +387,9 @@ void main(){
   vec4 col=uPanel>.5?vec4(uPanelCol.rgb,1.)*uPanelCol.a*inside:vec4(0.);
   vec3 ph=photo(p,inside);
   // the photographs are objects on black: they light the void panel (the brighter of the two), so no box ever shows
-  col.rgb=max(col.rgb,mix(vec3(ph.x),phRGB,max(uPhotoColor,uRestColour)*uPhotoSat)*ph.y);
+  // R22: at rest a photograph keeps half its colour (all of it on devices without hover); hover gives it the rest.
+  //     A board the DOM shows in grayscale(focus) keeps that much and no more.
+  col.rgb=max(col.rgb,mix(vec3(ph.x),phRGB,min(max(max(uPhotoColor,uRestColour),.5),uPhotoSat))*ph.y);
   col.rgb*=1.-ph.z;
   if(uPanel>.5){
     float frame=1.-smoothstep(0.,1.,abs(sd+.7)-.15);
@@ -410,7 +412,7 @@ void main(){
     // type keeps its weight and its single colour; near the pointer it takes a light, very diffuse amber
     vec2 d=p-uPointer.xy;
     float k=exp(-dot(d,d)/(uInkWarm.y*uInkWarm.y))*max(uHover,uNear*uInkWarm.z)*uInkWarm.x;
-    ink.rgb*=mix(vec3(1.),vec3(1.,.83,.77),k);
+    ink.rgb*=mix(vec3(1.),vec3(1.,.86,.62),k);
   }
   // large type: as the block warms, the overlay draws that share of the type with the same coverage. The content pass
   // gives it up instead of being covered, so nothing behind the anti-aliased edge is erased (no dark rim)
@@ -588,7 +590,8 @@ void main(){
   float a=ink.a;
   float lum=a>.003?dot(ink.rgb/a,vec3(.299,.587,.114)):1.;
   float t=clamp((lum-uGray.x)/(uGray.y-uGray.x),0.,1.);   // 0 at the base of the block, 1 at its top
-  vec3 idle=vec3(lum), amber=amberOf(lum);
+  // R22: at rest the type already holds a little of its colour (30% of the amber gradient); hover brings the rest
+  vec3 idle=mix(vec3(lum),amberOf(lum),.3), amber=amberOf(lum);
   // in range: warm yellow, paler at the top, deeper toward the base; it climbs from the base as the range grows
   float fill=smoothstep(t-.3,t+.06,local*1.05);
   vec3 hot=t>.5?mix(uHot[1],uHot[0],(t-.5)*2.):mix(uHot[2],uHot[1],t*2.);
@@ -604,7 +607,7 @@ void main(){
   vec3 col=amber;
   col=mix(col,hot,fill);
   col=mix(col,facet,lit*mix(.4,.55,clamp(local,0.,1.)));
-  col=mix(col,vec3(1.,.88,.85),wire*lit*.3);
+  col=mix(col,vec3(1.,.9,.75),wire*lit*.3);
   // the overlay takes over the share W of the type, with the type's own coverage: the content pass has given up exactly
   // that share (SURFACE_FRAG), so the edges keep their anti-aliasing and nothing behind them is erased (no dark rim)
   float k=vFade;
@@ -713,7 +716,7 @@ void main(){
   }
   vec3 col=s.rgb;
   if(uMix.x>0.) col+=texture(uBloom,vUv).rgb*uMix.x;
-  if(uMix.y>0.) col+=texture(uStreak,vUv).rgb*vec3(1.,.8,.73)*uMix.y;
+  if(uMix.y>0.) col+=texture(uStreak,vUv).rgb*vec3(1.,.84,.55)*uMix.y;
   col=shoulder(col);
   col*=1.-uMix.z*smoothstep(.42,1.05,r)*smoothstep(.42,1.05,r);
   // V25: no film grain or animated dithering; the photographic/text grade stays clean.

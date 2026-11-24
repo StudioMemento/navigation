@@ -6,13 +6,13 @@
 // R18: the sign is the name of the page that opens; wordmark and dock never leave. R20: the name spans the content
 // between the site's margins (padding.mjs) and the background of letters stays alive through the change.
 //
-// R21: the language of the cards (docs/dna). One irregular net of triangular cells of mixed sizes, as on a card;
-// amber is an event that runs along the edges of the cells the chain reaches and dies out, never a lattice over the
-// whole screen. Leaving, the chain runs only over the content between the margins: where it passes the content breaks
-// into obsidian fragments (black glass, a lit edge that cools as they fly) and they land on the name, which composes
-// facet by facet where they land, in the material of a title in hover (cream to #FF7950, micro-facets, light on the
-// border), drawn at the screen's full resolution. Arriving, the name breaks facet by facet, its fragments fly to the
-// new interface and the cells over it open, again with the chain on their edges: the same language both ways.
+// R21: the language of the cards (docs/dna): one irregular net of triangular cells of mixed sizes, as on a card. The
+// name spans the content between the margins and composes facet by facet where the fragments land, in the material of
+// a title in hover, at the screen's full resolution; arriving, it breaks the same way toward the new interface.
+// R22: as the page breaks and composes while it scrolls. One set of filled triangles and nothing drawn in outline: each
+// fragment carries the colour of the piece of interface it broke from (a photograph's own colours, the type's gradient),
+// turns as it flies so its face catches the light differently, and takes on the colour of where it lands (the name,
+// then the new interface). The cells that open over the incoming page are obsidian, shaded facet by facet.
 import { STATIONS } from '../src/kit/core.mjs';
 
 /** R18: the name composed for each address (the Home: HOME). Shared by every page through scene-head. */
@@ -33,16 +33,15 @@ export const weave = {
   veil: [.76, .96],
   /** leaving: when a cell leaves, by its distance from the touched point (the engine's EXIT uses the same) */
   leave: [.02, .46, .16],
-  /** R21: the share of the movement an edge stays lit after the chain reaches it (a fast rise, then it dies out) */
-  crack: .15,
-  /** R21: the front of the chain is torn by a slow noise: its share of the distance and its grain (px) */
+  /** R21: the front that breaks the page (and opens the next) is torn by a slow noise: its share of the distance, its
+   *  grain (px) */
   tear: .22, grain: 240,
   /** R21: the facets of the name, as a share of its size (never under 9 px) */
   facet: .12,
   /** the ground the page stands on (site.css --memento-ground) */
   ground: '#090909',
-  /** R21: the site's orange, its light variant and the crest of the chain (site.css --memento-accent…) */
-  amber: ['#ff7950', '#ffaf96', '#ffd7ca'],
+  /** R22 "Ambra": the site's orange, its light variant and its core (site.css --memento-accent…) */
+  amber: ['#ff7950', '#ffa94d', '#ffd285'],
 };
 
 export function createMaterial(name, weave, paddingOf) {
@@ -143,7 +142,7 @@ export function createMaterial(name, weave, paddingOf) {
     const base = H / 2 + cap / 2, pad = Math.ceil(size * .32);
     const step = Math.max(9, size * weave.facet);
     // the title ramp of the engine (src/vfx/config.mjs TITLE_AMBER, R21): cream from above, #FF7950 at the base
-    const ramp = [[0, '#ffece7'], [.56, '#ffece7'], [.68, '#ffd4c7'], [.8, '#ffa88e'], [.91, orange], [1, '#d66643']];
+    const ramp = [[0, '#fff0d9'], [.56, '#fff0d9'], [.68, '#ffdb9f'], [.8, '#ffb259'], [.91, orange], [1, '#d66643']];
     let x = count > 1 ? P : (W - ink[0]) / 2;
     const list = [];
     sprites = letters.map((c, i) => {
@@ -193,7 +192,7 @@ export function createMaterial(name, weave, paddingOf) {
       }
       batches.forEach((path, b) => { g.fillStyle = tones[b][0]; g.globalAlpha = tones[b][1]; g.fill(path); });
       // a hairline of one device pixel: the lattice of a title in hover, crisp at any resolution
-      g.globalAlpha = .16; g.strokeStyle = '#ffece7'; g.lineWidth = 1 / ndpr; g.stroke(wire);
+      g.globalAlpha = .16; g.strokeStyle = '#fff0d9'; g.lineWidth = 1 / ndpr; g.stroke(wire);
       g.globalAlpha = .4; g.strokeStyle = crest; g.lineWidth = Math.max(1, size * .014); g.strokeText(c, bx, by);
       g.globalAlpha = 1; g.globalCompositeOperation = 'source-over';
       for (const k of own) {
@@ -202,7 +201,7 @@ export function createMaterial(name, weave, paddingOf) {
           // order: across the letter from the left, loosened by a little chance
           .65 * (gx / w) + .35 * hash(k, i * 17 + 3));
       }
-      const out = { sprite, x: left, y: top, w, h };
+      const out = { sprite, x: left, y: top, w, h, capTop: base - cap, cap };
       x += ink[i] + gap;
       return out;
     });
@@ -216,6 +215,17 @@ export function createMaterial(name, weave, paddingOf) {
   const ready = !document.fonts || document.fonts.check(face) ? Promise.resolve()
     : Promise.race([document.fonts.load(face).then(() => { compose(); replan?.(); }), new Promise(r => setTimeout(r, 900))]);
 
+  /** R22: the colour of the name at a facet: its height in the letter, on the title ramp. */
+  const rampRGB = [[0, [255, 240, 217]], [.56, [255, 240, 217]], [.68, [255, 219, 159]], [.8, [255, 178, 89]], [.91, [255, 121, 80]], [1, [214, 102, 67]]];
+  function tone(k) {
+    const o = k * FS, li = facets[o + 6], q = sprites[li], y = (facets[o + 1] + facets[o + 3] + facets[o + 5]) / 3;
+    const v = q ? Math.max(0, Math.min(1, (y - q.capTop) / Math.max(1, q.cap))) : .5;
+    for (let i = 1; i < rampRGB.length; i++) if (v <= rampRGB[i][0]) {
+      const [a0, c0] = rampRGB[i - 1], [a1, c1] = rampRGB[i], u = (v - a0) / Math.max(1e-6, a1 - a0);
+      return c0.map((c, j) => Math.round(c + (c1[j] - c) * u));
+    }
+    return rampRGB[rampRGB.length - 1][1];
+  }
   /** When each facet of the name appears (leaving) or breaks (arriving), from its letter's moment and its order. */
   function facetTime(k, covering) {
     const li = facets[k * FS + 6], u = facets[k * FS + 7];
@@ -238,9 +248,18 @@ export function createMaterial(name, weave, paddingOf) {
     // the interface (cards, photographs, type): its cells are the ones that break and light; arriving, the new one
     const rects = (scene.rects || []).map(([x, y, w, h]) => [x * W, y * H, (x + w) * W, (y + h) * H]);
     const over = f => rects.some(q => cx[f] > q[0] && cx[f] < q[2] && cy[f] > q[1] && cy[f] < q[3]);
-    // the chain runs over the content between the margins, densest over the interface
-    const chain = [];
-    for (let f = 0; f < n; f++) if (inside[f] && (over(f) ? r[f] < .5 : r[f] < .1)) chain.push(f);
+    // R22: the colour of the interface under a point: the 3 × 3 grid of the rect it falls in (sceneOf in scene-head)
+    const colours = scene.colours || [];
+    const colourAt = (x, y) => {
+      for (let i = 0; i < rects.length; i++) {
+        const q = rects[i];
+        if (x <= q[0] || x >= q[2] || y <= q[1] || y >= q[3]) continue;
+        const grid = colours[i] || [[24, 24, 26]], side = Math.round(Math.sqrt(grid.length));
+        const gx = Math.min(side - 1, Math.floor((x - q[0]) / (q[2] - q[0]) * side)), gy = Math.min(side - 1, Math.floor((y - q[1]) / (q[3] - q[1]) * side));
+        return grid[gy * side + gx] || grid[0];
+      }
+      return [20, 20, 22];
+    };
     const max = W * H > 6e5 ? weave.shards[0] : weave.shards[1], pick = [];
     for (let f = 0; f < n && fcount; f++) {
       if (!inside[f] || cy[f] < -S || cy[f] > H + S) continue;
@@ -259,17 +278,17 @@ export function createMaterial(name, weave, paddingOf) {
         while (lo < hi) { const mid = (lo + hi) >> 1; if (order[mid][0] < a + .2) lo = mid + 1; else hi = mid; }
         const j = lo < order.length ? lo + Math.floor(hash(f, 41) * (order.length - lo)) : order.length - 1 - Math.floor(hash(f, 41) * Math.min(order.length, 12));
         const [time, k] = order[Math.max(0, j)];
-        shards.push({ f, k, x0: cx[f], y0: cy[f], a, b: Math.max(a + .22, time), h, size });
+        shards.push({ f, k, x0: cx[f], y0: cy[f], a, b: Math.max(a + .22, time), h, size, c0: colourAt(cx[f], cy[f]), c1: tone(k) });
       } else {
         const [time, k] = order[Math.floor(hash(f, 41) * order.length)];
         const a = time, b = Math.max(a + .26, t0[f] + weave.open * .5);
         t0[f] = Math.max(t0[f], b - weave.open * .4);
-        shards.push({ f, k, x1: cx[f], y1: cy[f], a, b, h, size });
+        shards.push({ f, k, x1: cx[f], y1: cy[f], a, b, h, size, c0: tone(k), c1: colourAt(cx[f], cy[f]) });
       }
     });
     let first = 1, last = 0;
     for (let f = 0; f < n; f++) { first = Math.min(first, t0[f]); last = Math.max(last, t0[f]); }
-    return { covering, t0, shards, first, last, chain, scene };
+    return { covering, t0, shards, first, last, scene };
   }
 
   const tri = (g, o, s, x, y) => {
@@ -278,77 +297,65 @@ export function createMaterial(name, weave, paddingOf) {
     g.lineTo(x + (V[o + 4] - x) * s, y + (V[o + 5] - y) * s);
     g.closePath();
   };
-  // the energy of a cell the chain reached `k` (shares of `crack`) ago: a fast rise to its crest, then it dies out
-  const energy = k => k <= 0 || k >= 1 ? 0 : k < .16 ? k / .16 : Math.exp(-(k - .16) * 4.2);
-  const edgeStyles = [[orange, .2], [light, .34], [crest, .5]];
+  // R22: obsidian tones for the cells that open (a facet each, as on a card) and the light a turning face catches
+  const obsidian = ['#0b0b0c', '#111113', '#18181a'];
+  const lightOf = (turn, h) => .5 + .62 * Math.abs(Math.cos(turn * 1.3 + h * 5.1));
 
   function draw(p, t) {
     const span = p.covering ? weave.close : weave.open;
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     ctx.clearRect(0, 0, W, H);
     ctx.fillStyle = weave.ground;
-    const lit = [[], [], []];
     if (p.covering) {
       // R17: the interface leaves by itself; black comes in behind the name once nothing is left to see
       const veil = smooth(weave.veil[0], weave.veil[1], t);
       if (veil > .001) { ctx.globalAlpha = veil; ctx.fillRect(0, 0, W, H); ctx.globalAlpha = 1; }
     } else {
-      // arriving: the cover, cell by cell, opens from the name outward over the new page
+      // arriving: the cover, cell by cell, opens from the name outward over the new page. A closed cell is the ground;
+      // R22: one that is opening is a facet of obsidian, its own shade, shrinking into the page (no outline)
       const shut = t <= p.first, open = t >= p.last + span;
       if (shut) ctx.fillRect(0, 0, W, H);
-      else if (!open) for (let f = 0; f < n; f++) {
-        const a = 1 - smooth(p.t0[f], p.t0[f] + span, t);
-        if (a <= 0) continue;
-        ctx.beginPath(); tri(ctx, f * 6, a * grow, cx[f], cy[f]); ctx.fill();
+      else if (!open) {
+        const ground = new Path2D(), faces = obsidian.map(() => new Path2D());
+        for (let f = 0; f < n; f++) {
+          const a = 1 - smooth(p.t0[f], p.t0[f] + span, t);
+          if (a <= 0) continue;
+          const target = a > .97 ? ground : faces[Math.floor(r[f] * 2.999)];
+          tri(target, f * 6, a * grow, cx[f], cy[f]);
+        }
+        ctx.fill(ground);
+        faces.forEach((path, b) => { ctx.fillStyle = obsidian[b]; ctx.fill(path); });
       }
     }
-    // R21: the chain: amber runs along the edges of the cells it reaches, over the content, and dies out
-    for (const f of p.chain) {
-      const e = energy((t - (p.covering ? p.t0[f] : p.t0[f] - span * .2)) / weave.crack);
-      if (e > .04) lit[Math.min(2, Math.floor(e * 2.999))].push(f);
-    }
-    ctx.lineWidth = 1; ctx.lineJoin = 'round';
-    lit.forEach((list, b) => {
-      if (!list.length) return;
-      ctx.beginPath();
-      for (const f of list) tri(ctx, f * 6, 1, cx[f], cy[f]);
-      ctx.strokeStyle = edgeStyles[b][0]; ctx.globalAlpha = edgeStyles[b][1]; ctx.stroke();
-    });
-    ctx.globalAlpha = 1;
-    // R21: fragments of obsidian: black glass, a graphite face, an edge lit in amber when they break that cools as they
-    // fly; smaller as they reach the name (leaving), larger as they reach the page (arriving)
-    const faces = new Path2D(), edges = [new Path2D(), new Path2D(), new Path2D()];
-    let any = false;
+    // R22: the fragments: filled triangles in the colour of what they broke from, turning toward the colour of where
+    // they land; as they turn their face catches the light (lighter, darker), as the page does when it scrolls apart.
+    // Smaller as they reach the name (leaving), larger as they reach the page (arriving)
     for (const s of p.shards) {
       const hold = p.covering ? .06 : .02;
       if (t <= s.a || t >= s.b + hold) continue;
+      if (p.covering && t > s.b) continue;
       const u = ease(Math.min(1, (t - s.a) / (s.b - s.a)));
       const k = s.k * FS, fx = (facets[k] + facets[k + 2] + facets[k + 4]) / 3, fy = (facets[k + 1] + facets[k + 3] + facets[k + 5]) / 3;
       const x0 = p.covering ? s.x0 : fx, y0 = p.covering ? s.y0 : fy, x1 = p.covering ? fx : s.x1, y1 = p.covering ? fy : s.y1;
       const dx = x1 - x0, dy = y1 - y0, bow = (s.h - .5) * .45 * Math.sin(Math.PI * u);
       const x = x0 + dx * u - dy * bow, y = y0 + dy * u + dx * bow;
-      const z = (p.covering ? s.size * (1 - .75 * u) : s.size * (.25 + .75 * u)) * .5;
-      if (p.covering && t > s.b) continue;
-      const turn = s.h * 6.283 + u * (1.2 + 1.6 * s.h);
-      const path = new Path2D();
+      const z = (p.covering ? s.size * (1 - .72 * u) : s.size * (.28 + .72 * u)) * .5;
+      const turn = s.h * 6.283 + u * (1.2 + 1.6 * s.h), shade = lightOf(turn, s.h);
+      const mix = smooth(.35, .95, u);
+      const c = [0, 1, 2].map(j => Math.min(255, Math.round((s.c0[j] + (s.c1[j] - s.c0[j]) * mix) * shade)));
+      ctx.beginPath();
       for (let q = 0; q < 3; q++) {
         const ang = turn + q * 2.094 + (q === 1 ? .3 : 0), rr = z * (q === 2 ? .8 : 1);
-        q ? path.lineTo(x + Math.cos(ang) * rr, y + Math.sin(ang) * rr) : path.moveTo(x + Math.cos(ang) * rr, y + Math.sin(ang) * rr);
+        q ? ctx.lineTo(x + Math.cos(ang) * rr, y + Math.sin(ang) * rr) : ctx.moveTo(x + Math.cos(ang) * rr, y + Math.sin(ang) * rr);
       }
-      path.closePath();
-      faces.addPath(path);
-      // the edge is hottest when the fragment breaks off (leaving) or leaves the name (arriving), then cools
-      const heat = 1 - u;
-      edges[heat > .66 ? 2 : heat > .33 ? 1 : 0].addPath(path);
-      any = true;
+      ctx.closePath();
+      // arriving, a fragment fades into the page it lands on
+      ctx.globalAlpha = p.covering ? 1 : 1 - smooth(.86, 1, u);
+      ctx.fillStyle = `rgb(${c[0]},${c[1]},${c[2]})`;
+      ctx.fill();
     }
-    if (any) {
-      ctx.fillStyle = '#141416'; ctx.globalAlpha = .96; ctx.fill(faces);
-      ctx.lineWidth = 1;
-      [['rgba(255,255,255,.2)', 1], [light, .5], [orange, .85]].forEach(([col, a], b) => { ctx.strokeStyle = col; ctx.globalAlpha = a; ctx.stroke(edges[b]); });
-      ctx.globalAlpha = 1;
-    }
-    // R21: the name, facet by facet: leaving, a facet appears where its fragment lands (a flash of the crest, then the
+    ctx.globalAlpha = 1;
+    // R21: the name, facet by facet: leaving, a facet appears where its fragment lands (a flash of the core, then the
     // material); arriving, it flashes and breaks away. A letter whose facets are all there is drawn whole.
     tctx.setTransform(ndpr, 0, 0, ndpr, 0, 0);
     tctx.clearRect(0, 0, W, H);
@@ -378,9 +385,8 @@ export function createMaterial(name, weave, paddingOf) {
       if (shown) tctx.drawImage(q.sprite, q.x, q.y, q.sprite.width / ndpr, q.sprite.height / ndpr);
       tctx.restore();
       if (glint) {
-        // the crest on the facets that just landed or just broke away
-        tctx.globalAlpha = .55; tctx.fillStyle = crest; tctx.fill(glints);
-        tctx.globalAlpha = .9; tctx.strokeStyle = light; tctx.lineWidth = .8; tctx.stroke(glints);
+        // the core of the amber on the facets that just landed or just broke away (filled, never outlined)
+        tctx.globalAlpha = .5; tctx.fillStyle = crest; tctx.fill(glints);
         tctx.globalAlpha = 1;
       }
     });

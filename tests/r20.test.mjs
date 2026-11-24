@@ -43,13 +43,14 @@ test('the background: the wordmark capitals, the React Bits parameters, faded ou
   assert.match(js, /saveData/);
   // Studio is a page of its own: no field there; coming from it, the field appears as on a first visit
   assert.match(js, /\/\^\\\/\(studio\|memento\)/);
-  assert.match(source('public/memento-ui/site.mjs'), /if \(root\.dataset\.mementoNative !== 'studio'\) import\('\/memento-ui\/letters\.mjs'\);/);
+  // R22: the field runs inline in each page (scene-head lettersLayer): site.mjs no longer loads it
+  assert.doesNotMatch(source('public/memento-ui/site.mjs'), /letters\.mjs/);
   const studio = nativePage('<!doctype html><html><head><title>t</title></head><body><main id="experience"></main></body></html>', 'studio', 'test');
   assert.doesNotMatch(studio, /<div class="mm-letters"/);
 });
 
 test('the background is in every body from the first byte, under everything, never in the way', () => {
-  assert.match(lettersLayer, /^<div class="mm-letters" aria-hidden="true"><canvas class="mm-letters-field"><\/canvas><canvas class="mm-letters-light"><\/canvas><\/div>$/);
+  assert.match(lettersLayer, /^<div class="mm-letters" aria-hidden="true"><canvas class="mm-letters-field"><\/canvas><canvas class="mm-letters-light"><\/canvas><\/div><script id="memento-letters">/);
   const page = nativePage('<!doctype html><html><head><title>t</title></head><body><main><h1>Start</h1></main></body></html>', 'start', 'test');
   assert.match(page, /<body><div class="mm-letters" aria-hidden="true">/);
   assert.equal(page.split('class="mm-letters"').length, 2);
