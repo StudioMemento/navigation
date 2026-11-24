@@ -7,8 +7,7 @@ import { nativePage } from '../scripts/native-page.mjs';
 import { mkdtemp, writeFile, readFile, mkdir, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { publishSection } from '../scripts/section-releases.mjs';
-import releases from '../scripts/sections.lock.json' with {type:'json'};
+import { publishSection } from '../scripts/sections.mjs';
 import { STATIONS } from '../src/kit/core.mjs';
 const source = '<!doctype html><html lang="it"><head><title>Sezione</title><link rel="canonical" href="old"><script src="navigation/bootstrap.js"></script><link rel="modulepreload" href="vfx/memento-vfx.js"><link rel="preload" href="a.webp" as="image"><script type="module" src="src/app.js"></script></head><body><!-- MEMENTO_OVERLAY_START --><memento-nav></memento-nav><!-- MEMENTO_OVERLAY_END --><main><h1>Titolo</h1><a href="#dettaglio">Scheda</a><iframe title="Demo" src="https://knives.vercel.app/"></iframe></main><link rel="preload" as="image" href="a.webp"></body></html>';
 const all = (node,name) => [...(node.tagName===name?[node]:[]),...(node.childNodes||[]).flatMap(n=>all(n,name))];
@@ -30,14 +29,14 @@ test('each native section has a single navbar and effect module, and preserves a
   assert(!routes.rewrites?.some(r=>r.source.startsWith(s.path+'/')));
  }
 });
-test('a pinned release publishes native HTML and its own assets together',async()=>{
+test('a page publishes native HTML and its own assets together, with the site release',async()=>{
  const work=await mkdtemp(join(tmpdir(),'memento-release-test-'));
  try {
    const origin=join(work,'origin'),out=join(work,'dist');await mkdir(origin);await mkdir(out);
    await writeFile(join(origin,'index.html'),source);await writeFile(join(origin,'a.webp'),'test bytes');
-   await publishSection('projects',origin,out);
+   await publishSection('projects',origin,out,'r19-test');
    const html=await readFile(join(out,'projects/index.html'),'utf8');
-   assert.equal(attr(all(parse(html),'html')[0],'data-memento-release'),releases.projects.commit);
+   assert.equal(attr(all(parse(html),'html')[0],'data-memento-release'),'r19-test');
    assert.equal(await readFile(join(out,'projects/a.webp'),'utf8'),'test bytes');
  } finally {await rm(work,{recursive:true,force:true});}
 });

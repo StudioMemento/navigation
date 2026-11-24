@@ -27,7 +27,17 @@ function populate(id, markup) {
   if (!slot.test(html)) throw new Error(`Missing initial view: ${id}`);
   html = html.replace(slot, (_match, tag, end) => tag + markup + end);
 }
-populate('bundle-boards', `<div class="carousel-stage">${catalogue.bundles.map((item,i)=>{const html=cover(item,i);return i===1 || i===catalogue.bundles.length-1 ? html.replaceAll('data-src','src') : html;}).join('')}</div>`);
+// Size the mask before the first frame with the same projection used for swiping.
+function placeOpening(methods) {
+  const element = document.getElementById('bundle-boards');
+  const cards = element.querySelector('.carousel-stage').children;
+  const width = cards[0].offsetWidth, height = cards[0].offsetHeight;
+  const wide = Number(getComputedStyle(element).getPropertyValue('--layout-wide')) || 0;
+  methods.reserveBleed.call({...methods, element, width, height, wide, count:cards.length,
+    fan:true, stride:width * (.78 - .14 * wide), perspective:1100 + 900 * wide});
+}
+const openingLayout = `<script>(${placeOpening.toString()})({${Carousel.prototype.pose.toString()},${Carousel.prototype.reserveBleed.toString()}})</script>`;
+populate('bundle-boards', `<div class="carousel-stage">${catalogue.bundles.map((item,i)=>{const html=cover(item,i);return i===1 || i===catalogue.bundles.length-1 ? html.replaceAll('data-src','src') : html;}).join('')}</div>${openingLayout}`);
 populate('bundle-controls', dots(catalogue.bundles.map(item => item.title)));
 populate('category-sections', categories());
 populate('catalogue-groups', grid('digital').html);

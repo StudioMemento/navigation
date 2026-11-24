@@ -48,7 +48,7 @@ const dialogs = createDialogs(bundleCarousel, {
 });
 
 if (!$('#category-sections').firstElementChild) $('#category-sections').innerHTML = categories();
-catalogue.categories.forEach((section) => {
+function mountCategory(section) {
   const items = section.featured.map(getItem);
   const carousel = new Carousel($(`#carousel-${section.id}`), {
     onRender: motion,
@@ -59,7 +59,27 @@ catalogue.categories.forEach((section) => {
     },
   });
   const update = bindDots($(`#controls-${section.id}`), carousel);
-});
+}
+const categoryList = $('#category-sections');
+const pendingCategories = new Map(catalogue.categories.map(section => [section.id, section]));
+function activateCategory(element) {
+  const section = element && pendingCategories.get(element.id);
+  if (!section) return;
+  pendingCategories.delete(section.id);
+  nearCategory?.unobserve(element);
+  mountCategory(section);
+}
+const nearCategory = 'IntersectionObserver' in window ? new IntersectionObserver(entries => {
+  for (const entry of entries) if (entry.isIntersecting) activateCategory(entry.target);
+}, {rootMargin:'360px 0px'}) : null;
+for (const section of categoryList.querySelectorAll('.category-section')) {
+  if (nearCategory) nearCategory.observe(section);
+  else activateCategory(section);
+}
+// Focus or a direct gesture takes precedence over the next observer delivery.
+for (const type of ['focusin','pointerdown','click','keydown']) {
+  categoryList.addEventListener(type, event => activateCategory(event.target.closest('.category-section')), {capture:true, passive:true});
+}
 
 let medium = 'digital';
 function renderCatalogue(initial = false) {

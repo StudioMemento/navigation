@@ -71,7 +71,7 @@ function updateSelection(index,announce=true) {
 }
 function commitSelection(index) {
   updateSelection(index,false);
-  player.load(selectedExperience());
+  if(player.frame)player.load(selectedExperience());
 }
 function selectExperience(index) {
   updateSelection(index);
@@ -90,7 +90,7 @@ if ('IntersectionObserver' in window) {
     if(!entries.some(entry=>entry.isIntersecting))return;
     nearDemo.disconnect();
     player.load(selectedExperience());
-  },{rootMargin:'280px'});
+  },{rootMargin:'48px'});
   nearDemo.observe(panel);
   window.addEventListener('pagehide',event=>{if(!event.persisted)nearDemo.disconnect();});
 } else {

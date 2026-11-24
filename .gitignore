@@ -1,5 +1,7 @@
 node_modules/
 dist/
+!apps/studio/dist/
+.ssr/
 .sites/
 .codex/
 *.tar.gz

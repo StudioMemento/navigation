@@ -1,5 +1,5 @@
 // Assemble the six published routes in one deployment.
-import { buildSections } from './section-releases.mjs';
+import { buildSections } from './sections.mjs';
 import { readFileSync, writeFileSync, rmSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { STATIONS, PUBLIC_ORIGIN } from '../src/kit/core.mjs';
