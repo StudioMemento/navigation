@@ -97,7 +97,8 @@ export function createMaterial(name, weave, paddingOf) {
     let x = count > 1 ? P : (W - ink[0]) / 2;
     // the look of a title of the site in hover: amber gradient, a mottled lattice of facets of mixed sizes inside the
     // letters, a warm rim just inside the outline and a soft glow outside (the effect is already on)
-    const hotAt = t => t < .5 ? ['#ffe6c4', '#ffda8c'][t < .25 ? 0 : 1] : '#ffb45c';
+    // the mottle of the hover titles: cream and peach patches up top, peach and amber lower down (screenshot 6, R20)
+    const hotAt = (t, k) => t < .45 ? ['#fff4ea', '#f9cfae', '#f4b98c'][k] : t < .75 ? ['#fbe3cf', '#f4b388', '#ee9c63'][k] : ['#f7c7a0', '#ee9a5e', '#e8803f'][k];
     const micro = Math.min(18, Math.max(5, size * .095));
     sprites = letters.map((c, i) => {
       const w = Math.ceil(ink[i]) + pad * 2, h = Math.ceil(cap + drop) + pad * 2;
@@ -107,12 +108,12 @@ export function createMaterial(name, weave, paddingOf) {
       g.scale(dpr, dpr);
       g.font = font(size); g.textBaseline = 'alphabetic';
       const bx = pad + metrics[i].actualBoundingBoxLeft, by = pad + cap;
-      g.fillStyle = '#ff8a4c';
-      g.shadowColor = 'rgba(255,121,80,.42)'; g.shadowBlur = size * .16; g.fillText(c, bx, by);
-      g.shadowColor = 'rgba(255,190,120,.5)'; g.shadowBlur = size * .045; g.fillText(c, bx, by);
+      g.fillStyle = '#ff9a55';
+      g.shadowColor = 'rgba(255,128,48,.6)'; g.shadowBlur = size * .2; g.fillText(c, bx, by);
+      g.shadowColor = 'rgba(255,196,128,.55)'; g.shadowBlur = size * .06; g.fillText(c, bx, by);
       g.shadowColor = 'transparent'; g.shadowBlur = 0;
       const grad = g.createLinearGradient(0, by - cap, 0, by);
-      [[0, '#fbefe8'], [.56, '#fbefe8'], [.68, '#f5d9c6'], [.8, '#ecb28c'], [.91, '#e2874f'], [1, '#d9682f']].forEach(([o, col]) => grad.addColorStop(o, col));
+      [[0, '#fdf2e8'], [.5, '#fbeadb'], [.68, '#f6d2b4'], [.82, '#efab7a'], [.93, '#e98a4c'], [1, '#e4733a']].forEach(([o, col]) => grad.addColorStop(o, col));
       g.fillStyle = grad; g.fillText(c, bx, by);
       // facets: a triangular lattice turned like the titles' one, split 1:4 once or twice at random, each facet lit
       // warm (by its height in the letter) or left a touch darker, a few hairline seams; drawn in a dozen batches
@@ -127,8 +128,8 @@ export function createMaterial(name, weave, paddingOf) {
         // the facet's height in the letter (0 top, 1 baseline), back from the turned lattice to the sprite
         const lx = (a[0] + b[0] + d[0]) / 3 - w, ly = (a[1] + b[1] + d[1]) / 3 - h;
         const yN = Math.min(1, Math.max(0, (sinA * lx + cosA * ly + h / 2 - (by - cap)) / cap));
-        if (r > .38) add('L' + hotAt(yN) + (r2 < .4 ? 1 : r2 < .75 ? 2 : 3), a, b, d);
-        else if (r < .16) add('S' + (r2 < .5 ? 1 : 2), a, b, d);
+        if (r > .3) add('L' + hotAt(yN, r2 < .45 ? 0 : r2 < .8 ? 1 : 2) + (hash(salt + 5, i) < .5 ? 1 : hash(salt + 6, i) < .6 ? 2 : 3), a, b, d);
+        else if (r < .06) add('S1', a, b, d);
         if (hash(salt + 9, i) < .3) { seams.moveTo(a[0], a[1]); seams.lineTo(b[0], b[1]); seams.lineTo(d[0], d[1]); }
       };
       const split = (a, b, d, level, salt) => {
@@ -143,13 +144,14 @@ export function createMaterial(name, weave, paddingOf) {
         split([xx + micro, yy], [xx + micro * 1.5, yy + rowH], [xx + micro / 2, yy + rowH], 0, (j * 997 + k) * 8 + 5);
       }
       for (const [key, path] of batches) {
-        if (key[0] === 'L') { g.fillStyle = key.slice(1, 8); g.globalAlpha = [0, .2, .32, .46][+key[8]]; }
-        else { g.fillStyle = '#96401a'; g.globalAlpha = key[1] === '1' ? .08 : .15; }
+        if (key[0] === 'L') { g.fillStyle = key.slice(1, 8); g.globalAlpha = [0, .28, .42, .58][+key[8]]; }
+        else { g.fillStyle = '#c0602a'; g.globalAlpha = .1; }
         g.fill(path);
       }
-      g.globalAlpha = .2; g.strokeStyle = '#ffecd2'; g.lineWidth = .5; g.stroke(seams);
+      g.globalAlpha = .14; g.strokeStyle = '#fff0e0'; g.lineWidth = .5; g.stroke(seams);
       g.restore();
-      g.globalAlpha = .55; g.strokeStyle = '#ff8c3c'; g.lineWidth = Math.max(1, size * .035); g.strokeText(c, bx, by);
+      // only a breath of warmth at the edge: the hover titles have a glow, not an outline
+      g.globalAlpha = .16; g.strokeStyle = '#ffb27a'; g.lineWidth = Math.max(1, size * .025); g.strokeText(c, bx, by);
       g.globalAlpha = 1; g.globalCompositeOperation = 'source-over';
       const out = { sprite, x: x - pad, y: base - cap - pad, w, h, bx, by };
       x += ink[i] + gap;
