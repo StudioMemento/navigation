@@ -5,12 +5,10 @@ import { cp, mkdir, rm, readFile, writeFile, access } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 import { resolve, dirname, join } from 'node:path';
 const root=resolve(dirname(fileURLToPath(import.meta.url)),'..');
-// START V27 navigation: standalone bundle and first-paint markup in index.html, from public/navigation (kit 12.1.0)
-await import('./build-navigation.mjs');
 const dist=join(root,'dist');
 await rm(dist,{recursive:true,force:true}); await mkdir(dist,{recursive:true});
 await cp(join(root,'public'),dist,{recursive:true,filter:source=>!source.endsWith('.prompt.txt')});
-for(const name of ['index.html','styles.css','bootstrap.js','src']) await cp(join(root,name),join(dist,name),{recursive:true});
+for(const name of ['index.html','styles.css','src']) await cp(join(root,name),join(dist,name),{recursive:true});
 const content=await readFile(join(root,'src/content.js'),'utf8');
 for(const m of content.matchAll(/asset: '([^']+)'/g)) await access(join(dist,m[1]));
 const index=join(dist,'index.html');

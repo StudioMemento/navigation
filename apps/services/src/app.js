@@ -105,7 +105,8 @@ $('.catalogue-filters').addEventListener('click', (event) => {
 renderCatalogue(true);
 $('#start-link').href = catalogue.config.startUrl;
 enhanceVisuals();
-vfxModule = import('../vfx/memento-vfx.js');
+// R19: the site's shared effects (navigation, /memento-ui/effects.mjs): one engine for every page
+vfxModule = import('/memento-ui/effects.mjs');
 dialogs.route();
 vfxModule
   .then((module) => {

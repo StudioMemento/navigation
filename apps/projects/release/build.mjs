@@ -5,8 +5,6 @@ import { cp, mkdir, rm, readFile, writeFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 
-// START V27 navigation: standalone bundle and first-paint markup in site/index.html, from site/navigation (kit 12.1.0)
-await import('./build-navigation.mjs');
 const root = fileURLToPath(new URL('../', import.meta.url));
 const output = path.join(root, 'dist');
 await rm(output, { recursive: true, force: true });

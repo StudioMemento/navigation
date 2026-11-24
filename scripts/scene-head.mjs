@@ -171,8 +171,8 @@ function observeScene(createMaterial, names, weave) {
         if (!r.width || !r.height) {if (depth < 9 && c.children.length) walk(c, depth + 1); continue;}
         if (r.bottom < 0 || r.top > vh || r.right < 0 || r.left > vw) continue;
         if (live && c.hasAttribute('data-vfx-ready')) {for (const d of c.querySelectorAll('[data-vfx-dom]')) if (out.length < 140) take(d); continue;}
-        // R18: the navigation (wordmark and dock) and the scroll cue stay: only the content leaves
-        if (c.localName === 'memento-nav' || c.matches('.mm-scrollbar')) continue;
+        // R18: the navigation (wordmark and dock) stays: only the content leaves (the scroll cue leaves with it)
+        if (c.localName === 'memento-nav') continue;
         if (c.querySelector(artwork)) {walk(c, depth + 1); continue;}   // never the canvas that takes itself apart
         if (c.matches(leafy) || depth >= 8 || !c.children.length || r.width * r.height < vw * vh * .08) take(c);
         else walk(c, depth + 1);

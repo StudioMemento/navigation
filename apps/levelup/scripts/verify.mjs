@@ -27,7 +27,7 @@ export async function verifyAssets(base){
    for(const path of paths.filter(path=>!path.startsWith('data:')&&!path.startsWith('https:')))await access(resolve(directory,path));
   }
  }
- await verifyModule(join(base,'vfx'));
+
  await verifyModule(join(base,'src'));
  // Ready to start: the wrapper of the published effect (https://visualfx.vercel.app/), no local copy of it.
  const embed=await readFile(join(base,'ready-to-start/embed.html'),'utf8');

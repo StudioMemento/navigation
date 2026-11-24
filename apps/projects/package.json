@@ -5,8 +5,7 @@
   "type": "module",
   "scripts": {
     "build": "node release/build.mjs",
-    "verify": "node release/verify-v43.mjs",
-    "verify:package": "node release/verify-package.mjs"
+    "test": "node release/verify-v43.mjs && node release/build.mjs && node release/verify-package.mjs"
   },
   "engines": {
     "node": ">=20"

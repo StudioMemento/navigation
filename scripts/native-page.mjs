@@ -124,20 +124,19 @@ export function nativePage(source, slug, release, { preload = [] } = {}) {
   }
   deduplicate(html);
   // Keep the original module entry. Downloads and controls can start during the handoff.
-  const spec = {imports:{[section.path+'/vfx/memento-vfx.js']:'/memento-ui/effects.mjs'}};
+  // R19: the pages import the shared effects directly (/memento-ui/effects.mjs): no import map any more.
   const tags = [
     sceneHead,
     '<link rel="canonical" href="'+canonical+'">',
     '<meta property="og:type" content="website"><meta property="og:site_name" content="Memento Design Studio">',
     '<meta property="og:title" content="'+escape(meta.title)+'"><meta property="og:description" content="'+escape(meta.description)+'">',
     '<meta property="og:url" content="'+canonical+'"><meta property="og:image" content="'+escape(OG_IMAGE)+'"><meta name="twitter:card" content="summary_large_image">',
-    '<script type="importmap" data-memento-imports>'+JSON.stringify(spec)+'</script>',
     '<link rel="stylesheet" href="/memento-ui/site.css">',
     ...(ready ? ['<link rel="stylesheet" href="/memento-ui/ready-to-start.css">'] : []),
     '<script type="module" src="/memento-ui/site.mjs"></script>'
   ];
   if (!desc) tags.push('<meta name="description" content="'+escape(meta.description)+'">');
-  // Import maps must precede all modules, including modulepreload.
+  // The site's tags go before the page's own scripts and styles.
   const firstResource = head.childNodes.findIndex(n => ['script','link','style'].includes(n.tagName));
   head.childNodes.splice(firstResource < 0 ? head.childNodes.length : firstResource, 0, ...parseFragment(tags.join('')).childNodes);
   head.childNodes.push(...parseFragment('<style id="memento-native-font">@font-face{font-family:Inter;src:url("/assets/fonts/InterVariable.woff2") format("woff2");font-weight:100 900;font-style:normal;font-display:swap}</style>').childNodes);

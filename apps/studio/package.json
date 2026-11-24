@@ -2,6 +2,10 @@
   "name": "memento-studio-atelier",
   "private": true,
   "type": "module",
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "test": "node scripts/verify-slots.mjs catalog && node scripts/verify-slots.mjs integration && node scripts/verify-slots.mjs navigation"
+  },
   "dependencies": {
     "three": "0.180.0",
     "meshoptimizer": "0.24.0",

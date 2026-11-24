@@ -1,22 +1,24 @@
 # Sito Memento
 
-Il progetto Vercel `mementonav` pubblica la Home e le pagine di [mementostudio.it](https://mementostudio.it/). Il sito integra le versioni delle cinque sezioni indicate in `scripts/sections.lock.json`.
+Il progetto Vercel `mementonav` pubblica la Home e le pagine di [mementostudio.it](https://mementostudio.it/). Dalla R19 tutto il sito sta in questa repository: la Home e la navigazione alla radice, le cinque pagine in `apps/`, ognuna con la sua storia.
 
-| Pagina | Indirizzo sul sito | Repository da clonare in GitHub Desktop |
+| Pagina | Indirizzo sul sito | Cartella |
 | --- | --- | --- |
-| Home e navigazione | `/` | [StudioMemento/navigation](https://github.com/StudioMemento/navigation) |
-| Studio 3D | `/studio/` | [StudioMemento/mementostudio](https://github.com/StudioMemento/mementostudio) |
-| Servizi | `/services/` | [StudioMemento/servizi](https://github.com/StudioMemento/servizi) |
-| Portfolio | `/projects/` | [StudioMemento/Portfolio](https://github.com/StudioMemento/Portfolio) |
-| LevelUp | `/levelup/` | [StudioMemento/mementolevelup](https://github.com/StudioMemento/mementolevelup) |
-| Start | `/start/` | [StudioMemento/mementostart](https://github.com/StudioMemento/mementostart) |
+| Home, navigazione, effetti, cambio pagina | `/` | radice (`src/`, `public/`, `scripts/`) |
+| Studio 3D | `/studio/` | `apps/studio` |
+| Servizi | `/services/` | `apps/services` |
+| Portfolio | `/projects/` | `apps/projects` |
+| LevelUp | `/levelup/` | `apps/levelup` |
+| Start | `/start/` | `apps/start` |
+
+Le repo separate (mementostudio, servizi, Portfolio, mementolevelup, mementostart) restano su GitHub come archivio: non vengono più lette dalla build.
 
 ## Pubblicare una modifica con GitHub Desktop
 
-1. Apri la repo della pagina e scegli **Fetch origin**, poi **Pull origin** se disponibile.
-2. Modifica i sorgenti nella cartella clonata. Se ricevi uno ZIP di aggiornamento, estrai i file indicati nella stessa cartella, al livello di `package.json`.
-3. Controlla l’elenco delle modifiche, scegli **Commit to main** e poi **Push origin**.
-4. Nella repo navigation aggiorna il commit della sezione in `scripts/sections.lock.json` su un branch. La preview include pagine, immagini e codice di quelle versioni. Dopo la verifica puoi unire il branch per pubblicare il sito. Il rollback del deploy ripristina insieme i file delle sei pagine.
+1. Apri la repo navigation, poi **Fetch origin** e **Pull origin**.
+2. Crea un branch, modifica i file (della Home o di una pagina in `apps/`). Se ricevi uno ZIP di aggiornamento, estrai la sua cartella sopra la radice della repo.
+3. Fai commit e **Publish branch**: Vercel crea la preview di tutto il sito.
+4. Se la preview va bene, unisci il branch in `main` per pubblicare. Una modifica che tocca più pagine è un solo commit; il rollback del deploy riporta indietro tutto il sito.
 
 ## Dove si regolano gli effetti
 
@@ -27,13 +29,16 @@ Il progetto Vercel `mementonav` pubblica la Home e le pagine di [mementostudio.i
 - Ready to start su Portfolio e LevelUp: `readyCard` in `scripts/native-page.mjs`, stile in `public/memento-ui/ready-to-start.css`.
 - Hover con il mouse: `VFX.pointer.wave`; intensità delle celle accese: `HOVER_CELLS` (R18). Luce del cursore sulle foto: `PHOTO_SPOT` in `src/surfaces/shaders.ts` e `src/shaders.js`.
 - `public/navigation/` contiene la navbar comune. Le pagine usano un fondo uniforme `#090909` (`--memento-ground` in `public/memento-ui/site.css`) e lo stesso indicatore di scroll (`public/memento-ui/scrollbar.mjs`).
-- Studio 3D usa lo stesso menu e la stessa transizione. La scena e i controlli 3D si modificano nella repo Studio.
+- Le pagine non hanno motore effetti né navbar propri: usano `/memento-ui/effects.mjs` (da `src/surfaces`) e la navbar di `public/navigation`. Il contenuto di ogni pagina (markup, CSS, caroselli, testi, immagini) si modifica nella sua cartella `apps/`.
+- Studio 3D usa lo stesso menu e la stessa transizione. La scena e i controlli 3D si modificano in `apps/studio`.
 
 ## Avvio e build
 
-Il progetto usa Node 22.12 o successivo della serie 22. `npm ci`, `npm test` e `npm run build` verificano e compilano i sorgenti. `npm run dev` avvia la Home in Vite. Dopo la build, `npm run preview` serve tutte e sei le pagine.
+Il progetto usa Node 22.12 o successivo della serie 22. `npm ci` e `npm run build` compilano tutto il sito. `npm run dev` avvia la sola Home in Vite. Dopo la build, `npm run preview` serve tutte e sei le pagine: è il modo di provare una pagina in locale, con navbar ed effetti veri.
 
-La build scarica i commit pubblici delle cinque repo, compila le sezioni e adatta l’HTML con `scripts/native-page.mjs`. Per provare commit non ancora pubblicati: `MEMENTO_SECTIONS=/cartella/con/i/cloni npm run build`. La CDN serve direttamente pagine e asset. La build si interrompe se manca una revisione o se una sezione fallisce. La Home disegna subito foto e titoli HTML con la prospettiva del carosello; il renderer degli effetti li sostituisce quando è pronto. `?lab` apre la regia.
+`npm test` controlla la Home, la navigazione e gli effetti. `npm run test:apps` esegue i test delle cinque pagine; `npm run test:apps services` ne esegue una sola. `npm run test:all` esegue entrambi.
+
+La build (`scripts/sections.mjs`) compila ogni pagina da una copia della sua cartella, con i comandi di sempre, e ne adatta l'HTML con `scripts/native-page.mjs`. La CDN serve direttamente pagine e asset. La build si interrompe se una pagina fallisce. Ogni pagina porta il commit del sito in `data-memento-release`. La Home disegna subito foto e titoli HTML con la prospettiva del carosello; il renderer degli effetti li sostituisce quando è pronto. `?lab` apre la regia.
 
 ## Riferimento visivo della Home
 
@@ -48,6 +53,11 @@ Dalla R15 la Home e le pagine Start, Servizi, Portfolio e LevelUp hanno di nuovo
 Le note delle release precedenti e i riferimenti artistici sono in `docs/`.
 
 ## Archivio delle release
+
+### R19
+
+- **Una sola repo.** Le cinque pagine sono in `apps/`, importate con la loro storia. La build le legge dalle cartelle: niente più `sections.lock.json`, hash da copiare o patch applicate in build.
+- **Niente copie doppie.** Le pagine non contengono più un loro motore effetti, la loro navbar, i bootstrap per Framer o gli host: usano solo quelli del sito. Il sito pubblicato è uguale alla R18, tolti i file che non venivano usati. Dettagli in `docs/R19_NOTES.md`.
 
 ### R18
 

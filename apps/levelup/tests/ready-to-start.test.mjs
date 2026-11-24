@@ -38,10 +38,3 @@ test('A wrapper that no longer embeds visualfx fails the production asset check'
   await assert.rejects(verifyAssets(temporary), /does not embed visualfx/);
 }));
 
-test('A missing VFX engine chunk fails the production asset check', () => withCopy(async temporary => {
-  const entry = await readFile(join(temporary, 'vfx/memento-vfx.js'), 'utf8');
-  const chunk = /import\(`\.\/([^`]+)`\)/.exec(entry)?.[1];
-  assert(chunk, 'the entry loads the engine chunk dynamically');
-  await rm(join(temporary, 'vfx', chunk));
-  await assert.rejects(verifyAssets(temporary), /ENOENT/);
-}));

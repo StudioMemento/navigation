@@ -181,7 +181,7 @@ for(const heading of document.querySelectorAll('[data-fit]')) {
 $('#contact-link').addEventListener('click',()=>{if(engaged)$('#contact-link').href=contactUrl(engaged);});
 enhanceVisuals();
 mountStart({ destination: () => contactUrl(engaged) });
-import('../vfx/memento-vfx.js')
+import('/memento-ui/effects.mjs')
   .then(({ mountVfx, mountBackground }) => {
     vfx = mountVfx();
     // START V27 background (Ghost Fibers), unless a compatible host owns the surface

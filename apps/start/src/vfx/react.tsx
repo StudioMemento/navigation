@@ -1,34 +1,25 @@
 import { createContext, useCallback, useContext, useEffect, useRef, useState, type ReactNode } from 'react';
 import { SurfaceRegistry, type SurfaceKind, type SurfaceOptions } from './registry';
-import { TouchPulseField } from './touch';
-import { installTouchFeedback } from './touch-feedback';
 
 const VfxContext = createContext<SurfaceRegistry | null>(null);
 
-/** One canvas behind the content, one engine. Loaded after the content; any failure leaves the plain DOM page. */
+/**
+ * One canvas behind the content. R19: the engine is the site's (navigation, /memento-ui/effects.mjs), the same one
+ * every page uses; this page only registers its surfaces. Loaded after the content; any failure leaves the DOM page.
+ */
 export function VfxProvider({ children }: { children: ReactNode }) {
   const [registry] = useState(() => new SurfaceRegistry());
   const canvas = useRef<HTMLCanvasElement>(null);
-  const [touchField] = useState(() => new TouchPulseField());
 
   useEffect(() => {
     let dispose = () => {};
     let cancelled = false;
-    if (document.documentElement.hasAttribute('data-memento-native')) {
-      const shared = '/memento-ui/effects.mjs';
-      import(/* @vite-ignore */ shared).then(module => {
-        if (!cancelled && canvas.current) dispose = module.bindSurfaceCanvas(canvas.current,registry).destroy;
-      }).catch(() => document.documentElement.classList.remove('vfx-boot','vfx-live'));
-      return () => { cancelled = true; dispose(); };
-    }
-    const stopTouch = installTouchFeedback(touchField);
-    import('./engine').then(({ VfxEngine }) => {
-      if (cancelled || !canvas.current || matchMedia('(forced-colors: active)').matches) return;
-      const engine = VfxEngine.create(canvas.current, registry, touchField);
-      dispose = () => engine?.destroy();
-    }).catch(() => document.documentElement.classList.remove('vfx-boot', 'vfx-live'));
-    return () => { cancelled = true; stopTouch(); dispose(); };
-  }, [registry, touchField]);
+    const shared = '/memento-ui/effects.mjs';
+    import(/* @vite-ignore */ shared).then(module => {
+      if (!cancelled && canvas.current) dispose = module.bindSurfaceCanvas(canvas.current,registry).destroy;
+    }).catch(() => document.documentElement.classList.remove('vfx-boot','vfx-live'));
+    return () => { cancelled = true; dispose(); };
+  }, [registry]);
 
   return (
     <VfxContext.Provider value={registry}>

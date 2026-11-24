@@ -1,3 +1,5 @@
+> **R19 (24 novembre 2026): questa cartella fa parte del sito Memento** (repo navigation, `apps/studio` → mementostudio.it/studio/). Si costruisce e si prova dalla radice della repo: `npm run build`, poi `npm run preview`. I test della pagina: `npm run test:apps studio`. Motore degli effetti, navbar, sfondo e cambio pagina sono quelli del sito (`src/surfaces`, `public/navigation`, `public/memento-ui`), non più copie locali. Le istruzioni di deploy autonomo, Framer e host più sotto sono storiche.
+
 # Memento / Studio — Cinematic Slots + Navbar Overlay
 
 Esperienza isolata dello Studio 3D. Gli altri siti Memento e le destinazioni dei link sono invariati.

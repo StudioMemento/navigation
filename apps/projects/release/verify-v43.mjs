@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { readFile, readdir, access } from 'node:fs/promises';
+import { readFile, access } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 import { validateProjects, wrapIndex } from '../site/catalogue.js';
@@ -55,18 +55,11 @@ assert(!/scroll-cue|cue-track|project-progress|checkpoint-/.test(index + app + c
 assert(!/data-tide-scroll-root|id="viewport"/.test(index), 'the document scrolls natively');
 assert(/\.project-title-band\{[^}]*text-align:center/.test(css) && /\.title-line\{[^}]*margin-inline:auto/.test(css), 'centred title');
 assert(app.includes("placeCatalogue('archive')") && app.includes('id="project-archive"'), 'archive at the end of the project');
-assert(/<memento-nav active="projects"[^>]*data-memento-kit="12\.1\.0" data-memento-prerender><template shadowrootmode="open">/.test(index), 'navbar in the first paint');
-assert(index.includes('navigation/portfolio.bundle.js') && index.includes('bootstrap.js') && index.includes('vfx.css'));
-assert(app.includes("import('./vfx/memento-vfx.js')") && app.includes('mountBackground'));
+// R19: the navbar, bootstraps and effects engine are the site's (navigation): the page keeps none of its own
+assert(!/<memento-nav|navigation\/|bootstrap\.js|vfx\/memento-vfx/.test(index), 'no navbar, bootstrap or engine of its own');
+assert(index.includes('vfx.css'));
+assert(app.includes("import('/memento-ui/effects.mjs')") && app.includes('mountBackground'));
 assert(vfxCss.includes('.memento-background') && vfxCss.includes('html.vfx-live [data-vfx][data-vfx-ready]'));
-const bundle = await read('navigation/portfolio.bundle.js');
-assert(bundle.includes('installChild({page:"projects"'), 'navigation bundle for Projects');
-// engine chunks referenced by the entry exist; no grain, no GSAP
-const vfxFiles = await readdir(path.join(site, 'vfx'));
-const entry = await read('vfx/memento-vfx.js');
-for (const match of entry.matchAll(/["']\.\/([\w-]+\.js)["']/g)) assert(vfxFiles.includes(match[1]), `vfx/${match[1]} missing`);
-const engine = await read(`vfx/${vfxFiles.find(file => file.startsWith('engine-'))}`);
-assert(engine.includes('uRestColour') && !/gsap|ScrollTrigger/.test(engine), 'Portfolio engine build');
 for (const surface of ['data-vfx="title"', 'data-vfx="card"', 'data-vfx-transform', 'data-vfx-clip=".coverflow"', 'data-vfx-colour', 'data-vfx-dom'])
   assert((index + app + await read('project-layout.js')).includes(surface), `surface ${surface}`);
 
@@ -77,4 +70,4 @@ for (const width of [240, 280, 343, 675, 901, 1199, 1720]) for (const text of ['
   assert(layout.lines.every(line => measure(line) * layout.size <= width + .001));
   assert(layout.size > 0 && layout.lines.length <= 2);
 }
-console.log(`PORTFOLIO_V43_VERIFIED: ${projects.length} projects, ${galleryImages} gallery images, ${experiences} experiences wired, no Process, no scroll cue, archive, navbar 12.1.0 and VFX layer.`);
+console.log(`PORTFOLIO_V43_VERIFIED: ${projects.length} projects, ${galleryImages} gallery images, ${experiences} experiences wired, no Process, no scroll cue, archive and VFX layer.`);

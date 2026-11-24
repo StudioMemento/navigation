@@ -10,7 +10,9 @@ test('Memento VFX (START V27): every page surface is declared in the markup', ()
   const html = read('index.html');
   assert.match(html, /<h2 id="catalogue-heading" data-vfx="title">/);
   assert.match(html, /id="start-link"[\s\S]*?data-vfx="card"[\s\S]*?data-vfx-photo="\.start-sparkle"/);
-  assert.match(html, /rel="modulepreload" href="vfx\/memento-vfx\.js"/);
+  // R19: the engine is the site's (navigation, /memento-ui/effects.mjs); the page keeps no copy of its own
+  assert.match(read('src/app.js'), /import\('\/memento-ui\/effects\.mjs'\)/);
+  assert.ok(!existsSync(new URL('../vfx/', import.meta.url)) && !existsSync(new URL('../public/vfx/', import.meta.url)));
   const board = /data-vfx="card" data-vfx-transform data-vfx-clip="\.carousel" data-vfx-focus data-vfx-photo="[^"]+" data-vfx-veil="\.mobile-title-veil"/;
   for (const item of [...catalogue.bundles, ...catalogue.services]) assert.match(cover(item, 0), board, item.id);
   assert.equal((categories().match(/class="spread-title" data-vfx="title"/g) || []).length, catalogue.categories.length);
@@ -36,25 +38,7 @@ test('Dialog boards are surfaces of their own engine; interactive rows and the C
   assert.match(app, /mountVfx\(\{ root: \$\('#memento-catalogo'\) \}\)/);
 });
 
-test('The prebuilt engine is published and every chunk it imports exists', () => {
-  const dir = new URL('../public/vfx/', import.meta.url);
-  const files = readdirSync(dir);
-  assert.ok(files.includes('memento-vfx.js'));
-  for (const file of files.filter((f) => f.endsWith('.js'))) {
-    const text = readFileSync(new URL(file, dir), 'utf8');
-    for (const m of text.matchAll(/(?:from\s*|import\s*\()\s*["'](\.\/[^"']+)["']/g))
-      assert.ok(existsSync(new URL(m[1], dir)), `${file} → ${m[1]}`);
-  }
-  const engine = files.find((f) => f.startsWith('engine-'));
-  const code = readFileSync(new URL(engine, dir), 'utf8');
-  assert.ok(!/gsap|ScrollTrigger/.test(code), 'no GSAP in the engine');
-  assert.match(read('build.mjs'), /public\/vfx/);
-});
-
-test('Surface and background: opaque unless a compatible host asks for it', () => {
-  const boot = read('bootstrap.js');
-  assert.match(boot, /get\('mementoEmbed'\) === '1'/);
-  assert.match(boot, /dataset\.mementoSurface = hosted \? 'transparent' : 'opaque'/);
+test('Surface: the page styles its own surfaces; the site owns the ground (site.css)', () => {
   const css = read('styles.css');
   assert.match(css, /html\[data-memento-surface='opaque'\] \{\s*background: #000;/);
   assert.match(css, /html\[data-memento-surface='transparent'\] \.memento-background/);

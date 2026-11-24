@@ -22,9 +22,9 @@ test('page change: the name of the page that opens, on the ground, under the nav
   // no seal any more; the incoming material waits for its face before it takes over
   assert.doesNotMatch(sceneHead, /mm-seal/);
   assert.match(sceneHead, /data-mm-name/);
-  // the navigation and the scroll cue never take part in the exit
+  // the navigation never takes part in the exit
   const head = source('scripts/scene-head.mjs');
-  assert.match(head, /c\.localName === 'memento-nav' \|\| c\.matches\('\.mm-scrollbar'\)/);
+  assert.match(head, /if \(c\.localName === 'memento-nav'\) continue;/);
   assert.doesNotMatch(head, /\.mm-wordmark, \.mm-dock/);
 });
 

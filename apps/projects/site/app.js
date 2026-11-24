@@ -334,7 +334,7 @@ async function init() {
     $('#project-grid').innerHTML = '<div class="empty-state">Portfolio non disponibile. <button type="button" data-action="reload">Riprova</button></div>';
     console.error(error);
   }
-  import('./vfx/memento-vfx.js')
+  import('/memento-ui/effects.mjs')
     .then(({ mountVfx, mountBackground }) => {
       vfx = mountVfx();
       // START V27 background (Ghost Fibers), unless a compatible host owns the surface

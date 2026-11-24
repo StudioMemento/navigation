@@ -23,7 +23,7 @@ test('each native section has a single navbar and effect module, and preserves a
   assert.equal(all(doc,'link').filter(n=>attr(n,'href')==='a.webp').length,1);
   assert(!html.includes('navigation/bootstrap.js'));assert(!html.includes('href="vfx/memento-vfx.js"'));
   const app=all(doc,'script').find(n=>attr(n,'src')==='src/app.js' || (n.childNodes||[]).some(c=>c.value?.includes('new URL("src/app.js"')));
-  assert(app);assert(html.indexOf('type="importmap"')<html.lastIndexOf('src/app.js'));
+  assert(app);assert(!html.includes('type="importmap"'));assert(html.indexOf('/memento-ui/site.mjs')<html.lastIndexOf('src/app.js'));
   assert.equal(attr(all(doc,'iframe')[0],'src'),'https://knives.vercel.app/');
   assert(all(doc,'a').some(a=>attr(a,'href')==='#dettaglio'));
   assert(!routes.rewrites?.some(r=>r.source.startsWith(s.path+'/')));
@@ -69,9 +69,9 @@ test('pages with effects are marked for the page change, with their code to prel
  }
 });
 
-test('reprocessing an existing native entry leaves one shared runtime and import map',()=>{
+test('reprocessing an existing native entry leaves one shared runtime',()=>{
  const doc=parse(nativePage(nativePage(source,'start'),'start'));
- assert.equal(all(doc,'script').filter(n=>attr(n,'type')==='importmap').length,1);
+ assert.equal(all(doc,'script').filter(n=>attr(n,'type')==='importmap').length,0);
  assert.equal(all(doc,'script').filter(n=>attr(n,'src')==='/memento-ui/site.mjs').length,1);
  assert.equal(all(doc,'memento-nav').length,1);
  assert.equal(all(doc,'div').filter(n=>attr(n,'id')==='site-atmosphere').length,0);

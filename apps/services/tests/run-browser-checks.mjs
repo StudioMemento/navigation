@@ -2,7 +2,6 @@ import { spawnSync } from 'node:child_process';
 for (const name of [
   'responsive',
   'content',
-  'embedded',
   'interactions',
   'bundle-polish',
   'visual-states',
