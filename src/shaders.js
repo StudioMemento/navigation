@@ -18,6 +18,8 @@ uniform float uEmissive;      // 1 while rendering the emission-only pass that f
 #define PHOTO_SPOT_R 230.
 /* R17: share of the still hover lattice (cells near the pointer, without a reaction): 0, the lattice is only live */
 #define HOVER_LATTICE 0.
+/* R18: strength of the cells the hover and touch waves light (facets and seams): R16–R17 drew them at 1 */
+#define HOVER_CELLS 1.6
 float h11(float p){ p=fract(p*.1031); p*=p+33.33; p*=p+p; return fract(p); }
 float h21(vec2 p){ vec3 p3=fract(vec3(p.xyx)*.1031); p3+=dot(p3,p3.yzx+33.33); return fract((p3.x+p3.y)*p3.z); }
 float vnoise(vec2 p){
@@ -179,7 +181,8 @@ float exitOf(vec4 cc, float seed){
 vec4 exitTo(vec4 vc, vec4 cc, float k, float seed){
   if(k<=0.) return vc;
   float e=k*k*(3.-2.*k);
-  vec2 c=cc.xy/cc.w, n=vc.xy/vc.w, to=-c;
+  // R18: toward the line where the page's name composes (the middle of the screen, across most of its width)
+  vec2 c=cc.xy/cc.w, n=vc.xy/vc.w, to=vec2(-.45*c.x,-c.y);
   vec2 side=vec2(-to.y,to.x)*(h11(seed*29.)-.5)*1.2*sin(3.1416*e);
   float a=(h11(seed*43.)-.5)*5.*e, ca=cos(a), sa=sin(a);
   vec2 v=(n-c)*vec2(uExit.w,1.);
@@ -370,13 +373,13 @@ void main(){
   float L=clamp(vis*wake*beat*uTopo*HOVER_LATTICE+E*(.45+.8*max(vis,.35)),0.,1.);
   float sat=.3+.7*h2;
   // R16: over the photograph the cells stay light and close to neutral; the amber lives on the black and the outline
-  float fA=inside*L*(.05+.24*h)*(.3+.7*sweep)*(1.-ia*.7*smoothstep(.04,.3,lum));
+  float fA=inside*L*(.05+.24*h)*HOVER_CELLS*(.3+.7*sweep)*(1.-ia*.5*smoothstep(.04,.3,lum));
   vec3 facet=ramp(.24+.44*L*sweep);
   facet=mix(vec3(dot(facet,vec3(.3333))),facet,sat*(1.-.6*ia))*(.45+.9*sweep);
   // the seams: hairlines (under half a pixel per side), never summed at a corner
   float edges=max(max(hair(vBary.x)*step(.45,h2),hair(vBary.y)*step(.45,h3)),hair(vBary.z)*step(.45,h));
   vec3 wc=ramp(.6+.32*L);
-  vec3 wire=mix(vec3(dot(wc,vec3(.3333))),wc,sat)*edges*L*(.34+.42*edgeK)*inside;
+  vec3 wire=mix(vec3(dot(wc,vec3(.3333))),wc,sat)*edges*L*(.34+.42*edgeK)*HOVER_CELLS*inside;
 
   // 3 · the outline lights by segment: a thin bright core and a soft local halo
   float Eb=bins(outlineAt(p))*uEdge;
@@ -569,6 +572,10 @@ void main(){
   col=shoulder(col);
   col*=1.-uMix.z*smoothstep(.42,1.05,r)*smoothstep(.42,1.05,r);
   // premultiplied over the background: panels are opaque, light added over the void keeps its own coverage
+  // R18: a fixed dither under one 8-bit step (the same pattern every frame: no grain, nothing moves) turns the steps of
+  // long dark gradients into an even tone. Pure black stays black.
+  vec2 g=gl_FragCoord.xy;
+  col+=(fract(52.9829189*fract(dot(g,vec2(.06711056,.00583715))))+fract(52.9829189*fract(dot(g+vec2(41.,23.),vec2(.06711056,.00583715))))-1.)/255.*step(.5/255.,max(col.r,max(col.g,col.b)));
   float a=s.a;
   if(a<1.) a=clamp(max(a,max(col.r,max(col.g,col.b))),0.,1.);
   o=vec4(max(col,0.),a);

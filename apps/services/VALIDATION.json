@@ -1,0 +1,191 @@
+{
+  "version": "40.0.0",
+  "baseline": "39.0.0",
+  "verifiedAt": "2026-11-01",
+  "browser": "Chromium 153 (headless; touch emulation)",
+  "result": "PASS",
+  "unitTests": 5,
+  "build": {
+    "result": "PASS",
+    "publishedFiles": 532,
+    "sourceParity": true
+  },
+  "responsive": {
+    "viewportCount": 14,
+    "adjacentBreakpointSizes": 34,
+    "pageWidths": [
+      320,
+      390,
+      500,
+      600,
+      767,
+      768,
+      820,
+      900,
+      1023,
+      1024,
+      1100,
+      1440,
+      1920
+    ]
+  },
+  "content": {
+    "items": 50,
+    "boardLayoutChecks": 400,
+    "canonicalContentUnchanged": true,
+    "assetsUnchanged": 521
+  },
+  "bundlePolish": {
+    "bundleCount": 6,
+    "listLayouts": 72,
+    "viewports": [
+      [
+        320,
+        568
+      ],
+      [
+        390,
+        844
+      ],
+      [
+        500,
+        900
+      ],
+      [
+        600,
+        900
+      ],
+      [
+        767,
+        1024
+      ],
+      [
+        768,
+        1024
+      ],
+      [
+        820,
+        1180
+      ],
+      [
+        927,
+        557
+      ],
+      [
+        1024,
+        768
+      ],
+      [
+        1371,
+        823
+      ],
+      [
+        1440,
+        900
+      ],
+      [
+        2048,
+        900
+      ]
+    ],
+    "unwantedScrollCases": 0,
+    "squareThumbnails": true,
+    "minimumRowHeight": 44,
+    "fanAnimations": [
+      {
+        "width": 320,
+        "frames": 101
+      },
+      {
+        "width": 390,
+        "frames": 101
+      },
+      {
+        "width": 500,
+        "frames": 101
+      },
+      {
+        "width": 600,
+        "frames": 89
+      },
+      {
+        "width": 767,
+        "frames": 91
+      },
+      {
+        "width": 768,
+        "frames": 91
+      },
+      {
+        "width": 820,
+        "frames": 91
+      },
+      {
+        "width": 927,
+        "frames": 95
+      },
+      {
+        "width": 1024,
+        "frames": 83
+      },
+      {
+        "width": 1371,
+        "frames": 58
+      },
+      {
+        "width": 1440,
+        "frames": 54
+      },
+      {
+        "width": 2048,
+        "frames": 49
+      }
+    ]
+  },
+  "visualStates": {
+    "result": "PASS",
+    "headingGradient": true,
+    "catalogueTitleStates": true,
+    "carousels": 7,
+    "popupSlides": 8,
+    "animationFrames": 49,
+    "inactiveColourLeaks": 0,
+    "modalSelectionBlocked": true,
+    "embeddedSelectionBlocked": true,
+    "touchLongPress": true,
+    "touchNestedNavigation": true,
+    "formEditing": true,
+    "draftSelection": true,
+    "errors": [],
+    "failed": []
+  },
+  "embedded": {
+    "result": "PASS",
+    "embeddedResize": true,
+    "scrollRestored": true,
+    "tap": true,
+    "pointerDrag": true,
+    "nestedBundle": true,
+    "leadResize": true,
+    "errors": []
+  },
+  "interactions": {
+    "result": "PASS",
+    "keyboard": true,
+    "focusTrap": true,
+    "focusReturn": true,
+    "backdrop": true,
+    "legacyRoutes": true,
+    "filters": true,
+    "emailDraft": true,
+    "reducedMotion": true,
+    "forcedColors": true,
+    "errors": [],
+    "failed": []
+  },
+  "limits": [
+    "No physical iPhone/iPad or Safari run.",
+    "Embedding tested with a local iframe fixture, not the live Framer host.",
+    "Native internal scrolling remains available for unusually short viewports or enlarged text."
+  ]
+}

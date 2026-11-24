@@ -1,0 +1,12 @@
+{
+  "schema": "memento-shader-atlas/v1",
+  "preset": "graphite",
+  "values": {
+    "a": 1,
+    "b": 0.49,
+    "c": 0.2,
+    "exposure": 1,
+    "emission": 0
+  },
+  "background": "transparent"
+}

@@ -1,0 +1,121 @@
+/*
+ * Ready to start: the published effect (https://visualfx.vercel.app/) in an iframe, over the same CTA as a plain
+ * link. The link is the keyboard target and every fallback (loading, no JavaScript, a frame that never answers);
+ * the iframe takes the pointer once it is ready. Section height and padding are the V16 ones.
+ */
+.contact-section.memento-start {
+  --start-space: clamp(20px, var(--gutter), 90px);
+  height: 100vh;
+  height: 100svh;
+  min-height: 0;
+  padding: max(var(--start-space), env(safe-area-inset-top, 0px)) 0
+    max(var(--start-space), env(safe-area-inset-bottom, 0px));
+  scroll-margin-top: 0;
+}
+/* Reserve the real logo/dock clearance inside the viewport, without adding height. */
+html:is([data-memento-navigation=standalone], [data-memento-layout=overlay]) .contact-section.memento-start {
+  padding-top: max(var(--start-space), calc(env(safe-area-inset-top, 0px) + 64px));
+  padding-bottom: max(var(--start-space), calc(env(safe-area-inset-bottom, 0px) + 80px));
+}
+
+.start-embed {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  container: start-embed / inline-size;
+  isolation: isolate;
+}
+
+/* The plain CTA: the effect's own frame and title, on black (the effect draws over it when ready). */
+.start-embed__card {
+  --start-cut: clamp(20px, 2.6cqw, 40px);
+  --start-pad: clamp(24px, 5.6cqw, 108px);
+  position: absolute;
+  inset: 0;
+  display: block;
+  color: #f4f0e8;
+  font-synthesis: none;
+  background: #000;
+  clip-path: polygon(var(--start-cut) 0, 100% 0, 100% calc(100% - var(--start-cut)), calc(100% - var(--start-cut)) 100%, 0 100%, 0 var(--start-cut));
+}
+.start-embed__card:focus-visible { outline: none; }
+.start-embed__outline,
+.start-embed__focus {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
+}
+.start-embed__outline path,
+.start-embed__focus path {
+  fill: none;
+  vector-effect: non-scaling-stroke;
+}
+.start-embed__outline path { stroke: rgba(184, 184, 174, .38); stroke-width: 1; }
+.start-embed__title {
+  position: absolute;
+  left: var(--start-pad);
+  right: var(--start-pad);
+  bottom: 8%;
+  display: block;
+  font-size: 6.5cqw;
+  font-weight: 300;
+  line-height: 1.04;
+  letter-spacing: -.015em;
+  white-space: nowrap;
+  font-kerning: none;
+  font-variant-ligatures: none;
+  pointer-events: none;
+}
+.start-embed__title > span { display: block; width: max-content; }
+.start-embed__title > span + span { font-weight: 600; letter-spacing: .23em; }
+@container start-embed (max-width: 584px) {
+  .start-embed__card { --start-pad: 24px; }
+  .start-embed__title { font-size: 12cqw; }
+}
+
+/*
+ * The effect. ready-to-start/embed.html lays the published card exactly on this box. The colour scheme matches the
+ * documents inside, so the frame stays transparent until they paint.
+ */
+.start-embed__view {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  background: transparent;
+  color-scheme: normal;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity .45s var(--ease), visibility 0s .45s;
+}
+.start-embed[data-state=ready] .start-embed__view {
+  opacity: 1;
+  visibility: visible;
+  transition: opacity .45s var(--ease), visibility 0s;
+}
+/* Covered by the expanded demo: nothing to draw. */
+html[data-demo-expanded=true] .start-embed__view { visibility: hidden; }
+
+/* Keyboard focus is on the link underneath: its ring is drawn above the effect, on the effect's own outline. */
+.start-embed__focus { z-index: 3; display: none; }
+.start-embed__focus path { stroke: #ffad79; stroke-width: 2.5; }
+.start-embed:has(.start-embed__card:focus-visible) .start-embed__focus { display: block; }
+
+@media (prefers-reduced-motion: reduce) {
+  .start-embed__view,
+  .start-embed[data-state=ready] .start-embed__view { transition: none; }
+}
+@media (forced-colors: active) {
+  .start-embed__view { display: none; }
+  .start-embed__card { outline: 1px solid LinkText; }
+  .start-embed__card:focus-visible { outline: 3px solid Highlight; }
+  .start-embed__outline path { stroke: LinkText; }
+  .start-embed__title { color: LinkText; }
+}

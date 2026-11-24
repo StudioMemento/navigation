@@ -64,6 +64,11 @@ interface Surface {
   ready: boolean;
   /** START V24: measured and painted again only when its size or content changed. */
   dirty: boolean;
+  /**
+   * R18: a title inside a card (the board's own title, drawn with the title's material: gradient, amber, lattice,
+   * glow). It moves, fades, clips and is hovered with its card; `hostOffset`: its flat position inside the card (px).
+   */
+  host: Surface | null; hostOffset: [number, number];
 }
 
 const clamp = (v: number, a: number, b: number) => Math.min(b, Math.max(a, v));
@@ -544,6 +549,7 @@ export class VfxEngine {
 
   /** Reads a board's CSS transform, opacity, visibility, stacking and focus; nothing is measured. */
   private updateMotion(s: Surface) {
+    if (s.host) { this.followHost(s); return; }
     const cs = getComputedStyle(s.el), u = s.u;
     const m = placement(parseTransform(cs.transform), s.origin[0], s.origin[1], s.x, s.y);
     s.xf!.set(m);
@@ -563,6 +569,27 @@ export class VfxEngine {
       u.uFrameA.value = F.frame + (1 - F.frame) * f;
       (u.uImgStyle.value as number[])[0] = s.photoOpacity * (F.photo + (1 - F.photo) * f);
     }
+  }
+
+  /**
+   * R18: a card's own title goes where its card goes: the card's CSS transform about the card's origin (expressed from
+   * the title's box), the card's opacity, stacking, visibility and focus. Drawn just above the card.
+   */
+  private followHost(s: Surface) {
+    const h = s.host!, u = s.u;
+    if (h.xf) {
+      const [dx, dy] = s.hostOffset;
+      const m = placement(parseTransform(getComputedStyle(h.el).transform), h.origin[0] - dx, h.origin[1] - dy, s.x, s.y);
+      s.xf ??= new Float32Array(16);
+      s.xf.set(m);
+      u.uXf.value = s.xf; u.uHasXf.value = 1;
+      s.inv = inverseHomography(m);
+    }
+    s.opacity = h.opacity; s.z = h.z; s.group = h.group;
+    s.shown = h.shown && (!h.xf || !!s.inv);
+    u.uAlpha.value = h.u.uAlpha.value;
+    u.uInkA.value = h.u.uInkA.value;
+    s.content.renderOrder = h.overlay.renderOrder + .25; s.overlay.renderOrder = h.overlay.renderOrder + .5;
   }
 
   /**
@@ -620,8 +647,10 @@ export class VfxEngine {
    * its own subtree returns to the DOM's colours while it is read, then the GPU representation takes over again.
    */
   private rasterize(s: Surface) {
-    const el = s.el, st = el.style;
-    const saved = s.opt.transform ? [st.transform, st.opacity, st.visibility, st.getPropertyValue('--slide-focus')] as const : null;
+    // R18: a card's own title is measured flat with its card
+    const flat = s.opt.transform ? s.el : s.host?.opt.transform ? s.host.el : null;
+    const st = (flat ?? s.el).style;
+    const saved = flat ? [st.transform, st.opacity, st.visibility, st.getPropertyValue('--slide-focus')] as const : null;
     if (saved) { st.transform = 'none'; st.opacity = '1'; st.visibility = 'visible'; st.setProperty('--slide-focus', '1'); }
     s.dirty = false;
     this.measureIn(s);
@@ -636,10 +665,17 @@ export class VfxEngine {
   private measureIn(s: Surface) {
     const ready = s.el.dataset.vfxReady;
     if (ready) delete s.el.dataset.vfxReady;
+    // R18: a card's own title is read with its card's DOM paint on (the card's rest rule hides its whole subtree)
+    const hostReady = s.host?.el.dataset.vfxReady;
+    if (hostReady) delete s.host!.el.dataset.vfxReady;
     // hover and focus styles of the DOM are suspended while it is read ([data-vfx-measuring] in the stylesheet):
     // a surface measured under the pointer keeps its rest colours
     s.el.dataset.vfxMeasuring = '';
+    const hostMeasuring = s.host && s.host.el.dataset.vfxMeasuring === undefined ? s.host.el : null;
+    if (hostMeasuring) hostMeasuring.dataset.vfxMeasuring = '';
     try { this.measureSurface(s); } finally {
+      if (hostMeasuring) delete hostMeasuring.dataset.vfxMeasuring;
+      if (hostReady && s.host!.el.dataset.vfxReady === undefined) s.host!.el.dataset.vfxReady = hostReady;
       delete s.el.dataset.vfxMeasuring;
       if (ready && s.el.dataset.vfxReady === undefined && s.ready) s.el.dataset.vfxReady = ready;
     }
@@ -770,6 +806,16 @@ export class VfxEngine {
         if (!groups.has(key)) groups.set(key, groups.size);
         s.group = groups.get(key)!;
       } else { s.xf = null; s.inv = null; s.u.uHasXf.value = 0; s.shown = true; s.opacity = 1; s.z = 0; }
+      // R18: a title inside a card follows its card (transform, clip, opacity, focus, hover): measured flat, like it
+      const hostEl = opt.kind === 'title' ? el.parentElement?.closest<HTMLElement>('[data-vfx="card"]') : null;
+      const host = hostEl ? this.surfaces.get(hostEl) ?? null : null;
+      s.host = host && host !== s ? host : null;
+      if (s.host) {
+        const h = s.host;
+        s.hostOffset = [s.x - h.x, s.y - h.y];
+        s.clipEl = h.clipEl; s.clipDoc = h.clipDoc; s.clipFade = h.clipFade;
+        if (h.xf) { s.xf ??= new Float32Array(16); s.u.uXf.value = s.xf; s.u.uHasXf.value = 1; s.group = h.group; }
+      }
       if (r.width < 2 || r.height < 2) { s.content.visible = false; return; }
       (s.u.uOrigin.value as Vector2).set(s.x, s.y);
       (s.u.uSize.value as Vector2).set(s.w, s.h);
@@ -834,7 +880,8 @@ export class VfxEngine {
       photoEl: null, photo2El: null, img2: null, img2Src: '', photoFit: { objectFit: 'fill', objectPosition: '50% 50%' }, photoBox: [0, 0, 1, 1],
       range: null, rangeBox: [0, 1], imgDirty: false, photoVersion: 0,
       photoOpacity: 1, veilEl: null, veilImg: null, veilBox: [0, 0, 1, 1], veilFit: { objectFit: 'fill', objectPosition: '50% 50%' }, veilBlur: 0, frameMask: false,
-      hover: 0, near: 0, inside: false, debt: 0, budget: 0, hot: false, waveTravel: 0, waveAt: 0, version: 0, ready: false, dirty: true };
+      hover: 0, near: 0, inside: false, debt: 0, budget: 0, hot: false, waveTravel: 0, waveAt: 0, version: 0, ready: false, dirty: true,
+      host: null, hostOffset: [0, 0] };
   }
 
   private dropSurface(s: Surface) {
@@ -858,7 +905,8 @@ export class VfxEngine {
     const before = s.opt.compare ? el.querySelector<HTMLImageElement>(`${s.opt.compare} img`) : null;
     // Servizi: the mobile title veil is drawn by the engine from the photograph's texture (never as an icon)
     const veil = s.opt.veil ? el.querySelector<HTMLElement>(s.opt.veil) : null;
-    const skip = ['[data-vfx-dom]', s.opt.compare, s.opt.veil].filter(Boolean).join(',');
+    // R18: a title inside a card is a surface of its own (title material): the card does not paint it
+    const skip = ['[data-vfx-dom]', s.opt.compare, s.opt.veil, s.opt.kind === 'card' ? '[data-vfx="title"]' : ''].filter(Boolean).join(',');
     const found = collect(el, { photos: [img, before].filter((i): i is HTMLImageElement => !!i), skip });
     s.fontSize = found.fontSize || 16;
     const title = s.opt.kind === 'title';
@@ -1263,15 +1311,18 @@ export class VfxEngine {
       }
       s.budget = Math.min(4, s.budget + dt * VFX.particles.perSecond);
       ch.propagate = !this.reduced;
-      const inside = s === hovered;
+      // R18: a card's own title warms with its card (the pointer anywhere on the board), its range follows the pointer
+      const inside = s === hovered || (!!s.host && s.host === hovered);
       const [lx, ly] = local.get(s)!;
       const dx = Math.max(-lx, 0, lx - s.w), dy = Math.max(-ly, 0, ly - s.h);
       const prox = present && !inside && s.shown && this.inClip(s, px, py) ? clamp(1 - Math.hypot(dx, dy) / R, 0, 1) * s.opacity : 0;
+      // R18: a card's own title lights its cells only where the pointer is near its letters (it warms everywhere)
+      const reach = !s.host || Math.hypot(dx, dy) < R * 0.6;
       if (inside) {
-        if (!s.inside) for (let i = 0; i < P.enterBurst; i++) ch.igniteAt(lx, ly, R * 0.45, rand(0.85, 1));
+        if (!s.inside && reach) for (let i = 0; i < P.enterBurst; i++) ch.igniteAt(lx, ly, R * 0.45, rand(0.85, 1));
         // R16: with a mouse the hover travels like a touch: connected paths through this surface's own cells, from
         // where the pointer enters and again as it moves, feeding the outline (the slow hover chain stays under it)
-        if (!this.reduced && !this.touchOnly.matches) {
+        if (!this.reduced && !this.touchOnly.matches && !s.host) {
           const W = P.wave;
           if (!s.inside) { s.waveTravel = 0; s.waveAt = time; this.touches.start(input.x, input.y, root().clientWidth, innerHeight, time, s, W.gain[0]); }
           else {
@@ -1294,7 +1345,7 @@ export class VfxEngine {
         }
         const title = s.opt.kind === 'title';
         const rate = (this.reduced ? 1.5 : (still ? P.stillRate : P.hoverRate) + input.speed * P.moveRate) * (title ? VFX.chain.title.rate : VFX.chain.card.rate);
-        s.debt += rate * dt;
+        s.debt = reach ? s.debt + rate * dt : 0;
         const spread = R * P.jitter * (title ? 1.7 : 1);
         while (s.debt >= 1) { s.debt -= 1; ch.igniteAt(lx, ly, spread, rand(0.75, 1)); }
       } else if (prox > 0) {

@@ -1,5 +1,5 @@
 import { nativeNav } from '../public/navigation/markup.mjs';
-import { sceneHead } from './scene-head.mjs';
+import { sceneHead, lettersLayer } from './scene-head.mjs';
 import { parse, parseFragment, serialize } from 'parse5';
 import { STATIONS, PUBLIC_ORIGIN } from '../src/kit/core.mjs';
 import { routeMeta, OG_IMAGE } from '../src/seo.mjs';
@@ -124,23 +124,25 @@ export function nativePage(source, slug, release, { preload = [] } = {}) {
   }
   deduplicate(html);
   // Keep the original module entry. Downloads and controls can start during the handoff.
-  const spec = {imports:{[section.path+'/vfx/memento-vfx.js']:'/memento-ui/effects.mjs'}};
+  // R19: the pages import the shared effects directly (/memento-ui/effects.mjs): no import map any more.
   const tags = [
     sceneHead,
     '<link rel="canonical" href="'+canonical+'">',
     '<meta property="og:type" content="website"><meta property="og:site_name" content="Memento Design Studio">',
     '<meta property="og:title" content="'+escape(meta.title)+'"><meta property="og:description" content="'+escape(meta.description)+'">',
     '<meta property="og:url" content="'+canonical+'"><meta property="og:image" content="'+escape(OG_IMAGE)+'"><meta name="twitter:card" content="summary_large_image">',
-    '<script type="importmap" data-memento-imports>'+JSON.stringify(spec)+'</script>',
     '<link rel="stylesheet" href="/memento-ui/site.css">',
     ...(ready ? ['<link rel="stylesheet" href="/memento-ui/ready-to-start.css">'] : []),
     '<script type="module" src="/memento-ui/site.mjs"></script>'
   ];
   if (!desc) tags.push('<meta name="description" content="'+escape(meta.description)+'">');
-  // Import maps must precede all modules, including modulepreload.
+  // The site's tags go before the page's own scripts and styles.
   const firstResource = head.childNodes.findIndex(n => ['script','link','style'].includes(n.tagName));
   head.childNodes.splice(firstResource < 0 ? head.childNodes.length : firstResource, 0, ...parseFragment(tags.join('')).childNodes);
   head.childNodes.push(...parseFragment('<style id="memento-native-font">@font-face{font-family:Inter;src:url("/assets/fonts/InterVariable.woff2") format("woff2");font-weight:100 900;font-style:normal;font-display:swap}</style>').childNodes);
+  // R20: the background of letters, first in the body (under everything, z-index -1; letters.mjs draws it).
+  // Not in Studio: it is a page of its own, to be designed on its own terms.
+  if (slug !== 'studio') body.childNodes.unshift(...parseFragment(lettersLayer).childNodes);
   body.childNodes.push(...parseFragment(nativeNav(section.id,'page')).childNodes);
   const staticLinks = ['<a href="/">Home</a>', ...STATIONS.map(s=>'<a href="'+s.path+'/">'+escape(s.label)+'</a>')];
   body.childNodes.push(...parseFragment('<noscript data-memento-static-nav><nav class="memento-static-nav" aria-label="Navigazione Memento">'+staticLinks.join(' ')+'</nav></noscript>').childNodes);

@@ -1,0 +1,18 @@
+{
+  "source": "https://memento-shader-atlas.memento-studio.chatgpt.site/#graphite",
+  "sourceCommit": "f747e7c791acac8fc206cd0da398f80d39b63952",
+  "catalogCount": 22,
+  "newStyles": [
+    "Copper etching",
+    "Cyanotype",
+    "Iridescent porcelain",
+    "Halftone noir",
+    "Brushed titanium",
+    "Silver relief"
+  ],
+  "originalFiles": {
+    "dist/studio/atlas/presets.js": "f83135dda9ab5cb8fc623d6115e4fd4cfeedfac7d9815eecbcd0b56349a70d9c",
+    "dist/studio/atlas/shaders.js": "0397834a5625e9f11744eb635bc6e85e7d08852223928002bd048e015f26b263"
+  },
+  "adaptation": "Atlas style equations and postprocess on V4 geometry with actual Studio lighting, AO, normal maps, animated emissive display masks and black background coverage. Voxel and point cloud use model surfaces. No changes to Atlas or other Sites."
+}

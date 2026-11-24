@@ -1,39 +1,45 @@
 # Sito Memento
 
-Il progetto Vercel `mementonav` pubblica la Home e le pagine di [mementostudio.it](https://mementostudio.it/). Il sito integra le versioni delle cinque sezioni indicate in `scripts/sections.lock.json`.
+Il progetto Vercel `mementonav` pubblica la Home e le pagine di [mementostudio.it](https://mementostudio.it/). Dalla R19 tutto il sito sta in questa repository: la Home e la navigazione alla radice, le cinque pagine in `apps/`, ognuna con la sua storia.
 
-| Pagina | Indirizzo sul sito | Repository da clonare in GitHub Desktop |
+| Pagina | Indirizzo sul sito | Cartella |
 | --- | --- | --- |
-| Home e navigazione | `/` | [StudioMemento/navigation](https://github.com/StudioMemento/navigation) |
-| Studio 3D | `/studio/` | [StudioMemento/mementostudio](https://github.com/StudioMemento/mementostudio) |
-| Servizi | `/services/` | [StudioMemento/servizi](https://github.com/StudioMemento/servizi) |
-| Portfolio | `/projects/` | [StudioMemento/Portfolio](https://github.com/StudioMemento/Portfolio) |
-| LevelUp | `/levelup/` | [StudioMemento/mementolevelup](https://github.com/StudioMemento/mementolevelup) |
-| Start | `/start/` | [StudioMemento/mementostart](https://github.com/StudioMemento/mementostart) |
+| Home, navigazione, effetti, cambio pagina | `/` | radice (`src/`, `public/`, `scripts/`) |
+| Studio 3D | `/studio/` | `apps/studio` |
+| Servizi | `/services/` | `apps/services` |
+| Portfolio | `/projects/` | `apps/projects` |
+| LevelUp | `/levelup/` | `apps/levelup` |
+| Start | `/start/` | `apps/start` |
+
+Le repo separate (mementostudio, servizi, Portfolio, mementolevelup, mementostart) restano su GitHub come archivio: non vengono più lette dalla build.
 
 ## Pubblicare una modifica con GitHub Desktop
 
-1. Apri la repo della pagina e scegli **Fetch origin**, poi **Pull origin** se disponibile.
-2. Modifica i sorgenti nella cartella clonata. Se ricevi uno ZIP di aggiornamento, estrai i file indicati nella stessa cartella, al livello di `package.json`.
-3. Controlla l’elenco delle modifiche, scegli **Commit to main** e poi **Push origin**.
-4. Nella repo navigation aggiorna il commit della sezione in `scripts/sections.lock.json` su un branch. La preview include pagine, immagini e codice di quelle versioni. Dopo la verifica puoi unire il branch per pubblicare il sito. Il rollback del deploy ripristina insieme i file delle sei pagine.
+1. Apri la repo navigation, poi **Fetch origin** e **Pull origin**.
+2. Crea un branch, modifica i file (della Home o di una pagina in `apps/`). Se ricevi uno ZIP di aggiornamento, estrai la sua cartella sopra la radice della repo.
+3. Fai commit e **Publish branch**: Vercel crea la preview di tutto il sito.
+4. Se la preview va bene, unisci il branch in `main` per pubblicare. Una modifica che tocca più pagine è un solo commit; il rollback del deploy riporta indietro tutto il sito.
 
 ## Dove si regolano gli effetti
 
 - `src/vfx/config.mjs` controlla palette, tempi, effetti al tocco e al puntatore di Home, Servizi, Portfolio, LevelUp e Start. `VFX.runtime` regola il riposo del loop (`idle`, 1 s) e la cadenza dell’hover fermo (`calmFps`, 30); `VFX.quality` i profili e il budget di pixel.
 - `src/vfx/policy.mjs` decide per ogni visita se gli effetti partono: `?vfx=off`, Save-Data e dispositivi sotto i 2 GB mostrano la pagina HTML.
-- `scripts/scene-head.mjs` guida il cambio pagina: la pagina si scompone dalle sue celle reali prima che il browser navighi verso il documento già prefetchato, e la nuova si compone con gli effetti già attivi (R17). Durate: `exit`, `unfold`; attesa massima degli effetti: `patience`. `scripts/scene-material.mjs` disegna crepe, schegge e sigillo e apre il reticolato all'arrivo (`weave`).
+- `scripts/scene-head.mjs` guida il cambio pagina: la pagina si scompone dalle sue celle reali prima che il browser navighi verso il documento già prefetchato, e la nuova si compone con gli effetti già attivi (R17). Durate: `exit`, `unfold`; attesa massima degli effetti: `patience`. `scripts/scene-material.mjs` disegna crepe, schegge e il nome della pagina (R18, `names`, `weave.letter`) e apre il reticolato all'arrivo (`weave`). Wordmark e navbar restano sopra la transizione.
 - Uscita delle celle negli shader: `EXIT` in `src/surfaces/shaders.ts` e `src/shaders.js`. Reticolato statico in hover: `HOVER_LATTICE` (0 dalla R17).
 - Ready to start su Portfolio e LevelUp: `readyCard` in `scripts/native-page.mjs`, stile in `public/memento-ui/ready-to-start.css`.
-- Hover con il mouse: `VFX.pointer.wave`. Luce del cursore sulle foto: `PHOTO_SPOT` in `src/surfaces/shaders.ts` e `src/shaders.js`.
-- `public/navigation/` contiene la navbar comune. Le pagine usano un fondo nero uniforme.
-- Studio 3D usa lo stesso menu e la stessa transizione. La scena e i controlli 3D si modificano nella repo Studio.
+- Hover con il mouse: `VFX.pointer.wave`; intensità delle celle accese: `HOVER_CELLS` (R18). Luce del cursore sulle foto: `PHOTO_SPOT` in `src/surfaces/shaders.ts` e `src/shaders.js`.
+- Sfondo di lettere (R20): `public/memento-ui/letters.mjs`. `LETTERS` contiene dimensione, densità, opacità, velocità, raggio del cursore, burst al clic e l'easter egg (`egg`: primo tentativo tra 7 e 13 s, poi ogni 16–30 s). I margini sono in `public/memento-ui/padding.mjs`: 10% su telefono, 15% su tablet, 20% su desktop; su ultrawide la colonna di Start (1280 px). Studio non ha lo sfondo: è una pagina a sé.
+- `public/navigation/` contiene la navbar comune. Le pagine usano un fondo uniforme `#090909` (`--memento-ground` in `public/memento-ui/site.css`) e lo stesso indicatore di scroll (`public/memento-ui/scrollbar.mjs`).
+- Le pagine non hanno motore effetti né navbar propri: usano `/memento-ui/effects.mjs` (da `src/surfaces`) e la navbar di `public/navigation`. Il contenuto di ogni pagina (markup, CSS, caroselli, testi, immagini) si modifica nella sua cartella `apps/`.
+- Studio 3D usa lo stesso menu e la stessa transizione. La scena e i controlli 3D si modificano in `apps/studio`.
 
 ## Avvio e build
 
-Il progetto usa Node 22.12 o successivo della serie 22. `npm ci`, `npm test` e `npm run build` verificano e compilano i sorgenti. `npm run dev` avvia la Home in Vite. Dopo la build, `npm run preview` serve tutte e sei le pagine.
+Il progetto usa Node 22.12 o successivo della serie 22. `npm ci` e `npm run build` compilano tutto il sito. `npm run dev` avvia la sola Home in Vite. Dopo la build, `npm run preview` serve tutte e sei le pagine: è il modo di provare una pagina in locale, con navbar ed effetti veri.
 
-La build scarica i commit pubblici delle cinque repo, compila le sezioni e adatta l’HTML con `scripts/native-page.mjs`. La CDN serve direttamente pagine e asset. La build si interrompe se manca una revisione o se una sezione fallisce. La Home disegna subito foto e titoli HTML con la prospettiva del carosello; il renderer degli effetti li sostituisce quando è pronto. `?lab` apre la regia.
+`npm test` controlla la Home, la navigazione e gli effetti. `npm run test:apps` esegue i test delle cinque pagine; `npm run test:apps services` ne esegue una sola. `npm run test:all` esegue entrambi.
+
+La build (`scripts/sections.mjs`) compila ogni pagina da una copia della sua cartella, con i comandi di sempre, e ne adatta l'HTML con `scripts/native-page.mjs`. La CDN serve direttamente pagine e asset. La build si interrompe se una pagina fallisce. Ogni pagina porta il commit del sito in `data-memento-release`. La Home disegna subito foto e titoli HTML con la prospettiva del carosello; il renderer degli effetti li sostituisce quando è pronto. `?lab` apre la regia.
 
 ## Riferimento visivo della Home
 
@@ -48,6 +54,29 @@ Dalla R15 la Home e le pagine Start, Servizi, Portfolio e LevelUp hanno di nuovo
 Le note delle release precedenti e i riferimenti artistici sono in `docs/`.
 
 ## Archivio delle release
+
+### R20
+
+- **Sfondo di lettere.** Riprende Letter Glitch di React Bits (preset pixel, `#f97316`, 8 px, densità 0.25, opacità 0.1, velocità 0.05, cursore 400, burst al clic). Al posto dei caratteri usa le lettere vettoriali del logotipo MEMENTO. Sta nei margini della pagina e sfuma fino a sparire dove comincia il contenuto. Ogni tanto il campo decripta MΞMΞNTO, e un'onda parte da lì per mostrare dove è successo.
+- **Margini.** Valgono 10-80-10 su telefono, 15-70-15 su tablet e 20-60-20 su desktop (`padding.mjs`). Start fa da riferimento: su telefono logotipo, contenuto e navbar sono larghi l'80% in tutte le pagine; su ultrawide tutte le pagine prendono la sua colonna di 1280 px.
+- **Studio** diventa una pagina a sé, da sviluppare su misura: niente sfondo di lettere.
+- **Cambio pagina.** Il nome della pagina occupa lo spazio tra i margini, con lo stile dei titoli già in hover. Lo sfondo resta attivo per tutta la transizione: cambia solo il contenuto. Dettagli in `docs/R20_NOTES.md`.
+
+### R19
+
+- **Una sola repo.** Le cinque pagine sono in `apps/`, importate con la loro storia. La build le legge dalle cartelle: niente più `sections.lock.json`, hash da copiare o patch applicate in build.
+- **Niente copie doppie.** Le pagine non contengono più un loro motore effetti, la loro navbar, i bootstrap per Framer o gli host: usano solo quelli del sito. Il sito pubblicato è uguale alla R18, tolti i file che non venivano usati. Dettagli in `docs/R19_NOTES.md`.
+
+### R18
+
+- **Card di Servizi.** Sfumatura della foto a curva morbida su gran parte dell'immagine, senza spigoli; dithering fisso nel grade, così i neri non fanno gradini.
+- **Titoli delle card con il materiale dei titoli di Start** (`data-vfx="title"` dentro una card): seguono la card nel carosello e si scaldano con il suo hover.
+- **Hover più visibile** su tab e card (`HOVER_CELLS`, `VFX.pointer.wave`).
+- **Titoli delle categorie** di Servizi attaccati alle slide.
+- **Un solo indicatore di scroll** ambra per tutte le pagine (`public/memento-ui/scrollbar.mjs`).
+- **Slider di LevelUp** al centro.
+- **Cambio pagina**: il nome della pagina che si apre al posto del sigillo; wordmark e navbar sempre visibili.
+- **Fondo `#090909`** (`--memento-ground`). Dettagli e verifica in `docs/R18_NOTES.md`.
 
 ### R17
 

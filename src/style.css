@@ -1,9 +1,9 @@
 @font-face{font-family:Inter;src:url('/assets/fonts/InterVariable.woff2') format('woff2');font-weight:100 900;font-display:swap}
-:root{color-scheme:dark;--ink:#000;--paper:#eeefed;--amber:#ff7950;--hover:#dfad6b;--ease:cubic-bezier(.22,1,.36,1);
+:root{color-scheme:dark;--ink:#090909;--paper:#eeefed;--amber:#ff7950;--hover:#dfad6b;--ease:cubic-bezier(.22,1,.36,1);
  /* the amber title gradient (DNA, VFX.color.titleAmber) and its idle, desaturated version: light from above */
  --title-gradient:linear-gradient(0deg,#838383 0%,#9c9c9c 9%,#bfbfbf 20%,#dfdfdf 32%,#f2f2f2 44%,#f2f2f2 100%);
  --title-amber:linear-gradient(0deg,#d9682f 0%,#e2874f 9%,#ecb28c 20%,#f5d9c6 32%,#fbefe8 44%,#fbefe8 100%);--vh:100svh;--card-w:80vw;--card-h:55vh;--padding:4.8vw;--cut:16px}
-*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;background:var(--ink);font-family:Inter,Arial,sans-serif;color:var(--paper);overscroll-behavior:none}body{overflow:hidden;-webkit-tap-highlight-color:transparent}button,a{touch-action:manipulation}button{font:inherit;color:inherit}button:focus-visible,a:focus-visible{outline:2px solid #ecc089;outline-offset:5px}
+*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;background:var(--ink);font-family:Inter,Arial,sans-serif;color:var(--paper);overscroll-behavior:none}body{overflow:hidden;-webkit-tap-highlight-color:transparent;background:transparent}button,a{touch-action:manipulation}button{font:inherit;color:inherit}button:focus-visible,a:focus-visible{outline:2px solid #ecc089;outline-offset:5px}
 .sr-only{position:absolute!important;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
 #world{position:fixed;inset:0;width:100%;height:var(--vh);pointer-events:none;z-index:0}
 #hub{position:fixed;inset:0;height:var(--vh);touch-action:pan-x pinch-zoom;user-select:none;-webkit-user-select:none}

@@ -1,0 +1,13 @@
+{
+  "name": "memento-portfolio",
+  "version": "44.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node release/build.mjs",
+    "test": "node release/verify-v43.mjs && node release/build.mjs && node release/verify-package.mjs"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

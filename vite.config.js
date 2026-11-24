@@ -1,5 +1,5 @@
 import { mediaAssets } from './scripts/media-assets.mjs';
-import { sceneHead } from './scripts/scene-head.mjs';
+import { sceneHead, lettersLayer } from './scripts/scene-head.mjs';
 import { defineConfig } from 'vite';
 import { resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
@@ -13,7 +13,9 @@ export default defineConfig({
       // R17: the Home carousel draws effects (the page change waits for their first frame, scene-head)
       return html.replace('<html lang="it">', '<html lang="it" data-mm-effects>').replace('<!-- MEMENTO_SCENE -->', () => sceneHead)
         .replace('<!-- MEMENTO_CARDS -->', homeMarkup)
-        .replace('<!-- MEMENTO_NAV -->', homeNav);
+        .replace('<!-- MEMENTO_NAV -->', homeNav)
+        // R20: the background of letters (public/memento-ui/letters.mjs, not bundled: the pages load the same file)
+        .replace('<!-- MEMENTO_LETTERS -->', () => lettersLayer + '<script type="module" src="/memento-ui/letters.mjs"></script>');
     }
   }],
   build: {

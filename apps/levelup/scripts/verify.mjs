@@ -1,0 +1,42 @@
+import { readFile, access, readdir } from 'node:fs/promises';
+import { resolve, dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
+import assert from 'node:assert/strict';
+import { benefits,experiences,visions,steps } from '../src/content.js';
+const root=resolve(dirname(fileURLToPath(import.meta.url)),'..'),dist=join(root,'dist');
+export async function verifyAssets(base){
+ const html=await readFile(join(base,'index.html'),'utf8'),css=await readFile(join(base,'styles.css'),'utf8');
+ const refs=[...html.matchAll(/(?:src|href)="([^"#]+)"/g)].map(m=>m[1]).filter(s=>!s.startsWith('https:')&&!s.startsWith('data:'));
+ const app=await readFile(join(base,'src/app.js'),'utf8');
+ refs.push(...[...app.matchAll(/src="(assets\/[^"$]+)"/g)].map(m=>m[1]));
+ refs.push(...[...css.matchAll(/url\(['"]?([^)'" ]+)/g)].map(m=>m[1]));
+ for(const item of [...benefits,...experiences])refs.push(item.asset,item.asset.replace('.webp','-640.webp'));
+ for(const item of visions)refs.push(item.before,item.after,item.before.replace('.webp','-640.webp'),item.after.replace('.webp','-640.webp'));
+ for(const item of steps)refs.push(item.asset,item.asset.replace('.webp','-768.webp'));
+ for(const ref of new Set(refs))await access(join(base,ref.split(/[?#]/)[0]));
+ for(const entry of await readdir(join(base,'src'),{withFileTypes:true})){if(!entry.isFile())continue;const text=await readFile(join(base,'src',entry.name),'utf8');for(const m of text.matchAll(/from ['"](.+?)['"]/g))await access(resolve(base,'src',m[1]));}
+ // Walk the prebuilt VFX bundle and the page modules: CSS textures, static/dynamic imports.
+ async function verifyModule(directory){
+  for(const entry of await readdir(directory,{withFileTypes:true})){
+   const file=join(directory,entry.name);
+   if(entry.isDirectory()){await verifyModule(file);continue;}
+   if(!/\.(js|mjs|css)$/.test(file))continue;
+   const text=await readFile(file,'utf8');
+   const paths=[...text.matchAll(/(?:from\s*|import\s*\(|new URL\()\s*['"`](\.[^'"`]+)['"`]/g)].map(m=>m[1]);
+   if(file.endsWith('.css'))paths.push(...[...text.matchAll(/url\(['"]?([^)'" ]+)/g)].map(m=>m[1]));
+   for(const path of paths.filter(path=>!path.startsWith('data:')&&!path.startsWith('https:')))await access(resolve(directory,path));
+  }
+ }
+
+ await verifyModule(join(base,'src'));
+ // Ready to start: the wrapper of the published effect (https://visualfx.vercel.app/), no local copy of it.
+ const embed=await readFile(join(base,'ready-to-start/embed.html'),'utf8');
+ if(!embed.includes('src="https://visualfx.vercel.app/"')||!/frame-src https:\/\/visualfx\.vercel\.app"/.test(embed))throw Error('ready-to-start/embed.html does not embed visualfx');
+ return new Set(refs).size;
+}
+if(process.argv[1]&&resolve(process.argv[1])===fileURLToPath(import.meta.url)){
+ const count=await verifyAssets(dist);const html=await readFile(join(dist,'index.html'),'utf8');
+ assert.equal((html.match(/<section\b/g)||[]).length,5);assert.equal((html.match(/<h1\b/g)||[]).length,1);
+ assert(!html.includes('__qa.html'));assert(!html.includes('localhost'));
+ console.log(`LEVELUP_TESTS_OK — ${count} local resources resolved, 5 sections`);
+}

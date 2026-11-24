@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="it" data-embedded="false" data-memento-surface="opaque" data-memento-navigation="standalone">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content">
+  <meta name="theme-color" content="#000000">
+  <meta name="description" content="Progetti Memento Design Studio. Web, 3D, video, visual, design e branding.">
+  <title>Portfolio — Memento</title>
+  <link rel="icon" href="data:,">
+  <link rel="preload" href="assets/fonts/InterVariable.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="styles.css?v=43.0.0">
+  <link rel="stylesheet" href="vfx.css?v=43.0.0">
+  <script type="module" src="app.js?v=43.0.0"></script>
+</head>
+<body>
+  <a class="skip-link" href="#catalogue-title">Vai ai progetti</a>
+  <main id="main">
+    <section id="catalogue" class="catalogue" aria-labelledby="catalogue-title">
+      <div class="catalogue-frame">
+        <header class="catalogue-heading">
+          <h1 id="catalogue-title" class="gradient-text" data-vfx="title" tabindex="-1">Progetti.</h1>
+          <div class="filters-slot" id="filters-home"><nav id="filters" class="filters" aria-label="Domini dei progetti"></nav></div>
+        </header>
+        <div id="grid-home">
+          <div id="grid-block">
+            <div id="project-grid" class="project-grid"></div>
+            <div id="empty-state" class="empty-state" hidden><span>Nessun progetto.</span><button type="button" data-action="reset-filters">Azzera filtri</button></div>
+          </div>
+        </div>
+        <footer class="footer"><a href="https://mementostart.vercel.app/" data-vfx="title"><span class="gradient-text">Ready to<br>start?</span><svg viewBox="0 0 100 160" aria-hidden="true"><path d="m20 10 70 70-70 70"/></svg></a></footer>
+      </div>
+    </section>
+    <section id="project-view" class="project-view" hidden aria-label="Progetto"></section>
+  </main>
+  <div class="sr-only" id="announcement" aria-live="polite" aria-atomic="true"></div>
+  <noscript><p class="noscript">Attiva JavaScript per esplorare il portfolio. <a href="mailto:info@mementostudio.it">info@mementostudio.it</a></p></noscript>
+</body>
+</html>

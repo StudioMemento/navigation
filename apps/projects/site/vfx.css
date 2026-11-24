@@ -1,0 +1,101 @@
+/*
+ * Memento VFX (START V27, as in LevelUp V20) on the portfolio. Same engine, same constants, same material: one canvas
+ * behind the content, the Ghost Fibers background behind it. The DOM keeps layout, semantics, focus and hit areas;
+ * while html.vfx-live is set it stops painting each surface the canvas has drawn ([data-vfx-ready]). Removing
+ * .vfx-live (any failure, context loss, printing) restores the DOM page.
+ *
+ * Surfaces: the catalogue/archive headings, the project title and VISION (title); the tiles, the selector boards
+ * (transformed, clipped by the selector), the gallery stage and the experience board (card). Tile labels, the
+ * experience controls and its media stay DOM ([data-vfx-dom]).
+ */
+
+/* Resolved lengths for the engine: getComputedStyle returns px instead of the raw clamp()/calc(). */
+@property --cut { syntax: '<length>'; inherits: true; initial-value: 16px; }
+@property --vfx-fade { syntax: '<length>'; inherits: false; initial-value: 0px; }
+.coverflow { --vfx-fade: var(--safe-left); }
+
+/*
+ * START V24: the canvas lives in a layer as tall as the document and is moved with the document by the compositor
+ * (iOS momentum included), overscanned above and below the viewport. The body is the layer's containing block.
+ */
+body { position: relative; display: flow-root; isolation: isolate; }
+.vfx-layer { position: absolute; inset: 0; overflow: clip; pointer-events: none; z-index: 0; }
+.vfx-canvas { position: absolute; top: 0; left: 0; width: 100%; display: block; pointer-events: none; will-change: transform; }
+/* START V25: the Ghost Fibers background, fixed behind everything, sized to the large viewport (no jump with toolbars). */
+.memento-background { position: fixed; inset: 0; z-index: -1; pointer-events: none; height: 100lvh; }
+.memento-background .ghost-fibers-container { position: absolute; inset: 0; width: 100%; height: 100%; overflow: hidden; }
+.memento-background .ghost-fibers-canvas { position: absolute; inset: 0; display: block; width: 100%; height: 100%; }
+main { position: relative; z-index: 1; }
+
+/*
+ * True black under the background (START). A uniform near-black shows the navigation's progressive blur as horizontal
+ * bands: its eight masked layers round to one level darker at every step. Zero cannot be rounded down.
+ * A compatible host (?mementoEmbed=1) owns the surface: transparent, no background of ours.
+ */
+html[data-memento-surface='opaque'] { background: #000; }
+html[data-memento-surface='transparent'] { background: transparent; color-scheme: normal; }
+html[data-memento-surface='transparent'] .memento-background { display: none; }
+html.vfx-off .vfx-layer { display: none; }
+
+@media screen {
+  /* GPU representation is live: each surface the engine has drawn stops painting in the DOM. [data-vfx-dom] stays DOM. */
+  html.vfx-live [data-vfx][data-vfx-ready],
+  html.vfx-live [data-vfx][data-vfx-ready] *:not(iframe):not(input):not(video):not([data-vfx-dom]):not([data-vfx-dom] *) {
+    color: transparent !important;
+    -webkit-text-fill-color: transparent !important;
+    text-decoration-color: transparent !important;
+    background-color: transparent !important;
+    background-image: none !important;
+    border-color: transparent !important;
+    text-shadow: none !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    caret-color: transparent;
+  }
+  html.vfx-live [data-vfx][data-vfx-ready] img:not([data-vfx-dom] img) { visibility: hidden !important; }
+  html.vfx-live [data-vfx][data-vfx-ready] svg:not([data-vfx-dom] svg) { visibility: hidden !important; }
+  /* Colours and positions are read by the engine at rest: no transition or animation may be half-way when it measures. */
+  html.vfx-ready [data-vfx],
+  html.vfx-ready [data-vfx] *:not(iframe):not([data-vfx-dom]):not([data-vfx-dom] *),
+  html.vfx-ready [data-vfx]::before,
+  html.vfx-ready [data-vfx]::after { transition: none !important; animation: none !important; }
+  /* Frames, shades and dividers drawn by pseudo-elements are drawn by the engine too. */
+  html.vfx-live [data-vfx][data-vfx-ready]::before,
+  html.vfx-live [data-vfx][data-vfx-ready]::after,
+  html.vfx-live [data-vfx][data-vfx-ready] *:not([data-vfx-dom]):not([data-vfx-dom] *)::before,
+  html.vfx-live [data-vfx][data-vfx-ready] *:not([data-vfx-dom]):not([data-vfx-dom] *)::after { opacity: 0 !important; }
+  html.vfx-live [data-vfx][data-vfx-ready] ::selection { background: rgba(255, 255, 255, 0.22); }
+  /* Portfolio: text kept in the DOM inside a surface does not inherit the surface's transparent paint. */
+  html.vfx-live [data-vfx][data-vfx-ready] [data-vfx-dom],
+  html.vfx-live [data-vfx][data-vfx-ready] [data-vfx-dom] * { -webkit-text-fill-color: currentColor !important; }
+  html.vfx-live [data-vfx][data-vfx-ready] .tile-meta { color: var(--ink); }
+  /* Portfolio: a hovered tile is measured at rest (no zoom), its labels stay DOM above the canvas. */
+  html.vfx-ready .project-tile .tile-visual img { transform: none !important; }
+  /* The experience board: once its media plays, the DOM owns the whole board (iframe, video or model). */
+  html.vfx-live .experience-board.is-live .experience-stage { background: #000; }
+}
+
+/* A focused control is never left inside a transition band. */
+main :focus-visible { scroll-margin-block: 20vh; }
+
+/*
+ * Rest state is monochrome in the DOM fallback too: light from above, shade at the base of every line, a neutral
+ * frame. Amber only ever comes from energy.
+ */
+:root {
+  /* the amber title gradient (VFX.color.titleAmber) desaturated: same luminance, no hue */
+  --title-gradient: linear-gradient(0deg, #838383 0%, #9c9c9c 9%, #bfbfbf 20%, #dfdfdf 32%, #f2f2f2 44%, #f2f2f2 100%);
+  --frame-gradient: linear-gradient(135deg, #d6d5d2c7 0%, #a3a29f66 27%, #6b6a6857 62%, #7b7a7875 83%, #b9b8b5cc 100%);
+}
+
+/* START V26/V27 DOM fallback of the touch wave: a title it reaches warms briefly (no painted layer, no circle). */
+html:not(.vfx-live) .touch-lit.gradient-text,
+html:not(.vfx-live) .touch-lit .gradient-text,
+html:not(.vfx-live) .touch-lit .title-line {
+  background-image: linear-gradient(0deg, #d9682f 0%, #e2874f 9%, #ecb28c 20%, #f5d9c6 32%, #fbefe8 44%, #fbefe8 100%);
+  filter: drop-shadow(0 0 7px #ff795050);
+}
+
+@media print { .vfx-layer, .memento-background { display: none; } }
+@media (forced-colors: active) { .vfx-layer, .memento-background { display: none; } }
