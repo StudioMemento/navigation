@@ -1,0 +1,2890 @@
+[
+  {
+    "name": "PORTE_Plane_001Shape",
+    "parent": "PORTE",
+    "triangles": 4453,
+    "materials": [
+      {
+        "name": "initialShadingGroup",
+        "color": [
+          0.2140411404715882,
+          0.2140411404715882,
+          0.2140411404715882
+        ],
+        "map": false
+      }
+    ],
+    "attrs": [
+      "position",
+      "normal",
+      "uv"
+    ],
+    "min": [
+      -2.71532098422972,
+      -0.015430799377767227,
+      -2.1902443968450034
+    ],
+    "max": [
+      -1.879794727270422,
+      2.0851282798097643,
+      -1.934197649638406
+    ]
+  },
+  {
+    "name": "DOORPlane_001Shape_PORTE",
+    "parent": "PORTE",
+    "triangles": 4417,
+    "materials": [
+      {
+        "name": "initialShadingGroup",
+        "color": [
+          0.2140411404715882,
+          0.2140411404715882,
+          0.2140411404715882
+        ],
+        "map": false
+      }
+    ],
+    "attrs": [
+      "position",
+      "normal",
+      "uv"
+    ],
+    "min": [
+      -2.71532098422972,
+      -0.015430799377766787,
+      -1.198258792796907
+    ],
+    "max": [
+      -1.879794727270422,
+      2.085128279809765,
+      -0.9422118930024225
+    ]
+  },
+  {
+    "name": "ZONA_DISPENSER_TAVOLO_APPOGGIA_TUTTO",
+    "parent": "ZONA_DISPENSER",
+    "triangles": 892,
+    "materials": [
+      {
+        "name": "initialShadingGroup",
+        "color": [
+          0.2140411404715882,
+          0.2140411404715882,
+          0.2140411404715882
+        ],
+        "map": false
+      }
+    ],
+    "attrs": [
+      "position",
+      "normal",
+      "uv"
+    ],
+    "min": [
+      -3.275431445343088,
+      -0.00039005997650236324,
+      -1.0157277452410511
+    ],
+    "max": [
+      -2.6754317639299074,
+      0.6861299742878231,
+      0.18427217071640098
+    ]
+  },
+  {
+    "name": "APPENDINO_ZONA_DISPENSER",
+    "parent": "ZONA_DISPENSER",
+    "triangles": 2392,
+    "materials": [
+      {
+        "name": "initialShadingGroup",
+        "color": [
+          0.2140411404715882,
+          0.2140411404715882,
+          0.2140411404715882
+        ],
+        "map": false
+      }
+    ],
+    "attrs": [
+      "position",
+      "normal",
+      "uv"
+    ],
+    "min": [
+      -3.149825979400589,
+      0.00005205999943486559,
+      0.1500826897453652
+    ],
+    "max": [
+      -2.850052121354963,
+      1.7151423261655339,
+      0.44982619233817894
+    ]
+  },
+  {
+    "name": "CONDIZIONATORE_BACKFACE_REVEAL",
+    "parent": "BACKFACE_REVEAL",
+    "triangles": 786,
+    "materials": [
+      {
+        "name": "COFFE_MACHINESG",
+        "color": [
+          0.1259673780128379,
+          0.13286832572150142,
+          0.14731898947390876
+        ],
+        "map": false
+      }
+    ],
+    "attrs": [
+      "position",
+      "normal",
+      "uv"
+    ],
+    "min": [
+      2.3483840417478064,
+      2.0493500823672828,
+      0.10630412817811567
+    ],
+    "max": [
+      2.6189486108955293,
+      2.3622489401195423,
+      0.9466321352131918
+    ]
+  },
+  {
+    "name": "BACKFACE_REVEAL_LUCI_SOFFITTO",
+    "parent": "BACKFACE_REVEAL",
+    "triangles": 1440,
+    "materials": [
+      {
+        "name": "LUCI_SOFFITTOSG",
+        "color": [
+          0.23302198073956934,
+          0.24286678538676792,
+          0.2632734208954164
+        ],
+        "map": false
+      }
+    ],
+    "attrs": [
+      "position",
+      "normal",
+      "uv"
+    ],
+    "min": [
+      -1.4979839753065107,
+      2.6809627696656535,
+      -2.0329424594430074
+    ],
+    "max": [
+      1.6173829289365642,
+      2.7069753423264156,
+      0.22194238166639713
+    ]
+  },
+  {
+    "name": "BACKFACE_REVEAL_PARETE",
+    "parent": "BACKFACE_REVEAL",
+    "triangles": 250,
+    "materials": [
+      {
+        "name": "svgMesh1SG",
+        "color": [
+          0.2049017749928035,
+          0.2140411404715882,
+          0.2234139844636503
+        ],
+        "map": false
+      }
+    ],
+    "attrs": [
+      "position",
+      "normal",
+      "uv"
+    ],
+    "min": [
+      -3.3483873763295833,
+      -3.000000038369965e-8,
+      0.015478260171153063
+    ],
+    "max": [
+      3.209544605995461,
+      2.728838134806495,
+      2.041367752223436
+    ]
+  },
+  {
+    "name": "BACKFACE_REVEAL_SOFFITTO",
+    "parent": "BACKFACE_REVEAL",
+    "triangles": 284,
+    "materials": [
+      {
+        "name": "svgMesh1SG",
+        "color": [
+          0.2049017749928035,
+          0.2140411404715882,
+          0.2234139844636503
+        ],
+        "map": false
+      }
+    ],
+    "attrs": [
+      "position",
+      "normal",
+      "uv"
+    ],
+    "min": [
+      -3.3483867659780344,
+      2.6961837165910634,
+      -3.1019081948271046
+    ],
+    "max": [
+      3.206731800882551,
+      2.7596352532587507,
+      2.0464249725693815
+    ]
+  },
+  {
+    "name": "SGABELLI_SGABELLI",
+    "parent": "SGABELLI",
+    "triangles": 4883,
+    "materials": [
+      {
+        "name": "initialShadingGroup",
+        "color": [
+          0.2140411404715882,
+          0.2140411404715882,
+          0.2140411404715882
+        ],
+        "map": false
+      }
+    ],
+    "attrs": [
+      "position",
+      "normal",
+      "uv"
+    ],
+    "min": [
+      -3.1355608430006896,
+      0.0037150999073286136,
+      -0.7200214987988433
+    ],
+    "max": [
+      -1.2525963312552193,
+      0.5181264380039322,
+      0.06903245771603748
+    ]
+  },
+  {
+    "name": "FOGLI_FOGLI",
+    "parent": "FOGLI",
+    "triangles": 270,
+    "materials": [
+      {
+        "name": "initialShadingGroup",
+        "color": [
+          0.2140411404715882,
+          0.2140411404715882,
+          0.2140411404715882
+        ],
+        "map": false
+      }
+    ],
+    "attrs": [
+      "position",
+      "normal",
+      "uv"
+    ],
+    "min": [
+      -1.6194100590182074,
+      0.5927299367026243,
+      -1.4462446270977412
+    ],
+    "max": [
+      -1.5315153161097612,
+      1.0086818469610386,
+      -1.0558479073081628
+    ]
+  },
+  {
+    "name": "FOGLI_pPlane7",
+    "parent": "FOGLI",
+    "triangles": 38,
+    "materials": [
+      {
+        "name": "initialShadingGroup",
+        "color": [
+          0.2140411404715882,
+          0.2140411404715882,
+          0.2140411404715882
+        ],
+        "map": false
+      }
+    ],
+    "attrs": [
+      "position",
+      "normal",
+      "uv"
+    ],
+    "min": [
+      -1.5600202593202823,
+      0.6976351009837878,
+      -1.225398227004746
+    ],
+    "max": [
+      -1.5346065941168376,
+      0.9037767589738189,
+      -1.1214189660231995
+    ]
+  },
+  {
+    "name": "ANGOLO_CAFFE_SPECCHIO",
+    "parent": "ANGOLO_CAFFE",
+    "triangles": 3245,
+    "materials": [
+      {
+        "name": "initialShadingGroup",
+        "color": [
+          0.2140411404715882,
+          0.2140411404715882,
+          0.2140411404715882
+        ],
+        "map": false
+      }
+    ],
+    "attrs": [
+      "position",
+      "normal",
+      "uv"
+    ],
+    "min": [
+      -1.3513604434275521,
+      -0.003046120039087309,
+      1.170581944050297
+    ],
+    "max": [
+      -0.9417298678667123,
+      1.5117521329577532,
+      1.720711021109423
+    ]
+  },
+  {
+    "name": "ANGOLO_CAFFE_DISPENSER",
+    "parent": "ANGOLO_CAFFE",
+    "triangles": 148,
+    "materials": [
+      {
+        "name": "initialShadingGroup",
+        "color": [
+          0.2140411404715882,
+          0.2140411404715882,
+          0.2140411404715882
+        ],
+        "map": false
+      }
+    ],
+    "attrs": [
+      "position",
+      "normal",
+      "uv"
+    ],
+    "min": [
+      -2.0731463159662553,
+      0.0000028800000380431647,
+      1.2342580900879618
+    ],
+    "max": [
+      -1.3251072396686538,
+      0.9000030316411773,
+      1.694680137902196
+    ]
+  },
+  {
+    "name": "ANGOLO_CAFFE_MICRONDE",
+    "parent": "ANGOLO_CAFFE",
+    "triangles": 18581,
+    "materials": [
+      {
+        "name": "initialShadingGroup",
+        "color": [
+          0.2140411404715882,
+          0.2140411404715882,
+          0.2140411404715882
+        ],
+        "map": false
+      }
+    ],
+    "attrs": [
+      "position",
+      "normal",
+      "uv"
+    ],
+    "min": [
+      -3.1484725248409973,
+      0.9131844125721362,
+      1.1257989250317444
+    ],
+    "max": [
+      -2.662876832569907,
+      1.1856454202761033,
+      1.4566944559657309
+    ]
+  },
+  {
+    "name": "ANGOLO_CAFFE_PLANT4",
+    "parent": "ANGOLO_CAFFE",
+    "triangles": 1900,
+    "materials": [
+      {
+        "name": "initialShadingGroup",
+        "color": [
+          0.2140411404715882,
+          0.2140411404715882,
+          0.2140411404715882
+        ],
+        "map": false
+      }
+    ],
+    "attrs": [
+      "position",
+      "normal",
+      "uv"
+    ],
+    "min": [
+      -2.0420955964454492,
+      0.8972058667867064,
+      1.3316933906444879
+    ],
+    "max": [
+      -1.8568566479491437,
+      1.5354189720283675,
+      1.595113642324946
+    ]
+  },
+  {
+    "name": "ANGOLO_CAFFE_svgMesh1",
+    "parent": "ANGOLO_CAFFE",
+    "triangles": 288,
+    "materials": [
+      {
+        "name": "initialShadingGroup",
+        "color": [
+          0.2140411404715882,
+          0.2140411404715882,
+          0.2140411404715882
+        ],
+        "map": false
+      }
+    ],
+    "attrs": [
+      "position",
+      "normal",
+      "uv"
+    ],
+    "min": [
+      -3.341818162609229,
+      -0.06345108844076777,
+      -3.1069658729367116
+    ],
+    "max": [
+      3.213300404251356,
+      1.299999965357361e-7,
+      2.041367752223436
+    ]
+  },
+  {
+    "name": "ANGOLO_CAFFE_KIT_WHISKY",
+    "parent": "ANGOLO_CAFFE",
+    "triangles": 1008,
+    "materials": [
+      {
+        "name": "initialShadingGroup",
+        "color": [
+          0.2140411404715882,
+          0.2140411404715882,
+          0.2140411404715882
+        ],
+        "map": false
+      }
+    ],
+    "attrs": [
+      "position",
+      "normal",
+      "uv"
+    ],
+    "min": [
+      -1.6781829458881248,
+      0.8990267743387794,
+      1.3690353087551437
+    ],
+    "max": [
+      -1.3963688347555205,
+      1.114085821045507,
+      1.6169190617594318
+    ]
+  },
+  {
+    "name": "ANGOLO_CAFFE_TAPPETINO_COFFEE",
+    "parent": "ANGOLO_CAFFE",
+    "triangles": 12,
+    "materials": [
+      {
+        "name": "initialShadingGroup",
+        "color": [
+          0.2140411404715882,
+          0.2140411404715882,
+          0.2140411404715882
+        ],
+        "map": false
+      }
+    ],
+    "attrs": [
+      "position",
+      "normal",
+      "uv"
+    ],
+    "min": [
+      -2.45105783706029,
+      0.9150747476128918,
+      1.2192350496522686
+    ],
+    "max": [
+      -2.0649532619501656,
+      0.9205718788376777,
+      1.548475764949415
+    ]
+  },
+  {
+    "name": "ANGOLO_CAFFE_FRIGORIFERO",
+    "parent": "ANGOLO_CAFFE",
+    "triangles": 200,
+    "materials": [
+      {
+        "name": "initialShadingGroup",
+        "color": [
+          0.2140411404715882,
+          0.2140411404715882,
+          0.2140411404715882
+        ],
+        "map": false
+      }
+    ],
+    "attrs": [
+      "position",
+      "normal",
+      "uv"
+    ],
+    "min": [
+      -3.0504668507620636,
+      0.0013721500030429079,
+      1.0451857523951127
+    ],
+    "max": [
+      -2.582781924692199,
+      0.8190856750513836,
+      1.5128707547589213
+    ]
+  },
+  {
+    "name": "ANGOLO_CAFFE_COFFE_MACHINE",
+    "parent": "ANGOLO_CAFFE",
+    "triangles": 1662,
+    "materials": [
+      {
+        "name": "initialShadingGroup",
+        "color": [
+          0.2140411404715882,
+          0.2140411404715882,
+          0.2140411404715882
+        ],
+        "map": false
+      }
+    ],
+    "attrs": [
+      "position",
+      "normal",
+      "uv"
+    ],
+    "min": [
+      -2.5970928374582627,
+      0.9149541268880488,
+      1.1292612967805262
+    ],
+    "max": [
+      -2.4356366948268544,
+      1.1827875254425213,
+      1.4760754064602672
+    ]
+  },
+  {
+    "name": "ANGOLO_CAFFE_PIANTINA046011",
+    "parent": "ANGOLO_CAFFE",
+    "triangles": 2568,
+    "materials": [
+      {
+        "name": "initialShadingGroup",
+        "color": [
+          0.2140411404715882,
+          0.2140411404715882,
+          0.2140411404715882
+        ],
+        "map": false
+      }
+    ],
+    "attrs": [
+      "position",
+      "normal",
+      "uv"
+    ],
+    "min": [
+      -1.881847186941343,
+      0.8881929580526139,
+      1.415135466416131
+    ],
+    "max": [
+      -1.6715359123452913,
+      1.196308872186194,
+      1.6066379950947003
+    ]
+  },
+  {
+    "name": "BANCO_CAFFE_ANGOLO_CAFFE",
+    "parent": "ANGOLO_CAFFE",
+    "triangles": 88,
+    "materials": [
+      {
+        "name": "initialShadingGroup",
+        "color": [
+          0.2140411404715882,
+          0.2140411404715882,
+          0.2140411404715882
+        ],
+        "map": false
+      }
+    ],
+    "attrs": [
+      "position",
+      "normal",
+      "uv"
+    ],
+    "min": [
+      -3.2818679076015655,
+      4.9999998070868464e-8,
+      1.0168267594987122
+    ],
+    "max": [
+      -2.035956070215491,
+      0.915000132136044,
+      1.5896450450350696
+    ]
+  },
+  {
+    "name": "POSTAZIONE_NURU_DESK_NURU",
+    "parent": "POSTAZIONE_NURU",
+    "triangles": 4999,
+    "materials": [
+      {
+        "name": "initialShadingGroup",
+        "color": [
+          0.2140411404715882,
+          0.2140411404715882,
+          0.2140411404715882
+        ],
+        "map": false
+      }
+    ],
+    "attrs": [
+      "position",
+      "normal",
+      "uv"
+    ],
+    "min": [
+      -1.6262807864036972,
+      0.00005520999773735832,
+      -2.9633107858156222
+    ],
+    "max": [
+      0.07871940913678532,
+      0.7413874651181508,
+      -1.563310511932286
+    ]
+  },
+  {
+    "name": "CHAIR_NURU_POSTAZIONE_NURU",
+    "parent": "POSTAZIONE_NURU",
+    "triangles": 4636,
+    "materials": [
+      {
+        "name": "initialShadingGroup",
+        "color": [
+          0.2140411404715882,
+          0.2140411404715882,
+          0.2140411404715882
+        ],
+        "map": false
+      }
+    ],
+    "attrs": [
+      "position",
+      "normal",
+      "uv"
+    ],
+    "min": [
+      -1.1515806022997155,
+      -0.007186961827606546,
+      -2.220599877400078
+    ],
+    "max": [
+      -0.5175123473445771,
+      1.043003730324548,
+      -1.5662300393598203
+    ]
+  },
+  {
+    "name": "POSTAZIONE_NURU_PC_NURU",
+    "parent": "POSTAZIONE_NURU",
+    "triangles": 40717,
+    "materials": [
+      {
+        "name": "initialShadingGroup",
+        "color": [
+          0.2140411404715882,
+          0.2140411404715882,
+          0.2140411404715882
+        ],
+        "map": false
+      },
+      {
+        "name": "PC_GRILLES_MICRODETAIL",
+        "color": [
+          0.2140411404715882,
+          0.2140411404715882,
+          0.2140411404715882
+        ],
+        "map": false
+      }
+    ],
+    "attrs": [
+      "position",
+      "normal",
+      "uv"
+    ],
+    "min": [
+      -1.5051882598134512,
+      0.694819167819189,
+      -2.9899157046545497
+    ],
+    "max": [
+      -1.1041498318877103,
+      1.1401725514194525,
+      -2.7196456301291505
+    ]
+  },
+  {
+    "name": "POSTAZIONE_NURU_KEYBOARD_NURU",
+    "parent": "POSTAZIONE_NURU",
+    "triangles": 3201,
+    "materials": [
+      {
+        "name": "initialShadingGroup",
+        "color": [
+          0.2140411404715882,
+          0.2140411404715882,
+          0.2140411404715882
+        ],
+        "map": false
+      }
+    ],
+    "attrs": [
+      "position",
+      "normal",
+      "uv"
+    ],
+    "min": [
+      -0.739494612377257,
+      0.7421806169558908,
+      -2.4914280143806025
+    ],
+    "max": [
+      -0.28082003919437426,
+      0.7608644696876883,
+      -2.34351908213975
+    ]
+  },
+  {
+    "name": "POSTAZIONE_NURU_DISPLAY_27_NURU",
+    "parent": "POSTAZIONE_NURU",
+    "triangles": 143,
+    "materials": [
+      {
+        "name": "initialShadingGroup",
+        "color": [
+          0.2140411404715882,
+          0.2140411404715882,
+          0.2140411404715882
+        ],
+        "map": false
+      }
+    ],
+    "attrs": [
+      "position",
+      "normal",
+      "uv"
+    ],
+    "min": [
+      -1.1939194984603034,
+      0.8061798678447318,
+      -2.6830391856348683
+    ],
+    "max": [
+      -0.8735701556450834,
+      1.352735565467127,
+      -2.577955874995382
+    ]
+  },
+  {
+    "name": "POSTAZIONE_NURU_LAVAGNA",
+    "parent": "POSTAZIONE_NURU",
+    "triangles": 44,
+    "materials": [
+      {
+        "name": "initialShadingGroup",
+        "color": [
+          0.2140411404715882,
+          0.2140411404715882,
+          0.2140411404715882
+        ],
+        "map": false
+      }
+    ],
+    "attrs": [
+      "position",
+      "normal",
+      "uv"
+    ],
+    "min": [
+      -1.7156858442197915,
+      0.6578890844161254,
+      -2.166227673749006
+    ],
+    "max": [
+      -1.600287439816725,
+      1.083000235192471,
+      -1.5662276871600511
+    ]
+  },
+  {
+    "name": "POSTAZIONE_NURU_ULTRAWIDE_NURU",
+    "parent": "POSTAZIONE_NURU",
+    "triangles": 888,
+    "materials": [
+      {
+        "name": "initialShadingGroup",
+        "color": [
+          0.2140411404715882,
+          0.2140411404715882,
+          0.2140411404715882
+        ],
+        "map": false
+      }
+    ],
+    "attrs": [
+      "position",
+      "normal",
+      "uv"
+    ],
+    "min": [
+      -0.8773420519230797,
+      0.7413912798153306,
+      -2.831975034356674
+    ],
+    "max": [
+      0.04575936692000848,
+      1.2404561337726663,
+      -2.6640087295172634
+    ]
+  },
+  {
+    "name": "POSTAZIONE_NURU_MOUSE_NURU",
+    "parent": "POSTAZIONE_NURU",
+    "triangles": 2238,
+    "materials": [
+      {
+        "name": "initialShadingGroup",
+        "color": [
+          0.2140411404715882,
+          0.2140411404715882,
+          0.2140411404715882
+        ],
+        "map": false
+      }
+    ],
+    "attrs": [
+      "position",
+      "normal",
+      "uv"
+    ],
+    "min": [
+      -0.21158053878887273,
+      0.7415650774188679,
+      -2.4742186946969014
+    ],
+    "max": [
+      -0.15340471878488238,
+      0.7780790536534983,
+      -2.361397499708886
+    ]
+  },
+  {
+    "name": "POSTAZIONE_NURU_FOGLIAME",
+    "parent": "POSTAZIONE_NURU",
+    "triangles": 11812,
+    "materials": [
+      {
+        "name": "initialShadingGroup",
+        "color": [
+          0.2140411404715882,
+          0.2140411404715882,
+          0.2140411404715882
+        ],
+        "map": false
+      }
+    ],
+    "attrs": [
+      "position",
+      "normal",
+      "uv"
+    ],
+    "min": [
+      -1.6906599048377586,
+      0.596605554596954,
+      -2.7327901610853473
+    ],
+    "max": [
+      -1.4956379365405894,
+      0.8202976806395259,
+      -2.2265722158572316
+    ]
+  },
+  {
+    "name": "POSTAZIONE_NURU_SPEAKER_NURU",
+    "parent": "POSTAZIONE_NURU",
+    "triangles": 232,
+    "materials": [
+      {
+        "name": "initialShadingGroup",
+        "color": [
+          0.2140411404715882,
+          0.2140411404715882,
+          0.2140411404715882
+        ],
+        "map": false
+      }
+    ],
+    "attrs": [
+      "position",
+      "normal",
+      "uv"
+    ],
+    "min": [
+      -0.9270831807956483,
+      0.7405340410649601,
+      -2.8667910125823823
+    ],
+    "max": [
+      -0.5131624056485151,
+      0.8177447326985416,
+      -2.785701536855811
+    ]
+  },
+  {
+    "name": "POSTAZIONE_NURU_TAPPETINO_NURU",
+    "parent": "POSTAZIONE_NURU",
+    "triangles": 42,
+    "materials": [
+      {
+        "name": "initialShadingGroup",
+        "color": [
+          0.2140411404715882,
+          0.2140411404715882,
+          0.2140411404715882
+        ],
+        "map": false
+      }
+    ],
+    "attrs": [
+      "position",
+      "normal",
+      "uv"
+    ],
+    "min": [
+      -0.8839308731869409,
+      0.7381751086225693,
+      -2.6237499413546175
+    ],
+    "max": [
+      0.07650492020312871,
+      0.7459377885027709,
+      -2.250028331055603
+    ]
+  },
+  {
+    "name": "SET_PIANTINE_PIANTINA046010",
+    "parent": "SET_PIANTINE",
+    "triangles": 2574,
+    "materials": [
+      {
+        "name": "initialShadingGroup",
+        "color": [
+          0.2140411404715882,
+          0.2140411404715882,
+          0.2140411404715882
+        ],
+        "map": false
+      }
+    ],
+    "attrs": [
+      "position",
+      "normal",
+      "uv"
+    ],
+    "min": [
+      0.5243703724957172,
+      0.7122826226290456,
+      -3.035540398458977
+    ],
+    "max": [
+      0.7615437909615679,
+      1.0203985367626258,
+      -2.8837706874958258
+    ]
+  },
+  {
+    "name": "PIANTINA_SET_PIANTINE",
+    "parent": "SET_PIANTINE",
+    "triangles": 2562,
+    "materials": [
+      {
+        "name": "initialShadingGroup",
+        "color": [
+          0.2140411404715882,
+          0.2140411404715882,
+          0.2140411404715882
+        ],
+        "map": false
+      }
+    ],
+    "attrs": [
+      "position",
+      "normal",
+      "uv"
+    ],
+    "min": [
+      -0.006134869915212615,
+      0.7122826226290456,
+      -3.007851800445053
+    ],
+    "max": [
+      0.22648917645612698,
+      1.0203985367626258,
+      -2.841157773409236
+    ]
+  },
+  {
+    "name": "SET_PIANTINE_PIANTINA046013",
+    "parent": "SET_PIANTINE",
+    "triangles": 2530,
+    "materials": [
+      {
+        "name": "initialShadingGroup",
+        "color": [
+          0.2140411404715882,
+          0.2140411404715882,
+          0.2140411404715882
+        ],
+        "map": false
+      }
+    ],
+    "attrs": [
+      "position",
+      "normal",
+      "uv"
+    ],
+    "min": [
+      2.2779102579226276,
+      0.6564766546381253,
+      -2.3251973967582558
+    ],
+    "max": [
+      2.4272028571247404,
+      0.9527811981861011,
+      -2.0988079364864234
+    ]
+  },
+  {
+    "name": "SET_PIANTINE_PIANTINA046014",
+    "parent": "SET_PIANTINE",
+    "triangles": 2226,
+    "materials": [
+      {
+        "name": "initialShadingGroup",
+        "color": [
+          0.2140411404715882,
+          0.2140411404715882,
+          0.2140411404715882
+        ],
+        "map": false
+      }
+    ],
+    "attrs": [
+      "position",
+      "normal",
+      "uv"
+    ],
+    "min": [
+      -1.808642537698688,
+      1.2102411381101343,
+      -0.3630938639545326
+    ],
+    "max": [
+      -1.65161403779058,
+      1.4182288806536287,
+      -0.25057025349355705
+    ]
+  },
+  {
+    "name": "BOTTIGLIE_BOTTIGLIE",
+    "parent": "BOTTIGLIE",
+    "triangles": 1888,
+    "materials": [
+      {
+        "name": "initialShadingGroup",
+        "color": [
+          0.2140411404715882,
+          0.2140411404715882,
+          0.2140411404715882
+        ],
+        "map": false
+      }
+    ],
+    "attrs": [
+      "position",
+      "normal",
+      "uv"
+    ],
+    "min": [
+      -0.29121011083103454,
+      0.05776402821174232,
+      0.7791577737221612
+    ],
+    "max": [
+      0.06987829052183869,
+      0.38301550962741293,
+      0.9325205785217746
+    ]
+  },
+  {
+    "name": "POSTAZIONE_GIAN_MOUSE_GIAN",
+    "parent": "POSTAZIONE_GIAN",
+    "triangles": 2238,
+    "materials": [
+      {
+        "name": "initialShadingGroup",
+        "color": [
+          0.2140411404715882,
+          0.2140411404715882,
+          0.2140411404715882
+        ],
+        "map": false
+      }
+    ],
+    "attrs": [
+      "position",
+      "normal",
+      "uv"
+    ],
+    "min": [
+      1.5295858134573876,
+      0.7415650476165455,
+      -2.4742186946968965
+    ],
+    "max": [
+      1.5877616009531046,
+      0.7780790238511759,
+      -2.361397499708881
+    ]
+  },
+  {
+    "name": "POSTAZIONE_GIAN_ULTRAWIDE_GIAN",
+    "parent": "POSTAZIONE_GIAN",
+    "triangles": 888,
+    "materials": [
+      {
+        "name": "initialShadingGroup",
+        "color": [
+          0.2140411404715882,
+          0.2140411404715882,
+          0.2140411404715882
+        ],
+        "map": false
+      }
+    ],
+    "attrs": [
+      "position",
+      "normal",
+      "uv"
+    ],
+    "min": [
+      0.7358427202612319,
+      0.7413912798153306,
+      -2.831975034356674
+    ],
+    "max": [
+      1.6589440531337991,
+      1.2404561337726663,
+      -2.6640087295172634
+    ]
+  },
+  {
+    "name": "POSTAZIONE_GIAN_TAPPETINO_GIAN",
+    "parent": "POSTAZIONE_GIAN",
+    "triangles": 42,
+    "materials": [
+      {
+        "name": "initialShadingGroup",
+        "color": [
+          0.2140411404715882,
+          0.2140411404715882,
+          0.2140411404715882
+        ],
+        "map": false
+      }
+    ],
+    "attrs": [
+      "position",
+      "normal",
+      "uv"
+    ],
+    "min": [
+      0.8504178429301561,
+      0.7381751086225693,
+      -2.6237499413546175
+    ],
+    "max": [
+      1.810853688772312,
+      0.7459377885027709,
+      -2.250028331055603
+    ]
+  },
+  {
+    "name": "POSTAZIONE_GIAN_SPEAKER_GIAN",
+    "parent": "POSTAZIONE_GIAN",
+    "triangles": 232,
+    "materials": [
+      {
+        "name": "initialShadingGroup",
+        "color": [
+          0.2140411404715882,
+          0.2140411404715882,
+          0.2140411404715882
+        ],
+        "map": false
+      }
+    ],
+    "attrs": [
+      "position",
+      "normal",
+      "uv"
+    ],
+    "min": [
+      1.301746797075566,
+      0.7405340410649601,
+      -2.8667910125823823
+    ],
+    "max": [
+      1.7156675336733258,
+      0.8177447326985416,
+      -2.785701536855811
+    ]
+  },
+  {
+    "name": "POSTAZIONE_GIAN_PC_GIAN",
+    "parent": "POSTAZIONE_GIAN",
+    "triangles": 40725,
+    "materials": [
+      {
+        "name": "initialShadingGroup",
+        "color": [
+          0.2140411404715882,
+          0.2140411404715882,
+          0.2140411404715882
+        ],
+        "map": false
+      },
+      {
+        "name": "PC_GRILLES_MICRODETAIL",
+        "color": [
+          0.2140411404715882,
+          0.2140411404715882,
+          0.2140411404715882
+        ],
+        "map": false
+      }
+    ],
+    "attrs": [
+      "position",
+      "normal",
+      "uv"
+    ],
+    "min": [
+      1.9988912517080166,
+      0.741940291033528,
+      -2.7185173952910873
+    ],
+    "max": [
+      2.269161478821303,
+      1.187293750927735,
+      -2.3174793488350645
+    ]
+  },
+  {
+    "name": "POSTAZIONE_GIAN_KEYBOARD_GIAN",
+    "parent": "POSTAZIONE_GIAN",
+    "triangles": 3193,
+    "materials": [
+      {
+        "name": "initialShadingGroup",
+        "color": [
+          0.2140411404715882,
+          0.2140411404715882,
+          0.2140411404715882
+        ],
+        "map": false
+      }
+    ],
+    "attrs": [
+      "position",
+      "normal",
+      "uv"
+    ],
+    "min": [
+      1.0016718068345227,
+      0.7421806169558908,
+      -2.4914280143806025
+    ],
+    "max": [
+      1.4603463418704337,
+      0.7608644696876883,
+      -2.34351908213975
+    ]
+  },
+  {
+    "name": "POSTAZIONE_GIAN_DESK_GIAN",
+    "parent": "POSTAZIONE_GIAN",
+    "triangles": 4397,
+    "materials": [
+      {
+        "name": "initialShadingGroup",
+        "color": [
+          0.2140411404715882,
+          0.2140411404715882,
+          0.2140411404715882
+        ],
+        "map": false
+      }
+    ],
+    "attrs": [
+      "position",
+      "normal",
+      "uv"
+    ],
+    "min": [
+      0.6818850555594622,
+      0.00005517999983790003,
+      -2.964296198391253
+    ],
+    "max": [
+      2.3868859329770657,
+      0.7413873888242072,
+      -1.564292567574398
+    ]
+  },
+  {
+    "name": "POSTAZIONE_GIAN_ALEXA",
+    "parent": "POSTAZIONE_GIAN",
+    "triangles": 554,
+    "materials": [
+      {
+        "name": "initialShadingGroup",
+        "color": [
+          0.2140411404715882,
+          0.2140411404715882,
+          0.2140411404715882
+        ],
+        "map": false
+      }
+    ],
+    "attrs": [
+      "position",
+      "normal",
+      "uv"
+    ],
+    "min": [
+      1.7759545501480716,
+      0.7409968401268813,
+      -2.908362056575072
+    ],
+    "max": [
+      1.935954546571793,
+      0.8775654405899602,
+      -2.7483620601513508
+    ]
+  },
+  {
+    "name": "POSTAZIONE_GIAN_DISPLAY_27_GIAN",
+    "parent": "POSTAZIONE_GIAN",
+    "triangles": 133,
+    "materials": [
+      {
+        "name": "initialShadingGroup",
+        "color": [
+          0.2140411404715882,
+          0.2140411404715882,
+          0.2140411404715882
+        ],
+        "map": false
+      }
+    ],
+    "attrs": [
+      "position",
+      "normal",
+      "uv"
+    ],
+    "min": [
+      1.6559536373029573,
+      0.8061798678447318,
+      -2.649600465679157
+    ],
+    "max": [
+      1.9681115282749033,
+      1.352735565467127,
+      -2.524036198466206
+    ]
+  },
+  {
+    "name": "CHAIR_GIAN_POSTAZIONE_GIAN",
+    "parent": "POSTAZIONE_GIAN",
+    "triangles": 4636,
+    "materials": [
+      {
+        "name": "initialShadingGroup",
+        "color": [
+          0.2140411404715882,
+          0.2140411404715882,
+          0.2140411404715882
+        ],
+        "map": false
+      }
+    ],
+    "attrs": [
+      "position",
+      "normal",
+      "uv"
+    ],
+    "min": [
+      1.3068644422248497,
+      -0.007186809617576786,
+      -2.2586377974159006
+    ],
+    "max": [
+      1.940932421216388,
+      1.043003669314003,
+      -1.6042687629699228
+    ]
+  },
+  {
+    "name": "BAR_SEDIA_BAR_ONE",
+    "parent": "BAR",
+    "triangles": 5569,
+    "materials": [
+      {
+        "name": "initialShadingGroup",
+        "color": [
+          0.2140411404715882,
+          0.2140411404715882,
+          0.2140411404715882
+        ],
+        "map": false
+      }
+    ],
+    "attrs": [
+      "position",
+      "normal",
+      "uv"
+    ],
+    "min": [
+      -0.7583097669860024,
+      -0.00002564999916021275,
+      1.0793995425239296
+    ],
+    "max": [
+      -0.24445043017453472,
+      0.9581989074155933,
+      1.6019926094563457
+    ]
+  },
+  {
+    "name": "BAR_Mesh",
+    "parent": "BAR",
+    "triangles": 11753,
+    "materials": [
+      {
+        "name": "initialShadingGroup",
+        "color": [
+          0.2140411404715882,
+          0.2140411404715882,
+          0.2140411404715882
+        ],
+        "map": false
+      }
+    ],
+    "attrs": [
+      "position",
+      "normal",
+      "uv"
+    ],
+    "min": [
+      -0.30164801877033653,
+      0.49203551146308716,
+      1.6688085564492205
+    ],
+    "max": [
+      -0.1057477641311042,
+      0.9922825400766164,
+      1.893194385174041
+    ]
+  },
+  {
+    "name": "BAR_UntitledMesh",
+    "parent": "BAR",
+    "triangles": 11764,
+    "materials": [
+      {
+        "name": "initialShadingGroup",
+        "color": [
+          0.2140411404715882,
+          0.2140411404715882,
+          0.2140411404715882
+        ],
+        "map": false
+      }
+    ],
+    "attrs": [
+      "position",
+      "normal",
+      "uv"
+    ],
+    "min": [
+      -0.10341420896170561,
+      0.49203551146308716,
+      1.6688085564492205
+    ],
+    "max": [
+      0.09248605521426967,
+      0.9922825400766164,
+      1.893194385174041
+    ]
+  },
+  {
+    "name": "LAMPADA_SALE_BAR",
+    "parent": "BAR",
+    "triangles": 3818,
+    "materials": [
+      {
+        "name": "initialShadingGroup",
+        "color": [
+          0.2140411404715882,
+          0.2140411404715882,
+          0.2140411404715882
+        ],
+        "map": false
+      }
+    ],
+    "attrs": [
+      "position",
+      "normal",
+      "uv"
+    ],
+    "min": [
+      -0.2824283918195576,
+      1.0383254772798982,
+      1.71709529853399
+    ],
+    "max": [
+      -0.12203267778383164,
+      1.285815248359399,
+      1.865317493707294
+    ]
+  },
+  {
+    "name": "BAR_PIANTINA046012",
+    "parent": "BAR",
+    "triangles": 2572,
+    "materials": [
+      {
+        "name": "initialShadingGroup",
+        "color": [
+          0.2140411404715882,
+          0.2140411404715882,
+          0.2140411404715882
+        ],
+        "map": false
+      }
+    ],
+    "attrs": [
+      "position",
+      "normal",
+      "uv"
+    ],
+    "min": [
+      -0.10802646395504922,
+      1.0373058850175316,
+      1.7015024949274382
+    ],
+    "max": [
+      0.10228496322888958,
+      1.3454218754450558,
+      1.8930047184302332
+    ]
+  },
+  {
+    "name": "BAR_SEDIA_BAR_TWO",
+    "parent": "BAR",
+    "triangles": 5591,
+    "materials": [
+      {
+        "name": "initialShadingGroup",
+        "color": [
+          0.2140411404715882,
+          0.2140411404715882,
+          0.2140411404715882
+        ],
+        "map": false
+      }
+    ],
+    "attrs": [
+      "position",
+      "normal",
+      "uv"
+    ],
+    "min": [
+      0.0176785298210711,
+      -0.000025639999084259367,
+      1.1513824205536587
+    ],
+    "max": [
+      0.5353760027428862,
+      0.9582272124686717,
+      1.650381585425549
+    ]
+  },
+  {
+    "name": "BAR_TAVOLO_BAR",
+    "parent": "BAR",
+    "triangles": 7380,
+    "materials": [
+      {
+        "name": "initialShadingGroup",
+        "color": [
+          0.2140411404715882,
+          0.2140411404715882,
+          0.2140411404715882
+        ],
+        "map": false
+      }
+    ],
+    "attrs": [
+      "position",
+      "normal",
+      "uv"
+    ],
+    "min": [
+      -0.35002947978609456,
+      0.00012834219906490387,
+      0.7001092372810257
+    ],
+    "max": [
+      0.14972854279588432,
+      1.044890342245467,
+      1.8998905520165577
+    ]
+  },
+  {
+    "name": "DYSON_ENTRATA",
+    "parent": "ENTRATA",
+    "triangles": 6246,
+    "materials": [
+      {
+        "name": "initialShadingGroup",
+        "color": [
+          0.2140411404715882,
+          0.2140411404715882,
+          0.2140411404715882
+        ],
+        "map": false
+      },
+      {
+        "name": "STUDIO_NEUTRAL",
+        "color": [
+          0.2140411404715882,
+          0.2140411404715882,
+          0.2140411404715882
+        ],
+        "map": false
+      },
+      {
+        "name": "DYSON_GRILLE_MICRODETAIL",
+        "color": [
+          0.2140411404715882,
+          0.2140411404715882,
+          0.2140411404715882
+        ],
+        "map": false
+      }
+    ],
+    "attrs": [
+      "position",
+      "normal",
+      "uv"
+    ],
+    "min": [
+      2.566141910415695,
+      0.31035701058006904,
+      -1.86614162088614
+    ],
+    "max": [
+      2.763401427490976,
+      1.338602112413894,
+      -1.7061414718745311
+    ]
+  },
+  {
+    "name": "ENTRATA_PLANT2",
+    "parent": "ENTRATA",
+    "triangles": 1992,
+    "materials": [
+      {
+        "name": "initialShadingGroup",
+        "color": [
+          0.2140411404715882,
+          0.2140411404715882,
+          0.2140411404715882
+        ],
+        "map": false
+      }
+    ],
+    "attrs": [
+      "position",
+      "normal",
+      "uv"
+    ],
+    "min": [
+      2.931279841707351,
+      0.0050982396655176706,
+      -0.3161352468400769
+    ],
+    "max": [
+      3.2517372930406623,
+      1.1091867580446573,
+      0.1395737235343368
+    ]
+  },
+  {
+    "name": "ENTRATA_TAVOLINO_DYSON",
+    "parent": "ENTRATA",
+    "triangles": 72,
+    "materials": [
+      {
+        "name": "initialShadingGroup",
+        "color": [
+          0.2140411404715882,
+          0.2140411404715882,
+          0.2140411404715882
+        ],
+        "map": false
+      }
+    ],
+    "attrs": [
+      "position",
+      "normal",
+      "uv"
+    ],
+    "min": [
+      2.4484362245700595,
+      0.010732749460649723,
+      -2.004814866077566
+    ],
+    "max": [
+      2.8884392664930374,
+      0.3107327963993064,
+      -1.5648151810881072
+    ]
+  },
+  {
+    "name": "ENTRATA_PLANT1",
+    "parent": "ENTRATA",
+    "triangles": 1972,
+    "materials": [
+      {
+        "name": "initialShadingGroup",
+        "color": [
+          0.2140411404715882,
+          0.2140411404715882,
+          0.2140411404715882
+        ],
+        "map": false
+      }
+    ],
+    "attrs": [
+      "position",
+      "normal",
+      "uv"
+    ],
+    "min": [
+      2.006086991293273,
+      0.005098129992973177,
+      -1.573592188948567
+    ],
+    "max": [
+      2.473014928854667,
+      1.1091866817507132,
+      -1.2478787715462116
+    ]
+  },
+  {
+    "name": "ENTRATA_ZERBINO_ENTRATA",
+    "parent": "ENTRATA",
+    "triangles": 88,
+    "materials": [
+      {
+        "name": "initialShadingGroup",
+        "color": [
+          0.2140411404715882,
+          0.2140411404715882,
+          0.2140411404715882
+        ],
+        "map": false
+      }
+    ],
+    "attrs": [
+      "position",
+      "normal",
+      "uv"
+    ],
+    "min": [
+      2.561136417363514,
+      -0.000876900012562916,
+      -1.1098508205298143
+    ],
+    "max": [
+      2.928490840304846,
+      0.004526509839448706,
+      -0.3368863221208826
+    ]
+  },
+  {
+    "name": "ENTRATA_PLANTPLANT",
+    "parent": "ENTRATA",
+    "triangles": 1972,
+    "materials": [
+      {
+        "name": "initialShadingGroup",
+        "color": [
+          0.2140411404715882,
+          0.2140411404715882,
+          0.2140411404715882
+        ],
+        "map": false
+      }
+    ],
+    "attrs": [
+      "position",
+      "normal",
+      "uv"
+    ],
+    "min": [
+      2.8005690902344327,
+      0.005098090057861836,
+      -2.098842573936821
+    ],
+    "max": [
+      3.267497180383714,
+      1.1091866054567692,
+      -1.7731290802405224
+    ]
+  },
+  {
+    "name": "POSTAZIONE_PS5_TV55_TAVOLO_POSTAZIONE",
+    "parent": "POSTAZIONE_PS5_TV55",
+    "triangles": 892,
+    "materials": [
+      {
+        "name": "initialShadingGroup",
+        "color": [
+          0.2140411404715882,
+          0.2140411404715882,
+          0.2140411404715882
+        ],
+        "map": false
+      }
+    ],
+    "attrs": [
+      "position",
+      "normal",
+      "uv"
+    ],
+    "min": [
+      0.07721221628338526,
+      0.00707529269747294,
+      -3.0344348326539228
+    ],
+    "max": [
+      0.6772119535758918,
+      0.6935952630246358,
+      -1.8344351402138779
+    ]
+  },
+  {
+    "name": "POSTAZIONE_PS5_TV55_CONTROLLER_PS5",
+    "parent": "POSTAZIONE_PS5_TV55",
+    "triangles": 2282,
+    "materials": [
+      {
+        "name": "initialShadingGroup",
+        "color": [
+          0.2140411404715882,
+          0.2140411404715882,
+          0.2140411404715882
+        ],
+        "map": false
+      }
+    ],
+    "attrs": [
+      "position",
+      "normal",
+      "uv"
+    ],
+    "min": [
+      0.3993789583583407,
+      0.7001627956294371,
+      -2.982015924557686
+    ],
+    "max": [
+      0.5472029372929867,
+      0.8109036836571151,
+      -2.854308102705147
+    ]
+  },
+  {
+    "name": "POSTAZIONE_PS5_TV55_STAND_TV_55",
+    "parent": "POSTAZIONE_PS5_TV55",
+    "triangles": 40,
+    "materials": [
+      {
+        "name": "initialShadingGroup",
+        "color": [
+          0.2140411404715882,
+          0.2140411404715882,
+          0.2140411404715882
+        ],
+        "map": false
+      }
+    ],
+    "attrs": [
+      "position",
+      "normal",
+      "uv"
+    ],
+    "min": [
+      0.07973064721232692,
+      0.6872276152544984,
+      -3.032742546959014
+    ],
+    "max": [
+      0.6797306671798822,
+      1.487227597373105,
+      -2.6327425558997106
+    ]
+  },
+  {
+    "name": "POSTAZIONE_PS5_TV55_TV_55",
+    "parent": "POSTAZIONE_PS5_TV55",
+    "triangles": 184,
+    "materials": [
+      {
+        "name": "initialShadingGroup",
+        "color": [
+          0.2140411404715882,
+          0.2140411404715882,
+          0.2140411404715882
+        ],
+        "map": false
+      }
+    ],
+    "attrs": [
+      "position",
+      "normal",
+      "uv"
+    ],
+    "min": [
+      -0.36908949980684724,
+      1.2765465260323892,
+      -2.999580011079161
+    ],
+    "max": [
+      1.1162692011236572,
+      2.1534012885376494,
+      -2.915461970967158
+    ]
+  },
+  {
+    "name": "CONTROLLERCONTROLLER_PS5_POSTAZIONE_PS5_TV55",
+    "parent": "POSTAZIONE_PS5_TV55",
+    "triangles": 2152,
+    "materials": [
+      {
+        "name": "initialShadingGroup",
+        "color": [
+          0.2140411404715882,
+          0.2140411404715882,
+          0.2140411404715882
+        ],
+        "map": false
+      }
+    ],
+    "attrs": [
+      "position",
+      "normal",
+      "uv"
+    ],
+    "min": [
+      0.21016353137425625,
+      0.7011186824488916,
+      -2.9781517889018687
+    ],
+    "max": [
+      0.3572159496572027,
+      0.8096425447692881,
+      -2.8500850803386015
+    ]
+  },
+  {
+    "name": "POSTAZIONE_PS5_TV55_PS5_CONSOLEPS5",
+    "parent": "POSTAZIONE_PS5_TV55",
+    "triangles": 4644,
+    "materials": [
+      {
+        "name": "initialShadingGroup",
+        "color": [
+          0.2140411404715882,
+          0.2140411404715882,
+          0.2140411404715882
+        ],
+        "map": false
+      }
+    ],
+    "attrs": [
+      "position",
+      "normal",
+      "uv"
+    ],
+    "min": [
+      0.2789231428744685,
+      0.713195632252193,
+      -2.9896239566141958
+    ],
+    "max": [
+      0.48320994250752136,
+      1.0740959690340743,
+      -2.9072747152907823
+    ]
+  },
+  {
+    "name": "SALOTTO_POLTRONA_TWO",
+    "parent": "SALOTTO",
+    "triangles": 6784,
+    "materials": [
+      {
+        "name": "initialShadingGroup",
+        "color": [
+          0.2140411404715882,
+          0.2140411404715882,
+          0.2140411404715882
+        ],
+        "map": false
+      }
+    ],
+    "attrs": [
+      "position",
+      "normal",
+      "uv"
+    ],
+    "min": [
+      1.8208613179431552,
+      -0.0001899201007949663,
+      0.1394196669887076
+    ],
+    "max": [
+      2.549462986227951,
+      0.8072014437496339,
+      0.9121884714322873
+    ]
+  },
+  {
+    "name": "LAMPADA_SALOTTO_SALOTTO",
+    "parent": "SALOTTO",
+    "triangles": 6348,
+    "materials": [
+      {
+        "name": "initialShadingGroup",
+        "color": [
+          0.2140411404715882,
+          0.2140411404715882,
+          0.2140411404715882
+        ],
+        "map": false
+      }
+    ],
+    "attrs": [
+      "position",
+      "normal",
+      "uv"
+    ],
+    "min": [
+      1.8269300433934461,
+      0.00015391999511650843,
+      1.155186741757688
+    ],
+    "max": [
+      2.285782877375567,
+      1.1997330969631723,
+      1.6236783999872555
+    ]
+  },
+  {
+    "name": "SALOTTO_TAPPETO_SALOTTO",
+    "parent": "SALOTTO",
+    "triangles": 2360,
+    "materials": [
+      {
+        "name": "initialShadingGroup",
+        "color": [
+          0.2140411404715882,
+          0.2140411404715882,
+          0.2140411404715882
+        ],
+        "map": false
+      }
+    ],
+    "attrs": [
+      "position",
+      "normal",
+      "uv"
+    ],
+    "min": [
+      0.5196880605886562,
+      0.0000027999997211130522,
+      -0.11027769795929564
+    ],
+    "max": [
+      2.560349369041262,
+      0.011026789895592215,
+      1.9303841731611437
+    ]
+  },
+  {
+    "name": "SALOTTO_POLTRONA_ONE",
+    "parent": "SALOTTO",
+    "triangles": 6534,
+    "materials": [
+      {
+        "name": "initialShadingGroup",
+        "color": [
+          0.2140411404715882,
+          0.2140411404715882,
+          0.2140411404715882
+        ],
+        "map": false
+      }
+    ],
+    "attrs": [
+      "position",
+      "normal",
+      "uv"
+    ],
+    "min": [
+      0.789139539246122,
+      -0.00018674978568912064,
+      1.1734245800951577
+    ],
+    "max": [
+      1.5619086870124477,
+      0.8072466097642498,
+      1.9020254091465743
+    ]
+  },
+  {
+    "name": "SALOTTO_TAVOLO_SALOTTO",
+    "parent": "SALOTTO",
+    "triangles": 5548,
+    "materials": [
+      {
+        "name": "initialShadingGroup",
+        "color": [
+          0.2140411404715882,
+          0.2140411404715882,
+          0.2140411404715882
+        ],
+        "map": false
+      }
+    ],
+    "attrs": [
+      "position",
+      "normal",
+      "uv"
+    ],
+    "min": [
+      0.5716975656517391,
+      -0.013634898357803403,
+      -0.001091800009642723
+    ],
+    "max": [
+      1.5375005759857459,
+      0.41095500027488935,
+      0.9631625150927332
+    ]
+  },
+  {
+    "name": "CESTINODoor_CESTINI",
+    "parent": "CESTINI",
+    "triangles": 2016,
+    "materials": [
+      {
+        "name": "initialShadingGroup",
+        "color": [
+          0.2140411404715882,
+          0.2140411404715882,
+          0.2140411404715882
+        ],
+        "map": false
+      }
+    ],
+    "attrs": [
+      "position",
+      "normal",
+      "uv"
+    ],
+    "min": [
+      -2.3301323942065437,
+      -0.0003150700334810639,
+      1.3008700270756317
+    ],
+    "max": [
+      -2.1512021919071174,
+      0.29279681504971994,
+      1.535424007428645
+    ]
+  },
+  {
+    "name": "CESTINI_pCube2",
+    "parent": "CESTINI",
+    "triangles": 236,
+    "materials": [
+      {
+        "name": "initialShadingGroup",
+        "color": [
+          0.2140411404715882,
+          0.2140411404715882,
+          0.2140411404715882
+        ],
+        "map": false
+      }
+    ],
+    "attrs": [
+      "position",
+      "normal",
+      "uv"
+    ],
+    "min": [
+      -3.084049308507531,
+      0.001275410027606219,
+      -0.7687580699751209
+    ],
+    "max": [
+      -2.7557964471922105,
+      0.3419618911602667,
+      -0.28556201296533595
+    ]
+  },
+  {
+    "name": "PARETE_DISPLAY_FONDAMENTA",
+    "parent": "FONDAMENTA",
+    "triangles": 160,
+    "materials": [
+      {
+        "name": "initialShadingGroup",
+        "color": [
+          0.2140411404715882,
+          0.2140411404715882,
+          0.2140411404715882
+        ],
+        "map": false
+      }
+    ],
+    "attrs": [
+      "position",
+      "normal",
+      "uv"
+    ],
+    "min": [
+      -3.348387071153809,
+      -2.4999998947627424e-7,
+      -3.1069002601452107
+    ],
+    "max": [
+      3.2094872329498685,
+      2.696183716591065,
+      1.4706478553120517
+    ]
+  },
+  {
+    "name": "ZONA_PROGETTAZIONE_PORTA_CARTEFBXASC046001",
+    "parent": "ZONA_PROGETTAZIONE",
+    "triangles": 636,
+    "materials": [
+      {
+        "name": "initialShadingGroup",
+        "color": [
+          0.2140411404715882,
+          0.2140411404715882,
+          0.2140411404715882
+        ],
+        "map": false
+      }
+    ],
+    "attrs": [
+      "position",
+      "normal",
+      "uv"
+    ],
+    "min": [
+      -1.6200861759464544,
+      0.6923110942099154,
+      -1.4420859680094436
+    ],
+    "max": [
+      -1.5171639675535857,
+      0.8819620451710817,
+      -1.2447466897851807
+    ]
+  },
+  {
+    "name": "ZONA_PROGETTAZIONE_PLANT3",
+    "parent": "ZONA_PROGETTAZIONE",
+    "triangles": 1992,
+    "materials": [
+      {
+        "name": "initialShadingGroup",
+        "color": [
+          0.2140411404715882,
+          0.2140411404715882,
+          0.2140411404715882
+        ],
+        "map": false
+      }
+    ],
+    "attrs": [
+      "position",
+      "normal",
+      "uv"
+    ],
+    "min": [
+      -1.6488444150497514,
+      0.005098219995985316,
+      -0.35797679100982593
+    ],
+    "max": [
+      -1.1810773966965655,
+      1.1091867580446573,
+      -0.025058059132291532
+    ]
+  },
+  {
+    "name": "ZONA_PROGETTAZIONE_PORTA_CARTE1",
+    "parent": "ZONA_PROGETTAZIONE",
+    "triangles": 636,
+    "materials": [
+      {
+        "name": "initialShadingGroup",
+        "color": [
+          0.2140411404715882,
+          0.2140411404715882,
+          0.2140411404715882
+        ],
+        "map": false
+      }
+    ],
+    "attrs": [
+      "position",
+      "normal",
+      "uv"
+    ],
+    "min": [
+      -1.6200861759464544,
+      0.6923111570109903,
+      -1.2395403775675506
+    ],
+    "max": [
+      -1.5171639675535857,
+      0.8819621079721566,
+      -1.0422012096151434
+    ]
+  },
+  {
+    "name": "ZONA_PROGETTAZIONE_BOOK_SHELF",
+    "parent": "ZONA_PROGETTAZIONE",
+    "triangles": 3526,
+    "materials": [
+      {
+        "name": "initialShadingGroup",
+        "color": [
+          0.2140411404715882,
+          0.2140411404715882,
+          0.2140411404715882
+        ],
+        "map": false
+      }
+    ],
+    "attrs": [
+      "position",
+      "normal",
+      "uv"
+    ],
+    "min": [
+      -1.7939254359768597,
+      0.9124852548729189,
+      -1.005787788798188
+    ],
+    "max": [
+      -1.6339246766137023,
+      1.7659586702445436,
+      -0.24437470843550493
+    ]
+  },
+  {
+    "name": "ZONA_PROGETTAZIONE_SOFTBOXSTANDSOFTBOX_GRPSoftbox_Stick",
+    "parent": "ZONA_PROGETTAZIONE",
+    "triangles": 608,
+    "materials": [
+      {
+        "name": "initialShadingGroup",
+        "color": [
+          0.2140411404715882,
+          0.2140411404715882,
+          0.2140411404715882
+        ],
+        "map": false
+      }
+    ],
+    "attrs": [
+      "position",
+      "normal",
+      "uv"
+    ],
+    "min": [
+      -1.6643899164112668,
+      1.872443195452319,
+      -0.8448447229375384
+    ],
+    "max": [
+      -0.9515246369348915,
+      2.2691330974742803,
+      -0.8046944247627017
+    ]
+  },
+  {
+    "name": "ZONA_PROGETTAZIONE_SOFTBOXSTANDSOFTBOX_GRPSoftbox_Arm2",
+    "parent": "ZONA_PROGETTAZIONE",
+    "triangles": 249,
+    "materials": [
+      {
+        "name": "initialShadingGroup",
+        "color": [
+          0.2140411404715882,
+          0.2140411404715882,
+          0.2140411404715882
+        ],
+        "map": false
+      }
+    ],
+    "attrs": [
+      "position",
+      "normal",
+      "uv"
+    ],
+    "min": [
+      -1.7221203228357354,
+      1.7715449127954621,
+      -0.848585262404712
+    ],
+    "max": [
+      -1.6122140142571766,
+      1.907498584073067,
+      -0.7833600441360467
+    ]
+  },
+  {
+    "name": "ZONA_PROGETTAZIONE_TRIPOD_ONE",
+    "parent": "ZONA_PROGETTAZIONE",
+    "triangles": 14526,
+    "materials": [
+      {
+        "name": "initialShadingGroup",
+        "color": [
+          0.2140411404715882,
+          0.2140411404715882,
+          0.2140411404715882
+        ],
+        "map": false
+      }
+    ],
+    "attrs": [
+      "position",
+      "normal",
+      "uv"
+    ],
+    "min": [
+      -1.558878444160257,
+      0.6616004033028977,
+      -1.657272759587926
+    ],
+    "max": [
+      -1.499192013609587,
+      1.1661520125086886,
+      -1.3206115427476561
+    ]
+  },
+  {
+    "name": "ZONA_PROGETTAZIONE_TAVOLO_DISPENSA",
+    "parent": "ZONA_PROGETTAZIONE",
+    "triangles": 892,
+    "materials": [
+      {
+        "name": "initialShadingGroup",
+        "color": [
+          0.2140411404715882,
+          0.2140411404715882,
+          0.2140411404715882
+        ],
+        "map": false
+      }
+    ],
+    "attrs": [
+      "position",
+      "normal",
+      "uv"
+    ],
+    "min": [
+      -1.6271540048896327,
+      0.006110955659113618,
+      -1.5310772432519502
+    ],
+    "max": [
+      -1.027154155838474,
+      0.6926309259862765,
+      -0.3310775508119055
+    ]
+  },
+  {
+    "name": "ZONA_PROGETTAZIONE_SOFTBOX1",
+    "parent": "ZONA_PROGETTAZIONE",
+    "triangles": 4408,
+    "materials": [
+      {
+        "name": "initialShadingGroup",
+        "color": [
+          0.2140411404715882,
+          0.2140411404715882,
+          0.2140411404715882
+        ],
+        "map": false
+      }
+    ],
+    "attrs": [
+      "position",
+      "normal",
+      "uv"
+    ],
+    "min": [
+      -1.478969235741289,
+      1.640887719670956,
+      -1.2599683098502092
+    ],
+    "max": [
+      -0.6271726849562071,
+      2.371921791465837,
+      -0.40918398896193575
+    ]
+  },
+  {
+    "name": "LAMPADA_SHELF_ZONA_PROGETTAZIONE",
+    "parent": "ZONA_PROGETTAZIONE",
+    "triangles": 3185,
+    "materials": [
+      {
+        "name": "initialShadingGroup",
+        "color": [
+          0.2140411404715882,
+          0.2140411404715882,
+          0.2140411404715882
+        ],
+        "map": false
+      }
+    ],
+    "attrs": [
+      "position",
+      "normal",
+      "uv"
+    ],
+    "min": [
+      -1.8899134404231575,
+      -2.0000001874748806e-8,
+      -0.22189706306389637
+    ],
+    "max": [
+      -1.6334855286742993,
+      1.6332896058271158,
+      0.034530951204949194
+    ]
+  },
+  {
+    "name": "ZONA_PROGETTAZIONE_SONY_FOTOCAMERA",
+    "parent": "ZONA_PROGETTAZIONE",
+    "triangles": 5380,
+    "materials": [
+      {
+        "name": "initialShadingGroup",
+        "color": [
+          0.2140411404715882,
+          0.2140411404715882,
+          0.2140411404715882
+        ],
+        "map": false
+      }
+    ],
+    "attrs": [
+      "position",
+      "normal",
+      "uv"
+    ],
+    "min": [
+      -1.3602633362949632,
+      1.3065025037563764,
+      -1.007521263490887
+    ],
+    "max": [
+      -1.2706425192063477,
+      1.398540312978468,
+      -0.8753379626124063
+    ]
+  },
+  {
+    "name": "ZONA_PROGETTAZIONE_SHELF",
+    "parent": "ZONA_PROGETTAZIONE",
+    "triangles": 2742,
+    "materials": [
+      {
+        "name": "initialShadingGroup",
+        "color": [
+          0.2140411404715882,
+          0.2140411404715882,
+          0.2140411404715882
+        ],
+        "map": false
+      }
+    ],
+    "attrs": [
+      "position",
+      "normal",
+      "uv"
+    ],
+    "min": [
+      -1.867682758547005,
+      0.00018524000007077258,
+      -1.0242004928544055
+    ],
+    "max": [
+      -1.627682763911423,
+      1.8065716148934141,
+      -0.22420028185396743
+    ]
+  },
+  {
+    "name": "ZONA_PROGETTAZIONE_TRIPOD_TWO",
+    "parent": "ZONA_PROGETTAZIONE",
+    "triangles": 14868,
+    "materials": [
+      {
+        "name": "initialShadingGroup",
+        "color": [
+          0.2140411404715882,
+          0.2140411404715882,
+          0.2140411404715882
+        ],
+        "map": false
+      }
+    ],
+    "attrs": [
+      "position",
+      "normal",
+      "uv"
+    ],
+    "min": [
+      -1.6608120356318636,
+      0.869114894514197,
+      -0.9812173242594899
+    ],
+    "max": [
+      -1.2504032618462304,
+      1.3940246270442451,
+      -0.9153045449710364
+    ]
+  },
+  {
+    "name": "ZONA_PROGETTAZIONE_case_shelf1",
+    "parent": "ZONA_PROGETTAZIONE",
+    "triangles": 21379,
+    "materials": [
+      {
+        "name": "initialShadingGroup.001",
+        "color": [
+          0.2140411404715882,
+          0.2140411404715882,
+          0.2140411404715882
+        ],
+        "map": false
+      }
+    ],
+    "attrs": [
+      "position",
+      "normal",
+      "uv"
+    ],
+    "min": [
+      -1.8872030217825682,
+      0.5903927861811334,
+      -0.9348714238061436
+    ],
+    "max": [
+      -1.6503161252219343,
+      1.016118675408094,
+      -0.4556717961503909
+    ]
+  },
+  {
+    "name": "pCube3_POSTER",
+    "parent": "POSTER",
+    "triangles": 12,
+    "materials": [
+      {
+        "name": "initialShadingGroup",
+        "color": [
+          0.2140411404715882,
+          0.2140411404715882,
+          0.2140411404715882
+        ],
+        "map": false
+      }
+    ],
+    "attrs": [
+      "position",
+      "normal",
+      "uv"
+    ],
+    "min": [
+      -0.0763388568981247,
+      1.5144709439321395,
+      1.8562739148078709
+    ],
+    "max": [
+      0.20419873734864424,
+      1.9194034910335354,
+      1.9009379152743966
+    ]
+  },
+  {
+    "name": "POSTER_pCube4",
+    "parent": "POSTER",
+    "triangles": 12,
+    "materials": [
+      {
+        "name": "initialShadingGroup",
+        "color": [
+          0.2140411404715882,
+          0.2140411404715882,
+          0.2140411404715882
+        ],
+        "map": false
+      }
+    ],
+    "attrs": [
+      "position",
+      "normal",
+      "uv"
+    ],
+    "min": [
+      0.2565235843541416,
+      1.5149126858656252,
+      1.8933509403463222
+    ],
+    "max": [
+      0.537061183369282,
+      1.919845232967021,
+      1.9380149408128478
+    ]
+  },
+  {
+    "name": "POSTER_pCube5",
+    "parent": "POSTER",
+    "triangles": 12,
+    "materials": [
+      {
+        "name": "initialShadingGroup",
+        "color": [
+          0.2140411404715882,
+          0.2140411404715882,
+          0.2140411404715882
+        ],
+        "map": false
+      }
+    ],
+    "attrs": [
+      "position",
+      "normal",
+      "uv"
+    ],
+    "min": [
+      -0.4109160522166775,
+      1.5149126858656252,
+      1.8180875753293708
+    ],
+    "max": [
+      -0.13037848181176592,
+      1.919845232967021,
+      1.8627515757958966
+    ]
+  }
+]
