@@ -1,3 +1,5 @@
+> **R18 (24 novembre 2026).** I confronti neutro/brandizzato partono al centro (50%). Dettagli in `docs/R18_NOTES.md` della repo navigation.
+
 > **V21 (17 novembre 2026) — bridge 13.** Nucleo di navigazione condiviso con il contenitore Vercel; le aperture verso Services e Start (carosello, «Ready to start», effetto visualfx) passano da `window.MementoNavigation.navigate()` quando il contenitore c'è; `data-memento-layout=overlay` conserva gli spazi della pagina standalone; `X-Robots-Tag: noindex, indexifembedded`. Contenuti, demo, VFX e navbar 12.1.0 invariati. Vedi `docs/PROTOCOLLO.md` del workspace.
 
 # Memento LevelUp · V20 — effetti, sfondo, touch e mobile di START V27

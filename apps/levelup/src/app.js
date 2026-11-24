@@ -23,7 +23,7 @@ $('#vision-grid').innerHTML = visions.map(item => `
       <div class="comparison-before"><img src="${item.before}" srcset="${item.before.replace('.webp','-640.webp')} 640w, ${item.before} 1280w" sizes="(max-width:767px) 75vw, 600px" alt="Lo stesso soggetto come modello di base" width="1280" height="1280" loading="lazy" decoding="async" draggable="false"></div>
       <div class="comparison-divider" data-vfx-dom aria-hidden="true"><span><img src="assets/icons/caret-left.svg" alt=""><img src="assets/icons/caret-right.svg" alt=""></span></div>
       <label class="sr-only" for="range-${item.id}">Confronta ${escape(item.title.join(' '))} Trascina per cambiare materiali e finiture.</label>
-      <input id="range-${item.id}" type="range" min="0" max="100" value="0" aria-valuetext="0% modello di base, 100% materiali e finiture">
+      <input id="range-${item.id}" type="range" min="0" max="100" value="50" aria-valuetext="50% modello di base, 50% materiali e finiture">
     </div></div>
   </article>`).join('');
 $('#steps-grid').innerHTML = steps.map((item,i) => `
