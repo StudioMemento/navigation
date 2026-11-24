@@ -32,7 +32,7 @@ export const weave = {
   ground: '#090909',
 };
 
-export function createMaterial(name, weave) {
+export function createMaterial(name, weave, paddingOf) {
   const layer = document.createElement('div');
   layer.className = 'mm-weave';
   layer.setAttribute('aria-hidden', 'true');
@@ -82,49 +82,77 @@ export function createMaterial(name, weave) {
   function compose() {
     const font = px => `300 ${px}px Inter, "Helvetica Neue", Arial, sans-serif`;
     const m = document.createElement('canvas').getContext('2d');
-    // as large as the screen allows: a capital about a sixth of the height, the word within 82% of the width,
-    // spread like the titles of the Home (justified capitals, a clear gap between them)
-    let size = Math.min(H * .17, W * .12), widths, gap;
-    for (let k = 0; k < 6; k++) {
-      m.font = font(size);
-      widths = letters.map(c => m.measureText(c).width);
-      const ink = widths.reduce((a, b) => a + b, 0), room = Math.min(W * .82, ink + size * .9 * (count - 1));
-      gap = count > 1 ? (room - ink) / (count - 1) : 0;
-      if (gap >= size * .28 || size < 18) break;
-      size *= .88;
-    }
-    const total = widths.reduce((a, b) => a + b, 0) + gap * (count - 1);
-    const cap = size * .727, base = H / 2 + cap / 2, pad = Math.ceil(size * .34);
-    let x = (W - total) / 2;
+    // R20: the name spans exactly the content between the site's margins (padding.mjs: 10 / 15 / 20 / 30% a side),
+    // its capitals justified from the left margin to the right one, like the wordmark over the content on mobile
+    const P = paddingOf(W, H) * W, room = W - 2 * P;
+    m.font = font(100);
+    const unit = letters.map(c => { const t = m.measureText(c); return t.actualBoundingBoxLeft + t.actualBoundingBoxRight; });
+    const size = Math.max(14, Math.min(H * .17, room * .6 / (unit.reduce((a, b) => a + b, 0) / 100)));
+    m.font = font(size);
+    const metrics = letters.map(c => m.measureText(c));
+    const ink = metrics.map(t => t.actualBoundingBoxLeft + t.actualBoundingBoxRight);
+    const cap = Math.max(...metrics.map(t => t.actualBoundingBoxAscent)), drop = Math.max(0, ...metrics.map(t => t.actualBoundingBoxDescent));
+    const gap = count > 1 ? (room - ink.reduce((a, b) => a + b, 0)) / (count - 1) : 0;
+    const base = H / 2 + cap / 2, pad = Math.ceil(size * .3);
+    let x = count > 1 ? P : (W - ink[0]) / 2;
+    // the look of a title of the site in hover: amber gradient, a mottled lattice of facets of mixed sizes inside the
+    // letters, a warm rim just inside the outline and a soft glow outside (the effect is already on)
+    const hotAt = t => t < .5 ? ['#ffe6c4', '#ffda8c'][t < .25 ? 0 : 1] : '#ffb45c';
+    const micro = Math.min(18, Math.max(5, size * .095));
     sprites = letters.map((c, i) => {
-      const w = Math.ceil(widths[i]) + pad * 2, h = Math.ceil(cap) + pad * 2;
+      const w = Math.ceil(ink[i]) + pad * 2, h = Math.ceil(cap + drop) + pad * 2;
       const sprite = document.createElement('canvas');
       sprite.width = Math.ceil(w * dpr); sprite.height = Math.ceil(h * dpr);
       const g = sprite.getContext('2d');
       g.scale(dpr, dpr);
       g.font = font(size); g.textBaseline = 'alphabetic';
-      const bx = pad, by = pad + cap;
-      // warm light around each letter: a wide soft glow, then a tight one
-      g.fillStyle = '#ff7950';
-      g.shadowColor = 'rgba(255,110,60,.5)'; g.shadowBlur = size * .2; g.fillText(c, bx, by);
-      g.shadowColor = 'rgba(255,170,96,.55)'; g.shadowBlur = size * .05; g.fillText(c, bx, by);
+      const bx = pad + metrics[i].actualBoundingBoxLeft, by = pad + cap;
+      g.fillStyle = '#ff8a4c';
+      g.shadowColor = 'rgba(255,121,80,.42)'; g.shadowBlur = size * .16; g.fillText(c, bx, by);
+      g.shadowColor = 'rgba(255,190,120,.5)'; g.shadowBlur = size * .045; g.fillText(c, bx, by);
       g.shadowColor = 'transparent'; g.shadowBlur = 0;
-      // the amber gradient of the titles: light from above, warm at the base
       const grad = g.createLinearGradient(0, by - cap, 0, by);
       [[0, '#fbefe8'], [.56, '#fbefe8'], [.68, '#f5d9c6'], [.8, '#ecb28c'], [.91, '#e2874f'], [1, '#d9682f']].forEach(([o, col]) => grad.addColorStop(o, col));
       g.fillStyle = grad; g.fillText(c, bx, by);
-      // a fine lattice of triangles inside the letter, like the cells of the titles
+      // facets: a triangular lattice turned like the titles' one, split 1:4 once or twice at random, each facet lit
+      // warm (by its height in the letter) or left a touch darker, a few hairline seams; drawn in a dozen batches
       g.globalCompositeOperation = 'source-atop';
-      g.strokeStyle = 'rgba(160,62,22,.32)'; g.lineWidth = Math.max(.5, size * .006);
-      const t = Math.max(7, size * .085), row = t * .866;
-      g.beginPath();
-      for (let yy = -row, j = 0; yy < h + row; yy += row, j++) for (let xx = -t + (j & 1) * t / 2; xx < w + t; xx += t) {
-        g.moveTo(xx, yy); g.lineTo(xx + t, yy); g.moveTo(xx, yy); g.lineTo(xx + t / 2, yy + row); g.lineTo(xx + t, yy);
+      const sinA = Math.sin(.332), cosA = Math.cos(.332);
+      g.save(); g.translate(w / 2, h / 2); g.rotate(.332); g.translate(-w, -h);
+      const batches = new Map(), seams = new Path2D(), rowH = micro * .866;
+      const add = (key, a, b, d) => { let p = batches.get(key); if (!p) batches.set(key, p = new Path2D()); p.moveTo(a[0], a[1]); p.lineTo(b[0], b[1]); p.lineTo(d[0], d[1]); p.closePath(); };
+      const mid = (a, b) => [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2];
+      const leaf = (a, b, d, salt) => {
+        const r = hash(salt, i * 131 + 7), r2 = hash(salt + 3, i * 17 + 1);
+        // the facet's height in the letter (0 top, 1 baseline), back from the turned lattice to the sprite
+        const lx = (a[0] + b[0] + d[0]) / 3 - w, ly = (a[1] + b[1] + d[1]) / 3 - h;
+        const yN = Math.min(1, Math.max(0, (sinA * lx + cosA * ly + h / 2 - (by - cap)) / cap));
+        if (r > .38) add('L' + hotAt(yN) + (r2 < .4 ? 1 : r2 < .75 ? 2 : 3), a, b, d);
+        else if (r < .16) add('S' + (r2 < .5 ? 1 : 2), a, b, d);
+        if (hash(salt + 9, i) < .3) { seams.moveTo(a[0], a[1]); seams.lineTo(b[0], b[1]); seams.lineTo(d[0], d[1]); }
+      };
+      const split = (a, b, d, level, salt) => {
+        if (level < 2 && hash(salt, level * 97 + i) < (level ? .42 : .62)) {
+          const ab = mid(a, b), bd = mid(b, d), da = mid(d, a);
+          split(a, ab, da, level + 1, salt * 4 + 1); split(ab, b, bd, level + 1, salt * 4 + 2);
+          split(da, bd, d, level + 1, salt * 4 + 3); split(ab, bd, da, level + 1, salt * 4 + 4);
+        } else leaf(a, b, d, salt);
+      };
+      for (let j = 0, yy = 0; yy < h * 2 + rowH; j++, yy += rowH) for (let k = 0, xx = -(j & 1) * micro / 2; xx < w * 2 + micro; k++, xx += micro) {
+        split([xx, yy], [xx + micro, yy], [xx + micro / 2, yy + rowH], 0, (j * 997 + k) * 8 + 1);
+        split([xx + micro, yy], [xx + micro * 1.5, yy + rowH], [xx + micro / 2, yy + rowH], 0, (j * 997 + k) * 8 + 5);
       }
-      g.stroke();
-      g.globalCompositeOperation = 'source-over';
-      const out = { sprite, x: x - pad, y: base - cap - pad, w, h };
-      x += widths[i] + gap;
+      for (const [key, path] of batches) {
+        if (key[0] === 'L') { g.fillStyle = key.slice(1, 8); g.globalAlpha = [0, .2, .32, .46][+key[8]]; }
+        else { g.fillStyle = '#96401a'; g.globalAlpha = key[1] === '1' ? .08 : .15; }
+        g.fill(path);
+      }
+      g.globalAlpha = .2; g.strokeStyle = '#ffecd2'; g.lineWidth = .5; g.stroke(seams);
+      g.restore();
+      g.globalAlpha = .55; g.strokeStyle = '#ff8c3c'; g.lineWidth = Math.max(1, size * .035); g.strokeText(c, bx, by);
+      g.globalAlpha = 1; g.globalCompositeOperation = 'source-over';
+      const out = { sprite, x: x - pad, y: base - cap - pad, w, h, bx, by };
+      x += ink[i] + gap;
       return out;
     });
     // where the fragments land: the letters' own pixels (the core of each glyph, not its glow)
@@ -134,7 +162,7 @@ export function createMaterial(name, weave) {
       const o = document.createElement('canvas'), q = sprites[i], ow = Math.ceil(q.w), oh = Math.ceil(q.h);
       o.width = ow; o.height = oh;
       const g = o.getContext('2d', { willReadFrequently: true });
-      g.font = font(size); g.fillStyle = '#fff'; g.fillText(c, pad, pad + cap);
+      g.font = font(size); g.fillStyle = '#fff'; g.fillText(c, q.bx, q.by);
       try {
         const data = g.getImageData(0, 0, ow, oh).data;
         for (let y = 0; y < oh; y += step) for (let xx = 0; xx < ow; xx += step) if (data[(y * ow + xx) * 4 + 3] > 160) targets.push(q.x + xx, q.y + y, i);

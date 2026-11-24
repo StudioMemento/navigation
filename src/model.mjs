@@ -21,10 +21,12 @@ export function layout(w,h,insets={}){
  const small=w<600,short=h<520;
  const arrowHeight=short?48:small?54:58,controlGap=12;
  const logoBottom=insets.logoBottom??60;
- const dockTop=insets.dockTop??h-(44+(Math.min(320,w-40)-200)/8);
+ // R20: on a phone the wordmark, the card and the dock share one column, 80% of the screen (padding.mjs, site.css)
+ const phone=w<768,rail=phone?w*.8:Math.min(320,w-40);
+ const dockTop=insets.dockTop??h-(44+(rail-200)/8);
  // Reserve the actual overlay hit areas before sizing the hero, including safe areas.
  const clearance=Math.max(logoBottom,h-dockTop)+arrowHeight+controlGap*2;
- const width=Math.min(w*(small?.84:portrait?.9:.88),h*.6*ratio,Math.max(40,h-2*clearance)*ratio),height=width/ratio;
+ const width=Math.min(w*(phone?.8:portrait?.9:.88),h*.6*ratio,Math.max(40,h-2*clearance)*ratio),height=width/ratio;
  const preferredOffset=Math.max(34,Math.min(62,(h-height)*.18));
  const previousY=clamp(h/2-height/2-preferredOffset,logoBottom+controlGap+arrowHeight/2,h/2-height/2-controlGap-arrowHeight/2);
  const nextY=clamp(h/2+height/2+preferredOffset,h/2+height/2+controlGap+arrowHeight/2,dockTop-controlGap-arrowHeight/2);

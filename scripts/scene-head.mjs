@@ -1,12 +1,17 @@
 import { createMaterial, names, weave } from './scene-material.mjs';
+import { paddingOf } from '../public/memento-ui/padding.mjs';
 
 // R18: the layer of the page change stays under the navigation (z-index 1000): wordmark and dock never leave, only the
-// content changes. Across the two documents the navigation is its own view-transition group, above the material: the
+// content changes. R20: the background of letters stays too: during the change it rises over the material (999 over
+// 998) and across the two documents it is its own view-transition group (mm-bg), the outgoing one until the incoming
+// has drawn its first frame (data-mm-bg, letters.mjs). Its field is the same in both: nothing jumps. Across the two documents the navigation is its own view-transition group, above the material: the
 // outgoing one until the new page opens, then the incoming one (the same bar, its new station lit). The incoming
 // material takes over from the outgoing frame once the page name is composed in its own face (data-mm-name).
 const css = `@media (prefers-reduced-motion:no-preference) and (forced-colors:none){
   @view-transition {navigation:auto}
-  .mm-weave {position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:999;view-transition-name:mm-material}
+  .mm-weave {position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:998;view-transition-name:mm-material}
+  .mm-letters {view-transition-name:mm-bg}
+  :root[data-mm-phase] .mm-letters {z-index:999}
   .mm-cells,.mm-name {position:absolute;inset:0;width:100%;height:100%}
   :root[data-mm-phase="hold"] .mm-name {animation:mm-breathe 2.4s ease-in-out infinite}
   @keyframes mm-breathe {50% {filter:brightness(1.14)}}
@@ -15,17 +20,23 @@ const css = `@media (prefers-reduced-motion:no-preference) and (forced-colors:no
   ::view-transition-group(root) {animation:mm-hold 6s step-end both}
   @keyframes mm-hold {from,to {opacity:1}}
   ::view-transition-old(root),::view-transition-new(root),::view-transition-group(mm-material),::view-transition-old(mm-material),::view-transition-new(mm-material),
-  ::view-transition-group(mm-nav),::view-transition-old(mm-nav),::view-transition-new(mm-nav) {animation:none;mix-blend-mode:normal}
+  ::view-transition-group(mm-nav),::view-transition-old(mm-nav),::view-transition-new(mm-nav),
+  ::view-transition-group(mm-bg),::view-transition-old(mm-bg),::view-transition-new(mm-bg) {animation:none;mix-blend-mode:normal}
   ::view-transition-old(root) {z-index:1;opacity:1}
   :root[data-mm-feed="new"]::view-transition-old(root),:root[data-mm-name]::view-transition-old(mm-material),:root:not([data-mm-name])::view-transition-new(mm-material) {opacity:0}
   ::view-transition-group(mm-material) {z-index:2}
-  ::view-transition-group(mm-nav) {z-index:3}
+  ::view-transition-group(mm-bg) {z-index:3}
+  ::view-transition-group(mm-nav) {z-index:4}
+  :root:not([data-mm-bg])::view-transition-new(mm-bg),:root[data-mm-bg]::view-transition-old(mm-bg) {opacity:0}
   ::view-transition-new(mm-nav),:root[data-mm-feed="new"]::view-transition-old(mm-nav) {opacity:0}
   :root[data-mm-feed="new"]::view-transition-new(mm-nav) {opacity:1}
 }
 @media (prefers-reduced-motion:reduce),(forced-colors:active){.mm-weave {display:none}}`;
 
-function observeScene(createMaterial, names, weave) {
+/** R20: the background of letters (letters.mjs) is in every body from the first byte, so the page change captures it. */
+export const lettersLayer = '<div class="mm-letters" aria-hidden="true"><canvas class="mm-letters-field"></canvas><canvas class="mm-letters-light"></canvas></div>';
+
+function observeScene(createMaterial, names, weave, paddingOf) {
   const root = document.documentElement;
   if (['services','levelup'].includes(root.dataset.mementoNative)) root.dataset.overlayScrollbar = 'true';
   let width, height;
@@ -155,7 +166,7 @@ function observeScene(createMaterial, names, weave) {
   // R17: the pieces of the interface the DOM paints (type, photographs, the dock; what a GPU surface keeps as DOM).
   // The surfaces the engine draws come apart in the engine itself.
   const leafy = 'img,picture,video,canvas,svg,h1,h2,h3,h4,h5,h6,p,li,dt,dd,button,a,label,input,select,textarea,figure,blockquote,pre,table,iframe,[data-vfx]';
-  const artwork = '.vfx-layer,.mm-weave,canvas#world';
+  const artwork = '.vfx-layer,.mm-weave,.mm-letters,canvas#world';
   const skip = artwork + ',script,style,link,meta,template,noscript';
   function pieces() {
     const vw = innerWidth, vh = innerHeight, live = root.classList.contains('vfx-live'), out = [];
@@ -234,7 +245,7 @@ function observeScene(createMaterial, names, weave) {
   // R18: the name composed during the change is the page that opens (leaving: the destination; arriving: this page)
   const nameOf = url => {try {return names[path(new URL(url, location.href))] || 'MEMENTO';} catch {return 'MEMENTO';}};
   function play(s, covering, fraction, duration) {
-    s.layer ??= createMaterial(nameOf(s.destination || location.href), weave);
+    s.layer ??= createMaterial(nameOf(s.destination || location.href), weave, paddingOf);
     s.run?.cancel();
     s.run = s.layer.play(covering, fraction, duration, s.scene);
     return s.run.done.catch(() => {});
@@ -405,4 +416,4 @@ function observeScene(createMaterial, names, weave) {
   motion.addEventListener('change', release);
 }
 
-export const sceneHead = `<style id="memento-scene-shape">${css}</style><script id="memento-scene-navigation">(${observeScene.toString()})(${createMaterial.toString()},${JSON.stringify(names)},${JSON.stringify(weave)})</script>`;
+export const sceneHead = `<style id="memento-scene-shape">${css}</style><script id="memento-scene-navigation">(${observeScene.toString()})(${createMaterial.toString()},${JSON.stringify(names)},${JSON.stringify(weave)},${paddingOf.toString()})</script>`;

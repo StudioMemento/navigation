@@ -1,5 +1,5 @@
 import { nativeNav } from '../public/navigation/markup.mjs';
-import { sceneHead } from './scene-head.mjs';
+import { sceneHead, lettersLayer } from './scene-head.mjs';
 import { parse, parseFragment, serialize } from 'parse5';
 import { STATIONS, PUBLIC_ORIGIN } from '../src/kit/core.mjs';
 import { routeMeta, OG_IMAGE } from '../src/seo.mjs';
@@ -140,6 +140,8 @@ export function nativePage(source, slug, release, { preload = [] } = {}) {
   const firstResource = head.childNodes.findIndex(n => ['script','link','style'].includes(n.tagName));
   head.childNodes.splice(firstResource < 0 ? head.childNodes.length : firstResource, 0, ...parseFragment(tags.join('')).childNodes);
   head.childNodes.push(...parseFragment('<style id="memento-native-font">@font-face{font-family:Inter;src:url("/assets/fonts/InterVariable.woff2") format("woff2");font-weight:100 900;font-style:normal;font-display:swap}</style>').childNodes);
+  // R20: the background of letters, first in the body (under everything, z-index -1; letters.mjs draws it)
+  body.childNodes.unshift(...parseFragment(lettersLayer).childNodes);
   body.childNodes.push(...parseFragment(nativeNav(section.id,'page')).childNodes);
   const staticLinks = ['<a href="/">Home</a>', ...STATIONS.map(s=>'<a href="'+s.path+'/">'+escape(s.label)+'</a>')];
   body.childNodes.push(...parseFragment('<noscript data-memento-static-nav><nav class="memento-static-nav" aria-label="Navigazione Memento">'+staticLinks.join(' ')+'</nav></noscript>').childNodes);

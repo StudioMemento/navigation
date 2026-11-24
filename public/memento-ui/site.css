@@ -34,7 +34,7 @@ html[data-status="404"] .missing-page {display:block;position:fixed;inset:auto 0
 html[data-memento-native] {scrollbar-width:none}
 html[data-memento-native]::-webkit-scrollbar {display:none;width:0;height:0}
 html[data-memento-native] .memento-scrollbar {display:none!important}
-.mm-scrollbar {position:fixed;z-index:998;top:6px;bottom:6px;right:0;width:16px;touch-action:none;cursor:default;-webkit-tap-highlight-color:transparent}
+.mm-scrollbar {position:fixed;z-index:997;top:6px;bottom:6px;right:0;width:16px;touch-action:none;cursor:default;-webkit-tap-highlight-color:transparent}
 .mm-scrollbar[hidden] {display:none}
 .mm-scrollbar-thumb {position:absolute;top:0;right:4px;width:2px;height:var(--scroll-size,40px);border-radius:2px;pointer-events:none;
   transform:translateY(var(--scroll-top,0px));opacity:.86;
@@ -55,3 +55,23 @@ html[data-memento-native] .memento-scrollbar {display:none!important}
 @media print {.mm-scrollbar {display:none}}
 /* Scroll areas inside a page (dialogs, long panels) keep a native scrollbar, thin and amber. */
 html[data-memento-native] * {scrollbar-color:#ff795080 transparent}
+
+/* R20: the background of letters (letters.mjs): the vector capitals of the MEMENTO wordmark in the margins of the
+   page (padding.mjs: 10 / 15 / 20 / 30% a side), fading out toward the content. Under everything, never in the way. */
+.mm-letters {position:fixed;inset:0;z-index:-1;pointer-events:none;overflow:hidden}
+.mm-letters canvas {position:absolute;inset:0;width:100%;height:100%;display:block}
+.mm-letters[hidden] {display:none}
+html[data-memento-native] body {background-color:transparent!important}
+/* The Studio is a 3D room filling the screen: the field shows there only during the page change, and fades over it */
+html[data-memento-native=studio] .mm-letters {opacity:0;transition:opacity .8s ease}
+html[data-memento-native=studio][data-mm-phase] .mm-letters {opacity:1}
+@media print {.mm-letters {display:none}}
+@media (forced-colors:active) {.mm-letters {display:none}}
+
+/* R20: on a phone the whole site stands on the Start page's frame: wordmark, content and dock share one column,
+   80% of the screen with 10% a side (padding.mjs). */
+@media (max-width:767px) {
+  :root {--memento-overlay-width:80vw;--memento-overlay-gutter:0px}
+  html[data-memento-native] {--content-width:80vw}
+  html[data-memento-native=start] .content-width {width:80vw;max-width:none}
+}

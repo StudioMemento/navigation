@@ -1,6 +1,8 @@
 import { mountNav } from '/navigation/navbar.mjs';
 import { navigationLink, station } from '/navigation/core.mjs';
 import { mountScrollbar } from '/memento-ui/scrollbar.mjs';
+// R20: the background of letters in the margins of every page (it mounts itself)
+import '/memento-ui/letters.mjs';
 
 const root = document.documentElement;
 const section = station(root.dataset.mementoNative);

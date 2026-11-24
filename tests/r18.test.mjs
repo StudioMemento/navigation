@@ -16,9 +16,9 @@ test('page change: the name of the page that opens, on the ground, under the nav
   assert.equal(weave.ground, '#090909');
   assert.ok(weave.letter[0] < weave.form[1] - weave.form[0] && weave.letter[1] < weave.fade[1] - weave.fade[0]);
   // the material stays under the navigation (z-index 1000) and the navigation is its own transition group above it
-  assert.match(sceneHead, /\.mm-weave \{[^}]*z-index:999/);
+  assert.match(sceneHead, /\.mm-weave \{[^}]*z-index:998/);   // R20: 998, the background of letters rises to 999 over it
   assert.match(sceneHead, /memento-nav \{view-transition-name:mm-nav\}/);
-  assert.match(sceneHead, /::view-transition-group\(mm-nav\) \{z-index:3\}/);
+  assert.match(sceneHead, /::view-transition-group\(mm-nav\) \{z-index:4\}/);   // R20: over the background of letters (3)
   // no seal any more; the incoming material waits for its face before it takes over
   assert.doesNotMatch(sceneHead, /mm-seal/);
   assert.match(sceneHead, /data-mm-name/);
@@ -58,7 +58,7 @@ test('one scroll cue and one ground for every page', () => {
   const css = source('public/memento-ui/site.css');
   assert.match(css, /--memento-ground: #090909/);
   assert.match(css, /html\[data-memento-native\] \.memento-scrollbar \{display:none!important\}/);
-  assert.match(css, /\.mm-scrollbar \{position:fixed;z-index:998;/);
+  assert.match(css, /\.mm-scrollbar \{position:fixed;z-index:997;/);   // R20: under the material (998)
   assert.match(source('public/memento-ui/site.mjs'), /mountScrollbar\(\);/);
   assert.match(source('public/memento-ui/scrollbar.mjs'), /role', 'scrollbar'/);
   assert.match(source('src/style.css'), /--ink:#090909/);
