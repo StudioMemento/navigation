@@ -4,7 +4,8 @@ import { paddingOf } from '../public/memento-ui/padding.mjs';
 // R18: the layer of the page change stays under the navigation (z-index 1000): wordmark and dock never leave, only the
 // content changes. R20: the background of letters stays too: during the change it rises over the material (999 over
 // 998) and across the two documents it is its own view-transition group (mm-bg), the outgoing one until the incoming
-// has drawn its first frame (data-mm-bg, letters.mjs). Its field is the same in both: nothing jumps. Across the two documents the navigation is its own view-transition group, above the material: the
+// has drawn its first frame (data-mm-bg, letters.mjs). Its field is the same in both: nothing jumps. Studio has no
+// field (a page of its own): there the outgoing one stays until the room opens. Across the two documents the navigation is its own view-transition group, above the material: the
 // outgoing one until the new page opens, then the incoming one (the same bar, its new station lit). The incoming
 // material takes over from the outgoing frame once the page name is composed in its own face (data-mm-name).
 const css = `@media (prefers-reduced-motion:no-preference) and (forced-colors:none){
@@ -27,7 +28,7 @@ const css = `@media (prefers-reduced-motion:no-preference) and (forced-colors:no
   ::view-transition-group(mm-material) {z-index:2}
   ::view-transition-group(mm-bg) {z-index:3}
   ::view-transition-group(mm-nav) {z-index:4}
-  :root:not([data-mm-bg])::view-transition-new(mm-bg),:root[data-mm-bg]::view-transition-old(mm-bg) {opacity:0}
+  :root:not([data-mm-bg])::view-transition-new(mm-bg),:root[data-mm-bg]::view-transition-old(mm-bg),:root[data-mm-feed="new"]::view-transition-old(mm-bg) {opacity:0}
   ::view-transition-new(mm-nav),:root[data-mm-feed="new"]::view-transition-old(mm-nav) {opacity:0}
   :root[data-mm-feed="new"]::view-transition-new(mm-nav) {opacity:1}
 }

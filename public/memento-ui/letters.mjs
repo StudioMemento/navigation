@@ -256,24 +256,17 @@ export function mountLetters() {
     }
     frame = requestAnimationFrame(tick);
   }
-  // the Studio is a 3D room filling the screen: there the field shows only while the page changes (site.css fades it
-  // out over the room); once it has faded, it stops drawing
-  const covered = () => root.dataset.mementoNative === 'studio' && !root.hasAttribute('data-mm-phase');
-  let asleep = covered(), rest = 0;
-  new MutationObserver(() => {
-    clearTimeout(rest);
-    if (covered()) rest = setTimeout(() => { if (covered()) { asleep = true; cancelAnimationFrame(frame); frame = 0; } }, 900);
-    else { asleep = false; start(); }
-  }).observe(root, { attributes: true, attributeFilter: ['data-mm-phase'] });
-  function start() { if (!frame && !asleep && !still() && !document.hidden) { last = 0; frame = requestAnimationFrame(tick); } }
+  function start() { if (!frame && !still() && !document.hidden) { last = 0; frame = requestAnimationFrame(tick); } }
 
   function resize() {
     const w = root.clientWidth || innerWidth, h = innerHeight;
     if (w === W && Math.abs(h - H) < 2) return;
     build();
   }
-  // arriving through the page change, the field is already there (the outgoing page showed it): no intro
-  intro = still() || root.hasAttribute('data-mm-arrive') ? 1 : 0;
+  // arriving through the page change, the field is already there (the outgoing page showed it): no intro. Coming from
+  // Studio, which has no field, it appears as on a first visit
+  const from = (() => { try { return new URL(window.navigation?.activation?.from?.url || document.referrer).pathname; } catch { return ''; } })();
+  intro = still() || (root.hasAttribute('data-mm-arrive') && !/^\/(studio|memento)(\/|$)/.test(from)) ? 1 : 0;
   eggAt = rand(...C.egg.first);
   build();
   requestAnimationFrame(() => root.setAttribute('data-mm-bg', ''));

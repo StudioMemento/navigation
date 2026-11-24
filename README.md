@@ -28,7 +28,7 @@ Le repo separate (mementostudio, servizi, Portfolio, mementolevelup, mementostar
 - Uscita delle celle negli shader: `EXIT` in `src/surfaces/shaders.ts` e `src/shaders.js`. Reticolato statico in hover: `HOVER_LATTICE` (0 dalla R17).
 - Ready to start su Portfolio e LevelUp: `readyCard` in `scripts/native-page.mjs`, stile in `public/memento-ui/ready-to-start.css`.
 - Hover con il mouse: `VFX.pointer.wave`; intensità delle celle accese: `HOVER_CELLS` (R18). Luce del cursore sulle foto: `PHOTO_SPOT` in `src/surfaces/shaders.ts` e `src/shaders.js`.
-- Sfondo di lettere (R20): `public/memento-ui/letters.mjs`. `LETTERS` contiene dimensione, densità, opacità, velocità, raggio del cursore, burst al clic e l'easter egg (`egg`: primo tentativo tra 7 e 13 s, poi ogni 16–30 s). I margini sono in `public/memento-ui/padding.mjs`: 10% su telefono, 15% su tablet, 20% su desktop, 30% su ultrawide.
+- Sfondo di lettere (R20): `public/memento-ui/letters.mjs`. `LETTERS` contiene dimensione, densità, opacità, velocità, raggio del cursore, burst al clic e l'easter egg (`egg`: primo tentativo tra 7 e 13 s, poi ogni 16–30 s). I margini sono in `public/memento-ui/padding.mjs`: 10% su telefono, 15% su tablet, 20% su desktop; su ultrawide la colonna di Start (1280 px). Studio non ha lo sfondo: è una pagina a sé.
 - `public/navigation/` contiene la navbar comune. Le pagine usano un fondo uniforme `#090909` (`--memento-ground` in `public/memento-ui/site.css`) e lo stesso indicatore di scroll (`public/memento-ui/scrollbar.mjs`).
 - Le pagine non hanno motore effetti né navbar propri: usano `/memento-ui/effects.mjs` (da `src/surfaces`) e la navbar di `public/navigation`. Il contenuto di ogni pagina (markup, CSS, caroselli, testi, immagini) si modifica nella sua cartella `apps/`.
 - Studio 3D usa lo stesso menu e la stessa transizione. La scena e i controlli 3D si modificano in `apps/studio`.
@@ -58,7 +58,8 @@ Le note delle release precedenti e i riferimenti artistici sono in `docs/`.
 ### R20
 
 - **Sfondo di lettere.** Riprende Letter Glitch di React Bits (preset pixel, `#f97316`, 8 px, densità 0.25, opacità 0.1, velocità 0.05, cursore 400, burst al clic). Al posto dei caratteri usa le lettere vettoriali del logotipo MEMENTO. Sta nei margini della pagina e sfuma fino a sparire dove comincia il contenuto. Ogni tanto il campo decripta MΞMΞNTO, e un'onda parte da lì per mostrare dove è successo.
-- **Margini.** Valgono 10-80-10 su telefono, 15-70-15 su tablet, 20-60-20 su desktop e 30-40-30 su ultrawide (`padding.mjs`). Su telefono logotipo, contenuto e navbar sono larghi l'80% in tutte le pagine, come in Start.
+- **Margini.** Valgono 10-80-10 su telefono, 15-70-15 su tablet e 20-60-20 su desktop (`padding.mjs`). Start fa da riferimento: su telefono logotipo, contenuto e navbar sono larghi l'80% in tutte le pagine; su ultrawide tutte le pagine prendono la sua colonna di 1280 px.
+- **Studio** diventa una pagina a sé, da sviluppare su misura: niente sfondo di lettere.
 - **Cambio pagina.** Il nome della pagina occupa lo spazio tra i margini, con lo stile dei titoli già in hover. Lo sfondo resta attivo per tutta la transizione: cambia solo il contenuto. Dettagli in `docs/R20_NOTES.md`.
 
 ### R19

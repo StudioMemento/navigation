@@ -62,9 +62,6 @@ html[data-memento-native] * {scrollbar-color:#ff795080 transparent}
 .mm-letters canvas {position:absolute;inset:0;width:100%;height:100%;display:block}
 .mm-letters[hidden] {display:none}
 html[data-memento-native] body {background-color:transparent!important}
-/* The Studio is a 3D room filling the screen: the field shows there only during the page change, and fades over it */
-html[data-memento-native=studio] .mm-letters {opacity:0;transition:opacity .8s ease}
-html[data-memento-native=studio][data-mm-phase] .mm-letters {opacity:1}
 @media print {.mm-letters {display:none}}
 @media (forced-colors:active) {.mm-letters {display:none}}
 
@@ -74,4 +71,9 @@ html[data-memento-native=studio][data-mm-phase] .mm-letters {opacity:1}
   :root {--memento-overlay-width:80vw;--memento-overlay-gutter:0px}
   html[data-memento-native] {--content-width:80vw}
   html[data-memento-native=start] .content-width {width:80vw;max-width:none}
+}
+/* R20: on an ultrawide screen (padding.mjs ULTRAWIDE) every page takes the Start page's column, 1280 px centred:
+   the margins, the background of letters and the name of the page change start where its content does. */
+@media (min-width:1600px) and (min-aspect-ratio:21/10) {
+  html[data-memento-native] {--content-width:1280px}
 }

@@ -4,7 +4,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { PADDING, paddingOf } from '../public/memento-ui/padding.mjs';
+import { PADDING, START_COLUMN, ULTRAWIDE, paddingOf } from '../public/memento-ui/padding.mjs';
 import { createMaterial } from '../scripts/scene-material.mjs';
 import { sceneHead, lettersLayer } from '../scripts/scene-head.mjs';
 import { nativePage } from '../scripts/native-page.mjs';
@@ -12,17 +12,29 @@ import { layout } from '../src/model.mjs';
 
 const source = path => readFileSync(new URL('../' + path, import.meta.url), 'utf8');
 
-test('padding rules: 10-80-10 phone, 15-70-15 tablet, 20-60-20 desktop, 30-40-30 ultrawide', () => {
-  assert.deepEqual({ ...PADDING }, { mobile: .1, tablet: .15, desktop: .2, ultrawide: .3 });
+test('padding rules: 10-80-10 phone, 15-70-15 tablet, 20-60-20 desktop, the Start column on ultrawide', () => {
+  assert.deepEqual({ ...PADDING }, { mobile: .1, tablet: .15, desktop: .2 });
   assert.equal(paddingOf(390, 844), .1);
   assert.equal(paddingOf(767, 1024), .1);
   assert.equal(paddingOf(768, 1024), .15);
   assert.equal(paddingOf(1024, 768), .15);
   assert.equal(paddingOf(1440, 900), .2);
   assert.equal(paddingOf(1920, 1080), .2);
-  assert.equal(paddingOf(2560, 1080), .3);
-  assert.equal(paddingOf(3440, 1440), .3);
   assert.equal(paddingOf(1500, 600), .2);   // very wide but under 1600 px: desktop, not ultrawide
+  // ultrawide: what the Start column (1280 px, centred) leaves on each side, never less than the desktop 20%
+  const start = width => (width - START_COLUMN) / 2 / width;
+  assert.equal(paddingOf(2560, 1080), start(2560));   // 25%
+  assert.equal(paddingOf(3440, 1440), start(3440));   // 31%
+  assert.equal(paddingOf(5120, 1440), start(5120));   // 37.5%
+  assert.equal(paddingOf(1800, 800), .2);              // the column would leave 14%: desktop margins
+  // Start's own column on wide screens is min(80%, 1280px), the column every page takes on ultrawide (site.css)
+  assert.match(source('apps/start/src/styles/start.css'), /\.content-width\{width:min\(80%,1280px\)/);
+  const css = source('public/memento-ui/site.css');
+  assert.ok(css.includes(`@media (min-width:${ULTRAWIDE.width}px) and (min-aspect-ratio:21/10) {\n  html[data-memento-native] {--content-width:${START_COLUMN}px}`));
+  assert.equal(ULTRAWIDE.ratio, 21 / 10);
+  // the Home card too
+  assert.equal(layout(2560, 1080).width, START_COLUMN);
+  assert.equal(layout(3440, 1440).width, START_COLUMN);
 });
 
 test('the background: the wordmark capitals, the React Bits parameters, faded out toward the content', () => {
@@ -36,10 +48,14 @@ test('the background: the wordmark capitals, the React Bits parameters, faded ou
   // the easter egg: the field decrypts MEMENTO and a chain spreads from where it happened
   assert.match(js, /function startEgg\(\)/);
   assert.match(js, /function stepEgg\(/);
-  // still for reduced motion, ?vfx=off and Save-Data; asleep under the Studio's 3D room
+  // still for reduced motion, ?vfx=off and Save-Data
   assert.match(js, /prefers-reduced-motion: reduce/);
   assert.match(js, /saveData/);
-  assert.match(js, /mementoNative === 'studio'/);
+  // Studio is a page of its own: no field there; coming from it, the field appears as on a first visit
+  assert.match(js, /\/\^\\\/\(studio\|memento\)/);
+  assert.match(source('public/memento-ui/site.mjs'), /if \(root\.dataset\.mementoNative !== 'studio'\) import\('\/memento-ui\/letters\.mjs'\);/);
+  const studio = nativePage('<!doctype html><html><head><title>t</title></head><body><main id="experience"></main></body></html>', 'studio', 'test');
+  assert.doesNotMatch(studio, /<div class="mm-letters"/);
 });
 
 test('the background is in every body from the first byte, under everything, never in the way', () => {
@@ -49,7 +65,6 @@ test('the background is in every body from the first byte, under everything, nev
   assert.equal(page.split('class="mm-letters"').length, 2);
   assert.match(source('vite.config.js'), /<!-- MEMENTO_LETTERS -->/);
   assert.match(source('index.html'), /<body>\n<!-- MEMENTO_LETTERS -->/);
-  assert.match(source('public/memento-ui/site.mjs'), /import '\/memento-ui\/letters\.mjs';/);
   const css = source('public/memento-ui/site.css');
   assert.match(css, /\.mm-letters \{position:fixed;inset:0;z-index:-1;pointer-events:none;overflow:hidden\}/);
   // contain:strict on a view-transition-named layer blanks the whole transition in Chrome: never again
@@ -86,7 +101,7 @@ test('page change: the name between the margins, in the hover look of the titles
   assert.match(sceneHead, /::view-transition-group\(mm-material\) \{z-index:2\}/);
   assert.match(sceneHead, /::view-transition-group\(mm-bg\) \{z-index:3\}/);
   assert.match(sceneHead, /::view-transition-group\(mm-nav\) \{z-index:4\}/);
-  assert.match(sceneHead, /:root:not\(\[data-mm-bg\]\)::view-transition-new\(mm-bg\),:root\[data-mm-bg\]::view-transition-old\(mm-bg\) \{opacity:0\}/);
+  assert.ok(sceneHead.includes(':root:not([data-mm-bg])::view-transition-new(mm-bg),:root[data-mm-bg]::view-transition-old(mm-bg),:root[data-mm-feed="new"]::view-transition-old(mm-bg) {opacity:0}'));
   assert.match(sceneHead, /const artwork = '\.vfx-layer,\.mm-weave,\.mm-letters,canvas#world';/);
   assert.match(sceneHead, /createMaterial\(nameOf\(s\.destination \|\| location\.href\), weave, paddingOf\)/);
   assert.match(sceneHead, /,function paddingOf\(width, height\)/);
