@@ -9,9 +9,9 @@
 :root {
   --ink: #f3f0ea;
   --muted: #aaa69f;
-  --amber: #f2a10a;
+  --amber: #ff7950;
   --line: #ffffff1c;
-  --memento-amber: #dfad6b;
+  --memento-amber: #ffaf96;
   --ease: cubic-bezier(0.22, 1, 0.36, 1);
   --layout-wide: 0;
   --board-ratio: 1;
@@ -33,12 +33,12 @@
   );
   --title-gradient-warm: linear-gradient(
     0deg,
-    #d9682f 0%,
-    #e2874f 9%,
-    #ecb28c 20%,
-    #f5d9c6 32%,
-    #fbefe8 44%,
-    #fbefe8 100%
+    #d66643 0%,
+    #ff7950 9%,
+    #ffa88e 20%,
+    #ffd4c7 32%,
+    #ffece7 44%,
+    #ffece7 100%
   );
   --frame-gradient: linear-gradient(
     135deg,
@@ -432,7 +432,8 @@ section[id] {
 }
 .service-carousel,
 #bundle-boards {
-  --outer-fade: max(0px, calc((100cqw - var(--slide-width)) * 0.43));
+  /* R21: only the edges of the screen fade (edge to edge), not the whole margin around a narrower board */
+  --outer-fade: min(max(0px, calc((100cqw - var(--slide-width)) * 0.43)), clamp(36px, 6vw, 140px));
   --slider-alpha: linear-gradient(
     90deg,
     transparent,
@@ -501,7 +502,7 @@ section[id] {
   background: var(--amber);
   opacity: 1;
   transform: scale(1.65);
-  box-shadow: 0 0 13px #d8994f45;
+  box-shadow: 0 0 13px #ff795045;
 }
 .carousel-dot:focus-visible {
   outline-offset: -2px;
@@ -553,7 +554,7 @@ section[id] {
 }
 .bundle-kicker {
   display: block;
-  color: #c8a579;
+  color: #ffaf96;
   font-size: 10px;
   font-weight: 500;
   letter-spacing: 0.12em;
@@ -593,7 +594,7 @@ section[id] {
   left: 0;
   width: 0.32em;
   height: 1px;
-  background: #c69b65;
+  background: #ffaf96;
 }
 .catalogue {
   padding-block: 32px 96px;
@@ -652,14 +653,14 @@ section[id] {
     background-color 0.4s ease;
 }
 .catalogue-filters button[aria-pressed='true'] {
-  color: #edbf80;
-  background: #c4955621;
+  color: #ffaf96;
+  background: #ff795021;
 }
 .catalogue-filters button:hover {
-  color: #f5dcc0;
+  color: #ffaf96;
 }
 .catalogue-filters button:focus-visible {
-  outline: 1px solid #ecc089;
+  outline: 1px solid #ffaf96;
   outline-offset: -4px;
 }
 .catalogue-filters svg {
@@ -762,7 +763,7 @@ section[id] {
   content: '';
   position: absolute;
   inset: 0;
-  background: #e4ad63;
+  background: #ff7950;
   transform: rotate(-45deg);
   -webkit-mask: url('assets/icons/caret-right.svg') center / contain no-repeat;
   mask: url('assets/icons/caret-right.svg') center / contain no-repeat;
@@ -987,7 +988,7 @@ dialog::backdrop {
   height: 1px;
   left: 0;
   top: 0.7em;
-  background: #bc925e;
+  background: #ff7950;
 }
 .item-master-steps {
   display: grid;
@@ -1103,7 +1104,7 @@ dialog::backdrop {
   margin-bottom: 12px;
   font-size: 10px;
   line-height: 1.3;
-  color: #c8a579;
+  color: #ffaf96;
   letter-spacing: 0.12em;
 }
 .bundle-master .bundle-services {
@@ -1285,7 +1286,7 @@ dialog::backdrop {
   width: fit-content;
   min-height: 48px;
   padding: 10px 0 8px;
-  border-bottom: 1px solid #b3894866;
+  border-bottom: 1px solid #ff795066;
   font-size: 14px;
   line-height: 1.5;
   text-align: left;
@@ -1463,7 +1464,7 @@ html[data-overlay-scrollbar='true']::-webkit-scrollbar {
   width: 2px;
   min-height: 32px;
   border-radius: 2px;
-  background: #cdb994;
+  background: #ffaf96;
   opacity: 0.32;
   transform: translateY(var(--scroll-top, 0px));
   height: var(--scroll-size, 44px);
@@ -1477,10 +1478,10 @@ html[data-overlay-scrollbar='true']::-webkit-scrollbar {
   .memento-scrollbar-thumb {
   opacity: 0.85;
   width: 3px;
-  background: #e0b57d;
+  background: #ffaf96;
 }
 .memento-scrollbar:focus-visible {
-  outline: 1px solid #d2aa73;
+  outline: 1px solid #ffaf96;
   outline-offset: -1px;
 }
 

@@ -86,7 +86,7 @@ main :focus-visible { scroll-margin-block: 20vh; }
 /* START V26/V27 DOM fallback of the touch wave: a title it reaches warms briefly (no painted layer, no circle). */
 html:not(.vfx-live) .touch-lit.gradient-text,
 html:not(.vfx-live) .touch-lit .gradient-text {
-  background-image: linear-gradient(0deg, #d9682f 0%, #e2874f 9%, #ecb28c 20%, #f5d9c6 32%, #fbefe8 44%, #fbefe8 100%);
+  background-image: linear-gradient(0deg, #d66643 0%, #ff7950 9%, #ffa88e 20%, #ffd4c7 32%, #ffece7 44%, #ffece7 100%);
   filter: drop-shadow(0 0 7px #ff795050);
 }
 

@@ -459,7 +459,7 @@ void main(){
   vec3 col=amber;
   col=mix(col,hot,fill);
   col=mix(col,facet,lit*mix(.4,.55,clamp(local,0.,1.)));
-  col=mix(col,vec3(1.,.9,.74),wire*lit*.3);
+  col=mix(col,vec3(1.,.88,.85),wire*lit*.3);
   // the overlay takes over the share W of the type with its own coverage: the content pass has given up exactly that
   float k=vFade;
   float cov=a*k*W0;
@@ -568,7 +568,7 @@ void main(){
   float band=smoothstep(.60,1.,abs(vUv.y-.5)*2.)*uLens.z;
   if(band>0.){ vec4 soft=texture(uSoft,vUv); col=mix(col,soft.rgb,band); s.a=mix(s.a,soft.a,band); }
   if(uMix.x>0.) col+=texture(uBloom,vUv).rgb*uMix.x;
-  if(uMix.y>0.) col+=texture(uStreak,vUv).rgb*vec3(1.,.82,.62)*uMix.y;
+  if(uMix.y>0.) col+=texture(uStreak,vUv).rgb*vec3(1.,.8,.73)*uMix.y;
   col=shoulder(col);
   col*=1.-uMix.z*smoothstep(.42,1.05,r)*smoothstep(.42,1.05,r);
   // premultiplied over the background: panels are opaque, light added over the void keeps its own coverage

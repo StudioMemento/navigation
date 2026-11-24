@@ -28,7 +28,8 @@ Le repo separate (mementostudio, servizi, Portfolio, mementolevelup, mementostar
 - Uscita delle celle negli shader: `EXIT` in `src/surfaces/shaders.ts` e `src/shaders.js`. Reticolato statico in hover: `HOVER_LATTICE` (0 dalla R17).
 - Ready to start su Portfolio e LevelUp: `readyCard` in `scripts/native-page.mjs`, stile in `public/memento-ui/ready-to-start.css`.
 - Hover con il mouse: `VFX.pointer.wave`; intensità delle celle accese: `HOVER_CELLS` (R18). Luce del cursore sulle foto: `PHOTO_SPOT` in `src/surfaces/shaders.ts` e `src/shaders.js`.
-- Sfondo di lettere (R20): `public/memento-ui/letters.mjs`. `LETTERS` contiene dimensione, densità, opacità, velocità, raggio del cursore, burst al clic e l'easter egg (`egg`: primo tentativo tra 7 e 13 s, poi ogni 16–30 s). I margini sono in `public/memento-ui/padding.mjs`: 10% su telefono, 15% su tablet, 20% su desktop; su ultrawide la colonna di Start (1280 px). Studio non ha lo sfondo: è una pagina a sé.
+- Sfondo di lettere (R20, R21): `public/memento-ui/letters.mjs`. `LETTERS` contiene dimensione, densità, opacità, velocità, raggio del cursore, sfumatura (`fade`), impulso del click e dell'easter egg (`wave`) ed easter egg (`egg`: primo tentativo tra 7 e 13 s, poi ogni 16–30 s). I margini sono in `public/memento-ui/padding.mjs` (10/15/20/30%) e, per il contenuto, in `--mm-pad` di `site.css` (R21). Studio non ha lo sfondo: è una pagina a sé.
+- Colori (R21): `#FF7950` (`--memento-accent`) e la variante light `#FFAF96` (`--memento-accent-light`); energia degli effetti in `VFX.color.amber`.
 - `public/navigation/` contiene la navbar comune. Le pagine usano un fondo uniforme `#090909` (`--memento-ground` in `public/memento-ui/site.css`) e lo stesso indicatore di scroll (`public/memento-ui/scrollbar.mjs`).
 - Le pagine non hanno motore effetti né navbar propri: usano `/memento-ui/effects.mjs` (da `src/surfaces`) e la navbar di `public/navigation`. Il contenuto di ogni pagina (markup, CSS, caroselli, testi, immagini) si modifica nella sua cartella `apps/`.
 - Studio 3D usa lo stesso menu e la stessa transizione. La scena e i controlli 3D si modificano in `apps/studio`.
@@ -54,6 +55,14 @@ Dalla R15 la Home e le pagine Start, Servizi, Portfolio e LevelUp hanno di nuovo
 Le note delle release precedenti e i riferimenti artistici sono in `docs/`.
 
 ## Archivio delle release
+
+### R21
+
+- **Niente scena congelata.** Il motore effetti, la Home, lo sfondo e il cambio pagina chiedono di nuovo un fotogramma perso durante il congelamento della scheda o la cache back/forward.
+- **Un solo arancione.** Tutto il sito usa `#FF7950` e la variante light `#FFAF96`, compresa l'energia del motore. I titoli a riposo restano identici.
+- **Padding forzato** sul contenuto di tutte le pagine (10/15/20/30%, `--mm-pad` in `site.css`), con gli slider di Services e LevelUp di nuovo edge to edge.
+- **Sfondo.** La sfumatura sta a cavallo del padding. Click ed easter egg mandano un impulso casuale su tutto il viewport, che torna in quiete.
+- **Cambio pagina.** Usa il linguaggio delle card: catena ambra negli spigoli, schegge di ossidiana, nome composto faccetta per faccetta e nitido. Dettagli in `docs/R21_NOTES.md`.
 
 ### R20
 

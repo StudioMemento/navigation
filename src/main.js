@@ -23,7 +23,7 @@ if(forceReduced)document.documentElement.dataset.motion='reduce';
 let storage;try{storage=sessionStorage;}catch{}
 const routeSlug=()=>{const segment=location.pathname.split('/').filter(Boolean)[0]?.replace(/\.html$/,'');const page=PAGES.find(p=>p.slug===segment||(segment==='memento'&&p.id==='memento'));return page?.slug||initialSection({hash:location.hash,storage,referrer:''});};
 let active=Math.max(0,PAGES.findIndex(p=>p.slug===(container?routeSlug():initialSection({hash:location.hash,storage,referrer:document.referrer}))));
-let position=active,target=active,velocity=0,settled=true,raf=0,lastTime=0,drag=null,suppressClick=0,disposed=false,layoutFrame=0;
+let frameAt=0,position=active,target=active,velocity=0,settled=true,raf=0,lastTime=0,drag=null,suppressClick=0,disposed=false,layoutFrame=0;
 let l,overlay,engine=null,route,hostHeight,tiltX=0,tiltY=0,frameCount=0,fpsSince=0,frameTime=0,idle=0,qaPaused=false,calm=false,moved=false;
 // R15: one decision per visit (query, Save-Data, device memory); `?vfx=off` keeps the HTML carousel
 const policy=vfxPolicy();
@@ -134,7 +134,7 @@ function stepWorld(dt){
  return busy||moving||tilting;
 }
 function frame(now){
- raf=0;if(disposed||document.hidden||qaPaused)return;
+ raf=0;frameAt=performance.now();if(disposed||document.hidden||qaPaused)return;
  // R17: the page change no longer pauses the carousel: the renderer draws the exit and goes live under the cover
  // high refresh screens are capped at 60 renders a second (V24), a held hover at NAV.calmFps (R15); the frame is skipped
  if(lastTime&&now-lastTime<1000/(calm?NAV.calmFps:NAV.fps)-1){raf=requestAnimationFrame(frame);return;}
@@ -155,7 +155,9 @@ function frame(now){
  calm=!!engine?.calm&&!moved&&!drag;
  if(active_ || (engine && idle<NAV.idle))raf=requestAnimationFrame(frame);
 }
-function wake(){idle=0;if(!raf&&!document.hidden&&!disposed&&!qaPaused){if(lastTime&&performance.now()-lastTime>100){lastTime=0;engine?.settle();}calm=false;raf=requestAnimationFrame(frame);}}
+// R21: a frame asked for before the page was frozen (background tab) or cached (back/forward) may never come: the loop
+// looked alive and the carousel stayed on its last frame. A request older than a second without a frame is asked again.
+function wake(){idle=0;if(raf&&!document.hidden&&performance.now()-frameAt>1000){cancelAnimationFrame(raf);raf=0;}if(!raf&&!document.hidden&&!disposed&&!qaPaused){if(lastTime&&performance.now()-lastTime>100){lastTime=0;engine?.settle();}calm=false;raf=requestAnimationFrame(frame);}}
 on($('previous'),'click',()=>select(queuedStep(position,target,-1)));
 on($('next'),'click',()=>select(queuedStep(position,target,1)));
 on(hub,'wheel',e=>{
@@ -220,6 +222,9 @@ on(document,'memento:scene-unfold',()=>{lastTime=0;wake();});
 on(document,'memento:scene-reset',()=>{engine?.resetExit();wake();});
 on(document,'visibilitychange',()=>{if(document.hidden){cancelAnimationFrame(raf);raf=0;lastTime=0;}else{lastTime=0;wake();}});
 on(window,'pageshow',()=>{lastTime=0;wake();});
+on(document,'freeze',()=>{cancelAnimationFrame(raf);raf=0;lastTime=0;});
+on(document,'resume',()=>{lastTime=0;wake();});
+on(window,'focus',()=>{lastTime=0;wake();});
 on(window,'pagehide',e=>{cancelAnimationFrame(raf);raf=0;if(!e.persisted){disposed=true;controller.abort();cancelAnimationFrame(layoutFrame);engine?.dispose();litTimers.forEach(clearTimeout);}});
 on(reduced,'change',()=>{lastTime=0;wake();});
 // Any loss of the context returns the navigation to its DOM rendering at once.

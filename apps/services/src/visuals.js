@@ -90,10 +90,10 @@ export function enhanceVisuals() {
       gradientUnits: 'userSpaceOnUse',
     });
     [
-      ['0', '#ffe4b5', '1'],
-      ['.28', '#dfad6b', '.95'],
-      ['.68', '#c98a40', '.5'],
-      ['1', '#c98a40', '0'],
+      ['0', '#ffd7ca', '1'],
+      ['.28', '#ffaf96', '.95'],
+      ['.68', '#ff7950', '.5'],
+      ['1', '#ff7950', '0'],
     ].forEach(([offset, color, opacity]) =>
       gradient.append(svgNode('stop', { offset, 'stop-color': color, 'stop-opacity': opacity })),
     );

@@ -1,14 +1,14 @@
 @font-face{font-family:Inter;src:url('assets/fonts/InterVariable.woff2') format('woff2');font-weight:100 900;font-style:normal;font-display:swap}
 :root{
-  --ink:#f3f0ea;--muted:#aaa69f;--amber:#dfad6b;--ease:cubic-bezier(.22,1,.36,1);
+  --ink:#f3f0ea;--muted:#aaa69f;--amber:#ffaf96;--ease:cubic-bezier(.22,1,.36,1);
   --content-width:min(1720px,100vw,max(320px,calc(100vw - 180px)));
   --gutter:max(0px,calc((100vw - var(--content-width))/2));
   --safe-left:max(var(--gutter),env(safe-area-inset-left));
   --safe-right:max(var(--gutter),env(safe-area-inset-right));
   --page-content:calc(100vw - var(--safe-left) - var(--safe-right));
   --layout-wide:1;--board-ratio:2;--corner-cut:clamp(16px,1.5vw,24px);
-  --title-gradient:linear-gradient(135deg,#f5f3ef 0%,#f5f3ef 34%,#eee4d6 61%,#ddbb8b 81%,#c98b42 100%);
-  --frame-gradient:linear-gradient(135deg,#d8d1c3c7,#aaa28f66 27%,#716a5e57 62%,#8c744b75 83%,#d9913de0);
+  --title-gradient:linear-gradient(135deg,#f5f3ef 0%,#f5f3ef 34%,#eedcd6 61%,#ffaa90 81%,#ff7950 100%);
+  --frame-gradient:linear-gradient(135deg,#d8d1c3c7,#aaa28f66 27%,#716a5e57 62%,#8c5a4b75 83%,#ff7950e0);
 }
 *{box-sizing:border-box}
 html{background:transparent;scrollbar-color:#746b5d transparent;scroll-behavior:auto}
@@ -45,7 +45,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,[tabindex]:focus-visibl
   --board-height:calc(var(--slide-width)/var(--intro-ratio));
   --card-inset:clamp(20px,calc(var(--slide-width)*.038),58px);
 }
-.carousel{--side-fade:calc((100vw - var(--slide-width))*.43);position:relative;width:100%;touch-action:pan-y pinch-zoom;user-select:none;overflow:hidden;padding-top:var(--carousel-bleed-top,12px);padding-bottom:var(--carousel-bleed-bottom,12px);mask-image:linear-gradient(90deg,transparent,#000 var(--side-fade),#000 calc(100% - var(--side-fade)),transparent)}
+.carousel{--side-fade:min(calc((100vw - var(--slide-width))*.43),clamp(36px,6vw,140px));position:relative;width:100%;touch-action:pan-y pinch-zoom;user-select:none;overflow:hidden;padding-top:var(--carousel-bleed-top,12px);padding-bottom:var(--carousel-bleed-bottom,12px);mask-image:linear-gradient(90deg,transparent,#000 var(--side-fade),#000 calc(100% - var(--side-fade)),transparent)}
 .carousel-stage{height:var(--board-height);position:relative;isolation:isolate;overflow:visible}
 .showcase-card{position:absolute;top:0;left:50%;width:var(--slide-width);height:var(--board-height);background:#000;transform-origin:center;cursor:grab;filter:grayscale(calc(1 - clamp(0,(var(--slide-focus,1) - .5)*2,1)));will-change:transform;overflow:hidden}
 .showcase-card:active{cursor:grabbing}.showcase-card::before{opacity:calc(.22 + .78*var(--slide-focus,1))}
@@ -58,13 +58,13 @@ button:focus-visible,a:focus-visible,input:focus-visible,[tabindex]:focus-visibl
 .carousel-controls{display:flex;justify-content:center;align-items:center;gap:0;height:44px;margin:12px auto 0;width:min(100% - 16px,640px)}
 .carousel-controls button{width:44px;height:44px;display:grid;place-items:center;padding:0;flex:0 1 44px;min-width:26px}
 .carousel-controls button span{width:5px;height:5px;background:#d8d5d0;opacity:.65;border-radius:50%;transition:background .3s,transform .3s,opacity .3s}
-.carousel-controls button[aria-current=true] span{background:#f2a10a;opacity:1;transform:scale(1.65);box-shadow:0 0 13px #d8994f45}
+.carousel-controls button[aria-current=true] span{background:#ff7950;opacity:1;transform:scale(1.65);box-shadow:0 0 13px #ff795045}
 .carousel-controls button:hover span{opacity:1}
 
 /* Cinematic coverflow: a dominant central frame with four perspective neighbours. */
 .experiences-section{padding-block:clamp(36px,5vw,80px);display:block;scroll-margin-top:24px}
 .experiences-section .section-heading{margin-bottom:clamp(20px,2vw,32px)}
-.portfolio-carousel{--slide-width:clamp(240px,calc(var(--page-content)*.4),680px);--board-height:calc(var(--slide-width)*.5);--card-inset:clamp(16px,1.4vw,26px);--side-fade:var(--safe-left);width:100%;margin:0;--corner-cut:clamp(12px,1.2vw,20px)}
+.portfolio-carousel{--slide-width:clamp(240px,calc(var(--page-content)*.4),680px);--board-height:calc(var(--slide-width)*.5);--card-inset:clamp(16px,1.4vw,26px);--side-fade:min(var(--safe-left),clamp(36px,6vw,140px));width:100%;margin:0;--corner-cut:clamp(12px,1.2vw,20px)}
 .portfolio-carousel .card-art{object-fit:cover;object-position:center 46%}
 .portfolio-carousel .showcase-card{cursor:pointer;filter:grayscale(calc(1 - var(--slide-focus,1)))}.portfolio-carousel .showcase-card[data-active=true]{cursor:grab}
 .portfolio-carousel .showcase-card:after{content:'';position:absolute;inset:0;z-index:1;background:linear-gradient(0deg,#000e,transparent 62%,#0009);pointer-events:none}
@@ -94,7 +94,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,[tabindex]:focus-visibl
 .demo-loading{position:absolute;inset:0;z-index:3;display:grid;place-items:center;background:linear-gradient(0deg,#07090aeb,#07090a88);color:var(--ink);font-size:15px;text-shadow:0 1px 10px #000}
 .demo-fallback{position:absolute;z-index:4;left:20px;right:20px;bottom:20px;padding:24px;background:#07090af5;border:1px solid #aaa28f66}
 .demo-fallback p{font-size:15px;line-height:1.45;margin-bottom:16px}.demo-fallback>div{display:flex;gap:12px;flex-wrap:wrap}
-.cut-button{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:10px 20px;background:#151310;color:var(--ink);border:1px solid #c4955655;clip-path:polygon(8px 0,100% 0,100% calc(100% - 8px),calc(100% - 8px) 100%,0 100%,0 8px)}.cut-button:hover{border-color:var(--amber)}
+.cut-button{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:10px 20px;background:#151310;color:var(--ink);border:1px solid #ff795055;clip-path:polygon(8px 0,100% 0,100% calc(100% - 8px),calc(100% - 8px) 100%,0 100%,0 8px)}.cut-button:hover{border-color:var(--amber)}
 .icon-button{display:grid;place-items:center;width:44px;height:44px;background:#090909e6;border:1px solid #ffffff36;cursor:pointer}.icon-button img{width:24px;height:24px;filter:invert(1)}
 .close-demo{position:absolute;right:16px;top:16px;z-index:10}
 /* The dialog stays in this slot for its entire lifetime. CSS renders the
@@ -157,7 +157,7 @@ html[data-demo-expanded=true]{overflow:hidden}
   .benefit-copy h2{font-size:clamp(28px,calc(var(--slide-width)*.065),38px)}
   .benefit-carousel .card-art{height:84%;top:9%;object-position:right center}
   .benefit-copy p{font-size:clamp(13px,calc(var(--slide-width)*.038),17px);letter-spacing:-.018em;line-height:1.35}
-  .experiences-section{padding-block:32px}.portfolio-carousel{--slide-width:calc(var(--page-content)*.72);--board-height:calc(var(--slide-width)*.61);--card-inset:16px;--side-fade:var(--safe-left)}.portfolio-carousel .project-name{font-size:28px} #demo-slot{height:72svh;min-height:400px}
+  .experiences-section{padding-block:32px}.portfolio-carousel{--slide-width:calc(var(--page-content)*.72);--board-height:calc(var(--slide-width)*.61);--card-inset:16px;--side-fade:min(var(--safe-left),clamp(36px,6vw,140px))}.portfolio-carousel .project-name{font-size:28px} #demo-slot{height:72svh;min-height:400px}
   .project-name{font-size:20px}.project-category{font-size:10px}
   .carousel-controls button{width:32px;flex-basis:32px;height:40px}
   .demo-fallback{inset:auto 12px 12px;padding:16px}.demo-loading{font-size:14px}
@@ -180,7 +180,7 @@ html[data-demo-expanded=true]{overflow:hidden}
 html[data-overlay-scrollbar=true]{scrollbar-width:none}html[data-overlay-scrollbar=true]::-webkit-scrollbar{display:none}
 .memento-scrollbar{position:fixed;z-index:120;top:4px;right:0;width:16px;height:calc(100dvh - 8px);touch-action:none;cursor:pointer;outline-offset:-2px}
 .memento-scrollbar-thumb{position:absolute;top:var(--scroll-top,0);right:3px;width:2px;height:var(--scroll-size,32px);background:#d2c4af;opacity:.32;transition:opacity .3s,width .3s;pointer-events:none}
-.memento-scrollbar:is(:hover,:focus-visible,.is-scrolling,.is-dragging) .memento-scrollbar-thumb{width:3px;opacity:.85;background:#e0b57d}
+.memento-scrollbar:is(:hover,:focus-visible,.is-scrolling,.is-dragging) .memento-scrollbar-thumb{width:3px;opacity:.85;background:#ffaf96}
 @media(max-width:767px){.memento-scrollbar{width:12px}.memento-scrollbar-thumb{right:2px}}
 @media(forced-colors:active){html[data-overlay-scrollbar=true]{scrollbar-width:auto}.memento-scrollbar{display:none}}
 

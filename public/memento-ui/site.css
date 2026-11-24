@@ -1,5 +1,7 @@
 :root {
   --memento-accent: #ff7950;
+  /* R21: the one light variant of the orange, for highlights and UI */
+  --memento-accent-light: #ffaf96;
   /* R18: one ground for the whole site (Home, pages, the page change). Cards and panels stay black on it. */
   --memento-ground: #090909;
   --memento-safe-top: max(76px,calc(env(safe-area-inset-top,0px) + 60px));
@@ -38,7 +40,7 @@ html[data-memento-native] .memento-scrollbar {display:none!important}
 .mm-scrollbar[hidden] {display:none}
 .mm-scrollbar-thumb {position:absolute;top:0;right:4px;width:2px;height:var(--scroll-size,40px);border-radius:2px;pointer-events:none;
   transform:translateY(var(--scroll-top,0px));opacity:.86;
-  background:linear-gradient(180deg,#ff795000 0%,#ff79501f 22%,#ff795066 48%,#ff7950c2 74%,#ff8a5c 90%,#ffb487 100%);
+  background:linear-gradient(180deg,#ff795000 0%,#ff79501f 22%,#ff795066 48%,#ff7950c2 74%,#ff9473 90%,#ffaf96 100%);
   box-shadow:0 6px 10px -4px #ff795059;
   transition:opacity .35s ease,width .2s ease,right .2s ease,box-shadow .35s ease}
 .mm-scrollbar:is(:hover,:focus-visible,.is-scrolling,.is-dragging) .mm-scrollbar-thumb {opacity:1;width:3px;right:3.5px;box-shadow:0 8px 14px -4px #ff79508c}
@@ -65,15 +67,16 @@ html[data-memento-native] body {background-color:transparent!important}
 @media print {.mm-letters {display:none}}
 @media (forced-colors:active) {.mm-letters {display:none}}
 
-/* R20: on a phone the whole site stands on the Start page's frame: wordmark, content and dock share one column,
-   80% of the screen with 10% a side (padding.mjs). */
+/* R20: on a phone the wordmark and the dock share the content's column, 80% of the screen (padding.mjs), as on Start. */
 @media (max-width:767px) {
   :root {--memento-overlay-width:80vw;--memento-overlay-gutter:0px}
-  html[data-memento-native] {--content-width:80vw}
-  html[data-memento-native=start] .content-width {width:80vw;max-width:none}
 }
-/* R20: on an ultrawide screen (padding.mjs ULTRAWIDE) every page takes the Start page's column, 1280 px centred:
-   the margins, the background of letters and the name of the page change start where its content does. */
-@media (min-width:1600px) and (min-aspect-ratio:21/10) {
-  html[data-memento-native] {--content-width:1280px}
-}
+/* R21: the margins of padding.mjs forced on the content of every page, to be evaluated (roll back: remove this block):
+   10-80-10 phone, 15-70-15 tablet, 20-60-20 desktop, 30-40-30 ultrawide. The sliders of Services and LevelUp keep
+   reaching the edges of the screen (their carousels). */
+:root {--mm-pad:.2}
+@media (max-width:1279px) {:root {--mm-pad:.15}}
+@media (max-width:767px) {:root {--mm-pad:.1}}
+@media (min-width:1600px) and (min-aspect-ratio:21/10) {:root {--mm-pad:.3}}
+html[data-memento-native] {--content-width:calc(100vw - 200vw * var(--mm-pad))}
+html[data-memento-native=start] .content-width {width:var(--content-width);max-width:none}

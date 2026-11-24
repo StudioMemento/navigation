@@ -32,10 +32,11 @@ export class Carousel {
       this.height = this.cards[0].offsetHeight || 1;
       this.wide = Number(getComputedStyle(element).getPropertyValue('--layout-wide')) || 0;
       this.perspective = 1100 + 900 * this.wide;
-      const contentWidth = element.closest('section')?.querySelector('.page-width')?.clientWidth || element.clientWidth;
+      // R21: the site's margins are forced; the portfolio's first neighbours reach the edges of the screen, not of
+      // the content (edge to edge)
       this.stride = this.fan
         ? width * (0.78 - 0.14 * this.wide)
-        : portfolioStride(element.clientWidth, width, contentWidth, this.perspective);
+        : portfolioStride(element.clientWidth, width, element.clientWidth, this.perspective);
       this.reserveBleed();
       this.render();
     };

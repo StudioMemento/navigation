@@ -13,7 +13,9 @@ export const desaturate = hex => {
 };
 
 /** One gradient over the whole title block (0 = cap line, 1 = baseline): light from above, shade only at the base. */
-const TITLE_AMBER = Object.freeze([[0, '#fbefe8'], [0.56, '#fbefe8'], [0.68, '#f5d9c6'], [0.8, '#ecb28c'], [0.91, '#e2874f'], [1, '#d9682f']]);
+// R21: one orange for the whole site, #FF7950 (and its light variant #FFAF96). The ramp keeps the luminance of each stop
+// of the earlier amber one (cream, peach, amber, burnt), so the idle grey titles are the same; only the hue is unified.
+const TITLE_AMBER = Object.freeze([[0, '#ffece7'], [0.56, '#ffece7'], [0.68, '#ffd4c7'], [0.8, '#ffa88e'], [0.91, '#ff7950'], [1, '#d66643']]);
 
 export const VFX = Object.freeze(/** @type {const} */ ({
   color: {
@@ -21,10 +23,15 @@ export const VFX = Object.freeze(/** @type {const} */ ({
     base: '#000000',
     cardInk: '#f2f0ec',
     panel: [0, 0, 0, 1],
-    /** Amber scale: deep > mid > hot > core. `base` is the reference tint (navbar, chevrons, focus). */
-    amber: { base: '#FF7950', deep: '#9E2208', mid: '#FF5510', hot: '#FF8A1C', core: '#FFCB72' },
+    /**
+     * Amber scale: deep > mid > hot > core. `base` is the reference tint (navbar, chevrons, focus).
+     * R21: every step is #FF7950 (`base`), darker or lighter at the luminance of the earlier step: no red, no yellow.
+     * `light` is the UI's light variant (site.css --memento-accent-light).
+     */
+    amber: { base: '#FF7950', light: '#FFAF96', deep: '#6F3523', mid: '#D16342', hot: '#FF7C55', core: '#FFBAA5' },
     titleAmber: TITLE_AMBER,
-    titleHot: ['#ffe6c4', '#ffda8c', '#ffb45c'],
+    /** R21: the range of the titles in the same orange (it was yellow) */
+    titleHot: ['#ffe2d9', '#ffd0c1', '#ffaa90'],
     titleGradient: TITLE_AMBER.map(([t, c]) => [t, desaturate(c)]),
   },
   chain: {

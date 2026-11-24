@@ -5,7 +5,7 @@
  * reaction under the pointer). Its own graphics will be developed further.
  */
 .mm-ready {
-  --mm-ready-amber: #dfad6b;
+  --mm-ready-amber: #ffaf96;
   --mm-ready-ease: cubic-bezier(.22, 1, .36, 1);
   box-sizing: border-box;
   width: 100%;

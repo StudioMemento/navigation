@@ -4,7 +4,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { PADDING, START_COLUMN, ULTRAWIDE, paddingOf } from '../public/memento-ui/padding.mjs';
+import { PADDING, ULTRAWIDE, paddingOf } from '../public/memento-ui/padding.mjs';
 import { createMaterial } from '../scripts/scene-material.mjs';
 import { sceneHead, lettersLayer } from '../scripts/scene-head.mjs';
 import { nativePage } from '../scripts/native-page.mjs';
@@ -12,8 +12,8 @@ import { layout } from '../src/model.mjs';
 
 const source = path => readFileSync(new URL('../' + path, import.meta.url), 'utf8');
 
-test('padding rules: 10-80-10 phone, 15-70-15 tablet, 20-60-20 desktop, the Start column on ultrawide', () => {
-  assert.deepEqual({ ...PADDING }, { mobile: .1, tablet: .15, desktop: .2 });
+test('padding rules: 10-80-10 phone, 15-70-15 tablet, 20-60-20 desktop, 30-40-30 ultrawide (R21: back to 30%)', () => {
+  assert.deepEqual({ ...PADDING }, { mobile: .1, tablet: .15, desktop: .2, ultrawide: .3 });
   assert.equal(paddingOf(390, 844), .1);
   assert.equal(paddingOf(767, 1024), .1);
   assert.equal(paddingOf(768, 1024), .15);
@@ -21,20 +21,9 @@ test('padding rules: 10-80-10 phone, 15-70-15 tablet, 20-60-20 desktop, the Star
   assert.equal(paddingOf(1440, 900), .2);
   assert.equal(paddingOf(1920, 1080), .2);
   assert.equal(paddingOf(1500, 600), .2);   // very wide but under 1600 px: desktop, not ultrawide
-  // ultrawide: what the Start column (1280 px, centred) leaves on each side, never less than the desktop 20%
-  const start = width => (width - START_COLUMN) / 2 / width;
-  assert.equal(paddingOf(2560, 1080), start(2560));   // 25%
-  assert.equal(paddingOf(3440, 1440), start(3440));   // 31%
-  assert.equal(paddingOf(5120, 1440), start(5120));   // 37.5%
-  assert.equal(paddingOf(1800, 800), .2);              // the column would leave 14%: desktop margins
-  // Start's own column on wide screens is min(80%, 1280px), the column every page takes on ultrawide (site.css)
-  assert.match(source('apps/start/src/styles/start.css'), /\.content-width\{width:min\(80%,1280px\)/);
-  const css = source('public/memento-ui/site.css');
-  assert.ok(css.includes(`@media (min-width:${ULTRAWIDE.width}px) and (min-aspect-ratio:21/10) {\n  html[data-memento-native] {--content-width:${START_COLUMN}px}`));
-  assert.equal(ULTRAWIDE.ratio, 21 / 10);
-  // the Home card too
-  assert.equal(layout(2560, 1080).width, START_COLUMN);
-  assert.equal(layout(3440, 1440).width, START_COLUMN);
+  assert.equal(paddingOf(2560, 1080), .3);
+  assert.equal(paddingOf(3440, 1440), .3);
+  assert.deepEqual({ ...ULTRAWIDE }, { width: 1600, ratio: 2.1 });
 });
 
 test('the background: the wordmark capitals, the React Bits parameters, faded out toward the content', () => {
@@ -42,7 +31,8 @@ test('the background: the wordmark capitals, the React Bits parameters, faded ou
   for (const kind of ['M', 'E', 'N', 'T', 'O']) assert.match(js, new RegExp(`\\b${kind}: \\{ w: `), kind);
   assert.match(js, /WORD = \['M', 'E', 'M', 'E', 'N', 'T', 'O'\]/);
   // ?glitchColors=f97316&baseColor=f97316&fontSize=8&spacing=0.5&density=0.25&baseOpacity=0.1&speed=0.05&cursorRadius=400&clickEffect=burst
-  for (const value of ['size: 8', 'spacing: 0.5', 'density: 0.25', 'base: 0.1', 'speed: 0.05', 'radius: 400', "color: '#f97316'", 'burst:'])
+  // R21: the glyphs in the site's orange #FF7950 (was #f97316); a click sends an impulse (was a ring, burst)
+  for (const value of ['size: 8', 'spacing: 0.5', 'density: 0.25', 'base: 0.1', 'speed: 0.05', 'radius: 400', "color: '#ff7950'", 'wave:'])
     assert.ok(js.includes(value), value);
   assert.match(js, /import \{ paddingOf \} from '\/memento-ui\/padding\.mjs'/);
   // the easter egg: the field decrypts MEMENTO and a chain spreads from where it happened
@@ -73,15 +63,9 @@ test('the background is in every body from the first byte, under everything, nev
   assert.match(source('src/style.css'), /body\{overflow:hidden;-webkit-tap-highlight-color:transparent;background:transparent\}/);
 });
 
-test('phone: wordmark, content and dock share the Start column, 80% of the screen', () => {
+test('phone: wordmark and dock share the content column, 80% of the screen', () => {
   const css = source('public/memento-ui/site.css');
-  const block = css.slice(css.lastIndexOf('@media (max-width:767px)'));
-  assert.match(block, /--memento-overlay-width:80vw;--memento-overlay-gutter:0px/);
-  assert.match(block, /html\[data-memento-native\] \{--content-width:80vw\}/);
-  assert.match(block, /html\[data-memento-native=start\] \.content-width \{width:80vw;max-width:none\}/);
-  // the same breakpoint as the padding rules
-  assert.equal(paddingOf(767, 900), .1);
-  // the Home card: 80% of a phone, as wide as the wordmark
+  assert.match(css, /@media \(max-width:767px\) \{\n  :root \{--memento-overlay-width:80vw;--memento-overlay-gutter:0px\}/);
   for (const [w, h] of [[390, 844], [360, 780], [430, 932]]) {
     const l = layout(w, h);
     assert.ok(Math.abs(l.width - w * .8) < .5, `${w}x${h}: ${l.width}`);
@@ -91,7 +75,8 @@ test('phone: wordmark, content and dock share the Start column, 80% of the scree
 test('page change: the name between the margins, in the hover look of the titles; the background stays', () => {
   assert.equal(createMaterial.length, 3);
   const material = source('scripts/scene-material.mjs');
-  assert.match(material, /const P = paddingOf\(W, H\) \* W, room = W - 2 \* P;/);
+  assert.match(material, /const P = paddingOf\(W, H\) \* W;/);
+  assert.match(material, /const room = W - 2 \* P;/);
   assert.match(material, /actualBoundingBoxLeft \+ t\.actualBoundingBoxRight/);
   assert.match(material, /globalCompositeOperation = 'source-atop'/);
   assert.match(material, /strokeText/);

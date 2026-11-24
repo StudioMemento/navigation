@@ -190,6 +190,8 @@ export class VfxEngine {
   private viewportDirty = true; private viewW = 0; private pixelRatio = 0;
   private pad = 96; private surfaceObserver: ResizeObserver | null = null;
   private raf = 0; private lastTick = 0;
+  /** R21: when the loop last ran (performance.now()): a frame asked for long ago that never came is not a running loop */
+  private frameAt = 0;
   /* R15: rest and wake. Seconds without any change, the first frame after a sleep, a held hover, the last carousel frame */
   private restFor = 0; private resumed = false; private calm = false; private lastMotion = 0; private live = false;
   /* R17: the page exit (performance.now() at its start, duration ms, origin as viewport fractions) */
@@ -385,7 +387,13 @@ export class VfxEngine {
    * only if something changed, and the loop goes back to sleep after `VFX.runtime.idle` seconds without changes.
    */
   wake = () => {
-    if (this.destroyed || this.failed || this.raf) return;
+    if (this.destroyed || this.failed) return;
+    if (this.raf) {
+      // R21: a page frozen in a background tab or kept in the back/forward cache can lose the frame it had asked for;
+      // the loop then looked alive and never drew again (the scene stayed on its last frame, mid-transition)
+      if (document.hidden || performance.now() - this.frameAt < 1000) return;
+      cancelAnimationFrame(this.raf); this.raf = 0;
+    }
     this.metrics.wakes++;
     this.lastTick = 0;
     this.raf = requestAnimationFrame(this.animate);
@@ -442,6 +450,12 @@ export class VfxEngine {
     document.addEventListener('memento:overlay-change', shown, passive);
     document.addEventListener('memento:surface-visibility', shown, passive);
     addEventListener('pageshow', shown, passive);
+    // R21: leaving for the back/forward cache or being frozen, the loop lets go of its frame; back, it asks a new one
+    const halt = () => { if (this.raf) { cancelAnimationFrame(this.raf); this.raf = 0; } this.lastTick = 0; };
+    addEventListener('pagehide', halt, passive);
+    document.addEventListener('freeze', halt, passive);
+    document.addEventListener('resume', shown, passive);
+    addEventListener('focus', shown, passive);
     addEventListener('beforeprint', () => this.goDom(), passive);
     addEventListener('afterprint', () => { if (this.loaded && !this.lost) this.goLive(); }, passive);
     const forced = matchMedia('(forced-colors: active)');
@@ -1216,7 +1230,7 @@ export class VfxEngine {
   }
 
   private animate = (time: number) => {
-    this.raf = 0;
+    this.raf = 0; this.frameAt = performance.now();
     if (this.destroyed) return;
     if (this.failed) { this.destroy(); root().classList.add('vfx-off'); return; }
     if (this.lost || document.hidden || (window as { __TIDE_VISIBLE__?: boolean }).__TIDE_VISIBLE__ === false || this.covered()) { this.lastTick = 0; this.resumed = true; return; }

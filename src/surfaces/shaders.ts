@@ -410,7 +410,7 @@ void main(){
     // type keeps its weight and its single colour; near the pointer it takes a light, very diffuse amber
     vec2 d=p-uPointer.xy;
     float k=exp(-dot(d,d)/(uInkWarm.y*uInkWarm.y))*max(uHover,uNear*uInkWarm.z)*uInkWarm.x;
-    ink.rgb*=mix(vec3(1.),vec3(1.,.84,.68),k);
+    ink.rgb*=mix(vec3(1.),vec3(1.,.83,.77),k);
   }
   // large type: as the block warms, the overlay draws that share of the type with the same coverage. The content pass
   // gives it up instead of being covered, so nothing behind the anti-aliased edge is erased (no dark rim)
@@ -604,7 +604,7 @@ void main(){
   vec3 col=amber;
   col=mix(col,hot,fill);
   col=mix(col,facet,lit*mix(.4,.55,clamp(local,0.,1.)));
-  col=mix(col,vec3(1.,.9,.74),wire*lit*.3);
+  col=mix(col,vec3(1.,.88,.85),wire*lit*.3);
   // the overlay takes over the share W of the type, with the type's own coverage: the content pass has given up exactly
   // that share (SURFACE_FRAG), so the edges keep their anti-aliasing and nothing behind them is erased (no dark rim)
   float k=vFade;
@@ -713,7 +713,7 @@ void main(){
   }
   vec3 col=s.rgb;
   if(uMix.x>0.) col+=texture(uBloom,vUv).rgb*uMix.x;
-  if(uMix.y>0.) col+=texture(uStreak,vUv).rgb*vec3(1.,.82,.62)*uMix.y;
+  if(uMix.y>0.) col+=texture(uStreak,vUv).rgb*vec3(1.,.8,.73)*uMix.y;
   col=shoulder(col);
   col*=1.-uMix.z*smoothstep(.42,1.05,r)*smoothstep(.42,1.05,r);
   // V25: no film grain or animated dithering; the photographic/text grade stays clean.

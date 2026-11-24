@@ -26,9 +26,9 @@ export function layout(w,h,insets={}){
  const dockTop=insets.dockTop??h-(44+(rail-200)/8);
  // Reserve the actual overlay hit areas before sizing the hero, including safe areas.
  const clearance=Math.max(logoBottom,h-dockTop)+arrowHeight+controlGap*2;
- // R20: on an ultrawide screen the card takes the Start page's column (padding.mjs START_COLUMN)
- const ultrawide=w>=1600&&w/Math.max(1,h)>=2.1;
- const width=Math.min(w*(phone?.8:portrait?.9:.88),ultrawide?1280:Infinity,h*.6*ratio,Math.max(40,h-2*clearance)*ratio),height=width/ratio;
+ // R21: the card stands between the site's margins (padding.mjs paddingOf: 10 / 15 / 20 / 30% a side), forced
+ const pad=phone?.1:(w>=1600&&w/Math.max(1,h)>=2.1)?.3:w<1280?.15:.2;
+ const width=Math.min(w*(1-2*pad),h*.6*ratio,Math.max(40,h-2*clearance)*ratio),height=width/ratio;
  const preferredOffset=Math.max(34,Math.min(62,(h-height)*.18));
  const previousY=clamp(h/2-height/2-preferredOffset,logoBottom+controlGap+arrowHeight/2,h/2-height/2-controlGap-arrowHeight/2);
  const nextY=clamp(h/2+height/2+preferredOffset,h/2+height/2+controlGap+arrowHeight/2,dockTop-controlGap-arrowHeight/2);
