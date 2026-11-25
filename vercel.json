@@ -62,7 +62,7 @@
       "headers": [
         {
           "key": "Cache-Control",
-          "value": "public, max-age=0, must-revalidate"
+          "value": "public, max-age=0, stale-while-revalidate=120"
         }
       ]
     },
@@ -71,7 +71,16 @@
       "headers": [
         {
           "key": "Cache-Control",
-          "value": "public, max-age=0, must-revalidate"
+          "value": "public, max-age=0, stale-while-revalidate=120"
+        }
+      ]
+    },
+    {
+      "source": "/(services|projects|levelup|start|studio)/(.*)\\.(js|mjs|css|svg|json|webp|png|jpg|jpeg|avif)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=0, stale-while-revalidate=120"
         }
       ]
     },

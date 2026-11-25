@@ -243,10 +243,15 @@ export function createMaterial(name, weave, paddingOf) {
     composed = true;
   }
   // the incoming document may still be loading Inter: the name is composed as soon as the face is there, and only then
-  // takes over from the outgoing frame (scene-head waits for `ready`)
+  // takes over from the outgoing frame (scene-head waits for `ready`). R23: and never before the page's first frame (the
+  // view transition holds the outgoing name meanwhile): the background and the page start drawing 20–60 ms sooner
   const face = '300 64px Inter';
+  const afterFrame = () => new Promise(r => {
+    if (document.visibilityState === 'hidden') { setTimeout(r, 0); return; }
+    requestAnimationFrame(() => setTimeout(r, 0));
+  });
   const ready = (!document.fonts || document.fonts.check(face) ? Promise.resolve()
-    : Promise.race([document.fonts.load(face), new Promise(r => setTimeout(r, 900))])).then(() => compose(), () => compose());
+    : Promise.race([document.fonts.load(face), new Promise(r => setTimeout(r, 900))])).then(afterFrame, afterFrame).then(() => compose());
 
   // when each letter forms (leaving) or breaks (arriving), and each of its pieces within it
   const letterAt = (li, span, [a0, a1]) => a0 + (a1 - a0 - span) * (count > 1 ? li / (count - 1) : 0);
@@ -435,8 +440,9 @@ export function createMaterial(name, weave, paddingOf) {
       if (reuse) { drop(current); current = null; primed = null; master?.cancel(); master = null; } else stop();
       // a movement built ahead of time shows from its first frame on, in the same frame the last one goes
       cellBox.style.visibility = shardBox.style.visibility = '';
-      const now = () => document.timeline?.currentTime ?? performance.now();
-      const start = now() - f0 * D;
+      // the movement starts now, not at the last frame the timeline saw: on a page that has been drawing nothing (the
+      // pointer resting on a link) that frame can be 200 ms old, and a third of the movement went by unseen
+      const start = performance.now() - f0 * D;
       const clock = new Animation(new KeyframeEffect(null, null, { duration: D, fill: 'forwards' }), document.timeline);
       clock.startTime = start;
       master = clock;

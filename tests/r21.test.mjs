@@ -31,8 +31,9 @@ test('freeze: a frame asked for before a freeze or the back/forward cache is ask
   assert.match(home, /on\(document,'resume',/);
   const letters = source('public/memento-ui/letters.mjs');
   assert.match(letters, /if \(frame && !document\.hidden && performance\.now\(\) - frameAt > 1000\) \{ cancelAnimationFrame\(frame\); frame = 0; \}/);
-  // R23: the page change has no frame loop left to freeze: its movements are compositor animations
-  assert.doesNotMatch(source('scripts/scene-material.mjs'), /requestAnimationFrame/);
+  // R23: the page change has no frame loop left to freeze: its movements are compositor animations (one frame is
+  // waited for, once, before the name is composed)
+  assert.equal((source('scripts/scene-material.mjs').match(/requestAnimationFrame/g) || []).length, 1);
 });
 
 test('one orange: #FF7D00 and its glow (R23, the icons), nothing pink, nothing acid', () => {

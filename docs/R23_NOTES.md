@@ -70,6 +70,9 @@ La causa principale del lag era il cambio pagina. Disegnava un canvas fotogramma
   | apertura | 1150 ms | 660 ms |
   | nome fermo | 280 ms | da 140 a 380 ms |
 
+- **La pagina nuova arriva prima.** Script, stili e immagini delle pagine e di `/memento-ui/` e `/navigation/` escono subito dalla cache del browser e vengono ricontrollati in background (`stale-while-revalidate=120` in `vercel.json`). Prima ogni cambio pagina li ricontrollava uno per uno con il server, a catena, prima di mostrare la pagina. Le pagine HTML restano sempre fresche. Dopo un deploy, al massimo una visita entro due minuti usa ancora gli script precedenti.
+- **Il nome dopo il primo fotogramma.** All'arrivo il nome si compone dopo il primo fotogramma della pagina nuova (nel frattempo la transizione mostra quello della pagina precedente): lo sfondo riparte subito.
+- **Partenza esatta.** Il movimento parte dal momento del click. Prima partiva dall'ultimo fotogramma disegnato, che su una pagina ferma poteva essere vecchio di 200 ms: un terzo dell'uscita andava perso.
 - **Meno risoluzione dove si muove.** Pezzi e lampo del nome a non più di 2× (il nome composto resta a piena risoluzione). Lo sfondo di lettere è a 1,5× sui touch.
 - **Meno elementi.** 240 celle sugli schermi grandi e 120 sui piccoli; 64 e 36 frammenti.
 

@@ -54,7 +54,9 @@ test('page change: only the column between the margins; background, wordmark and
 
 test('page change on the compositor: transform and opacity only, no frame loop, no mask, no filter', () => {
   const material = source('scripts/scene-material.mjs');
-  assert.doesNotMatch(material, /requestAnimationFrame/);
+  // no frame loop: the only frame it waits for is the page's first, before it composes the name
+  assert.equal((material.match(/requestAnimationFrame/g) || []).length, 1);
+  assert.match(material, /requestAnimationFrame\(\(\) => setTimeout\(r, 0\)\)/);
   assert.doesNotMatch(material, /clip-path|clipPath/);
   // keyframes never animate a filter (a surface per element) nor a colour (main thread)
   for (const [, frames] of material.matchAll(/run\([^,]+, \[([\s\S]*?)\], /g)) assert.doesNotMatch(frames, /filter|background|color/);
@@ -97,4 +99,15 @@ test('devices without hover hold the hover\'s warmth at rest', () => {
     assert.match(source(file), /grayscale\(var\(--mm-rest-gray, ?\.5\)\)/, file);
   // the background is lighter to keep on a phone
   assert.match(source('public/memento-ui/letters.mjs'), /W \* H > 4e6 \|\| coarse\.matches \? 1\.5 : 2/);
+});
+
+test('the next page arrives sooner: shared and page assets come from the cache, checked again in the background', () => {
+  const vercel = JSON.parse(source('vercel.json'));
+  const rule = src => vercel.headers.find(h => h.source === src)?.headers.find(h => h.key === 'Cache-Control')?.value;
+  for (const src of ['/memento-ui/(.*)', '/navigation/(.*)', '/(services|projects|levelup|start|studio)/(.*)\\.(js|mjs|css|svg|json|webp|png|jpg|jpeg|avif)'])
+    assert.equal(rule(src), 'public, max-age=0, stale-while-revalidate=120', src);
+  // the pages themselves (HTML) are always asked for fresh: no rule reaches them
+  assert.ok(!vercel.headers.some(h => /services\|projects/.test(h.source) && !/\\\.\(/.test(h.source)));
+  // the incoming page draws its first frame before the name is composed (the transition holds the outgoing one)
+  assert.match(source('scripts/scene-material.mjs'), /\.then\(afterFrame, afterFrame\)\.then\(\(\) => compose\(\)\);/);
 });
