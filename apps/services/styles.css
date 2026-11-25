@@ -9,9 +9,9 @@
 :root {
   --ink: #f3f0ea;
   --muted: #aaa69f;
-  --amber: #ff7950;
+  --amber: #ff7d00;
   --line: #ffffff1c;
-  --memento-amber: #ffa94d;
+  --memento-amber: #ffa23d;
   --ease: cubic-bezier(0.22, 1, 0.36, 1);
   --layout-wide: 0;
   --board-ratio: 1;
@@ -25,21 +25,21 @@
      at rest, the full gradient and the effects on hover. */
   --title-gradient: linear-gradient(
     0deg,
-    #9c7a70 0%,
-    #ba9285 9%,
-    #d2bba0 20%,
-    #e9decc 32%,
+    #a27b64 0%,
+    #b99470 9%,
+    #d3bca3 20%,
+    #e9ddd0 32%,
     #f6f1eb 44%,
     #f6f1eb 100%
   );
   --title-gradient-warm: linear-gradient(
     0deg,
-    #d66643 0%,
-    #ff7950 9%,
-    #ffb259 20%,
-    #ffdb9f 32%,
-    #fff0d9 44%,
-    #fff0d9 100%
+    #e8661a 0%,
+    #ff7d00 9%,
+    #ffb35e 20%,
+    #ffd9ad 32%,
+    #ffefdc 44%,
+    #ffefdc 100%
   );
   --frame-gradient: linear-gradient(
     135deg,
@@ -504,7 +504,7 @@ section[id] {
   background: var(--amber);
   opacity: 1;
   transform: scale(1.65);
-  box-shadow: 0 0 13px #ff795045;
+  box-shadow: 0 0 13px #ff7d0045;
 }
 .carousel-dot:focus-visible {
   outline-offset: -2px;
@@ -556,7 +556,7 @@ section[id] {
 }
 .bundle-kicker {
   display: block;
-  color: #ffa94d;
+  color: #ffa23d;
   font-size: 10px;
   font-weight: 500;
   letter-spacing: 0.12em;
@@ -596,7 +596,7 @@ section[id] {
   left: 0;
   width: 0.32em;
   height: 1px;
-  background: #ffa94d;
+  background: #ffa23d;
 }
 .catalogue {
   padding-block: 32px 96px;
@@ -655,14 +655,14 @@ section[id] {
     background-color 0.4s ease;
 }
 .catalogue-filters button[aria-pressed='true'] {
-  color: #ffa94d;
-  background: #ff795021;
+  color: #ffa23d;
+  background: #ff7d0021;
 }
 .catalogue-filters button:hover {
-  color: #ffa94d;
+  color: #ffa23d;
 }
 .catalogue-filters button:focus-visible {
-  outline: 1px solid #ffa94d;
+  outline: 1px solid #ffa23d;
   outline-offset: -4px;
 }
 .catalogue-filters svg {
@@ -721,7 +721,7 @@ section[id] {
   height: 100%;
   object-fit: cover;
   pointer-events: none;
-  filter: grayscale(0.5);
+  filter: grayscale(var(--mm-rest-gray, 0.5));
   transition: filter 0.45s var(--ease);
   -webkit-mask: url('assets/masks/tile-bottom.png') 0 0 / 100% 100%;
   mask: url('assets/masks/tile-bottom.png') 0 0 / 100% 100%;
@@ -765,7 +765,7 @@ section[id] {
   content: '';
   position: absolute;
   inset: 0;
-  background: #ff7950;
+  background: #ff7d00;
   transform: rotate(-45deg);
   -webkit-mask: url('assets/icons/caret-right.svg') center / contain no-repeat;
   mask: url('assets/icons/caret-right.svg') center / contain no-repeat;
@@ -990,7 +990,7 @@ dialog::backdrop {
   height: 1px;
   left: 0;
   top: 0.7em;
-  background: #ff7950;
+  background: #ff7d00;
 }
 .item-master-steps {
   display: grid;
@@ -1106,7 +1106,7 @@ dialog::backdrop {
   margin-bottom: 12px;
   font-size: 10px;
   line-height: 1.3;
-  color: #ffa94d;
+  color: #ffa23d;
   letter-spacing: 0.12em;
 }
 .bundle-master .bundle-services {
@@ -1288,7 +1288,7 @@ dialog::backdrop {
   width: fit-content;
   min-height: 48px;
   padding: 10px 0 8px;
-  border-bottom: 1px solid #ff795066;
+  border-bottom: 1px solid #ff7d0066;
   font-size: 14px;
   line-height: 1.5;
   text-align: left;
@@ -1389,7 +1389,7 @@ dialog::backdrop {
   width: 100%;
   height: 100%;
   object-fit: contain;
-  filter: grayscale(0.5) brightness(0.8);
+  filter: grayscale(var(--mm-rest-gray, 0.5)) brightness(0.8);
   transition: filter 0.75s var(--ease);
 }
 .start-action h2 {
@@ -1466,7 +1466,7 @@ html[data-overlay-scrollbar='true']::-webkit-scrollbar {
   width: 2px;
   min-height: 32px;
   border-radius: 2px;
-  background: #ffa94d;
+  background: #ffa23d;
   opacity: 0.32;
   transform: translateY(var(--scroll-top, 0px));
   height: var(--scroll-size, 44px);
@@ -1480,10 +1480,10 @@ html[data-overlay-scrollbar='true']::-webkit-scrollbar {
   .memento-scrollbar-thumb {
   opacity: 0.85;
   width: 3px;
-  background: #ffa94d;
+  background: #ffa23d;
 }
 .memento-scrollbar:focus-visible {
-  outline: 1px solid #ffa94d;
+  outline: 1px solid #ffa23d;
   outline-offset: -1px;
 }
 
@@ -1830,7 +1830,7 @@ html[data-overlay-open='true'] :is(body > .vfx-layer .vfx-canvas, .memento-backg
 /* START V26/V27 DOM fallback of the touch wave: a title it reaches warms briefly (no painted layer, no circle). */
 html:not(.vfx-live) .touch-lit[data-vfx='title'] {
   background-image: var(--title-gradient-warm);
-  filter: drop-shadow(0 0 7px #ff795050);
+  filter: drop-shadow(0 0 7px #ff7d0050);
 }
 
 @media print {

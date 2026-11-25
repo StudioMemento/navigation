@@ -39,7 +39,9 @@ export function paintTitle(canvas, t, scale, margin) {
   ctx.textBaseline = 'alphabetic';
   ctx.font = t.font;
   const g = ctx.createLinearGradient(0, t.baseline - t.cap, 0, t.baseline + t.size * 0.03);
-  for (const [stop, color] of VFX.color.titleGradient) g.addColorStop(stop, color);
+  // R23: a device without hover holds the hover's colour at rest: the title ramp itself (the same greys, stop by stop)
+  const warm = typeof matchMedia === 'function' && matchMedia('(hover: none), (pointer: coarse)').matches;
+  for (const [stop, color] of warm ? VFX.color.titleAmber : VFX.color.titleGradient) g.addColorStop(stop, color);
   ctx.fillStyle = g;
   for (const glyph of t.glyphs) ctx.fillText(glyph.ch, glyph.x, glyph.y);
   const ascale = 0.25, aw = Math.max(1, Math.round(t.box.w * ascale)), ah = Math.max(1, Math.round(t.box.h * ascale));

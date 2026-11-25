@@ -45,9 +45,10 @@ test('Surface: the page styles its own surfaces; the site owns the ground (site.
   // a DOM-kept subtree (CTA, included services) must not inherit the hidden surface's transparent fill
   assert.match(css, /\[data-vfx\]\[data-vfx-ready\] \[data-vfx-dom\] \{\s*-webkit-text-fill-color: currentColor;/);
   // R22: at rest the title holds a light tint of its gradient (30%), never the full amber: red and blue stay close
+  // (R23: 30% of the icons' purer orange, a few steps more)
   const idle = /--title-gradient: linear-gradient\(([^;]+)\);/.exec(css)[1];
   for (const hex of idle.match(/#[0-9a-f]{6}/gi)) {
     const r = parseInt(hex.slice(1, 3), 16), b = parseInt(hex.slice(5, 7), 16);
-    assert.ok(r - b >= 0 && r - b <= 60, hex);
+    assert.ok(r - b >= 0 && r - b <= 80, hex);
   }
 });

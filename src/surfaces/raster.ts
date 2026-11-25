@@ -220,10 +220,13 @@ export async function paint(canvas: HTMLCanvasElement, { ops, box }: Collected, 
   ctx.setTransform(scale, 0, 0, scale, -frame.x * scale, -frame.y * scale);
   ctx.textBaseline = 'alphabetic';
   const gradients = new Map<string, CanvasGradient | string>();
+  // R23: a device without hover holds the hover's colour at rest (site.css): its type is painted in the title ramp
+  // itself, which keeps the idle gradient's greys stop by stop, so the effects read its height the same way
+  const stops = typeof matchMedia === 'function' && matchMedia('(hover: none), (pointer: coarse)').matches ? VFX.color.titleAmber : VFX.color.titleGradient;
   const gradient = (c: CanvasRenderingContext2D, top: number, bottom: number): CanvasGradient | string => {
     if (solid) return solid;
     const g = c.createLinearGradient(0, top, 0, bottom);
-    for (const [stop, color] of VFX.color.titleGradient) g.addColorStop(stop, color);
+    for (const [stop, color] of stops) g.addColorStop(stop, color);
     return g;
   };
   // a clipped block (a title) spans one gradient from its first cap line to its last baseline

@@ -5,7 +5,8 @@
 //
 // At rest it lives in the margins of the page (padding.mjs: 10 / 15 / 20 / 30% of the width on each side).
 // R21: the fade begins inside the margin and ends a little past the padding line, into the content: no edge shows where
-// the field stops. The glyphs are #FF7950, the site's one orange, lit cells take its light variant.
+// the field stops. The glyphs are the site's one orange (R23: #FF7D00, the glow of the navbar's icons), lit cells take
+// its light variant.
 // R21: a click (a tap) and a decrypted word send one impulse through the whole viewport: a chain of cells, each lit at
 // a random strength as the front reaches it, fading after its crest at its own pace, back to rest. The front is torn by
 // a slow noise and the cells are sparse, so it never reads as a disc or a flashing screen (DNA: "mai un disco").
@@ -33,7 +34,7 @@ const WORD_KIND = WORD.map(c => KINDS.indexOf(c));
 export const LETTERS = Object.freeze({
   size: 8, spacing: 0.5, density: 0.25, base: 0.1, glitch: 0.5, speed: 0.05, flow: 0.5, radius: 400,
   /** R21: the site's orange and its light variant (site.css --memento-accent, --memento-accent-light) */
-  color: '#ff7950', hot: '#ffa94d',
+  color: '#ff7d00', hot: '#ffa23d',
   /** glitch runs per second for every 1000 visible cells (speed 0.05, glitch amount 0.5) */
   rate: 5,
   /** R21: the fade, in shares of the margin P: full up to `from`·P from the screen's edge, gone at `to`·P (past P) */
@@ -84,6 +85,7 @@ export function mountLetters() {
   const query = new URLSearchParams(location.search).get('vfx');
   const motion = matchMedia('(prefers-reduced-motion: reduce)');
   const forced = matchMedia('(forced-colors: active)');
+  const coarse = matchMedia('(pointer: coarse)');
   const still = () => motion.matches || query === 'off' || query === '0' || !!navigator.connection?.saveData;
 
   // the build writes the layer at the top of every body (scene-head lettersLayer), so it is in the document when the
@@ -125,7 +127,8 @@ export function mountLetters() {
   }
   function build() {
     W = root.clientWidth || innerWidth; H = innerHeight;
-    dpr = Math.min(devicePixelRatio || 1, W * H > 4e6 ? 1.5 : 2);
+    // R23: 1.5 on touch screens (glyphs of 8 px stay crisp enough; half the pixels to fill and keep on a phone)
+    dpr = Math.min(devicePixelRatio || 1, W * H > 4e6 || coarse.matches ? 1.5 : 2);
     for (const c of [field, light]) { c.width = Math.round(W * dpr); c.height = Math.round(H * dpr); }
     const P = paddingOf(W, H) * W;
     // R21: the field covers the whole viewport (the impulse runs through all of it); at rest only the margins show

@@ -54,11 +54,13 @@ test('photographs: their own colours on hover, a highlight under the pointer, no
 test('page change: slightly longer, through the lattice into the seal and back (guards)', () => {
   const head = source('scripts/scene-head.mjs');
   // R17 renamed the movements (exit, unfold) and made them slower: see r17.test.mjs
-  const [, g, u] = head.match(/const exit = (\d+), unfold = (\d+);/).map(Number);
+  const [, g, u] = head.match(/const exit = (\d+), unfold = (\d+)/).map(Number);
   assert.ok(g > 260 && u > 260);
-  assert.ok(weave.close > 0 && weave.open > 0 && weave.form[1] < 1 && weave.fade[1] < .5);
+  // R23: the cells open over weave.open, a share of the movement (r23.test.mjs)
+  assert.ok(weave.open[0] > 0 && weave.form[1] < 1 && weave.fade[1] < .5);
   // the material travels inline with the page, with its timing and the seal
   assert.match(sceneHead, /mm-cells/);
   assert.match(sceneHead, /"form":\[/);
-  assert.doesNotMatch(sceneHead, /mm-veil/);
+  // R23: a veil again, but only the column between the margins turns to the ground (r23.test.mjs)
+  assert.match(sceneHead, /\.mm-veil \{background:#090909;opacity:0\}/);
 });

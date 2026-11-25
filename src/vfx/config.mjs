@@ -13,9 +13,11 @@ export const desaturate = hex => {
 };
 
 /** One gradient over the whole title block (0 = cap line, 1 = baseline): light from above, shade only at the base. */
-// R21: one orange for the whole site, #FF7950 (and its light variant #FFA94D). The ramp keeps the luminance of each stop
-// of the earlier amber one (cream, peach, amber, burnt), so the idle grey titles are the same; only the hue is unified.
-const TITLE_AMBER = Object.freeze([[0, '#fff0d9'], [0.56, '#fff0d9'], [0.68, '#ffdb9f'], [0.8, '#ffb259'], [0.91, '#ff7950'], [1, '#d66643']]);
+// R21: one orange for the whole site. The ramp keeps the luminance of each stop of the earlier amber one (cream, peach,
+// amber, burnt), so the idle grey titles are the same; only the hue changes. R23 "Incandescenza", the warm colours of
+// the navbar's icons (their metal is not part of it): a warm white from above, the glow's core, its light, the orange
+// #FF7D00 (a touch lighter, #FF840C, to keep the stop's grey) and the ember at the base.
+const TITLE_AMBER = Object.freeze([[0, '#ffefdc'], [0.56, '#ffefdc'], [0.68, '#ffd9ad'], [0.8, '#ffb35e'], [0.91, '#ff840c'], [1, '#e8661a']]);
 
 export const VFX = Object.freeze(/** @type {const} */ ({
   color: {
@@ -25,13 +27,15 @@ export const VFX = Object.freeze(/** @type {const} */ ({
     panel: [0, 0, 0, 1],
     /**
      * Amber scale: deep > mid > hot > core. `base` is the reference tint (navbar, chevrons, focus).
-     * R22 "Ambra": #FF7950 at the centre, warming toward amber as it gets lighter (light #FFA94D, core #FFD285), like
-     * metal heating up: never pink, never acid yellow. `light` is the UI's light variant (site.css --memento-accent-light).
+     * R23 "Incandescenza": the glow of the navbar's icons, only its warm colours. #FF7D00 at the centre (a pure orange,
+     * it was a coral), its light #FFA23D and its core #FFC890 as it gets lighter, the ember #C2500A and the
+     * brace #7A340A as it gets darker: never pink, never acid yellow. `light` is the UI's light variant (site.css
+     * --memento-accent-light).
      */
-    amber: { base: '#FF7950', light: '#FFA94D', deep: '#8C3510', mid: '#FF7950', hot: '#FFA94D', core: '#FFD285' },
+    amber: { base: '#FF7D00', light: '#FFA23D', deep: '#7A340A', mid: '#FF7D00', hot: '#FFA23D', core: '#FFC890' },
     titleAmber: TITLE_AMBER,
-    /** R21: the range of the titles in the same orange (it was yellow) */
-    titleHot: ['#ffe6be', '#ffd896', '#ffb259'],
+    /** R21: the range of the titles in the same orange (it was yellow); R23: the icons' core and light */
+    titleHot: ['#ffe3c2', '#ffc890', '#ffb35e'],
     titleGradient: TITLE_AMBER.map(([t, c]) => [t, desaturate(c)]),
   },
   chain: {

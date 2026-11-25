@@ -3,7 +3,8 @@ import { paddingOf } from '../public/memento-ui/padding.mjs';
 import { readFileSync } from 'node:fs';
 
 // R18: the layer of the page change stays under the navigation (z-index 1000): wordmark and dock never leave, only the
-// content changes. R20: the background of letters stays too: during the change it rises over the material (999 over
+// content changes. R23: and it is only the column between the margins (scene-material): nothing else is touched.
+// R20: the background of letters stays too: during the change it rises over the material (999 over
 // 998) and across the two documents it is its own view-transition group (mm-bg), the outgoing one until the incoming
 // has drawn its first frame (data-mm-bg, letters.mjs). Its field is the same in both: nothing jumps. Studio has no
 // field (a page of its own): there the outgoing one stays until the room opens. Across the two documents the navigation is its own view-transition group, above the material: the
@@ -11,10 +12,14 @@ import { readFileSync } from 'node:fs';
 // material takes over from the outgoing frame once the page name is composed in its own face (data-mm-name).
 const css = `@media (prefers-reduced-motion:no-preference) and (forced-colors:none){
   @view-transition {navigation:auto}
-  .mm-weave {position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:998;view-transition-name:mm-material}
+  .mm-weave {position:fixed;top:0;left:0;pointer-events:none;overflow:hidden;z-index:998;view-transition-name:mm-material}
+  .mm-weave>div {position:absolute;inset:0}
+  .mm-veil {background:#090909;opacity:0}
+  .mm-weave canvas {position:absolute;left:0;top:0;display:block}
+  .mm-tri {position:absolute;left:0;top:0;width:0;height:0;box-sizing:content-box;transform-origin:0 0}
+  .mm-piece,.mm-letter,.mm-flash {opacity:0}
   .mm-letters {view-transition-name:mm-bg}
   :root[data-mm-phase] .mm-letters {z-index:999}
-  .mm-cells,.mm-name {position:absolute;inset:0;width:100%;height:100%}
   :root[data-mm-phase="hold"] .mm-name {animation:mm-breathe 2.4s ease-in-out infinite}
   @keyframes mm-breathe {50% {filter:brightness(1.14)}}
   memento-nav {view-transition-name:mm-nav}
@@ -25,6 +30,8 @@ const css = `@media (prefers-reduced-motion:no-preference) and (forced-colors:no
   ::view-transition-group(mm-nav),::view-transition-old(mm-nav),::view-transition-new(mm-nav),
   ::view-transition-group(mm-bg),::view-transition-old(mm-bg),::view-transition-new(mm-bg) {animation:none;mix-blend-mode:normal}
   ::view-transition-old(root) {z-index:1;opacity:1}
+  :root[data-mm-feed="old"]::view-transition-old(root) {clip-path:inset(0 var(--mm-side,0px))}
+  :root[data-mm-feed="old"]::view-transition-new(root) {opacity:0}
   :root[data-mm-feed="new"]::view-transition-old(root),:root[data-mm-name]::view-transition-old(mm-material),:root:not([data-mm-name])::view-transition-new(mm-material) {opacity:0}
   ::view-transition-group(mm-material) {z-index:2}
   ::view-transition-group(mm-bg) {z-index:3}
@@ -34,6 +41,7 @@ const css = `@media (prefers-reduced-motion:no-preference) and (forced-colors:no
   :root[data-mm-feed="new"]::view-transition-new(mm-nav) {opacity:1}
 }
 @media (prefers-reduced-motion:reduce),(forced-colors:active){.mm-weave {display:none}}
+@font-face {font-family:Inter;src:url("/assets/fonts/InterVariable.woff2") format("woff2");font-weight:100 900;font-style:normal;font-display:swap}
 html {-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
 input,textarea,select,[contenteditable]:not([contenteditable="false"]) {-webkit-user-select:text;user-select:text}
 img,a,svg,canvas {-webkit-user-drag:none}`;
@@ -85,13 +93,15 @@ function observeScene(createMaterial, names, weave, paddingOf) {
   const sections = new Set(['/', '/studio', '/memento', '/services', '/projects', '/levelup', '/start']);
   const path = url => url.pathname.replace(/\/+$/, '') || '/';
   const key = 'memento.route.handoff.v5';
-  // R17: slower, and from the real interface. Leaving, the page on screen comes apart into the seal before the browser
-  // navigates (was 560 ms, over the frozen snapshot); arriving, the seal breaks and the next page composes (was 700)
-  const exit = 1000, unfold = 1150;
-  // R22: how long the name holds, composed, before the next page opens: the same on every page
-  const hold = 280;
-  // the longest the seal waits for the incoming page's effects (their first frame) before it lifts
-  const patience = 2200;
+  // R17: from the real interface: leaving, the page on screen comes apart into the name; arriving, the name breaks and
+  // the next page composes. R23: shorter (it was 1000 and 1150 ms, 3–3.7 s in all with the wait). The interface is gone
+  // by `weave.depart` of the movement (`away` ms: the engine's EXIT and the DOM pieces end at .98 of their duration);
+  // the name is whole at the end of it, and the browser is asked for the next page then (it was prefetched on hover or
+  // touch): the moment the browser swaps the documents holds a composed name, never a half-formed one
+  const exit = 520, unfold = 660, away = exit * weave.depart / .98;
+  // R22: the same rhythm on every page. R23: the name, once composed, stays at least `hold` ms and at most `patience` ms
+  // more while the incoming page gets its first view and its effects' first frame; what is not ready by then composes in place
+  const hold = 140, patience = 380;
   const fallbackBox = [.16, .22, .68, .56];
   let active = null, lastPoint = null, passing = null;
   window.addEventListener('pointerdown', e => {lastPoint = [e.clientX / innerWidth, e.clientY / innerHeight, performance.now()];}, {capture:true, passive:true});
@@ -103,6 +113,7 @@ function observeScene(createMaterial, names, weave, paddingOf) {
   }
   function mark(name) {performance.mark?.('memento:' + name);}
   if (window.top !== window) return;
+  if (/[?&]mmdebug\b/.test(location.search)) window.__mmScene = {createMaterial, names, weave, paddingOf};
   try {if (sessionStorage.getItem('memento.artwork.software') === '1' && !new URLSearchParams(location.search).has('vfx')) root.setAttribute('data-mm-software','');} catch {}
   const supported = () => motion.matches && 'onpagereveal' in window && typeof Element.prototype.animate === 'function';
   const enabled = () => supported() && !!document.body;
@@ -135,40 +146,63 @@ function observeScene(createMaterial, names, weave, paddingOf) {
     if (supported() && type !== 'reload' && (peek() || crossing(activation?.from?.url, location.href))) {
       root.setAttribute('data-mm-arrive', '');
       root.dataset.mmPhase = 'hold';
+      // R23: the name's face is asked for at once (it is preloaded; asked for here it is ready by the first frame)
+      try {document.fonts?.load('300 64px Inter');} catch {}
       // never left covered: pagereveal decides within a frame; this is only the net under it
       setTimeout(() => {if (!active && root.hasAttribute('data-mm-arrive')) settle();}, 6000);
     }
   }
 
-  // the interface on screen, in viewport fractions: the cells over it are the ones that become fragments.
+  // the interface on screen, in viewport fractions: where the fragments come from (leaving) and land (arriving).
   // R22: with its colours, a 3 × 3 grid of each photograph (the title's own gradient for type), so every fragment
-  // carries the piece of interface it broke from
-  let sampling = null;
+  // carries the piece of interface it broke from. R23: read ahead of time, while the page is idle, one photograph at a
+  // time (read back on the click it cost 80 ms, right when the touch wants an answer)
+  const parts = '[data-vfx], #scene .card[data-slot], main img, main h1, main h2, main canvas, #experience';
   const typeColours = [[246,241,235],[233,222,204],[210,187,160]];
-  function coloursOf(el) {
+  const palette = new Map();
+  const photoOf = el => {
     const img = el.localName === 'img' ? el : el.querySelector?.('img');
-    if (img?.complete && img.naturalWidth) {
-      try {
-        if (!sampling) {
-          const c = document.createElement('canvas');
-          c.width = c.height = 3;
-          sampling = c.getContext('2d', {willReadFrequently:true});
-        }
-        sampling.clearRect(0, 0, 3, 3);
-        sampling.drawImage(img, 0, 0, 3, 3);
-        const d = sampling.getImageData(0, 0, 3, 3).data, out = [];
-        for (let i = 0; i < 36; i += 4) out.push([d[i], d[i + 1], d[i + 2]]);
-        return out;
-      } catch {}
-    }
+    return img?.currentSrc || img?.getAttribute('src') || el.dataset?.vfxPhoto || '';
+  };
+  function coloursOf(el) {
     if (/^h[1-6]$/.test(el.localName) || el.dataset?.vfx === 'title') return typeColours;
-    return [[24,24,26]];
+    const url = photoOf(el);
+    return url && palette.get(new URL(url, location.href).href) || null;
   }
+  function readColours() {
+    const idle = window.requestIdleCallback || (f => setTimeout(() => f({timeRemaining: () => 8}), 120));
+    const queue = [...new Set([...document.querySelectorAll(parts)].map(photoOf).filter(Boolean).map(u => new URL(u, location.href).href))]
+      .filter(u => u.startsWith(location.origin) && !palette.has(u)).slice(0, 24);
+    let scratch = null;
+    const next = () => {
+      const url = queue.shift();
+      if (!url) return;
+      idle(async () => {
+        try {
+          const image = new Image();
+          image.src = url;
+          await image.decode();
+          scratch ??= document.createElement('canvas').getContext('2d', {willReadFrequently:true});
+          scratch.canvas.width = scratch.canvas.height = 12;
+          scratch.drawImage(image, 0, 0, 12, 12);
+          const d = scratch.getImageData(0, 0, 12, 12).data, grid = [];
+          for (let gy = 0; gy < 3; gy++) for (let gx = 0; gx < 3; gx++) {
+            const sum = [0, 0, 0];
+            for (let y = gy * 4; y < gy * 4 + 4; y++) for (let x = gx * 4; x < gx * 4 + 4; x++) for (let c = 0; c < 3; c++) sum[c] += d[(y * 12 + x) * 4 + c];
+            grid.push(sum.map(v => Math.round(v / 16)));
+          }
+          palette.set(url, grid);
+        } catch {}
+        next();
+      });
+    };
+    next();
+  }
+  window.addEventListener('load', () => setTimeout(readColours, 900), {once:true});
   function sceneOf(origin) {
     const vw = innerWidth, vh = innerHeight, rects = [];
     // R18: the navigation stays on screen: only the content comes apart
-    const parts = document.querySelectorAll('[data-vfx], #scene .card[data-slot], main img, main h1, main h2, main canvas, #experience');
-    for (const el of parts) {
+    for (const el of document.querySelectorAll(parts)) {
       const r = el.getBoundingClientRect();
       if (r.width * r.height < 900 || r.bottom < 0 || r.top > vh || r.right < 0 || r.left > vw) continue;
       rects.push([r.left / vw, r.top / vh, r.width / vw, r.height / vh, r.width * r.height, el]);
@@ -176,7 +210,7 @@ function observeScene(createMaterial, names, weave, paddingOf) {
     rects.sort((a, b) => b[4] - a[4]);
     if (!rects.length) rects.push([...fallbackBox, 0, null]);
     const kept = rects.slice(0, 28);
-    return {origin, rects: kept.map(q => q.slice(0, 4).map(v => Math.round(v * 1e4) / 1e4)), colours: kept.map(q => q[5] ? coloursOf(q[5]) : [[24,24,26]])};
+    return {origin, rects: kept.map(q => q.slice(0, 4).map(v => Math.round(v * 1e4) / 1e4)), colours: kept.map(q => q[5] ? coloursOf(q[5]) : null)};
   }
   function firstElement() {
     const selectors = {studio:'#experience #loading', services:'#bundle-boards [data-slide="0"] img',
@@ -209,13 +243,44 @@ function observeScene(createMaterial, names, weave, paddingOf) {
     if (!a || a.hasAttribute('download') || !['','_self','_top','_parent'].includes(a.target)) return null;
     return a;
   }
-  let hover = 0;
+  // R23: the name of the page a link opens is composed ahead of the click as well (on the same short hover, on
+  // contact): the click itself only sets the movement going. It cost 20–40 ms on a desktop, two or three times as much
+  // on a phone, right between the touch and its first answer. Kept for a few seconds, for one link at a time.
+  let prepared = null;
+  function prepare(url) {
+    if (!enabled() || active || prepared?.url === url) return;
+    dismiss();
+    try {prepared = {url, layer:createMaterial(nameOf(url), weave, paddingOf), timer:setTimeout(dismiss, 6000)};} catch {prepared = null;}
+  }
+  function dismiss() {
+    if (!prepared) return;
+    clearTimeout(prepared.timer);
+    prepared.layer.remove();
+    prepared = null;
+  }
+  function materialFor(url) {
+    if (prepared?.url === url) {const layer = prepared.layer; clearTimeout(prepared.timer); prepared = null; return layer;}
+    dismiss();
+    return createMaterial(nameOf(url), weave, paddingOf);
+  }
+  let hover = 0, hovered = null;
   window.addEventListener('pointerover', e => {
     clearTimeout(hover);
     const a = e.pointerType === 'mouse' && linkOf(e);
-    if (a && crossing(location.href, a.href)) hover = setTimeout(() => prefetch(a.href), 90);
+    // the name is composed when the browser is idle: moving across the dock never waits for it
+    if (a && crossing(location.href, a.href)) hover = setTimeout(() => {
+      prefetch(a.href);
+      (window.requestIdleCallback || setTimeout)(() => {if (hovered === a.href) prepare(a.href);}, {timeout:240});
+    }, 90);
+    hovered = a ? a.href : null;
   }, {passive:true});
-  window.addEventListener('pointerdown', e => {const a = linkOf(e); if (a && crossing(location.href, a.href)) prefetch(a.href);}, {capture:true, passive:true});
+  // on contact: a touch on the dock is a choice (a touch on a card may be the start of a scroll: only prefetched)
+  window.addEventListener('pointerdown', e => {
+    const a = linkOf(e);
+    if (!a || !crossing(location.href, a.href)) return;
+    prefetch(a.href);
+    if (e.pointerType === 'mouse' || a.getRootNode()?.host?.localName === 'memento-nav') prepare(a.href);
+  }, {capture:true, passive:true});
 
   // R17: the pieces of the interface the DOM paints (type, photographs, the dock; what a GPU surface keeps as DOM).
   // The surfaces the engine draws come apart in the engine itself.
@@ -253,13 +318,13 @@ function observeScene(createMaterial, names, weave, paddingOf) {
     for (const [el, opacity] of pieces()) {
       const r = el.getBoundingClientRect(), x = r.left + r.width / 2, y = r.top + r.height / 2;
       const d = Math.min(1, Math.hypot(x - ox, y - oy) / far), jitter = ((Math.sin(x * 12.9898 + y * 78.233) * 43758.5453) % 1 + 1) % 1;
-      const delay = Math.max(0, l0 + l1 * d + lj * .5 * (jitter - .5)) * exit;
+      const delay = Math.max(0, l0 + l1 * d + lj * .5 * (jitter - .5)) * away;
       try {
         s.anims.push(el.animate([
           {opacity, scale:'1', translate:'0px 0px'},
           {opacity: opacity * .9, offset:.25},
           {opacity:0, scale:'.9', translate:`${((vw / 2 - x) * .18).toFixed(1)}px ${((vh / 2 - y) * .18).toFixed(1)}px`},
-        ], {duration:.42 * exit, delay, easing:'cubic-bezier(.5,0,.75,.4)', fill:'both'}));
+        ], {duration:.42 * away, delay, easing:'cubic-bezier(.5,0,.75,.4)', fill:'both'}));
       } catch {}
     }
   }
@@ -299,7 +364,7 @@ function observeScene(createMaterial, names, weave, paddingOf) {
   // R18: the name composed during the change is the page that opens (leaving: the destination; arriving: this page)
   const nameOf = url => {try {return names[path(new URL(url, location.href))] || 'MEMENTO';} catch {return 'MEMENTO';}};
   function play(s, covering, fraction, duration) {
-    s.layer ??= createMaterial(nameOf(s.destination || location.href), weave, paddingOf);
+    s.layer ??= s.destination ? materialFor(s.destination) : createMaterial(nameOf(location.href), weave, paddingOf);
     s.run?.cancel();
     s.run = s.layer.play(covering, fraction, duration, s.scene);
     return s.run.done.catch(() => {});
@@ -325,7 +390,7 @@ function observeScene(createMaterial, names, weave, paddingOf) {
     };
     try {
       s.scene = sceneOf(origin);
-      document.dispatchEvent(new CustomEvent('memento:scene-exit', {detail:{origin, duration:exit}}));
+      document.dispatchEvent(new CustomEvent('memento:scene-exit', {detail:{origin, duration:away}}));
       dissolve(s);
       play(s, true, 0, exit).then(() => {
         if (active !== s) return;
@@ -365,7 +430,15 @@ function observeScene(createMaterial, names, weave, paddingOf) {
     event.viewTransition?.ready.catch(() => {});
     save(event.activation?.entry?.url);
   });
-  window.addEventListener('pagehide', () => {save(); release();});
+  // R23: leaving for good, the page is left as it is: the browser may capture the outgoing frame after this event, and
+  // putting the interface back together here showed it whole again, frozen, in the margins. Back from the cache, the
+  // page is put back together on pageshow.
+  window.addEventListener('pagehide', event => {
+    save();
+    dismiss();
+    if (!event.persisted || !active) return;
+    clearTimeout(active.timeout); active.run?.cancel();
+  });
   window.addEventListener('click', event => {
     if (event.defaultPrevented || event.button || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
     const a = linkOf(event);
@@ -429,6 +502,18 @@ function observeScene(createMaterial, names, weave, paddingOf) {
       check();
     });
   }
+  // R23: what of the incoming page lies outside the column (a slider that runs edge to edge) composes with the cells
+  // that open next to it: it would otherwise stand there, whole, beside a column still covered
+  function assemble() {
+    const vw = innerWidth, vh = innerHeight, P = paddingOf(vw, vh) * vw, far = Math.hypot(vw / 2, vh / 2) || 1, [o0, o1] = weave.open;
+    for (const [el, opacity] of pieces()) {
+      const r = el.getBoundingClientRect();
+      if (r.left >= P - 1 && r.right <= vw - P + 1) continue;
+      const x = Math.min(Math.max(r.left + r.width / 2, P), vw - P), y = r.top + r.height / 2;
+      const delay = (o0 + (o1 - weave.span - o0) * Math.min(1, Math.hypot(x - vw / 2, (y - vh / 2) * 1.25) / far)) * unfold;
+      try {el.animate([{opacity:0}, {opacity}], {duration:weave.span * unfold, delay, easing:'ease-out', fill:'backwards'});} catch {}
+    }
+  }
   async function arrive(event) {
     const started = performance.now();
     const vt = event.viewTransition;
@@ -444,31 +529,39 @@ function observeScene(createMaterial, names, weave, paddingOf) {
     const s = begin(null, 'hold');
     s.transition = vt;
     root.setAttribute('data-mm-arrive', '');
+    // R23: of the outgoing frame only the column stays (the margins hold nothing but the background, which goes on)
+    root.style.setProperty('--mm-side', Math.round(paddingOf(innerWidth, innerHeight) * innerWidth) + 'px');
     root.dataset.mmFeed = 'old';
     s.scene = saved?.scene || {origin:[.5, .5], rects:[]};
     const first = readyView(s);
     try {
-      // the old page left before the browser navigated: this frame is the one it ended on (the seal on black).
-      // History commits earlier: the rest of the movement runs here, quicker, over the old page's last frame.
+      // the old page asked for this one while its name formed: the movement goes on from where it was when the browser
+      // swapped the documents. History swaps earlier: the rest runs here, quicker, over the old page's last frame.
       const fraction = vt ? Math.max(0, Math.min(1, saved?.fraction ?? 1)) : 1;
       const covered = play(s, true, fraction, saved?.deferred ? exit : Math.min(exit, 420 / Math.max(.01, 1 - fraction)));
       // R18: until the name is composed in its own face, the outgoing frame stays on screen (view transition)
       s.layer.ready.then(() => {if (active === s) root.setAttribute('data-mm-name', '');});
       await Promise.all([covered, vt?.ready.catch(() => {})]);
-      // R22: the same rhythm on every page. The name holds `hold` ms once composed and the page opens, whatever it is
-      // still loading (photographs, the effects' first frame): it waited for the page, up to 3.4 s on a heavy one.
-      // What is not ready by then composes in place, as the cells open over it.
+      // R22: the same rhythm on every page. R23: the composed name stays `hold` ms, and up to `patience` ms while the
+      // page gets its first view and its effects' first frame; whatever is not ready then composes in place
       const composed = performance.now(), wait = ms => new Promise(resolve => setTimeout(resolve, ms));
-      await Promise.race([Promise.all([first, effectsOf(started)]), wait(hold)]);
+      // R23: the opening is built now, while the name holds (its cells, their timelines), not on the frame it starts
+      const primed = first.then(() => {if (active === s) return s.layer.prime(false, unfold, s.nextScene || sceneOf([.5, .5]));}).catch(() => {});
+      await Promise.race([Promise.all([first, effectsOf(started), primed]), wait(patience)]);
       await wait(Math.max(0, hold - (performance.now() - composed)));
       if (s !== active) return;
       root.dataset.mmFeed = 'new';
       root.dataset.mmPhase = 'unfold';
-      // the loading sequences start now: the page composes through the opening lattice
+      // the loading sequences start now: the page composes through the opening cells
       document.dispatchEvent(new Event('memento:scene-unfold'));
       s.scene = s.nextScene || sceneOf([.5, .5]);
       mark('open');
-      await play(s, false, 0, unfold);
+      const opening = play(s, false, 0, unfold);
+      assemble();
+      // R23: from here the page shows by itself exactly what the view transition shows (its own content, its material,
+      // its background and its navigation): the transition ends now, and the cells open on the page itself
+      vt?.skipTransition();
+      await opening;
       if (active === s) {mark('done'); release();}
     } catch {if (active === s) release();}
   }

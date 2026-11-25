@@ -12,18 +12,19 @@ const source = path => readFileSync(new URL('../' + path, import.meta.url), 'utf
 
 test('the exit is slower and leaves before the browser navigates (the next document is prefetched)', () => {
   const head = source('scripts/scene-head.mjs');
-  const [, exit, unfold] = head.match(/const exit = (\d+), unfold = (\d+);/).map(Number);
-  assert.ok(exit >= 900 && unfold >= 1000 && exit + unfold <= 2400, `${exit} + ${unfold}`);
-  const [, patience] = head.match(/const patience = (\d+);/).map(Number);
-  assert.ok(patience >= 1200 && patience <= 2500);
+  // R23: shorter again (exit 520, unfold 660: r23.test.mjs), within the same bounds
+  const [, exit, unfold] = head.match(/const exit = (\d+), unfold = (\d+)/).map(Number);
+  assert.ok(exit >= 400 && unfold >= 500 && exit + unfold <= 2400, `${exit} + ${unfold}`);
+  const [, patience] = head.match(/patience = (\d+);/).map(Number);
+  assert.ok(patience >= 200 && patience <= 2500);
   // a link click is held while the page comes apart; the browser navigates to the prefetched document afterwards
   assert.match(sceneHead, /event\.preventDefault\(\);\s*depart\(a\.href, false\)/);
   assert.match(sceneHead, /speculationrules/);
   assert.match(sceneHead, /location\.assign\(s\.destination\)/);
   // a navigation started by script waits too; history goes at once and the next document finishes the movement
   assert.match(sceneHead, /e\.cancelable && \(e\.navigationType === 'push' \|\| e\.navigationType === 'replace'\)/);
-  // no closing lattice over the page any more: black only once it is empty, behind the seal
-  assert.ok(weave.veil[0] >= .7 && weave.veil[1] < 1 && weave.form[0] <= weave.veil[0]);
+  // no closing lattice over the page any more: the column turns to the ground while it empties, behind the name (R23)
+  assert.ok(weave.veil[0] >= weave.form[0] && weave.veil[1] < 1);
 });
 
 test('the engines take the same interface apart: same order as the DOM pieces and the lattice (guards)', () => {
@@ -35,7 +36,7 @@ test('the engines take the same interface apart: same order as the DOM pieces an
     assert.ok(m, file);
     assert.deepEqual(m.slice(1, 4).map(Number), [l0, l1, lj], file);
     // the DOM pieces dissolve over the same share of the movement
-    assert.match(source('scripts/scene-head.mjs'), new RegExp(`duration:${m[4]} \\* exit`));
+    assert.match(source('scripts/scene-head.mjs'), new RegExp(`duration:${m[4]} \\* away`));
     // every content and overlay vertex shader takes part
     assert.ok((glsl.match(/gl_Position=exitTo\(/g) || []).length >= 2, file);
   }

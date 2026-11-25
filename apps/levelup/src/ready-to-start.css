@@ -105,7 +105,7 @@ html[data-demo-expanded=true] .start-embed__view { visibility: hidden; }
 
 /* Keyboard focus is on the link underneath: its ring is drawn above the effect, on the effect's own outline. */
 .start-embed__focus { z-index: 3; display: none; }
-.start-embed__focus path { stroke: #ffa94d; stroke-width: 2.5; }
+.start-embed__focus path { stroke: #ffa23d; stroke-width: 2.5; }
 .start-embed:has(.start-embed__card:focus-visible) .start-embed__focus { display: block; }
 
 @media (prefers-reduced-motion: reduce) {

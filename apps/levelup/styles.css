@@ -1,14 +1,14 @@
 @font-face{font-family:Inter;src:url('assets/fonts/InterVariable.woff2') format('woff2');font-weight:100 900;font-style:normal;font-display:swap}
 :root{
-  --ink:#f3f0ea;--muted:#aaa69f;--amber:#ffa94d;--ease:cubic-bezier(.22,1,.36,1);
+  --ink:#f3f0ea;--muted:#aaa69f;--amber:#ffa23d;--ease:cubic-bezier(.22,1,.36,1);
   --content-width:min(1720px,100vw,max(320px,calc(100vw - 180px)));
   --gutter:max(0px,calc((100vw - var(--content-width))/2));
   --safe-left:max(var(--gutter),env(safe-area-inset-left));
   --safe-right:max(var(--gutter),env(safe-area-inset-right));
   --page-content:calc(100vw - var(--safe-left) - var(--safe-right));
   --layout-wide:1;--board-ratio:2;--corner-cut:clamp(16px,1.5vw,24px);
-  --title-gradient:linear-gradient(135deg,#f5f3ef 0%,#f5f3ef 34%,#eee1d6 61%,#ffb259 81%,#ff7950 100%);
-  --frame-gradient:linear-gradient(135deg,#d8d1c3c7,#aaa28f66 27%,#716a5e57 62%,#8c694b75 83%,#ff7950e0);
+  --title-gradient:linear-gradient(135deg,#f5f3ef 0%,#f5f3ef 34%,#eee1d6 61%,#ffb35e 81%,#ff7d00 100%);
+  --frame-gradient:linear-gradient(135deg,#d8d1c3c7,#aaa28f66 27%,#716a5e57 62%,#8c694b75 83%,#ff7d00e0);
 }
 *{box-sizing:border-box}
 html{background:transparent;scrollbar-color:#746b5d transparent;scroll-behavior:auto}
@@ -58,7 +58,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,[tabindex]:focus-visibl
 .carousel-controls{display:flex;justify-content:center;align-items:center;gap:0;height:44px;margin:12px auto 0;width:min(100% - 16px,640px)}
 .carousel-controls button{width:44px;height:44px;display:grid;place-items:center;padding:0;flex:0 1 44px;min-width:26px}
 .carousel-controls button span{width:5px;height:5px;background:#d8d5d0;opacity:.65;border-radius:50%;transition:background .3s,transform .3s,opacity .3s}
-.carousel-controls button[aria-current=true] span{background:#ff7950;opacity:1;transform:scale(1.65);box-shadow:0 0 13px #ff795045}
+.carousel-controls button[aria-current=true] span{background:#ff7d00;opacity:1;transform:scale(1.65);box-shadow:0 0 13px #ff7d0045}
 .carousel-controls button:hover span{opacity:1}
 
 /* Cinematic coverflow: a dominant central frame with four perspective neighbours. */
@@ -94,7 +94,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,[tabindex]:focus-visibl
 .demo-loading{position:absolute;inset:0;z-index:3;display:grid;place-items:center;background:linear-gradient(0deg,#07090aeb,#07090a88);color:var(--ink);font-size:15px;text-shadow:0 1px 10px #000}
 .demo-fallback{position:absolute;z-index:4;left:20px;right:20px;bottom:20px;padding:24px;background:#07090af5;border:1px solid #aaa28f66}
 .demo-fallback p{font-size:15px;line-height:1.45;margin-bottom:16px}.demo-fallback>div{display:flex;gap:12px;flex-wrap:wrap}
-.cut-button{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:10px 20px;background:#151310;color:var(--ink);border:1px solid #ff795055;clip-path:polygon(8px 0,100% 0,100% calc(100% - 8px),calc(100% - 8px) 100%,0 100%,0 8px)}.cut-button:hover{border-color:var(--amber)}
+.cut-button{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:10px 20px;background:#151310;color:var(--ink);border:1px solid #ff7d0055;clip-path:polygon(8px 0,100% 0,100% calc(100% - 8px),calc(100% - 8px) 100%,0 100%,0 8px)}.cut-button:hover{border-color:var(--amber)}
 .icon-button{display:grid;place-items:center;width:44px;height:44px;background:#090909e6;border:1px solid #ffffff36;cursor:pointer}.icon-button img{width:24px;height:24px;filter:invert(1)}
 .close-demo{position:absolute;right:16px;top:16px;z-index:10}
 /* The dialog stays in this slot for its entire lifetime. CSS renders the
@@ -180,7 +180,7 @@ html[data-demo-expanded=true]{overflow:hidden}
 html[data-overlay-scrollbar=true]{scrollbar-width:none}html[data-overlay-scrollbar=true]::-webkit-scrollbar{display:none}
 .memento-scrollbar{position:fixed;z-index:120;top:4px;right:0;width:16px;height:calc(100dvh - 8px);touch-action:none;cursor:pointer;outline-offset:-2px}
 .memento-scrollbar-thumb{position:absolute;top:var(--scroll-top,0);right:3px;width:2px;height:var(--scroll-size,32px);background:#d2c4af;opacity:.32;transition:opacity .3s,width .3s;pointer-events:none}
-.memento-scrollbar:is(:hover,:focus-visible,.is-scrolling,.is-dragging) .memento-scrollbar-thumb{width:3px;opacity:.85;background:#ffa94d}
+.memento-scrollbar:is(:hover,:focus-visible,.is-scrolling,.is-dragging) .memento-scrollbar-thumb{width:3px;opacity:.85;background:#ffa23d}
 @media(max-width:767px){.memento-scrollbar{width:12px}.memento-scrollbar-thumb{right:2px}}
 @media(forced-colors:active){html[data-overlay-scrollbar=true]{scrollbar-width:auto}.memento-scrollbar{display:none}}
 

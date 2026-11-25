@@ -14,7 +14,7 @@ test('page change: the name of the page that opens, on the ground, under the nav
   assert.equal(names['/'], 'HOME');
   for (const s of STATIONS) assert.equal(names[s.path], s.title);
   assert.equal(weave.ground, '#090909');
-  assert.ok(weave.letter[0] < weave.form[1] - weave.form[0] && weave.letter[1] < weave.fade[1] - weave.fade[0]);
+  assert.ok(weave.letter < weave.form[1] - weave.form[0] && weave.split < weave.fade[1] - weave.fade[0]);
   // the material stays under the navigation (z-index 1000) and the navigation is its own transition group above it
   assert.match(sceneHead, /\.mm-weave \{[^}]*z-index:998/);   // R20: 998, the background of letters rises to 999 over it
   assert.match(sceneHead, /memento-nav \{view-transition-name:mm-nav\}/);

@@ -409,9 +409,9 @@ void main(){
   }
   vec4 ink=inkAt(p);
   if(uPanel>.5&&ink.a>.003){
-    // type keeps its weight and its single colour; near the pointer it takes a light, very diffuse amber
-    vec2 d=p-uPointer.xy;
-    float k=exp(-dot(d,d)/(uInkWarm.y*uInkWarm.y))*max(uHover,uNear*uInkWarm.z)*uInkWarm.x;
+    // type keeps its weight and its single colour; near the pointer it takes a light, very diffuse amber.
+    // R23: a device without hover holds most of that warmth at rest (uPhotoColor: no hover), as it holds the colour
+    float k=max(exp(-dot(p-uPointer.xy,p-uPointer.xy)/(uInkWarm.y*uInkWarm.y))*max(uHover,uNear*uInkWarm.z),uPhotoColor*.7)*uInkWarm.x;
     ink.rgb*=mix(vec3(1.),vec3(1.,.86,.62),k);
   }
   // large type: as the block warms, the overlay draws that share of the type with the same coverage. The content pass

@@ -31,15 +31,16 @@ test('freeze: a frame asked for before a freeze or the back/forward cache is ask
   assert.match(home, /on\(document,'resume',/);
   const letters = source('public/memento-ui/letters.mjs');
   assert.match(letters, /if \(frame && !document\.hidden && performance\.now\(\) - frameAt > 1000\) \{ cancelAnimationFrame\(frame\); frame = 0; \}/);
-  assert.match(source('scripts/scene-material.mjs'), /const kick = \(\) => \{ if \(!document\.hidden && t < 1 && performance\.now\(\) - frameAt > 1000\)/);
+  // R23: the page change has no frame loop left to freeze: its movements are compositor animations
+  assert.doesNotMatch(source('scripts/scene-material.mjs'), /requestAnimationFrame/);
 });
 
-test('one orange: #FF7950 and its amber family (R22), nothing pink, nothing acid', () => {
-  assert.equal(VFX.color.amber.base, '#FF7950');
-  assert.equal(VFX.color.amber.light, '#FFA94D');
-  const accent = hue('ff7950').h;
-  // R22 "Ambra": from #FF7950 (hue 14) to its core #FFD285 (hue 39): never pinker than the orange, never past amber
-  const family = h => h > accent - 3 && h < hue('ffd285').h + 4;
+test('one orange: #FF7D00 and its glow (R23, the icons), nothing pink, nothing acid', () => {
+  assert.equal(VFX.color.amber.base, '#FF7D00');
+  assert.equal(VFX.color.amber.light, '#FFA23D');
+  // R23 "Incandescenza": the warm colours of the navbar's icons, from their brace and ember (hue 22) to the core of
+  // their glow (hue 33): never pinker than the ember, never past amber
+  const family = h => h > hue('7a340a').h - 3 && h < hue('ffefdc').h + 4;
   const files = ['src/style.css', 'src/shell/shell.css', 'src/vfx/config.mjs', 'public/memento-ui/site.css', 'public/memento-ui/ready-to-start.css',
     'public/memento-ui/letters.mjs', 'public/navigation/styles.mjs', 'public/navigation/icons.mjs', 'scripts/scene-material.mjs',
     'apps/services/styles.css', 'apps/services/src/visuals.js', 'apps/start/src/styles/start.css', 'apps/start/src/vfx/vfx.css',
@@ -47,7 +48,7 @@ test('one orange: #FF7950 and its amber family (R22), nothing pink, nothing acid
     'apps/projects/site/vfx.css'];
   for (const file of files) for (const [, hex] of source(file).matchAll(/#([0-9a-fA-F]{6})(?:[0-9a-fA-F]{2})?\b/g)) {
     const { h, s, l } = hue(hex);
-    // a warm colour (red to yellow) that is not grey must have the hue of #FF7950
+    // a warm colour (red to yellow) that is not grey must have the hue of the glow
     // (warm whites and creams, lighter than 80%, are the ink of the site, not its orange)
     if (h >= 6 && h <= 60 && s > .3 && l > .2 && l < .8) assert.ok(family(h), `${file}: #${hex} (hue ${h.toFixed(1)})`);
   }
@@ -105,18 +106,18 @@ test('background: the fade crosses the padding line; a click or a word sends one
 });
 
 test('page change: the language of the cards, a crisp name', () => {
-  assert.deepEqual(weave.amber, ['#ff7950', '#ffa94d', '#ffd285']);
+  // R23: the glow of the navbar's icons (it was the amber of R21/R22)
+  assert.deepEqual(weave.glow, ['#ffefdc', '#ffc890', '#ffa23d', '#ff7d00', '#c2500a', '#7a340a']);
   const material = source('scripts/scene-material.mjs');
   // an irregular net of mixed sizes (shorter diagonal, some cells split in four), not a regular lattice
   assert.match(material, /function net\(x0, y0, w, h, S, salt\)/);
   assert.match(material, /if \(Math\.hypot\(X\[a\] - X\[d\], Y\[a\] - Y\[d\]\) < Math\.hypot\(X\[b\] - X\[c\], Y\[b\] - Y\[c\]\)\)/);
-  // the fragments come from the content between the margins and land on the facets of the name
-  assert.match(material, /inside\[f\] = cx\[f\] > P && cx\[f\] < W - P \? 1 : 0;/);
-  assert.match(material, /shards\.push\(\{ f, k, x0: cx\[f\], y0: cy\[f\], a, b: Math\.max\(a \+ \.22, time\), h, size, c0: colourAt\(cx\[f\], cy\[f\]\), c1: tone\(k\) \}\);/);
-  // the name at the screen's full resolution, one sprite pixel on one device pixel
-  assert.match(material, /ndpr = Math\.min\(ratio, 3\)/);
-  assert.match(material, /tctx\.drawImage\(q\.sprite, q\.x, q\.y, q\.sprite\.width \/ ndpr, q\.sprite\.height \/ ndpr\)/);
-  assert.match(material, /g\.lineWidth = 1 \/ ndpr;/);
+  // the fragments come from the content between the margins (rects in the column's coordinates) and land on the name
+  assert.match(material, /const rectsOf = scene => \(scene\?\.rects \|\| \[\]\)\.map\(\(\[x, y, w, h\], i\) => \[Math\.max\(0, x \* W - P\)/);
+  assert.match(material, /const \[land, p\] = order\[Math\.max\(0, j\)\]/);
+  // the composed letter at the screen's full resolution, one sprite pixel on one device pixel
+  assert.match(material, /ndpr = Math\.min\(dpr, 3\)/);
+  assert.match(material, /const sprite = canvas\(w, h, ndpr\)/);
   assert.doesNotMatch(material, /g\.rotate\(/);
   // the inline copy every page runs is the same function
   assert.ok(sceneHead.includes('function net(x0, y0, w, h, S, salt)'));

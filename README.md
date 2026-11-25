@@ -29,7 +29,8 @@ Le repo separate (mementostudio, servizi, Portfolio, mementolevelup, mementostar
 - Ready to start su Portfolio e LevelUp: `readyCard` in `scripts/native-page.mjs`, stile in `public/memento-ui/ready-to-start.css`.
 - Hover con il mouse: `VFX.pointer.wave`; intensità delle celle accese: `HOVER_CELLS` (R18). Luce del cursore sulle foto: `PHOTO_SPOT` in `src/surfaces/shaders.ts` e `src/shaders.js`.
 - Sfondo di lettere (R20, R21): `public/memento-ui/letters.mjs`. `LETTERS` contiene dimensione, densità, opacità, velocità, raggio del cursore, sfumatura (`fade`), impulso del click e dell'easter egg (`wave`) ed easter egg (`egg`: primo tentativo tra 7 e 13 s, poi ogni 16–30 s). I margini sono in `public/memento-ui/padding.mjs` (10/15/20/30%) e, per il contenuto, in `--mm-pad` di `site.css` (R21). Studio non ha lo sfondo: è una pagina a sé.
-- Colori (R22, palette Ambra): `#FF7950` (`--memento-accent`), light `#FFA94D` (`--memento-accent-light`), core `#FFD285`; energia degli effetti in `VFX.color.amber`. Colore a riposo: foto al 50% (`.5` negli shader), titoli al 30% del gradiente (`idle` negli shader, `--title-gradient` nel DOM).
+- Colori (R23, palette Incandescenza, dai colori caldi delle icone della navbar): `#FF7D00` (`--memento-accent`), light `#FFA23D` (`--memento-accent-light`), core `#FFC890`, ember `#C2500A`, deep `#7A340A`; energia degli effetti in `VFX.color.amber`. Colore a riposo: foto al 50% (`.5` negli shader), titoli al 30% del gradiente (`--title-gradient` nel DOM). Sui dispositivi senza hover: foto e titoli con il colore dell'hover già a riposo.
+- Cambio pagina (R23): solo nella colonna tra i margini, con animazioni nel compositor (`scripts/scene-material.mjs`). Durate in `scripts/scene-head.mjs`: `exit` 520 ms, `unfold` 660 ms, nome fermo da `hold` 140 a `patience` 380 ms.
 - `public/navigation/` contiene la navbar comune. Le pagine usano un fondo uniforme `#090909` (`--memento-ground` in `public/memento-ui/site.css`) e lo stesso indicatore di scroll (`public/memento-ui/scrollbar.mjs`).
 - Le pagine non hanno motore effetti né navbar propri: usano `/memento-ui/effects.mjs` (da `src/surfaces`) e la navbar di `public/navigation`. Il contenuto di ogni pagina (markup, CSS, caroselli, testi, immagini) si modifica nella sua cartella `apps/`.
 - Studio 3D usa lo stesso menu e la stessa transizione. La scena e i controlli 3D si modificano in `apps/studio`.
@@ -55,6 +56,13 @@ Dalla R15 la Home e le pagine Start, Servizi, Portfolio e LevelUp hanno di nuovo
 Le note delle release precedenti e i riferimenti artistici sono in `docs/`.
 
 ## Archivio delle release
+
+### R23
+
+- **Palette Incandescenza:** i colori caldi delle icone della navbar, senza argento. Base `#FF7D00`, light `#FFA23D`, core `#FFC890`, ember `#C2500A`, deep `#7A340A`.
+- **La transizione tocca solo il contenuto.** Avviene nella colonna tra i margini. Sfondo di lettere, logotipo e navbar restano sempre visibili.
+- **Cambio pagina fluido.** Animazioni di sola trasformazione e opacità nel compositor, che non si fermano mentre la pagina nuova si carica. Il nome si compone prima del click e i colori delle foto si leggono in anticipo. Tempi: 520 ms in uscita, 660 ms in apertura.
+- **Mobile caldo a riposo.** Senza hover, foto, titoli ed etichette hanno già il colore dell'hover. Dettagli in `docs/R23_NOTES.md`.
 
 ### R22
 

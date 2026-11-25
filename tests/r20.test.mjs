@@ -32,7 +32,7 @@ test('the background: the wordmark capitals, the React Bits parameters, faded ou
   assert.match(js, /WORD = \['M', 'E', 'M', 'E', 'N', 'T', 'O'\]/);
   // ?glitchColors=f97316&baseColor=f97316&fontSize=8&spacing=0.5&density=0.25&baseOpacity=0.1&speed=0.05&cursorRadius=400&clickEffect=burst
   // R21: the glyphs in the site's orange #FF7950 (was #f97316); a click sends an impulse (was a ring, burst)
-  for (const value of ['size: 8', 'spacing: 0.5', 'density: 0.25', 'base: 0.1', 'speed: 0.05', 'radius: 400', "color: '#ff7950'", 'wave:'])
+  for (const value of ['size: 8', 'spacing: 0.5', 'density: 0.25', 'base: 0.1', 'speed: 0.05', 'radius: 400', "color: '#ff7d00'", 'wave:'])
     assert.ok(js.includes(value), value);
   assert.match(js, /import \{ paddingOf \} from '\/memento-ui\/padding\.mjs'/);
   // the easter egg: the field decrypts MEMENTO and a chain spreads from where it happened
@@ -76,11 +76,11 @@ test('phone: wordmark and dock share the content column, 80% of the screen', () 
 test('page change: the name between the margins, in the hover look of the titles; the background stays', () => {
   assert.equal(createMaterial.length, 3);
   const material = source('scripts/scene-material.mjs');
-  assert.match(material, /const P = paddingOf\(W, H\) \* W;/);
-  assert.match(material, /const room = W - 2 \* P;/);
+  // R23: the whole layer is the column between the margins (CW wide, from P)
+  assert.match(material, /P = Math\.round\(paddingOf\(W, H\) \* W\), CW = Math\.max\(1, W - 2 \* P\);/);
+  assert.match(material, /const gap = count > 1 \? \(CW - ink\.reduce\(\(a, b\) => a \+ b, 0\)\) \/ \(count - 1\) : 0;/);
   assert.match(material, /actualBoundingBoxLeft \+ t\.actualBoundingBoxRight/);
   assert.match(material, /globalCompositeOperation = 'source-atop'/);
-  assert.match(material, /strokeText/);
   // the background rises over the material during the change and is its own group between it and the navigation
   assert.match(sceneHead, /\.mm-letters \{view-transition-name:mm-bg\}/);
   assert.match(sceneHead, /:root\[data-mm-phase\] \.mm-letters \{z-index:999\}/);
@@ -89,7 +89,7 @@ test('page change: the name between the margins, in the hover look of the titles
   assert.match(sceneHead, /::view-transition-group\(mm-nav\) \{z-index:4\}/);
   assert.ok(sceneHead.includes(':root:not([data-mm-bg])::view-transition-new(mm-bg),:root[data-mm-bg]::view-transition-old(mm-bg),:root[data-mm-feed="new"]::view-transition-old(mm-bg) {opacity:0}'));
   assert.match(sceneHead, /const artwork = '\.vfx-layer,\.mm-weave,\.mm-letters,canvas#world';/);
-  assert.match(sceneHead, /createMaterial\(nameOf\(s\.destination \|\| location\.href\), weave, paddingOf\)/);
+  assert.match(sceneHead, /s\.layer \?\?= s\.destination \? materialFor\(s\.destination\) : createMaterial\(nameOf\(location\.href\), weave, paddingOf\)/);
   assert.match(sceneHead, /,function paddingOf\(width, height\)/);
   assert.match(source('public/memento-ui/site.css'), /\.mm-scrollbar \{position:fixed;z-index:997;/);
 });

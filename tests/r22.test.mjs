@@ -9,10 +9,11 @@ import { nativePage } from '../scripts/native-page.mjs';
 
 const source = path => readFileSync(new URL('../' + path, import.meta.url), 'utf8');
 
-test('palette "Ambra": #FF7950, light #FFA94D, core #FFD285 everywhere', () => {
-  assert.deepEqual({ ...VFX.color.amber }, { base: '#FF7950', light: '#FFA94D', deep: '#8C3510', mid: '#FF7950', hot: '#FFA94D', core: '#FFD285' });
-  assert.match(source('public/memento-ui/site.css'), /--memento-accent-light: #ffa94d;/);
-  assert.match(source('public/memento-ui/letters.mjs'), /color: '#ff7950', hot: '#ffa94d'/);
+test('palette: one orange, its light and its core everywhere (R22 "Ambra", R23 "Incandescenza")', () => {
+  // R23: the warm colours of the navbar's icons replace the Ambra values (r23.test.mjs)
+  assert.deepEqual({ ...VFX.color.amber }, { base: '#FF7D00', light: '#FFA23D', deep: '#7A340A', mid: '#FF7D00', hot: '#FFA23D', core: '#FFC890' });
+  assert.match(source('public/memento-ui/site.css'), /--memento-accent-light: #ffa23d;/);
+  assert.match(source('public/memento-ui/letters.mjs'), /color: '#ff7d00', hot: '#ffa23d'/);
   // no trace of the pink light variant of R21
   for (const file of ['src/style.css', 'public/memento-ui/site.css', 'public/navigation/styles.mjs', 'public/navigation/icons.mjs', 'scripts/scene-material.mjs',
     'apps/services/styles.css', 'apps/start/src/styles/start.css', 'apps/levelup/styles.css', 'apps/projects/site/styles.css', 'src/vfx/config.mjs'])
@@ -26,7 +27,8 @@ test('colour at rest: photographs at half their colour, type with a little of it
   for (const shader of [pages, home]) assert.match(shader, /vec3 idle=mix\(vec3\(lum\),amberOf\(lum\),\.3\), amber=amberOf\(lum\);/);
   // the DOM says the same where the effects do not run
   for (const file of ['src/style.css', 'apps/services/styles.css', 'apps/projects/site/vfx.css', 'apps/start/src/vfx/vfx.css', 'apps/levelup/src/vfx.css'])
-    assert.match(source(file).replace(/\s+/g, ''), /--title-gradient:linear-gradient\(0deg,#9c7a700%,#ba92859%,#d2bba020%,#e9decc32%,#f6f1eb44%,#f6f1eb100%\)/, file);
+    // R23: 30% of the glow's ramp (r23.test.mjs)
+    assert.match(source(file).replace(/\s+/g, ''), /--title-gradient:linear-gradient\(0deg,#a27b640%,#b994709%,#d3bca320%,#e9ddd032%,#f6f1eb44%,#f6f1eb100%\)/, file);
   for (const file of ['src/style.css', 'apps/services/styles.css', 'apps/projects/site/styles.css', 'apps/start/src/styles/start.css', 'public/memento-ui/ready-to-start.css'])
     // (the map's dark styling is a filter chain of its own, not a photograph at rest)
     assert.doesNotMatch(source(file).replace(/\.map-frame iframe\{[^}]*\}/, ''), /grayscale\(1\)/, file);
@@ -59,18 +61,21 @@ test('the background draws from the first frame of every page (inline), one fiel
 test('page change: filled fragments in the colours of the interface, nothing in outline', () => {
   const material = source('scripts/scene-material.mjs');
   // nothing in outline on the cells or over the name (the hairline inside the letters is the title's own material)
-  assert.doesNotMatch(material, /\b(ctx|tctx)\.stroke/);
-  assert.match(material, /ctx\.fillStyle = `rgb\(\$\{c\[0\]\},\$\{c\[1\]\},\$\{c\[2\]\}\)`;/);
-  assert.match(material, /const obsidian = \['#0b0b0c', '#111113', '#18181a'\];/);
+  assert.doesNotMatch(material, /\.stroke(Text)?\(/);
+  // R23: every fragment a filled triangle (a box drawn by its borders), in the colour of the piece it broke from
+  assert.match(material, /border-top:\$\{BASE\}px solid \$\{colour\};border-right:\$\{BASE\}px solid transparent/);
+  assert.match(material, /const from = colour \? shade\(colour, light\) : shade\(hex\(glow\), light \* \.55\);/);
   const head = source('scripts/scene-head.mjs');
-  assert.match(head, /sampling\.drawImage\(img, 0, 0, 3, 3\);/);
-  assert.match(head, /colours: kept\.map\(q => q\[5\] \? coloursOf\(q\[5\]\) : \[\[24,24,26\]\]\)/);
+  // R23: the colours are read ahead of time, while the page is idle (r23.test.mjs)
+  assert.match(head, /scratch\.drawImage\(image, 0, 0, 12, 12\);/);
+  assert.match(head, /colours: kept\.map\(q => q\[5\] \? coloursOf\(q\[5\]\) : null\)/);
 });
 
 test('the same rhythm on every page, and no page change that can hang', () => {
   const head = source('scripts/scene-head.mjs');
-  assert.match(head, /const hold = 280;/);
-  assert.match(head, /await Promise\.race\(\[Promise\.all\(\[first, effectsOf\(started\)\]\), wait\(hold\)\]\);\n\s+await wait\(Math\.max\(0, hold - \(performance\.now\(\) - composed\)\)\);/);
+  // R23: shorter, and bounded on both sides (r23.test.mjs)
+  assert.match(head, /const hold = 140, patience = 380;/);
+  assert.match(head, /await Promise\.race\(\[Promise\.all\(\[first, effectsOf\(started\), primed\]\), wait\(patience\)\]\);\n\s+await wait\(Math\.max\(0, hold - \(performance\.now\(\) - composed\)\)\);/);
   assert.match(head, /s\.timeout = setTimeout\(release, 4500\);/);
   assert.match(source('src/surfaces/engine.ts'), /\(phase === 'gather' \|\| phase === 'hold'\) && performance\.now\(\) - this\.bornAt < 5000/);
 });

@@ -178,7 +178,7 @@ test('titles are laid out like the DOM <h2>: one line, justified across the padd
 });
 
 test('palette: the title gradient keeps its luminance at rest (desaturated), the amber reference is the DNA one', () => {
-  assert.equal(VFX.color.amber.base, '#FF7950');
+  assert.equal(VFX.color.amber.base, '#FF7D00');   // R23: the orange of the navbar's icons (docs/dna/tokens.json)
   const [base, top] = gradientRange();
   assert.ok(top > base);
   const ramp = titleRamp();
