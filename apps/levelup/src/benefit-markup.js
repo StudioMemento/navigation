@@ -3,7 +3,10 @@ export const escape = value => String(value).replace(/[&<>"']/g, c => ({ '&':'&a
 export const lines = items => items.map(text => `<span>${escape(text)}</span>`).join(' ');
 // Carousel boards are VFX cards drawn through their own 3D transform, clipped and faded by the carousel.
 export const board = 'data-vfx="card" data-vfx-transform data-vfx-clip=".carousel" data-vfx-focus data-vfx-photo=".card-art"';
-export const image = (item, eager = false) => `<img class="card-art" src="${item.asset}" srcset="${item.asset.replace('.webp','-640.webp')} 640w, ${item.asset} ${item.domain ? 1280 : 1536}w" sizes="${item.domain ? '(max-width:767px) 90vw, 60vw' : '(max-width:767px) 70vw, 40vw'}" alt="${escape(item.alt || '')}" width="${item.domain ? 1280 : 1536}" height="${item.domain ? 1280 : 1024}" loading="${eager ? 'eager' : 'lazy'}" decoding="async" ${eager ? 'fetchpriority="high"' : ''} draggable="false">`;
+// R24 (site): a phone of three device pixels per CSS pixel gets its photographs at about two: the slot is declared at two
+// thirds of its width there (the heroes came at 1536 px, about 200 KB each, on every phone)
+export const PHONE = '(max-width:767px) and (min-resolution:2.5dppx) ';
+export const image = (item, eager = false) => `<img class="card-art" src="${item.asset}" srcset="${item.asset.replace('.webp','-640.webp')} 640w, ${item.asset} ${item.domain ? 1280 : 1536}w" sizes="${item.domain ? `${PHONE}60vw, (max-width:767px) 90vw, 60vw` : `${PHONE}47vw, (max-width:767px) 70vw, 40vw`}" alt="${escape(item.alt || '')}" width="${item.domain ? 1280 : 1536}" height="${item.domain ? 1280 : 1024}" loading="${eager ? 'eager' : 'lazy'}" decoding="async" ${eager ? 'fetchpriority="high"' : ''} draggable="false">`;
 
 export const benefitMarkup = () => benefits.map((item,i) => `
   <article class="showcase-card cut-frame" ${board} data-slide="${i}" role="group" aria-roledescription="slide" aria-label="${i+1} di ${benefits.length}: ${escape(item.title.join(' '))}">

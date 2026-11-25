@@ -2,7 +2,7 @@ import { SurfaceRegistry, type SurfaceKind, type SurfaceOptions } from './regist
 import { TouchPulseField } from './touch';
 import { installTouchFeedback } from './touch-feedback';
 import type { EngineOptions, VfxEngine } from './engine';
-import { afterFirstPaint, announceEffects, arriving, whenIdle } from '../paint.mjs';
+import { afterFirstPaint, announceEffects, whenIdle } from '../paint.mjs';
 import { vfxPolicy } from '../vfx/policy.mjs';
 
 /**
@@ -108,8 +108,9 @@ export function bindSurfaceCanvas(canvas: HTMLCanvasElement, registry: SurfaceRe
       const [{ VfxEngine }] = loaded;
       if (current !== generation) { announced(); return; }
       // a native page opened directly is already on screen: the engine takes over without the loading sequence.
-      // R17: arriving under the page-change cover, the loading sequence composes the page when the cover lifts.
-      const intro = arriving() || (!document.documentElement.hasAttribute('data-memento-native') && options.intro !== false);
+      // R24: after a page change too (it composed the page a second time once the cells had opened it: the page, then
+      // nothing, then the page again); the engine starts once the opening is over and takes over in place
+      const intro = !document.documentElement.hasAttribute('data-memento-native') && options.intro !== false;
       renderer = VfxEngine.create(canvas, registry, touches, {...options,intro,offset:dialog,bands:!dialog,quality:policy.quality,pinned:policy.pinned});
       if (!renderer) { announced(); fallback(); }
     }).catch(() => { announced(); if (current === generation) fallback(); });

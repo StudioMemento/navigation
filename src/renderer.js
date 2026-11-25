@@ -78,6 +78,8 @@ export class VfxRenderer {
     this.globals = {
       // R17: the page exit (progress, origin in clip space, aspect of the canvas), see EXIT in shaders.js
       uExit: u(new Vector4(0, 0, 0, 1)),
+      // R24: the column the page change happens in (clip x): outside it the cells go out in place
+      uExitCol: u(new Vector2(-2, 2)),
       uTime: u(0), uMotion: u(1), uEmissive: u(0), uLoad: u(0), uPhotoColor: u(this.touchOnly.matches ? 1 : 0),
       uView: u(new Vector2(1, 1)), uBand: u(120), uBandK: u(new Vector2(1, 1)), uDrift: u(new Vector3(0, NAV.drift, NAV.fade)),
       uAmb: u([...hexToRgb(A.deep), ...hexToRgb(A.mid), ...hexToRgb(A.hot), ...hexToRgb(A.core)]),
@@ -186,11 +188,9 @@ export class VfxRenderer {
     if (this.disposed || this.lost) return;
     this.live = true;
     this.publishFrame = true;
-    // R17: arriving under the page-change cover, the carousel composes when the cover lifts; opened directly (or
-    // live after the cover has lifted) it takes over at once
-    const arrival = root().hasAttribute('data-mm-arrive');
-    if (arrival && this.held()) this.loadSpeed = VFX.loading.duration / VFX.loading.arrive;
-    else if (this.reduced || root().dataset.hubRole === 'container') { this.load = 1; this.loaded = true; }
+    // R24: after a page change the carousel was composed by the opening cells: the renderer takes over in place, never
+    // with its loading sequence a second time (opened directly, the sequence composes the carousel as before)
+    if (this.reduced || root().dataset.hubRole === 'container' || root().hasAttribute('data-mm-arrived')) { this.load = 1; this.loaded = true; }
     this.wakeUp();
   }
 
@@ -198,9 +198,10 @@ export class VfxRenderer {
   held() { const phase = root().dataset.mmPhase; return phase === 'gather' || phase === 'hold'; }
 
   /** R17: the page is leaving: the cards' cells come apart from `origin` (viewport fractions) and fly into the seal. */
-  exit(origin, duration) {
+  exit(origin, duration, column = [-.5, 1.5]) {
     if (this.disposed || !this.live) return;
     this.exitAt = performance.now(); this.exitMs = Math.max(1, duration); this.exitT = 0; this.exitOrigin = origin;
+    this.globals.uExitCol.value.set(column[0] * 2 - 1, column[1] * 2 - 1);
     this.input.leave?.();
     this.wakeUp();
   }

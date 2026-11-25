@@ -53,7 +53,12 @@ export const weave = {
   obsidian: ['#090909', '#0d0c0b', '#121110'],
 };
 
-export function createMaterial(name, weave, paddingOf) {
+/**
+ * R24: `now`: the page that leaves composes the name at once (ahead of the click, while the page is idle), without
+ * waiting for a frame: only the incoming document has a first frame to protect. The layer joins the page only when a
+ * movement uses it, so names made ahead of time are not part of the page meanwhile.
+ */
+export function createMaterial(name, weave, paddingOf, now = false) {
   const W = innerWidth, H = innerHeight, P = Math.round(paddingOf(W, H) * W), CW = Math.max(1, W - 2 * P);
   const dpr = devicePixelRatio || 1, small = W * H < 6e5;
   // R21: the composed letter at the screen's full resolution (it looked soft on sharper screens). R23: its pieces and
@@ -66,9 +71,13 @@ export function createMaterial(name, weave, paddingOf) {
   layer.style.cssText = `left:${P}px;width:${CW}px;height:${H}px`;
   const veil = make('mm-veil'), cellBox = make('mm-cells'), shardBox = make('mm-shards'), nameBox = make('mm-name');
   layer.append(veil, cellBox, shardBox, nameBox);
-  // R17: the name breathes while the next page gets ready; both documents take the phase from the clock: no jump
-  nameBox.style.animationDelay = -(Date.now() % 2400) + 'ms';
-  document.body.append(layer);
+  // R17: the name breathes while the next page gets ready; both documents take the phase from the clock: no jump.
+  // R24: the layer joins the page when a movement first uses it (and the phase is read then)
+  const attach = () => {
+    if (layer.isConnected) return;
+    nameBox.style.animationDelay = -(Date.now() % 2400) + 'ms';
+    document.body.append(layer);
+  };
   const hash = (a, b) => {
     let h = Math.imul(a ^ 0x9e3779b9, 0x85ebca6b) ^ Math.imul((b + 0x632be5ab) | 0, 0xc2b2ae35);
     h ^= h >>> 15; h = Math.imul(h, 0x2c1b3c6d); h ^= h >>> 12; h = Math.imul(h, 0x297a2d39); h ^= h >>> 15;
@@ -250,8 +259,11 @@ export function createMaterial(name, weave, paddingOf) {
     if (document.visibilityState === 'hidden') { setTimeout(r, 0); return; }
     requestAnimationFrame(() => setTimeout(r, 0));
   });
-  const ready = (!document.fonts || document.fonts.check(face) ? Promise.resolve()
-    : Promise.race([document.fonts.load(face), new Promise(r => setTimeout(r, 900))])).then(afterFrame, afterFrame).then(() => compose());
+  const loaded = !document.fonts || document.fonts.check(face);
+  if (now && loaded) compose();
+  const ready = composed ? Promise.resolve()
+    : (loaded ? Promise.resolve() : Promise.race([document.fonts.load(face), new Promise(r => setTimeout(r, 900))]))
+      .then(now ? null : afterFrame, now ? null : afterFrame).then(() => { if (!composed) compose(); });
 
   // when each letter forms (leaving) or breaks (arriving), and each of its pieces within it
   const letterAt = (li, span, [a0, a1]) => a0 + (a1 - a0 - span) * (count > 1 ? li / (count - 1) : 0);
@@ -435,6 +447,7 @@ export function createMaterial(name, weave, paddingOf) {
      * handed to the compositor with its whole timeline at once: nothing waits on the main thread once it has started.
      */
     play(covering, fraction, duration, scene) {
+      attach();
       const D = Math.max(1, duration), f0 = Math.max(0, Math.min(1, fraction || 0));
       const reuse = primed && primed.covering === covering && primed.duration === D ? primed : null;
       if (reuse) { drop(current); current = null; primed = null; master?.cancel(); master = null; } else stop();
@@ -469,12 +482,15 @@ export function createMaterial(name, weave, paddingOf) {
     prime(covering, duration, scene) {
       return ready.then(() => {
         if (primed) return;
+        attach();
         // the last movement is still on screen: nothing of the next one shows before it starts
         cellBox.style.visibility = shardBox.style.visibility = 'hidden';
         primed = build(covering, Math.max(1, duration), scene);
       });
     },
     remove() { stop(); layer.remove(); },
+    /** R24: a name made ahead of time still fits the screen (a rotation, a toolbar that hid, compose it again) */
+    fits() { return Math.abs(innerWidth - W) < 1 && Math.abs(innerHeight - H) < 2; },
     /** R18: the name is composed in its own face (the incoming document may be loading Inter) */
     ready
   };

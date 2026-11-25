@@ -7,7 +7,9 @@ import { VFX } from '../src/vfx/config.mjs';
 import { buildNetwork, mulberry } from '../src/vfx/geometry.mjs';
 import { TouchPulseField, TouchReaction, planTouchSeeds } from '../src/vfx/touch.mjs';
 import { weave } from '../scripts/scene-material.mjs';
-import { sceneHead } from '../scripts/scene-head.mjs';
+import { sceneHead as sceneTags, sceneCode, guardCode } from '../scripts/scene-head.mjs';
+// R24: the page change is a script of its own (scene-head sceneFiles): its code is checked as it was inline
+const sceneHead = sceneTags + guardCode + sceneCode;
 
 const source = path => readFileSync(new URL('../' + path, import.meta.url), 'utf8');
 const network = () => buildNetwork(340, 220, 22, 20, 170, 19);

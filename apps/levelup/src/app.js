@@ -1,4 +1,4 @@
-import { escape, lines, board, image, benefitMarkup } from './benefit-markup.js';
+import { escape, lines, board, image, benefitMarkup, PHONE } from './benefit-markup.js';
 import { benefits, experiences, visions, steps, contactUrl, serviceUrl } from './content.js';
 import { Carousel } from './carousel.js';
 import { enhanceVisuals } from './visuals.js';
@@ -19,15 +19,15 @@ $('#vision-grid').innerHTML = visions.map(item => `
   <article class="vision-card cut-frame vision-${item.id}" data-vfx="card" data-vfx-photo=".comparison > img" data-vfx-compare=".comparison-before" aria-labelledby="vision-${item.id}-title">
     <div class="vision-copy"><h3 class="gradient-text" id="vision-${item.id}-title">${lines(item.title)}</h3><p>${escape(item.copy)}</p></div>
     <div class="vision-art"><div class="comparison" id="comparison-${item.id}">
-      <img src="${item.after}" srcset="${item.after.replace('.webp','-640.webp')} 640w, ${item.after} 1280w" sizes="(max-width:767px) 75vw, 600px" alt="${escape(item.alt)}" width="1280" height="1280" loading="lazy" decoding="async" draggable="false">
-      <div class="comparison-before"><img src="${item.before}" srcset="${item.before.replace('.webp','-640.webp')} 640w, ${item.before} 1280w" sizes="(max-width:767px) 75vw, 600px" alt="Lo stesso soggetto come modello di base" width="1280" height="1280" loading="lazy" decoding="async" draggable="false"></div>
+      <img src="${item.after}" srcset="${item.after.replace('.webp','-640.webp')} 640w, ${item.after} 1280w" sizes="${PHONE}50vw, (max-width:767px) 75vw, 600px" alt="${escape(item.alt)}" width="1280" height="1280" loading="lazy" decoding="async" draggable="false">
+      <div class="comparison-before"><img src="${item.before}" srcset="${item.before.replace('.webp','-640.webp')} 640w, ${item.before} 1280w" sizes="${PHONE}50vw, (max-width:767px) 75vw, 600px" alt="Lo stesso soggetto come modello di base" width="1280" height="1280" loading="lazy" decoding="async" draggable="false"></div>
       <div class="comparison-divider" data-vfx-dom aria-hidden="true"><span><img src="assets/icons/caret-left.svg" alt=""><img src="assets/icons/caret-right.svg" alt=""></span></div>
       <label class="sr-only" for="range-${item.id}">Confronta ${escape(item.title.join(' '))} Trascina per cambiare materiali e finiture.</label>
       <input id="range-${item.id}" type="range" min="0" max="100" value="50" aria-valuetext="50% modello di base, 50% materiali e finiture">
     </div></div>
   </article>`).join('');
 $('#steps-grid').innerHTML = steps.map((item,i) => `
-  <li class="step-card cut-frame" data-vfx="card"><img class="step-art" src="${item.asset}" srcset="${item.asset.replace('.webp','-768.webp')} 768w, ${item.asset} 1536w" sizes="(max-width:900px) 90vw, 33vw" alt="" width="1536" height="1024" loading="lazy" decoding="async"><p>${escape(item.copy)}</p><span class="step-number" aria-hidden="true">STEP ${i+1}</span><h3 class="gradient-text">${lines(item.title)}</h3></li>`).join('');
+  <li class="step-card cut-frame" data-vfx="card"><img class="step-art" src="${item.asset}" srcset="${item.asset.replace('.webp','-768.webp')} 768w, ${item.asset} 1536w" sizes="${PHONE}60vw, (max-width:900px) 90vw, 33vw" alt="" width="1536" height="1024" loading="lazy" decoding="async"><p>${escape(item.copy)}</p><span class="step-number" aria-hidden="true">STEP ${i+1}</span><h3 class="gradient-text">${lines(item.title)}</h3></li>`).join('');
 
 function pagination(root, items, label, select) {
   root.innerHTML = items.map((item,i) => `<button type="button" aria-label="${escape(label(item))}" aria-current="${i===0}" data-index="${i}"><span></span></button>`).join('');

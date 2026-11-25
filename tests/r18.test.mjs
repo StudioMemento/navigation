@@ -5,7 +5,9 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { VFX } from '../src/vfx/config.mjs';
 import { names, weave } from '../scripts/scene-material.mjs';
-import { sceneHead } from '../scripts/scene-head.mjs';
+import { sceneHead as sceneTags, sceneCode, guardCode } from '../scripts/scene-head.mjs';
+// R24: the page change is a script of its own (scene-head sceneFiles): its code is checked as it was inline
+const sceneHead = sceneTags + guardCode + sceneCode;
 import { STATIONS } from '../src/kit/core.mjs';
 
 const source = path => readFileSync(new URL('../' + path, import.meta.url), 'utf8');

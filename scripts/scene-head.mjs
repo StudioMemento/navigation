@@ -1,6 +1,7 @@
 import { createMaterial, names, weave } from './scene-material.mjs';
 import { paddingOf } from '../public/memento-ui/padding.mjs';
 import { readFileSync } from 'node:fs';
+import { createHash } from 'node:crypto';
 
 // R18: the layer of the page change stays under the navigation (z-index 1000): wordmark and dock never leave, only the
 // content changes. R23: and it is only the column between the margins (scene-material): nothing else is touched.
@@ -31,7 +32,8 @@ const css = `@media (prefers-reduced-motion:no-preference) and (forced-colors:no
   ::view-transition-group(mm-bg),::view-transition-old(mm-bg),::view-transition-new(mm-bg) {animation:none;mix-blend-mode:normal}
   ::view-transition-old(root) {z-index:1;opacity:1}
   :root[data-mm-feed="old"]::view-transition-old(root) {clip-path:inset(0 var(--mm-side,0px))}
-  :root[data-mm-feed="old"]::view-transition-new(root) {opacity:0}
+  :root[data-mm-feed="old"]::view-transition-new(root) {clip-path:inset(0 var(--mm-side,0px))}
+  :root[data-mm-feed="old"]:not([data-mm-name])::view-transition-new(root) {opacity:0}
   :root[data-mm-feed="new"]::view-transition-old(root),:root[data-mm-name]::view-transition-old(mm-material),:root:not([data-mm-name])::view-transition-new(mm-material) {opacity:0}
   ::view-transition-group(mm-material) {z-index:2}
   ::view-transition-group(mm-bg) {z-index:3}
@@ -69,8 +71,8 @@ function guardInput() {
 const lettersSource = readFileSync(new URL('../public/memento-ui/letters.mjs', import.meta.url), 'utf8')
   .replace(/^import \{ paddingOf \} from '\/memento-ui\/padding\.mjs';\n/m, '')
   .replace(/^export /gm, '');
-export const lettersLayer = '<div class="mm-letters" aria-hidden="true"><canvas class="mm-letters-field"></canvas><canvas class="mm-letters-light"></canvas></div>'
-  + `<script id="memento-letters">(()=>{${paddingOf.toString()}\n${lettersSource}})()</script>`;
+/** R24: the background of letters as a script of its own, run right after its layer (see sceneFiles) */
+export const lettersCode = `(()=>{${paddingOf.toString()}\n${lettersSource}})()`;
 
 function observeScene(createMaterial, names, weave, paddingOf) {
   const root = document.documentElement;
@@ -99,8 +101,9 @@ function observeScene(createMaterial, names, weave, paddingOf) {
   // the name is whole at the end of it, and the browser is asked for the next page then (it was prefetched on hover or
   // touch): the moment the browser swaps the documents holds a composed name, never a half-formed one
   const exit = 520, unfold = 660, away = exit * weave.depart / .98;
-  // R22: the same rhythm on every page. R23: the name, once composed, stays at least `hold` ms and at most `patience` ms
-  // more while the incoming page gets its first view and its effects' first frame; what is not ready by then composes in place
+  // R22: the same rhythm on every page. R23: the name, once composed, stays at least `hold` ms. R24: and the incoming page
+  // has until `patience` ms after its first frame to show its first view (it waited for its effects too, up to 380 ms
+  // after the name: a phone always waited the whole of it); what is not ready by then composes in place
   const hold = 140, patience = 380;
   const fallbackBox = [.16, .22, .68, .56];
   let active = null, lastPoint = null, passing = null;
@@ -140,11 +143,18 @@ function observeScene(createMaterial, names, weave, paddingOf) {
   function peek() {
     try {const s = JSON.parse(sessionStorage.getItem(key)); return s?.to === location.href && Date.now() - s.at < 15000 ? s : null;} catch {return null;}
   }
+  // R24: a page change of the site is a handoff from the outgoing page (it saved its movement), or history between
+  // two of its pages. An address typed or pasted after another page of the site is not: the page opens directly (it
+  // ran the whole arrival, up to 400 ms of work, over a page already on screen)
+  const traversal = type => type === 'traverse' || type === 'back_forward';
   {
     const activation = window.navigation?.activation;
     const type = activation?.navigationType || performance.getEntriesByType?.('navigation')[0]?.type;
-    if (supported() && type !== 'reload' && (peek() || crossing(activation?.from?.url, location.href))) {
+    if (supported() && type !== 'reload' && (peek() || (traversal(type) && crossing(activation?.from?.url, location.href)))) {
       root.setAttribute('data-mm-arrive', '');
+      // R24: and it stays known after the change is over: the effects of this page take over in place, never with
+      // their own loading sequence (it took the page away and composed it a second time)
+      root.setAttribute('data-mm-arrived', '');
       root.dataset.mmPhase = 'hold';
       // R23: the name's face is asked for at once (it is preloaded; asked for here it is ready by the first frame)
       try {document.fonts?.load('300 64px Inter');} catch {}
@@ -160,10 +170,17 @@ function observeScene(createMaterial, names, weave, paddingOf) {
   const parts = '[data-vfx], #scene .card[data-slot], main img, main h1, main h2, main canvas, #experience';
   const typeColours = [[246,241,235],[233,222,204],[210,187,160]];
   const palette = new Map();
-  const photoOf = el => {
-    const img = el.localName === 'img' ? el : el.querySelector?.('img');
-    return img?.currentSrc || img?.getAttribute('src') || el.dataset?.vfxPhoto || '';
-  };
+  // R24: data-vfx-photo names which <img> is the photograph (a selector, see src/surfaces/index.ts), never an address
+  // (read as one, it asked the server for /services/.bundle-visual and /projects/.tile-visual img: two 404s). Only a
+  // photograph already loaded is read: a lazy one is never downloaded for this
+  function imageOf(el) {
+    if (el.localName === 'img') return el;
+    let img = null;
+    try {img = el.dataset?.vfxPhoto ? el.querySelector(el.dataset.vfxPhoto) : null;} catch {}
+    if (img && img.localName !== 'img') img = img.querySelector('img');
+    return img || el.querySelector?.('img') || null;
+  }
+  const photoOf = el => {const img = imageOf(el); return img?.currentSrc || img?.getAttribute('src') || '';};
   function coloursOf(el) {
     if (/^h[1-6]$/.test(el.localName) || el.dataset?.vfx === 'title') return typeColours;
     const url = photoOf(el);
@@ -171,7 +188,8 @@ function observeScene(createMaterial, names, weave, paddingOf) {
   }
   function readColours() {
     const idle = window.requestIdleCallback || (f => setTimeout(() => f({timeRemaining: () => 8}), 120));
-    const queue = [...new Set([...document.querySelectorAll(parts)].map(photoOf).filter(Boolean).map(u => new URL(u, location.href).href))]
+    const queue = [...new Set([...document.querySelectorAll(parts)].map(imageOf).filter(img => img?.complete && img.naturalWidth)
+      .map(img => img.currentSrc || img.getAttribute('src')).filter(Boolean).map(u => new URL(u, location.href).href))]
       .filter(u => u.startsWith(location.origin) && !palette.has(u)).slice(0, 24);
     let scratch = null;
     const next = () => {
@@ -212,11 +230,11 @@ function observeScene(createMaterial, names, weave, paddingOf) {
     const kept = rects.slice(0, 28);
     return {origin, rects: kept.map(q => q.slice(0, 4).map(v => Math.round(v * 1e4) / 1e4)), colours: kept.map(q => q[5] ? coloursOf(q[5]) : null)};
   }
-  function firstElement() {
+  function firstElement(strict = false) {
     const selectors = {studio:'#experience #loading', services:'#bundle-boards [data-slide="0"] img',
       projects:'#project-view:not([hidden]) .flow-card[aria-current] img, #catalogue:not([hidden]) #project-grid img',
       levelup:'#benefits [data-slide="0"] img', start:'main h1, #root h1'};
-    return document.querySelector(selectors[root.dataset.mementoNative] || '#scene .card[data-slot="active"] img') || document.querySelector('main h1,main');
+    return document.querySelector(selectors[root.dataset.mementoNative] || '#scene .card[data-slot="active"] img') || (strict ? null : document.querySelector('main h1,main'));
   }
 
   // R17: the next document is requested while the page comes apart (speculation rules: the navigation then uses the
@@ -246,23 +264,54 @@ function observeScene(createMaterial, names, weave, paddingOf) {
   // R23: the name of the page a link opens is composed ahead of the click as well (on the same short hover, on
   // contact): the click itself only sets the movement going. It cost 20–40 ms on a desktop, two or three times as much
   // on a phone, right between the touch and its first answer. Kept for a few seconds, for one link at a time.
-  let prepared = null;
-  function prepare(url) {
-    if (!enabled() || active || prepared?.url === url) return;
-    dismiss();
-    try {prepared = {url, layer:createMaterial(nameOf(url), weave, paddingOf), timer:setTimeout(dismiss, 6000)};} catch {prepared = null;}
+  // R24: composed at once (it waited for a frame: 160 ms right after the touch on a phone, and the exit waited for it).
+  // A screen without hover composes the names of every page of the dock ahead of time, one per idle moment after the
+  // page has loaded: the touch only sets the movement going. With a mouse, one name at a time, on the short hover.
+  const made = new Map();
+  const keyOf = url => {try {return path(new URL(url, location.href));} catch {return '';}};
+  function drop(k) {
+    const m = made.get(k);
+    if (!m) return;
+    clearTimeout(m.timer); m.layer.remove(); made.delete(k);
   }
-  function dismiss() {
-    if (!prepared) return;
-    clearTimeout(prepared.timer);
-    prepared.layer.remove();
-    prepared = null;
+  function dismiss() {for (const k of [...made.keys()]) drop(k);}
+  function prepare(url, keep = 6000) {
+    const k = keyOf(url);
+    if (!enabled() || active || !k) return;
+    const have = made.get(k);
+    if (have?.layer.fits()) {
+      clearTimeout(have.timer);
+      have.timer = keep ? setTimeout(() => drop(k), keep) : 0;
+      return;
+    }
+    drop(k);
+    // with a mouse, only the name the pointer is on is kept
+    if (keep) for (const [other, m] of made) if (m.timer) drop(other);
+    try {made.set(k, {layer:createMaterial(nameOf(url), weave, paddingOf, true), timer:keep ? setTimeout(() => drop(k), keep) : 0});} catch {}
   }
   function materialFor(url) {
-    if (prepared?.url === url) {const layer = prepared.layer; clearTimeout(prepared.timer); prepared = null; return layer;}
-    dismiss();
-    return createMaterial(nameOf(url), weave, paddingOf);
+    const k = keyOf(url), m = made.get(k);
+    if (m?.layer.fits()) {clearTimeout(m.timer); made.delete(k); return m.layer;}
+    drop(k);
+    return createMaterial(nameOf(url), weave, paddingOf, true);
   }
+  const touchOnly = matchMedia('(hover: none)');
+  let ahead = 0;
+  function composeAhead() {
+    clearTimeout(ahead);
+    const memory = navigator.deviceMemory;
+    if (!touchOnly.matches || !enabled() || (typeof memory === 'number' && memory > 0 && memory < 3)) return;
+    const here = path(location), queue = Object.keys(names).filter(p => p !== here && p !== '/memento' && sections.has(p));
+    const idle = window.requestIdleCallback || (f => setTimeout(f, 160));
+    const next = () => {
+      const p = queue.shift();
+      if (p && !active) idle(() => {if (!active) prepare(location.origin + (p === '/' ? '/' : p + '/'), 0); next();}, {timeout:3000});
+    };
+    next();
+  }
+  window.addEventListener('load', () => {ahead = setTimeout(composeAhead, 1500);}, {once:true});
+  window.addEventListener('resize', () => {clearTimeout(ahead); ahead = setTimeout(composeAhead, 900);}, {passive:true});
+  window.addEventListener('pageshow', e => {if (e.persisted) {clearTimeout(ahead); ahead = setTimeout(composeAhead, 600);}});
   let hover = 0, hovered = null;
   window.addEventListener('pointerover', e => {
     clearTimeout(hover);
@@ -279,7 +328,7 @@ function observeScene(createMaterial, names, weave, paddingOf) {
     const a = linkOf(e);
     if (!a || !crossing(location.href, a.href)) return;
     prefetch(a.href);
-    if (e.pointerType === 'mouse' || a.getRootNode()?.host?.localName === 'memento-nav') prepare(a.href);
+    if (e.pointerType === 'mouse' || a.getRootNode()?.host?.localName === 'memento-nav') prepare(a.href, made.get(keyOf(a.href))?.timer === 0 ? 0 : 6000);
   }, {capture:true, passive:true});
 
   // R17: the pieces of the interface the DOM paints (type, photographs, the dock; what a GPU surface keeps as DOM).
@@ -287,6 +336,10 @@ function observeScene(createMaterial, names, weave, paddingOf) {
   const leafy = 'img,picture,video,canvas,svg,h1,h2,h3,h4,h5,h6,p,li,dt,dd,button,a,label,input,select,textarea,figure,blockquote,pre,table,iframe,[data-vfx]';
   const artwork = '.vfx-layer,.mm-weave,.mm-letters,canvas#world';
   const skip = artwork + ',script,style,link,meta,template,noscript';
+  // R24: whole blocks (a container up to a fifth of the screen leaves in one piece), at most 36 of them: it read the
+  // style of up to 140 elements on the click and handed each to the compositor as its own layer (64 ms on the click,
+  // 600 ms of style, layout and layers in the first 0.75 s after a touch on a phone)
+  const most = 36, block = .2;
   function pieces() {
     const vw = innerWidth, vh = innerHeight, live = root.classList.contains('vfx-live'), out = [];
     const take = el => {
@@ -295,16 +348,16 @@ function observeScene(createMaterial, names, weave, paddingOf) {
     };
     (function walk(el, depth) {
       for (const c of el.children) {
-        if (out.length >= 140) return;
+        if (out.length >= most) return;
         if (c.matches(skip)) continue;
         const r = c.getBoundingClientRect();
         if (!r.width || !r.height) {if (depth < 9 && c.children.length) walk(c, depth + 1); continue;}
         if (r.bottom < 0 || r.top > vh || r.right < 0 || r.left > vw) continue;
-        if (live && c.hasAttribute('data-vfx-ready')) {for (const d of c.querySelectorAll('[data-vfx-dom]')) if (out.length < 140) take(d); continue;}
+        if (live && c.hasAttribute('data-vfx-ready')) {for (const d of c.querySelectorAll('[data-vfx-dom]')) if (out.length < most) take(d); continue;}
         // R18: the navigation (wordmark and dock) stays: only the content leaves (the scroll cue leaves with it)
         if (c.localName === 'memento-nav') continue;
         if (c.querySelector(artwork)) {walk(c, depth + 1); continue;}   // never the canvas that takes itself apart
-        if (c.matches(leafy) || depth >= 8 || !c.children.length || r.width * r.height < vw * vh * .08) take(c);
+        if (c.matches(leafy) || depth >= 8 || !c.children.length || r.width * r.height < vw * vh * block) take(c);
         else walk(c, depth + 1);
       }
     })(document.body, 0);
@@ -337,6 +390,7 @@ function observeScene(createMaterial, names, weave, paddingOf) {
       clearTimeout(s.timeout);
       s.run?.cancel();
       s.layer?.remove();
+      for (const a of s.outside || []) a.cancel();
       // a page that did not leave after all (blocked, back from the cache): its interface is put back together
       if (s.anims) {for (const a of s.anims) a.cancel(); document.dispatchEvent(new Event('memento:scene-reset'));}
       s.finish();
@@ -390,7 +444,10 @@ function observeScene(createMaterial, names, weave, paddingOf) {
     };
     try {
       s.scene = sceneOf(origin);
-      document.dispatchEvent(new CustomEvent('memento:scene-exit', {detail:{origin, duration:away}}));
+      // R24: with the column (viewport fractions): the engine's cells outside it go out in place, they never fly over
+      // the margins, the background and the wordmark
+      const side = paddingOf(innerWidth, innerHeight);
+      document.dispatchEvent(new CustomEvent('memento:scene-exit', {detail:{origin, duration:away, column:[side, 1 - side]}}));
       dissolve(s);
       play(s, true, 0, exit).then(() => {
         if (active !== s) return;
@@ -471,12 +528,26 @@ function observeScene(createMaterial, names, weave, paddingOf) {
     e.signal.addEventListener('abort', () => {if (active === s) release();}, {once:true});
   });
 
+  // R24: the first view of the incoming page is its first element, parsed and decoded, and the face of its type: not
+  // the whole document. DOMContentLoaded also waits for the page's own modules: 2.4–3.1 s after the touch on a phone,
+  // so the name always stood its whole wait
+  function parsed(s) {
+    return new Promise(resolve => {
+      const look = () => {
+        const target = firstElement(true);
+        if (target || document.readyState !== 'loading' || s !== active) resolve(target || firstElement());
+        else setTimeout(look, 16);
+      };
+      look();
+    });
+  }
   async function readyView(s) {
     let timer;
     async function visible() {
-      if (document.readyState === 'loading') await new Promise(resolve => document.addEventListener('DOMContentLoaded', resolve, {once:true}));
+      const target = await parsed(s);
+      // its layout is read after the page's first frame (read in the reveal, it forced the whole layout before it)
+      await new Promise(resolve => requestAnimationFrame(() => setTimeout(resolve, 0)));
       if (s !== active) return;
-      const target = firstElement();
       s.nextScene = sceneOf([.5, .5]);
       if (target instanceof HTMLImageElement && (target.currentSrc || target.getAttribute('src'))) await target.decode();
       else if (root.dataset.mementoNative === 'studio' && target && !document.body.classList.contains('ready')) {
@@ -487,31 +558,23 @@ function observeScene(createMaterial, names, weave, paddingOf) {
     }
     try {await Promise.race([visible(), new Promise(resolve => {timer = setTimeout(resolve, 1200);})]);} catch {} finally {clearTimeout(timer);}
   }
-  // R17: the effects of the incoming page draw their first frame under the seal (html.vfx-live; a renderer that fails
-  // settles its entry in window.mementoEffects, paint.mjs): the page is revealed already drawn, never as plain DOM
-  // taken over a moment later. Pages without effects, or a visit that will not get them, do not wait.
-  function effectsOf(started) {
-    if (!expected()) return;
-    return new Promise(resolve => {
-      const list = () => window.mementoEffects || [];
-      const check = () => {
-        if (root.classList.contains('vfx-live') || root.classList.contains('vfx-off') || (list().length && list().every(e => e.settled))
-          || performance.now() - started > patience || !active) resolve();
-        else setTimeout(check, 24);
-      };
-      check();
-    });
-  }
   // R23: what of the incoming page lies outside the column (a slider that runs edge to edge) composes with the cells
-  // that open next to it: it would otherwise stand there, whole, beside a column still covered
-  function assemble() {
+  // that open next to it: it would otherwise stand there, whole, beside a column still covered. R24: read and built in
+  // the hold (its layout reads, its animations, held until the opening sets them going): the frame the page opens on
+  // read the style and the position of every piece
+  function assemble(s) {
     const vw = innerWidth, vh = innerHeight, P = paddingOf(vw, vh) * vw, far = Math.hypot(vw / 2, vh / 2) || 1, [o0, o1] = weave.open;
+    s.outside = [];
     for (const [el, opacity] of pieces()) {
       const r = el.getBoundingClientRect();
       if (r.left >= P - 1 && r.right <= vw - P + 1) continue;
       const x = Math.min(Math.max(r.left + r.width / 2, P), vw - P), y = r.top + r.height / 2;
       const delay = (o0 + (o1 - weave.span - o0) * Math.min(1, Math.hypot(x - vw / 2, (y - vh / 2) * 1.25) / far)) * unfold;
-      try {el.animate([{opacity:0}, {opacity}], {duration:weave.span * unfold, delay, easing:'ease-out', fill:'backwards'});} catch {}
+      try {
+        const a = el.animate([{opacity:0}, {opacity}], {duration:weave.span * unfold, delay, easing:'ease-out', fill:'backwards'});
+        a.pause();
+        s.outside.push(a);
+      } catch {}
     }
   }
   async function arrive(event) {
@@ -521,15 +584,21 @@ function observeScene(createMaterial, names, weave, paddingOf) {
     const saved = read();
     const activation = window.navigation?.activation;
     const type = activation?.navigationType || performance.getEntriesByType('navigation')[0]?.type;
-    if (type === 'reload' || !enabled() || !(saved || crossing(activation?.from?.url, location.href))) {
+    // R24: only with the view transition, and only for a page change of the site (see traversal above)
+    if (!vt || type === 'reload' || !enabled() || !(saved || (traversal(type) && crossing(activation?.from?.url, location.href)))) {
       vt?.skipTransition();
+      root.removeAttribute('data-mm-arrived');
       if (root.hasAttribute('data-mm-arrive') || active) release();
       return;
     }
     const s = begin(null, 'hold');
     s.transition = vt;
     root.setAttribute('data-mm-arrive', '');
-    // R23: of the outgoing frame only the column stays (the margins hold nothing but the background, which goes on)
+    root.setAttribute('data-mm-arrived', '');
+    // R23: of the outgoing frame only the column stays (the margins hold nothing but the background, which goes on).
+    // R24: the incoming page is drawn under it once its name has composed (the material's veil covers the column then;
+    // it was hidden until the opening): when the cells open it is already rasterized, and it never shows in the
+    // margins. Until the name, its first frames stay light: the name composes sooner
     root.style.setProperty('--mm-side', Math.round(paddingOf(innerWidth, innerHeight) * innerWidth) + 'px');
     root.dataset.mmFeed = 'old';
     s.scene = saved?.scene || {origin:[.5, .5], rects:[]};
@@ -537,30 +606,44 @@ function observeScene(createMaterial, names, weave, paddingOf) {
     try {
       // the old page asked for this one while its name formed: the movement goes on from where it was when the browser
       // swapped the documents. History swaps earlier: the rest runs here, quicker, over the old page's last frame.
-      const fraction = vt ? Math.max(0, Math.min(1, saved?.fraction ?? 1)) : 1;
+      const fraction = Math.max(0, Math.min(1, saved?.fraction ?? 1));
       const covered = play(s, true, fraction, saved?.deferred ? exit : Math.min(exit, 420 / Math.max(.01, 1 - fraction)));
       // R18: until the name is composed in its own face, the outgoing frame stays on screen (view transition)
       s.layer.ready.then(() => {if (active === s) root.setAttribute('data-mm-name', '');});
-      await Promise.all([covered, vt?.ready.catch(() => {})]);
-      // R22: the same rhythm on every page. R23: the composed name stays `hold` ms, and up to `patience` ms while the
-      // page gets its first view and its effects' first frame; whatever is not ready then composes in place
+      await Promise.all([covered, vt.ready.catch(() => {}), s.layer.ready.catch(() => {})]);
+      // R22: the same rhythm on every page. R24: the composed name stays `hold` ms at least, and the page has until
+      // `patience` ms after its first frame to show its first view. The effects are not waited for: they take over in
+      // place once the page is open (paint.mjs, engine.ts)
       const composed = performance.now(), wait = ms => new Promise(resolve => setTimeout(resolve, ms));
-      // R23: the opening is built now, while the name holds (its cells, their timelines), not on the frame it starts
-      const primed = first.then(() => {if (active === s) return s.layer.prime(false, unfold, s.nextScene || sceneOf([.5, .5]));}).catch(() => {});
-      await Promise.race([Promise.all([first, effectsOf(started), primed]), wait(patience)]);
+      // R23: the opening is built now, while the name holds (its cells, their timelines), not on the frame it starts;
+      // R24: and with it what lies outside the column
+      // (never once the opening has started: a late first view would hide its running cells and freeze what lies
+      // outside the column at nothing)
+      const primed = first.then(() => {
+        if (active !== s || s.opened) return;
+        assemble(s);
+        return s.layer.prime(false, unfold, s.nextScene || sceneOf([.5, .5]));
+      }).catch(() => {});
+      await Promise.race([Promise.all([first, primed]), wait(Math.max(0, started + patience - performance.now()))]);
       await wait(Math.max(0, hold - (performance.now() - composed)));
       if (s !== active) return;
       root.dataset.mmFeed = 'new';
-      root.dataset.mmPhase = 'unfold';
-      // the loading sequences start now: the page composes through the opening cells
-      document.dispatchEvent(new Event('memento:scene-unfold'));
       s.scene = s.nextScene || sceneOf([.5, .5]);
       mark('open');
-      const opening = play(s, false, 0, unfold);
-      assemble();
+      // what lies outside the column composes with the cells even when the first view came late (built now, then)
+      s.opened = true;
+      if (!s.outside) assemble(s);
+      const opening = play(s, false, 0, unfold), at = performance.now();
+      for (const a of s.outside) a.startTime = at;
       // R23: from here the page shows by itself exactly what the view transition shows (its own content, its material,
       // its background and its navigation): the transition ends now, and the cells open on the page itself
-      vt?.skipTransition();
+      vt.skipTransition();
+      // R24: the page's own work starts a frame later: the frame the page opens on only opens it
+      requestAnimationFrame(() => {
+        if (active !== s) return;
+        root.dataset.mmPhase = 'unfold';
+        document.dispatchEvent(new Event('memento:scene-unfold'));
+      });
       await opening;
       if (active === s) {mark('done'); release();}
     } catch {if (active === s) release();}
@@ -570,4 +653,23 @@ function observeScene(createMaterial, names, weave, paddingOf) {
   motion.addEventListener('change', release);
 }
 
-export const sceneHead = `<style id="memento-scene-shape">${css}</style><script id="memento-guard">(${guardInput.toString()})()</script><script id="memento-scene-navigation">(${observeScene.toString()})(${createMaterial.toString()},${JSON.stringify(names)},${JSON.stringify(weave)},${paddingOf.toString()})</script>`;
+/** R24: the page change, as the script every page runs in its head (and the guard of R22 before it) */
+export const sceneCode = `(${observeScene.toString()})(${createMaterial.toString()},${JSON.stringify(names)},${JSON.stringify(weave)},${paddingOf.toString()})`;
+export const guardCode = `(${guardInput.toString()})()`;
+/**
+ * R24: both scripts are files of their own, named by their content and cached for good (/assets/compiled/, immutable
+ * in vercel.json): 80 KB of JavaScript (the page change 55 KB, the background 23 KB) were written inline in every page
+ * and compiled again on every page change, since the browser keeps compiled code only for scripts it fetched. Both stay
+ * classic scripts where they were (the page change in the head, before the first frame; the background right after its
+ * layer): only how they arrive changes. The build writes them (vite.config.js).
+ */
+const digest = text => createHash('sha256').update(text).digest('hex').slice(0, 12);
+const headCode = guardCode + ';\n' + sceneCode;
+export const sceneFiles = Object.freeze({
+  [`assets/compiled/scene-${digest(headCode)}.js`]: headCode,
+  [`assets/compiled/letters-${digest(lettersCode)}.js`]: lettersCode,
+});
+const [headFile, lettersFile] = Object.keys(sceneFiles);
+export const sceneHead = `<style id="memento-scene-shape">${css}</style><script id="memento-scene-navigation" src="/${headFile}"></script>`;
+export const lettersLayer = '<div class="mm-letters" aria-hidden="true"><canvas class="mm-letters-field"></canvas><canvas class="mm-letters-light"></canvas></div>'
+  + `<script id="memento-letters" src="/${lettersFile}"></script>`;

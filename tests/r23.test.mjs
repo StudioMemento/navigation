@@ -6,7 +6,9 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { VFX } from '../src/vfx/config.mjs';
 import { weave, createMaterial } from '../scripts/scene-material.mjs';
-import { sceneHead } from '../scripts/scene-head.mjs';
+import { sceneHead as sceneTags, sceneCode, guardCode } from '../scripts/scene-head.mjs';
+// R24: the page change is a script of its own (scene-head sceneFiles): its code is checked as it was inline
+const sceneHead = sceneTags + guardCode + sceneCode;
 
 const source = path => readFileSync(new URL('../' + path, import.meta.url), 'utf8');
 const hsl = hex => {
@@ -39,14 +41,16 @@ test('palette "Incandescenza": the warm colours of the navbar\'s icons, never th
 test('page change: only the column between the margins; background, wordmark and dock stay', () => {
   const material = source('scripts/scene-material.mjs');
   assert.match(material, /layer\.style\.cssText = `left:\$\{P\}px;width:\$\{CW\}px;height:\$\{H\}px`;/);
+  // R24: a fourth argument, `now`, composes the name at once on the outgoing side (r24.test.mjs)
   assert.equal(createMaterial.length, 3);
   // of the outgoing frame only the column is kept; the new page shows itself once the cells open
   assert.ok(sceneHead.includes(':root[data-mm-feed="old"]::view-transition-old(root) {clip-path:inset(0 var(--mm-side,0px))}'));
-  assert.ok(sceneHead.includes(':root[data-mm-feed="old"]::view-transition-new(root) {opacity:0}'));
+  // R24: the incoming page is drawn under it, clipped to the column too (it was hidden: r24.test.mjs)
+  assert.ok(sceneHead.includes(':root[data-mm-feed="old"]::view-transition-new(root) {clip-path:inset(0 var(--mm-side,0px))}'));
   assert.match(sceneHead, /root\.style\.setProperty\('--mm-side', Math\.round\(paddingOf\(innerWidth, innerHeight\) \* innerWidth\) \+ 'px'\);/);
-  assert.match(sceneHead, /vt\?\.skipTransition\(\);\n\s+await opening;/);
+  assert.match(sceneHead, /vt\.skipTransition\(\);/);
   // what of the incoming page reaches past the column composes with the cells next to it
-  assert.match(sceneHead, /function assemble\(\)/);
+  assert.match(sceneHead, /function assemble\(s\)/);
   // the background rises over the material and the navigation over everything: neither takes part
   assert.match(sceneHead, /:root\[data-mm-phase\] \.mm-letters \{z-index:999\}/);
   assert.match(sceneHead, /\.mm-weave \{position:fixed;top:0;left:0;pointer-events:none;overflow:hidden;z-index:998;view-transition-name:mm-material\}/);
@@ -79,7 +83,7 @@ test('page change: shorter, prepared ahead, and the swap holds a composed name',
   assert.doesNotMatch(head, /s\.depart = setTimeout/);
   // the name is composed on hover and on a touch on the dock; the opening is built while the name holds
   assert.match(head, /\(window\.requestIdleCallback \|\| setTimeout\)\(\(\) => \{if \(hovered === a\.href\) prepare\(a\.href\);\}, \{timeout:240\}\);/);
-  assert.match(head, /if \(e\.pointerType === 'mouse' \|\| a\.getRootNode\(\)\?\.host\?\.localName === 'memento-nav'\) prepare\(a\.href\);/);
+  assert.match(head, /if \(e\.pointerType === 'mouse' \|\| a\.getRootNode\(\)\?\.host\?\.localName === 'memento-nav'\) prepare\(a\.href, /);
   assert.match(head, /s\.layer\.prime\(false, unfold, s\.nextScene \|\| sceneOf\(\[\.5, \.5\]\)\)/);
   // the colours of the photographs are read while the page is idle, never on the click
   assert.match(head, /window\.addEventListener\('load', \(\) => setTimeout\(readColours, 900\), \{once:true\}\);/);
@@ -113,5 +117,6 @@ test('the next page arrives sooner: shared and page assets come from the cache, 
   // the pages themselves (HTML) are always asked for fresh: no rule reaches them
   assert.ok(!vercel.headers.some(h => /services\|projects/.test(h.source) && !/\\\.\(/.test(h.source)));
   // the incoming page draws its first frame before the name is composed (the transition holds the outgoing one)
-  assert.match(source('scripts/scene-material.mjs'), /\.then\(afterFrame, afterFrame\)\.then\(\(\) => compose\(\)\);/);
+  // (R24: only the incoming page waits for it; the outgoing one composes at once)
+  assert.match(source('scripts/scene-material.mjs'), /\.then\(now \? null : afterFrame, now \? null : afterFrame\)\.then\(\(\) => \{ if \(!composed\) compose\(\); \}\);/);
 });

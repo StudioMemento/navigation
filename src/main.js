@@ -217,7 +217,7 @@ on(window,'keydown',e=>{
 on(window,'resize',scheduleFit);if(visualViewport)on(visualViewport,'resize',scheduleFit);
 on(document,'memento:surface-visibility',wake);
 // R17: the page change (scene-head): the cards come apart into the seal; the cover lifts; the page came back
-on(document,'memento:scene-exit',e=>{if(e.detail)engine?.exit(e.detail.origin,e.detail.duration);wake();});
+on(document,'memento:scene-exit',e=>{if(e.detail)engine?.exit(e.detail.origin,e.detail.duration,e.detail.column);wake();});
 on(document,'memento:scene-unfold',()=>{lastTime=0;wake();});
 on(document,'memento:scene-reset',()=>{engine?.resetExit();wake();});
 on(document,'visibilitychange',()=>{if(document.hidden){cancelAnimationFrame(raf);raf=0;lastTime=0;}else{lastTime=0;wake();}});

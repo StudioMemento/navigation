@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import { parse } from 'parse5';
 import { readFileSync } from 'node:fs';
 import { runInNewContext } from 'node:vm';
+import { sceneFiles, sceneCode, guardCode } from '../scripts/scene-head.mjs';
 import { nativePage } from '../scripts/native-page.mjs';
 import { mkdtemp, writeFile, readFile, mkdir, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
@@ -84,7 +85,12 @@ test('a single cross-document scene owns the transition, and requesting a link s
   assert.match(css, /@view-transition\s*\{navigation:auto/);
   assert.match(css, /::view-transition-old\(root\)/);
   assert.match(css, /::view-transition-new\(root\)/);
-  const script=scene.childNodes[0].value;
+  // R24: the page change is a file of its own, named by its content and cached for good (scene-head sceneFiles)
+  assert.equal(scene.childNodes.length,0);
+  const file=attr(scene,'src');
+  assert.match(file,/^\/assets\/compiled\/scene-[0-9a-f]{12}\.js$/);
+  assert.ok(sceneFiles[file.slice(1)].startsWith(guardCode));
+  const script=sceneCode;
   const flags=new Set();
   const root={clientWidth:400,dataset:{},style:{setProperty(){}},classList:{contains:()=>false},hasAttribute:n=>flags.has(n),setAttribute:n=>flags.add(n),removeAttribute:n=>flags.delete(n)};
   const document=Object.assign(new EventTarget(),{documentElement:root,referrer:'',body:{}});

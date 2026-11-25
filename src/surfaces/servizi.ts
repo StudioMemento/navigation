@@ -57,11 +57,13 @@ export function brightnessOf(filter: string) {
 
 /**
  * Residency of a surface: vertical gap (px) between its document box and the viewport. Surfaces are prepared within
- * `near` viewport heights and release their GPU memory beyond `far`.
+ * `near` viewport heights and release their GPU memory beyond `far`. R24: in the browser's idle time the engine also
+ * prepares those within `ahead`, before the scroll needs them (they were measured, painted and uploaded during the
+ * scroll itself: Servizi scrolled at 20 frames a second on a phone).
  */
 export function viewportGap(top: number, height: number, scrollY: number, viewH: number) {
   if (top + height < scrollY) return scrollY - (top + height);
   if (top > scrollY + viewH) return top - (scrollY + viewH);
   return 0;
 }
-export const RESIDENCY = { near: 1.25, far: 3 } as const;
+export const RESIDENCY = { near: 1.25, ahead: 2.25, far: 3 } as const;

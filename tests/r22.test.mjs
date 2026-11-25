@@ -4,7 +4,9 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { VFX } from '../src/vfx/config.mjs';
-import { sceneHead, lettersLayer } from '../scripts/scene-head.mjs';
+import { sceneHead as sceneTags, sceneCode, guardCode, lettersLayer, lettersCode } from '../scripts/scene-head.mjs';
+// R24: the page change is a script of its own (scene-head sceneFiles): its code is checked as it was inline
+const sceneHead = sceneTags + guardCode + sceneCode;
 import { nativePage } from '../scripts/native-page.mjs';
 
 const source = path => readFileSync(new URL('../' + path, import.meta.url), 'utf8');
@@ -41,17 +43,19 @@ test('a controlled surface: no selection, no context menu, no middle button, no 
     assert.ok(sceneHead.includes(event), event);
   // every page has it, Studio included
   const studio = nativePage('<!doctype html><html><head><title>t</title></head><body><main id="experience"></main></body></html>', 'studio', 'test');
-  assert.match(studio, /<script id="memento-guard">/);
+  // R24: in the head script of every page (scene-head sceneFiles), the guard first
+  assert.match(studio, /<script id="memento-scene-navigation" src="\/assets\/compiled\/scene-[0-9a-f]{12}\.js"><\/script>/);
 });
 
 test('the background draws from the first frame of every page (inline), one field per page', () => {
-  assert.match(lettersLayer, /<script id="memento-letters">\(\(\)=>\{function paddingOf\(width, height\)/);
-  assert.doesNotMatch(lettersLayer.slice(lettersLayer.indexOf('<script')), /^import |^export /m);
+  // R24: the same code, run right after the layer, as a file of its own (scene-head sceneFiles)
+  assert.match(lettersCode, /^\(\(\)=>\{function paddingOf\(width, height\)/);
+  assert.doesNotMatch(lettersCode, /^import |^export /m);
   assert.match(source('public/memento-ui/letters.mjs'), /if \(window\.__mementoLetters\) return \(mounted = window\.__mementoLetters\);/);
   assert.doesNotMatch(source('public/memento-ui/site.mjs'), /letters\.mjs/);
   assert.doesNotMatch(source('vite.config.js'), /src="\/memento-ui\/letters\.mjs"/);
   const page = nativePage('<!doctype html><html><head><title>t</title></head><body><main><h1>Start</h1></main></body></html>', 'start', 'test');
-  assert.match(page, /<body><div class="mm-letters" aria-hidden="true">.*?<\/div><script id="memento-letters">/s);
+  assert.match(page, /<body><div class="mm-letters" aria-hidden="true">.*?<\/div><script id="memento-letters" src="[^"]+"><\/script>/s);
   // a tap that scrolls or a link never sends an impulse (the page change has its own movement)
   const js = source('public/memento-ui/letters.mjs');
   assert.match(js, /n instanceof HTMLAnchorElement/);
@@ -75,7 +79,8 @@ test('the same rhythm on every page, and no page change that can hang', () => {
   const head = source('scripts/scene-head.mjs');
   // R23: shorter, and bounded on both sides (r23.test.mjs)
   assert.match(head, /const hold = 140, patience = 380;/);
-  assert.match(head, /await Promise\.race\(\[Promise\.all\(\[first, effectsOf\(started\), primed\]\), wait\(patience\)\]\);\n\s+await wait\(Math\.max\(0, hold - \(performance\.now\(\) - composed\)\)\);/);
+  // R24: the page's first view is waited for up to `patience` after its first frame, the effects no longer (r24.test.mjs)
+  assert.match(head, /await Promise\.race\(\[Promise\.all\(\[first, primed\]\), wait\(Math\.max\(0, started \+ patience - performance\.now\(\)\)\)\]\);\n\s+await wait\(Math\.max\(0, hold - \(performance\.now\(\) - composed\)\)\);/);
   assert.match(head, /s\.timeout = setTimeout\(release, 4500\);/);
   assert.match(source('src/surfaces/engine.ts'), /\(phase === 'gather' \|\| phase === 'hold'\) && performance\.now\(\) - this\.bornAt < 5000/);
 });

@@ -12,7 +12,7 @@ import { buildNetwork, hashString, type SurfaceNetwork } from './geometry';
 import { PointerField } from './input';
 import { TouchPulseField, TouchReaction, type SurfaceRect } from './touch';
 import { GPU_STRIDE, Particles } from './particles';
-import { collect, distanceField, imageFit, paint } from './raster';
+import { collect, distanceFieldAsync, imageFit, paint } from './raster';
 import { gradientLine, inverseHomography, lineLength, parseAlphaGradient, parseAlphaGradients, parseTransform, placement, project, unproject, type AlphaGradient } from './projective';
 import { RESIDENCY, blurLod, blurOf, brightnessOf, pickSource, viewportGap } from './servizi';
 import type { SurfaceOptions, SurfaceRegistry } from './registry';
@@ -245,6 +245,8 @@ export class VfxEngine {
       uFrag: { value: new Vector4(1, 1, 1, 0) },
       // R17: the page exit (progress, origin in clip space, aspect of the canvas)
       uExit: { value: new Vector4(0, 0, 0, 1) },
+      // R24: the column the page change happens in (clip x): outside it the cells go out in place
+      uExitCol: { value: new Vector2(-2, 2) },
     };
 
     // particles
@@ -312,6 +314,7 @@ export class VfxEngine {
   destroy() {
     this.destroyed = true;
     cancelAnimationFrame(this.raf);
+    if (this.aheadTask) cancelIdleCallback(this.aheadTask);
     this.loading = false;
     this.abort.abort();
     this.cleanups.forEach(f => f());
@@ -346,11 +349,11 @@ export class VfxEngine {
     if (document.hidden) await new Promise(resolve => document.addEventListener('visibilitychange', resolve, { once: true, signal: this.abort.signal }));
     if (this.destroyed || this.lost || document.hidden) return;
     this.goLive();
-    // R17: arriving under the page-change cover, the page composes when the cover lifts (and a little faster);
-    // an engine that goes live after the cover has lifted takes over at once, like on a page opened directly
-    const arrival = root().hasAttribute('data-mm-arrive');
-    if (this.reduced || !this.intro || (arrival && !this.held())) { this.load.value = 1; this.loaded = true; return; }
-    if (arrival) this.loadRate = VFX.loading.duration / VFX.loading.arrive;
+    // R24: a page that arrived through the page change was composed by its cells: the engine takes over in place, the
+    // same image, never with its own loading sequence (which hid the page and composed it a second time)
+    const arrived = root().hasAttribute('data-mm-arrived');
+    this.scheduleAhead();
+    if (this.reduced || !this.intro || arrived) { this.load.value = 1; this.loaded = true; return; }
     // Cellule > Unione > Assestamento > Presente. Any interaction shortens it; nothing is queued behind it.
     this.loading = true;
     const hurry = () => { this.loadRate = Math.max(this.loadRate, VFX.loading.hurry); };
@@ -395,11 +398,17 @@ export class VfxEngine {
       cancelAnimationFrame(this.raf); this.raf = 0;
     }
     this.metrics.wakes++;
-    this.lastTick = 0;
+    // R24: the frame clock starts again only after a real pause: a wake from within a frame (a texture that arrived, a
+    // carousel frame) no longer lets the next frame skip the 60 fps cap on a fast screen
+    if (!this.lastTick || performance.now() - this.lastTick > 100) this.lastTick = 0;
     this.raf = requestAnimationFrame(this.animate);
   };
   /** Something arrived outside the loop (a painted glyph texture, a photograph): draw it on the next frame. */
   private redraw() { this.renderDirty = true; this.wake(); }
+  /** R24: a surface got its textures: drawn now if it is on (or right next to) the screen, else when scroll brings it */
+  private shown(s: Surface) {
+    if (viewportGap(s.y, s.h, this.scroll.y, this.viewH) <= this.pad) this.redraw(); else this.renderDirty = true;
+  }
 
   private publishFrame = false;
   private goLive() { if (!this.failed) { this.publishFrame = true; this.live = true; this.redraw(); } }
@@ -444,8 +453,8 @@ export class VfxEngine {
       this.exitAt = 0; (this.globals.uExit.value as Vector4).set(0, 0, 0, 1); this.redraw();
     }, passive);
     document.addEventListener('memento:scene-exit', e => {
-      const d = (e as CustomEvent<{ origin: [number, number]; duration: number }>).detail;
-      if (d) this.exit(d.origin, d.duration);
+      const d = (e as CustomEvent<{ origin: [number, number]; duration: number; column?: [number, number] }>).detail;
+      if (d) this.exit(d.origin, d.duration, d.column);
     }, passive);
     document.addEventListener('memento:overlay-change', shown, passive);
     document.addEventListener('memento:surface-visibility', shown, passive);
@@ -640,6 +649,8 @@ export class VfxEngine {
       u.uImg.value = s.img; u.uHasImg.value = 1;
       if (ib) { [s.img2, s.img2Src] = texture(ib, b, s.img2, s.img2Src); u.uImg2.value = s.img2; u.uHasImg2.value = 1; }
       else u.uHasImg2.value = 0;
+      // R24: uploaded now (the image has arrived), not by the first frame that draws it: the scroll no longer pays for it
+      for (const t of [s.img, ib ? s.img2 : null]) if (t) this.renderer.initTexture(t);
       // Servizi: the veil samples the same texture, fitted to its own box, at the mip level of its CSS blur
       if (s.veilImg) {
         const [, , vw, vh] = s.veilBox, fit = imageFit(ia, s.veilFit as CSSStyleDeclaration, vw, vh);
@@ -650,7 +661,7 @@ export class VfxEngine {
         vp.x = lod;
         (u.uVeilTexel.value as Vector2).set((0.5 * 2 ** lod) / nw, (0.5 * 2 ** lod) / nh);
       }
-      this.redraw();
+      this.shown(s);
     });
   }
 
@@ -733,6 +744,33 @@ export class VfxEngine {
     }
     return worked;
   }
+
+  /**
+   * R24: in the browser's idle time, the surfaces within `RESIDENCY.ahead` viewports are prepared before the scroll
+   * reaches them (nearest first, while the idle period lasts). The scroll then finds them ready; `residency` keeps
+   * preparing on the frame only what a fast scroll outran.
+   */
+  private aheadTask = 0;
+  private scheduleAhead() {
+    if (this.aheadTask || this.destroyed || this.failed || typeof requestIdleCallback !== 'function') return;
+    this.aheadTask = requestIdleCallback(this.prepareAhead, { timeout: 2000 });
+  }
+  private prepareAhead = (deadline: IdleDeadline) => {
+    this.aheadTask = 0;
+    if (this.destroyed || this.failed || this.lost || document.hidden || !this.live || this.layoutDirty) return;
+    const vh = this.viewH, y = this.scroll.y, reach = RESIDENCY.ahead * vh;
+    for (let n = 0; deadline.timeRemaining() > 8 || (deadline.didTimeout && n === 0); n++) {
+      let pick: Surface | null = null, best = Infinity;
+      for (const s of this.surfaces.values()) {
+        if (!s.dirty || s.w < 2 || s.h < 2) continue;
+        const gap = viewportGap(s.y, s.h, y, vh);
+        if (gap <= reach && gap < best) { best = gap; pick = s; }
+      }
+      if (!pick) return;
+      this.rasterize(pick);
+    }
+    this.scheduleAhead();
+  };
 
   /* ------------------------------------------------------------------ layout and surfaces */
 
@@ -1087,19 +1125,26 @@ export class VfxEngine {
       s.ink = t; s.alpha = title ? alpha : null;
       u.uInk.value = t; u.uHasInk.value = 1;
       (u.uInkMap.value as Vector4).set(bx - ox, by - oy, scale / frame.w, scale / frame.h);
-      if (title) {
-        // the glow of large type follows each letter: a signed distance field of the painted glyphs (mapped like the ink)
-        const f = distanceField(painted, frame.w / scale, frame.h / scale, u.uRange.value as number);
+      // R24: a surface prepared away from the screen (ahead of the scroll) is not a reason to draw a frame
+      const done = () => {
+        // Servizi: the pixels live on the GPU only; a lost context or a return from far away paints them again
+        painted.width = painted.height = 0;
+        s.content.visible = true; s.ready = true; s.el.dataset.vfxReady = 'true';
+        this.shown(s);
+      };
+      if (!title) { done(); return; }
+      // the glow of large type follows each letter: a signed distance field of the painted glyphs (mapped like the ink).
+      // R24: computed in a worker (raster.ts); the title stays DOM until it has it
+      void distanceFieldAsync(painted, frame.w / scale, frame.h / scale, u.uRange.value as number).then(f => {
+        if (s.version !== version || this.destroyed) { painted.width = painted.height = 0; return; }
         s.dist?.dispose();
         const d = new DataTexture(f.data, f.w, f.h, RedFormat, UnsignedByteType);
         d.minFilter = LinearFilter; d.magFilter = LinearFilter; d.flipY = false; d.generateMipmaps = false; d.needsUpdate = true;
+        this.renderer.initTexture(d);
         s.dist = d; u.uDist.value = d;
         this.weightByInk(s);
-      }
-      // Servizi: the pixels live on the GPU only; a lost context or a return from far away paints them again
-      painted.width = painted.height = 0;
-      s.content.visible = true; s.ready = true; s.el.dataset.vfxReady = 'true';
-      this.redraw();
+        done();
+      });
     }).catch(() => { s.ready = true; this.wake(); });
   }
 
@@ -1242,7 +1287,7 @@ export class VfxEngine {
     this.tick(time, delta);
     if (this.destroyed || this.raf) return;
     // R15: at rest the loop sleeps; the canvas keeps its last frame and wake() restarts the loop
-    if (this.loaded && this.restFor >= R.idle) { this.lastTick = 0; this.resumed = true; this.metrics.sleeps++; return; }
+    if (this.loaded && this.restFor >= R.idle) { this.lastTick = 0; this.resumed = true; this.metrics.sleeps++; this.scheduleAhead(); return; }
     this.raf = requestAnimationFrame(this.animate);
   };
 
@@ -1548,9 +1593,10 @@ export class VfxEngine {
    * R17: the page is leaving. Its cells come apart from the touched point and fly into the seal (see EXIT in
    * shaders.ts); scene-head navigates when the movement is over. `origin`: viewport fractions.
    */
-  exit(origin: [number, number], duration: number) {
+  exit(origin: [number, number], duration: number, column: [number, number] = [-.5, 1.5]) {
     if (this.destroyed || this.failed || !this.live) return;
     this.exitAt = performance.now(); this.exitMs = Math.max(1, duration); this.exitT = 0; this.exitOrigin = origin;
+    (this.globals.uExitCol.value as Vector2).set(column[0] * 2 - 1, column[1] * 2 - 1);
     this.input.leave();
     this.redraw();
   }

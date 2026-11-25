@@ -6,7 +6,9 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { PADDING, ULTRAWIDE, paddingOf } from '../public/memento-ui/padding.mjs';
 import { createMaterial } from '../scripts/scene-material.mjs';
-import { sceneHead, lettersLayer } from '../scripts/scene-head.mjs';
+import { sceneHead as sceneTags, sceneCode, guardCode, lettersLayer } from '../scripts/scene-head.mjs';
+// R24: the page change is a script of its own (scene-head sceneFiles): its code is checked as it was inline
+const sceneHead = sceneTags + guardCode + sceneCode;
 import { nativePage } from '../scripts/native-page.mjs';
 import { layout } from '../src/model.mjs';
 
@@ -50,7 +52,8 @@ test('the background: the wordmark capitals, the React Bits parameters, faded ou
 });
 
 test('the background is in every body from the first byte, under everything, never in the way', () => {
-  assert.match(lettersLayer, /^<div class="mm-letters" aria-hidden="true"><canvas class="mm-letters-field"><\/canvas><canvas class="mm-letters-light"><\/canvas><\/div><script id="memento-letters">/);
+  // R24: its script right after it, a file of its own (scene-head sceneFiles)
+  assert.match(lettersLayer, /^<div class="mm-letters" aria-hidden="true"><canvas class="mm-letters-field"><\/canvas><canvas class="mm-letters-light"><\/canvas><\/div><script id="memento-letters" src="\/assets\/compiled\/letters-[0-9a-f]{12}\.js"><\/script>$/);
   const page = nativePage('<!doctype html><html><head><title>t</title></head><body><main><h1>Start</h1></main></body></html>', 'start', 'test');
   assert.match(page, /<body><div class="mm-letters" aria-hidden="true">/);
   assert.equal(page.split('class="mm-letters"').length, 2);

@@ -170,6 +170,18 @@ const EXIT = /* glsl */ `
    (a little shuffled), flies to the seal at the centre of the screen on a bowed path, shrinking and turning, heats up
    and fades as it arrives. uExit: progress (0 = none), origin (clip x, y), aspect of the canvas (w / h). */
 uniform vec4 uExit;
+/* R24: the column between the margins in clip x (left, right): a cell outside it goes out in place, it never flies over
+   the margins, the background and the wordmark. Inside it, two cells in five fly (at about the size of the change's
+   fragments: they shrink little); the others go out in place too. It read as dust spread over the whole screen. */
+uniform vec2 uExitCol;
+float exitStays(vec4 cc, float seed){
+  float x=cc.x/cc.w;
+  return (x<uExitCol.x||x>uExitCol.y||h11(seed*61.)>.4)?1.:0.;
+}
+/* how far a leaving cell is gone: a flying one as it arrives, one that stays soon after it starts */
+float exitGone(vec4 cc, float seed, float k){
+  return mix(smoothstep(.62,1.,k),smoothstep(.06,.62,k),exitStays(cc,seed));
+}
 float exitOf(vec4 cc, float seed){
   if(uExit.x<=0.) return 0.;
   vec2 q=(cc.xy/cc.w-uExit.yz)*vec2(uExit.w,1.);
@@ -181,13 +193,18 @@ float exitOf(vec4 cc, float seed){
 vec4 exitTo(vec4 vc, vec4 cc, float k, float seed){
   if(k<=0.) return vc;
   float e=k*k*(3.-2.*k);
+  if(exitStays(cc,seed)>.5){
+    // in place: the cell shrinks a little about its centre and goes out
+    vec2 c0=cc.xy/cc.w, n0=vc.xy/vc.w;
+    return vec4((c0+(n0-c0)*(1.-.35*e))*vc.w,vc.z,vc.w);
+  }
   // R18: toward the line where the page's name composes (the middle of the screen, across most of its width)
   vec2 c=cc.xy/cc.w, n=vc.xy/vc.w, to=vec2(-.45*c.x,-c.y);
   vec2 side=vec2(-to.y,to.x)*(h11(seed*29.)-.5)*1.2*sin(3.1416*e);
   float a=(h11(seed*43.)-.5)*5.*e, ca=cos(a), sa=sin(a);
   vec2 v=(n-c)*vec2(uExit.w,1.);
   v=vec2(ca*v.x-sa*v.y,sa*v.x+ca*v.y)/vec2(uExit.w,1.);
-  vec2 m=c+v*(1.-.8*e)+(to+side)*e;
+  vec2 m=c+v*(1.-.45*e)+(to+side)*e;
   return vec4(m*vc.w,vc.z,vc.w);
 }
 `;
@@ -238,7 +255,7 @@ void main(){
   vOv=(1.-smoothstep(.02,.3,fragAt(screenY(place(position)))))*(1.-loadAbs(delayAt(position,.5)));
   vec4 cc=place(cd+off), vc=place(cd+dv+off);
   float ke=exitOf(cc,seed);
-  vGone=max(vGone,smoothstep(.62,1.,ke)); vHeat=ke;
+  vGone=max(vGone,exitGone(cc,seed,ke)); vHeat=ke*(1.-.6*exitStays(cc,seed));
   gl_Position=exitTo(vc,cc,ke,seed);
 }`;
 
@@ -308,7 +325,7 @@ void main(){
   // R17 exit: the light (and the title drawn here) leaves with its cells and goes out on the way
   vec4 cc=place(centre+uOffset);
   float ke=exitOf(cc,cell.x);
-  vFade*=1.-smoothstep(.5,.95,ke);
+  vFade*=1.-mix(smoothstep(.5,.95,ke),smoothstep(.06,.62,ke),exitStays(cc,cell.x));
   gl_Position=exitTo(clip,cc,ke,cell.x);
 }`;
 

@@ -307,9 +307,12 @@ export function imageFit(img: HTMLImageElement, style: CSSStyleDeclaration, bw: 
  * Signed distance of the painted type, in CSS px, encoded on 8 bits over ±`range`: the glow of large type follows
  * the exact silhouette of every letter. A reduced grid is enough: the field is smooth and filtered on the GPU.
  */
-export function distanceField(source: HTMLCanvasElement, cssW: number, cssH: number, range: number) {
+const fieldSize = (cssW: number, cssH: number) => {
   const k = Math.min(1, Math.sqrt(2.6e5 / Math.max(1, cssW * cssH)));
-  const w = Math.max(2, Math.round(cssW * k)), h = Math.max(2, Math.round(cssH * k));
+  return { k, w: Math.max(2, Math.round(cssW * k)), h: Math.max(2, Math.round(cssH * k)) };
+};
+export function distanceField(source: HTMLCanvasElement, cssW: number, cssH: number, range: number) {
+  const { k, w, h } = fieldSize(cssW, cssH);
   const c = document.createElement('canvas'); c.width = w; c.height = h;
   const x = c.getContext('2d', { willReadFrequently: true })!;
   x.imageSmoothingEnabled = true; x.imageSmoothingQuality = 'high';
@@ -317,3 +320,39 @@ export function distanceField(source: HTMLCanvasElement, cssW: number, cssH: num
   const d = signedDistance(x.getImageData(0, 0, w, h).data, w, h, 4, 3);
   return { data: encodeDistance(d, 1 / k, range), w, h };
 }
+
+/**
+ * R24: the same field computed in a worker (sdf.worker.ts): the glyphs are handed over as a bitmap already scaled to
+ * the field's size, and nothing of the read back or the transform runs on the main thread. Where workers, offscreen
+ * canvases or bitmaps are missing, or the worker fails, the field is computed here as before.
+ */
+type Field = { data: Uint8Array; w: number; h: number };
+let worker: Worker | null | undefined, jobs = 0;
+const pending = new Map<number, (f: Field | null) => void>();
+function fieldWorker() {
+  if (worker !== undefined) return worker;
+  try {
+    if (typeof Worker === 'undefined' || typeof OffscreenCanvas === 'undefined' || typeof createImageBitmap !== 'function') throw new Error('no worker');
+    worker = new Worker(new URL('./sdf.worker.ts', import.meta.url), { type: 'module' });
+    worker.onmessage = (e: MessageEvent<{ id: number; data?: Uint8Array; w?: number; h?: number; error?: string }>) => {
+      const done = pending.get(e.data.id);
+      pending.delete(e.data.id);
+      done?.(e.data.data ? { data: e.data.data, w: e.data.w!, h: e.data.h! } : null);
+    };
+    worker.onerror = () => { for (const done of pending.values()) done(null); pending.clear(); worker?.terminate(); worker = null; };
+  } catch { worker = null; }
+  return worker;
+}
+export function distanceFieldAsync(source: HTMLCanvasElement, cssW: number, cssH: number, range: number): Promise<Field> {
+  const w0 = fieldWorker(), { k, w, h } = fieldSize(cssW, cssH);
+  if (!w0) return Promise.resolve(distanceField(source, cssW, cssH, range));
+  // the bitmap is taken from the canvas now (the caller may clear it as soon as this returns)
+  const taken = createImageBitmap(source, { resizeWidth: w, resizeHeight: h, resizeQuality: 'high' });
+  return taken.then(bitmap => new Promise<Field | null>(resolve => {
+    const id = ++jobs;
+    pending.set(id, resolve);
+    w0.postMessage({ id, bitmap, w, h, scale: 1 / k, range }, [bitmap]);
+  })).catch(() => null).then(f => f ?? fallbackField(source, cssW, cssH, range));
+}
+const fallbackField = (source: HTMLCanvasElement, cssW: number, cssH: number, range: number): Field =>
+  source.width > 0 ? distanceField(source, cssW, cssH, range) : { data: new Uint8Array(4).fill(255), w: 2, h: 2 };

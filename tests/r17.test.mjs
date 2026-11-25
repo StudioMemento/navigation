@@ -5,7 +5,9 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { weave } from '../scripts/scene-material.mjs';
-import { sceneHead } from '../scripts/scene-head.mjs';
+import { sceneHead as sceneTags, sceneCode, guardCode } from '../scripts/scene-head.mjs';
+// R24: the page change is a script of its own (scene-head sceneFiles): its code is checked as it was inline
+const sceneHead = sceneTags + guardCode + sceneCode;
 import { VFX } from '../src/vfx/config.mjs';
 
 const source = path => readFileSync(new URL('../' + path, import.meta.url), 'utf8');
@@ -52,18 +54,24 @@ test('hover: no static lattice under the pointer, only the live chain reaction (
   assert.ok(every <= 160 && gap <= .35);
 });
 
-test('arriving under the page change, the effects boot at once and wait for the seal to lift', async () => {
-  const flags = new Set(['data-mm-arrive']);
+test('arriving under the page change, the effects wait for the cells to open, then take over in place (R24)', async () => {
+  const flags = new Set(['data-mm-arrive', 'data-mm-arrived']);
   globalThis.document = Object.assign(new EventTarget(), { documentElement: { hasAttribute: n => flags.has(n) } });
   globalThis.window = globalThis;
   globalThis.requestAnimationFrame = cb => setTimeout(() => cb(performance.now()), 0);
-  globalThis.requestIdleCallback = () => { throw new Error('no idle wait under the cover'); };
-  window.mementoSceneFinished = new Promise(() => {});   // the page change is still on
-  const { afterFirstPaint, whenIdle, announceEffects, arriving } = await import('../src/paint.mjs');
+  globalThis.requestIdleCallback = cb => setTimeout(cb, 0);
+  let finish;
+  window.mementoSceneFinished = new Promise(r => { finish = r; });   // the page change is still on
+  const { afterFirstPaint, whenIdle, announceEffects, arriving, arrived } = await import('../src/paint.mjs');
   assert.equal(arriving(), true);
+  assert.equal(arrived(), true);
   const late = Symbol('late'), within = (p, ms) => Promise.race([p.then(() => 'done'), new Promise(r => setTimeout(() => r(late), ms))]);
-  assert.equal(await within(afterFirstPaint(), 200), 'done');
-  assert.equal(await within(whenIdle(), 200), 'done');
+  // R24: the page's boot, the engine's and the opening no longer share the same moment
+  const painted = afterFirstPaint(), idle = whenIdle();
+  assert.equal(await within(painted, 120), late);
+  finish();
+  assert.equal(await within(painted, 200), 'done');
+  assert.equal(await within(idle, 200), 'done');
   // the first published frame settles every renderer announced so far; a failure settles its own
   const a = announceEffects(), b = announceEffects();
   assert.deepEqual(window.mementoEffects.map(e => e.settled), [false, false]);

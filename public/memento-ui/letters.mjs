@@ -50,7 +50,9 @@ export const LETTERS = Object.freeze({
     hot: 0.06, tear: 0.22, grain: 260, gap: 0.25, max: 3 },
   /** seconds between two decrypted words (the first one sooner), how long the word holds lit (s) */
   egg: { first: [7, 13], every: [16, 30], hold: 1.7 },
-  fps: 30,
+  /** R24: frames a second (screens without hover: 18, battery and heat on a phone); the field rests while the page
+   *  scrolls and starts again `pause` s after the scroll stops */
+  fps: 30, touchFps: 18, pause: 0.18,
 });
 
 const smooth = (a, b, x) => { const t = Math.min(1, Math.max(0, (x - a) / (b - a))); return t * t * (3 - 2 * t); };
@@ -303,11 +305,13 @@ export function mountLetters() {
     lctx.globalAlpha = 1;
   }
 
+  const hoverless = matchMedia('(hover: none)');
+  let resting = 0;
   function tick(now) {
     frame = 0; frameAt = performance.now();
-    if (document.hidden) return;
+    if (document.hidden || resting) return;
     const dt = Math.min(0.1, last ? (now - last) / 1000 : 0);
-    if (dt && dt < 1 / C.fps - 0.004) { frame = requestAnimationFrame(tick); return; }
+    if (dt && dt < 1 / (hoverless.matches ? C.touchFps : C.fps) - 0.004) { frame = requestAnimationFrame(tick); return; }
     last = now; clock += dt;
     // during the page change the field rises over it (scene-head): the impulse then stays in the margins
     gain = root.hasAttribute('data-mm-phase') ? 0 : C.wave.content;
@@ -335,9 +339,16 @@ export function mountLetters() {
   function start() {
     // R21: a frame asked for before the page was frozen or cached may never come: ask again after a second without one
     if (frame && !document.hidden && performance.now() - frameAt > 1000) { cancelAnimationFrame(frame); frame = 0; }
-    if (!frame && !still() && !document.hidden) { last = 0; frame = requestAnimationFrame(tick); }
+    if (!frame && !resting && !still() && !document.hidden) { last = 0; frame = requestAnimationFrame(tick); }
   }
   const halt = () => { cancelAnimationFrame(frame); frame = 0; };
+  // R24: while the page scrolls the field rests (the scroll has the frame to itself); never during the page change
+  addEventListener('scroll', () => {
+    if (root.hasAttribute('data-mm-phase')) return;
+    clearTimeout(resting);
+    halt();
+    resting = setTimeout(() => { resting = 0; start(); }, C.pause * 1000);
+  }, { passive: true, capture: true });
 
   function resize() {
     const w = root.clientWidth || innerWidth, h = innerHeight;

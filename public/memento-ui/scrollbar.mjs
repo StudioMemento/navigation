@@ -98,5 +98,8 @@ export function mountScrollbar() {
   forced.addEventListener?.('change', schedule);
   for (const type of ['memento:overlay-change', 'memento:surface-visibility']) document.addEventListener(type, () => { endDrag(); measure(); });
   document.addEventListener('toggle', event => { if (event.target instanceof HTMLDialogElement) { endDrag(); measure(); } }, true);
-  measure();
+  // R24: the first measure waits for the browser's own layout (the observer reports it, or the next frame): read here,
+  // while the page was still booting, it forced a layout of the whole page (85 ms on a phone)
+  rail.hidden = true;
+  schedule();
 }

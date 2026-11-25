@@ -136,6 +136,11 @@ export function nativePage(source, slug, release, { preload = [] } = {}) {
     '<script type="module" src="/memento-ui/site.mjs"></script>'
   ];
   if (!desc) tags.push('<meta name="description" content="'+escape(meta.description)+'">');
+  // R24: every page names its icon (Studio did not: the browser asked for /favicon.ico, 404)
+  // (Servizi and Portfolio named an empty one: the site's own icon now, as on the Home)
+  const icon = n => n.tagName === 'link' && /(^|\s)icon(\s|$)/.test(attr(n,'rel') || '');
+  for (const n of head.childNodes.filter(icon)) if (attr(n,'href') === 'data:,') set(n,'href','/favicon.svg');
+  if (!head.childNodes.some(icon)) tags.push('<link rel="icon" href="/favicon.svg">');
   // The site's tags go before the page's own scripts and styles.
   const firstResource = head.childNodes.findIndex(n => ['script','link','style'].includes(n.tagName));
   head.childNodes.splice(firstResource < 0 ? head.childNodes.length : firstResource, 0, ...parseFragment(tags.join('')).childNodes);

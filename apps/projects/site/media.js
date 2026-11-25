@@ -6,13 +6,17 @@ export const setManifest = value => { if (value?.images) manifest = { images: va
 export const imageData = src => manifest.images[manifest.aliases[src] || src] || null;
 export const imageRatio = src => { const data = imageData(src); return data ? data.width / data.height : 16 / 9; };
 
+// R24 (site): on a phone of three device pixels per CSS pixel a photograph comes at about two (the slot is declared at two
+// thirds of its width there): a third of the bytes, a difference a photograph does not show. Portfolio weighed 1.9 MB
+// on a phone against 0.97 MB on a desktop (the stage asked for the 1600 px source)
+const phone = slot => `(max-width:767px) and (min-resolution:2.5dppx) calc((${slot}) * .67), (max-width:767px) ${slot.includes(' ') ? `calc(${slot})` : slot}`;
 const sizes = {
-  tile:'(max-width:767px) calc(50vw - 27px), (max-width:1100px) 31vw, (min-width:2100px) 470px, 23vw',
-  wide:'(max-width:767px) calc(100vw - 40px), (max-width:1100px) 62vw, (min-width:2100px) 950px, 46vw',
-  flow:'(max-width:767px) 50vw, min(38vw, 640px)',
-  thumb:'(max-width:767px) 72px, 120px',
-  stage:'(max-width:767px) calc(100vw - 40px), min(88vw, 1720px)',
-  poster:'(max-width:767px) calc(100vw - 40px), min(88vw, 1720px)',
+  tile:phone('50vw - 27px') + ', (max-width:1100px) 31vw, (min-width:2100px) 470px, 23vw',
+  wide:phone('100vw - 40px') + ', (max-width:1100px) 62vw, (min-width:2100px) 950px, 46vw',
+  flow:phone('50vw') + ', min(38vw, 640px)',
+  thumb:phone('72px') + ', 120px',
+  stage:phone('100vw - 40px') + ', min(88vw, 1720px)',
+  poster:phone('100vw - 40px') + ', min(88vw, 1720px)',
 };
 
 /**
