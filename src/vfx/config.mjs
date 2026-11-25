@@ -12,6 +12,12 @@ export const desaturate = hex => {
   return `#${v}${v}${v}`;
 };
 
+/** R22/R23: the same luminance with `share` of the hue (0: grey, 1: the colour itself). */
+export const tint = (hex, share) => {
+  const c = hexToRgb(hex), l = 0.299 * c[0] + 0.587 * c[1] + 0.114 * c[2];
+  return '#' + c.map(v => Math.round((l + (v - l) * share) * 255).toString(16).padStart(2, '0')).join('');
+};
+
 /** One gradient over the whole title block (0 = cap line, 1 = baseline): light from above, shade only at the base. */
 // R21: one orange for the whole site. The ramp keeps the luminance of each stop of the earlier amber one (cream, peach,
 // amber, burnt), so the idle grey titles are the same; only the hue changes. R23 "Incandescenza", the warm colours of
@@ -37,6 +43,9 @@ export const VFX = Object.freeze(/** @type {const} */ ({
     /** R21: the range of the titles in the same orange (it was yellow); R23: the icons' core and light */
     titleHot: ['#ffe3c2', '#ffc890', '#ffb35e'],
     titleGradient: TITLE_AMBER.map(([t, c]) => [t, desaturate(c)]),
+    /** R22: the titles at rest hold 30% of their colour (the DOM's --title-gradient); the same greys underneath, so the
+     *  effects read their height as before. R23: the effects paint it too (they painted the bare greys) */
+    titleRest: TITLE_AMBER.map(([t, c]) => [t, tint(c, 0.3)]),
   },
   chain: {
     /** Cards: one scale of irregular cells (median ~25 px, mixed ~16–36 px), more often visible near the outline. */

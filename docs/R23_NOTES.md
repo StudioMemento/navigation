@@ -49,6 +49,7 @@ Un dispositivo senza hover non vede mai il colore dell'hover, quindi lo tiene a 
 
 - **Foto:** a colori pieni (`--mm-rest-gray: 0` nel DOM; il motore lo faceva già).
 - **Titoli:** con il gradiente caldo intero (`site.css`, `raster.ts`, `title.mjs` per la Home).
+- **Desktop:** anche il motore disegna i titoli a riposo con il 30% del colore, come il DOM (`VFX.color.titleRest`). Prima li disegnava grigi.
 - **Etichette delle card:** con la maggior parte del calore dell'hover (`uPhotoColor` nello shader delle superfici).
 - **Bagliori:** sono ora arancioni (`#FF7D00`), non più oro.
 

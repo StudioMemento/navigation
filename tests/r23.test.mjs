@@ -90,8 +90,12 @@ test('page change: shorter, prepared ahead, and the swap holds a composed name',
 test('devices without hover hold the hover\'s warmth at rest', () => {
   const css = source('public/memento-ui/site.css');
   assert.match(css, /@media \(hover:none\),\(pointer:coarse\) \{\n\s+:root:root \{--mm-rest-gray:0;--title-gradient:linear-gradient\(0deg,#e8661a 0%,#ff840c 9%,#ffb35e 20%,#ffd9ad 32%,#ffefdc 44%,#ffefdc 100%\)\}/);
-  assert.match(source('src/surfaces/raster.ts'), /matchMedia\('\(hover: none\), \(pointer: coarse\)'\)\.matches \? VFX\.color\.titleAmber : VFX\.color\.titleGradient/);
-  assert.match(source('src/vfx/title.mjs'), /warm \? VFX\.color\.titleAmber : VFX\.color\.titleGradient/);
+  assert.match(source('src/surfaces/raster.ts'), /matchMedia\('\(hover: none\), \(pointer: coarse\)'\)\.matches \? VFX\.color\.titleAmber : VFX\.color\.titleRest/);
+  assert.match(source('src/vfx/title.mjs'), /warm \? VFX\.color\.titleAmber : VFX\.color\.titleRest/);
+  // elsewhere the effects paint titles at rest as the DOM does: 30% of their colour, the idle greys' luminance
+  assert.deepEqual(VFX.color.titleRest.map(([, c]) => c), ['#f6f1eb', '#f6f1eb', '#e9ddd0', '#d3bca3', '#b99470', '#a27b64']);
+  const grey = c => { const [r, g, b] = [1, 3, 5].map(i => parseInt(c.slice(i, i + 2), 16)); return .299 * r + .587 * g + .114 * b; };
+  VFX.color.titleRest.forEach(([, c], i) => assert.ok(Math.abs(grey(c) - grey(VFX.color.titleGradient[i][1])) < 1.5, c));
   // the type on the cards takes most of its hover warmth at rest
   assert.match(source('src/surfaces/shaders.ts'), /max\(uHover,uNear\*uInkWarm\.z\),uPhotoColor\*\.7\)\*uInkWarm\.x;/);
   // photographs at rest go through the same variable everywhere
