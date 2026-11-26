@@ -64,4 +64,4 @@ http.createServer((req, res) => {
   res.writeHead(status, { 'Content-Type': types[extname(file)] || 'application/octet-stream' });
   if (req.method === 'HEAD') res.end();
   else createReadStream(file).on('error', () => res.destroy()).pipe(res);
-}).listen(port, host, () => console.log(`Memento R25.3 su http://${host}:${port}/`));
+}).listen(port, host, () => console.log(`Memento R25.4 su http://${host}:${port}/`));

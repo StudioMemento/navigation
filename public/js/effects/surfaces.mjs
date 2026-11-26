@@ -1,80 +1,120 @@
 import { edgeLight } from './edge-light.mjs';
+import { typeLight } from './type-light.mjs';
 
-// One delegated input stream also covers content inserted by carousels, filters and dialogs.
+// A single passive input stream for both effects, including content added by a carousel or a dialog.
 export function mountSurfaces() {
-  const edge=edgeLight(), forced=matchMedia('(forced-colors:active)');
-  const localFilter = new URL(location.href);
-  localFilter.hash='mm-ink-emission';
-  const soft=document.querySelector('.mm-emission-soft'), core=document.querySelector('.mm-emission-core');
-  let pointer=null, keyboard=null, ink=null, em=0, frame=0, touchTimer=0;
-  function clearInk() {
-    if (ink) {
-      ink.removeAttribute('data-lit');
-      for (const prop of ['--light-x','--light-y','--ink-em','--ink-filter']) ink.style.removeProperty(prop);
+  const edges=edgeLight(), ink=typeLight();
+  const forced=matchMedia('(forced-colors:active)'), reduced=matchMedia('(prefers-reduced-motion:reduce)');
+  const touchStyle=matchMedia('(hover:none) and (pointer:coarse)');
+  let pointer=null, keyboard=null, pressed=null, touchTimer=0;
+  let request=0, previous=0, dirty=false;
+  const hover=matchMedia('(hover:hover)');
+  // Screen just the photograph's own pixels under the pointer. Black contributes zero light.
+  let photoCard=null;
+  const glint=new Image();
+  glint.alt='';glint.setAttribute('aria-hidden','true');
+  function photo(card, point) {
+    if (!hover.matches || !card || !point || point.touch || !card.matches('.email-card,.channel,.location-card')) {
+      if (photoCard) {glint.remove();photoCard=null;}
+      return;
     }
-    ink=null;
-  }
-  function illuminate(element, point) {
-    if (element!==ink) {
-      clearInk();
-      if (!element) return;
-      ink=element;
-      const sample=element.querySelector('.hero-line,.explore-line') || element;
-      em=parseFloat(getComputedStyle(sample).fontSize)||16;
-      ink.style.setProperty('--ink-em',em+'px');
-      ink.style.setProperty('--ink-filter',`url("${localFilter.href}")`);
-      soft.setAttribute('stdDeviation',Math.min(18,Math.max(1.3,em*.073)).toFixed(2));
-      core.setAttribute('stdDeviation',Math.min(6,Math.max(.7,em*.024)).toFixed(2));
-      ink.setAttribute('data-lit','');
+    if (card!==photoCard) {
+      const image=card.querySelector('img');
+      if (!image) return;
+      glint.className=(image.className+' mm-photo-glint').trim();
+      glint.src=image.currentSrc || image.src;
+      image.after(glint);photoCard=card;
     }
-    if (!ink) return;
-    const box=ink.getBoundingClientRect();
-    const relative=(v,start,length)=>Math.max(0,Math.min(100,100*(v-start)/Math.max(1,length))).toFixed(1)+'%';
-    ink.style.setProperty('--light-x',relative(point.x,box.left,box.width));
-    ink.style.setProperty('--light-y',relative(point.y,box.top,box.height));
+    const box=card.getBoundingClientRect();
+    glint.style.setProperty('--photo-x',((point.x-box.left)/box.width*100).toFixed(2)+'%');
+    glint.style.setProperty('--photo-y',((point.y-box.top)/box.height*100).toFixed(2)+'%');
   }
-  function paint() {
-    frame=0;
-    if ((!pointer && !keyboard) || document.hidden || forced.matches) {clearInk();edge.clear();return;}
-    const dialog=document.documentElement.hasAttribute('data-mm-modal') ? document.querySelector('dialog[open]') : null;
-    const target=keyboard || document.elementFromPoint(pointer.x,pointer.y);
-    if (!target || target.closest('.mm-header,.mm-dock') || (dialog && !dialog.contains(target))) {clearInk();edge.clear();return;}
-    let title=target.closest('.mm-type');
+
+  function select() {
+    const modal=document.documentElement.hasAttribute('data-mm-modal');
+    const target=keyboard || (pointer && document.elementFromPoint(pointer.x,pointer.y));
+    const dialog=modal && target ? target.closest('dialog[open]') : null;
+    if (!target || target.closest('.mm-header,.mm-dock') || (modal && !dialog)) {
+      ink.target(null); edges.target(null);photo(null);return;
+    }
     const card=target.closest('.mm-tab');
+    let title=target.closest('.mm-type');
     let edgePoint=pointer, typePoint=pointer;
     if (keyboard) {
-      const b=(card||target).getBoundingClientRect();
-      edgePoint={x:b.left+b.width*.28,y:b.bottom-1};
       title=title || target.querySelector('.mm-type');
-      const t=(title||target).getBoundingClientRect();typePoint={x:t.left+t.width*.5,y:t.top+t.height*.8};
+      if (card) {
+        const box=card.getBoundingClientRect();
+        edgePoint={x:box.left+box.width*.28,y:box.bottom-1};
+      }
+      if (title) {
+        const box=title.getBoundingClientRect();
+        typePoint={x:box.left+box.width*.5,y:box.top+box.height*.65};
+      }
     }
-    illuminate(title,typePoint);
-    if (keyboard && !card) edge.clear();
-    else edge.draw(edgePoint,dialog,keyboard && card);
+    ink.target(title,typePoint,!!keyboard,touchStyle.matches);
+    edges.target(edgePoint,dialog,keyboard && card);
+    photo(card,keyboard ? typePoint || edgePoint : pointer);
   }
-  function schedule(){if (!frame) frame=requestAnimationFrame(paint);}
-  function reset(){clearTimeout(touchTimer);pointer=keyboard=null;clearInk();edge.clear();if(frame) cancelAnimationFrame(frame);frame=0;}
+  function frame(now) {
+    request=0;
+    if (document.hidden || forced.matches) {reset();return;}
+    const dt=previous?(now-previous)/1000:1/60;
+    previous=now;
+    if (dirty) {dirty=false;select();}
+    const titleMoving=ink.frame(dt), edgesMoving=edges.frame(dt);
+    if (titleMoving || edgesMoving) request=requestAnimationFrame(frame);
+    else previous=0;
+  }
+  function schedule() {
+    dirty=true;
+    if (!request) request=requestAnimationFrame(frame);
+  }
+  function reset() {
+    clearTimeout(touchTimer);
+    cancelAnimationFrame(request);request=previous=0;dirty=false;
+    pointer=keyboard=pressed=null;
+    ink.clear();edges.clear();photo(null);
+  }
+  function release() {pointer=keyboard=null;schedule();}
   function track(event) {
-    if (event.isPrimary===false) return;
-    if (pointer && Math.hypot(pointer.x-event.clientX,pointer.y-event.clientY)>175) edge.clear();
-    keyboard=null;pointer={x:event.clientX,y:event.clientY,type:event.pointerType};schedule();
+    if (!event.isPrimary && event.isPrimary!==undefined) return;
+    if (pressed && Math.hypot(event.clientX-pressed.x,event.clientY-pressed.y)>8) {
+      pressed.drag=true;
+      if (pointer) release();
+      return;
+    }
+    keyboard=null;pointer={x:event.clientX,y:event.clientY,touch:event.pointerType==='touch'};
+    schedule();
   }
-  document.addEventListener('pointermove',event=>{if(event.pointerType!=='touch' || pointer?.type==='touch') track(event);},{passive:true});
-  document.addEventListener('pointerdown',event=>{clearTimeout(touchTimer);track(event);},{passive:true,capture:true});
-  document.addEventListener('pointerup',event=>{if(event.pointerType==='touch') touchTimer=setTimeout(reset,350);},{passive:true,capture:true});
+  document.addEventListener('pointermove',event=>{
+    if (event.pointerType!=='touch' || pressed) track(event);
+  },{passive:true});
+  document.addEventListener('pointerdown',event=>{
+    if (event.button!==0 || !event.isPrimary) return;
+    clearTimeout(touchTimer);
+    pressed={x:event.clientX,y:event.clientY,drag:false};
+    track(event);
+  },{capture:true,passive:true});
+  document.addEventListener('pointerup',event=>{
+    if (!event.isPrimary) return;
+    const dragging=pressed?.drag;pressed=null;
+    if (dragging) {release();return;}
+    if (event.pointerType==='touch') touchTimer=setTimeout(release,190);
+  },{capture:true,passive:true});
   document.addEventListener('pointercancel',reset,{passive:true});
-  document.addEventListener('pointerout',event=>{if (!event.relatedTarget) reset();},{passive:true});
+  document.addEventListener('pointerout',event=>{if (!event.relatedTarget) release();},{passive:true});
   document.addEventListener('keydown',event=>{
-    if (['Tab','ArrowLeft','ArrowRight','ArrowDown','ArrowUp','Home','End'].includes(event.key)) {pointer=null; keyboard=document.activeElement; schedule();}
+    if (['Tab','ArrowLeft','ArrowRight','ArrowDown','ArrowUp','Home','End'].includes(event.key)) {
+      pointer=null;keyboard=document.activeElement;schedule();
+    }
   },true);
-  document.addEventListener('focusin',event=>{if(!pointer){keyboard=event.target;schedule();}});
-  document.addEventListener('focusout',()=>{if(keyboard){keyboard=null;schedule();}});
-  document.addEventListener('scroll',()=>{if(pointer?.type==='touch') reset();else if(pointer || keyboard) schedule();},{capture:true,passive:true});
+  document.addEventListener('focusin',event=>{if (!pointer) {keyboard=event.target;schedule();}});
+  document.addEventListener('focusout',()=>{if (keyboard) {keyboard=null;schedule();}});
+  // Never leave a screen-space highlight behind a moving card, closed dialog or restored page.
+  document.addEventListener('scroll',reset,{capture:true,passive:true});
   document.addEventListener('wheel',reset,{passive:true});
-  window.addEventListener('resize',()=>{clearInk();if(pointer || keyboard) schedule();},{passive:true});
-  document.addEventListener('memento:modal-visibility',reset);
-  document.addEventListener('visibilitychange',reset);
-  window.addEventListener('blur',reset);
-  window.addEventListener('pagehide',reset);
-  forced.addEventListener?.('change',reset);
+  for (const event of ['resize','blur','pagehide']) window.addEventListener(event,reset);
+  for (const event of ['memento:modal-visibility','visibilitychange']) document.addEventListener(event,reset);
+  document.fonts?.addEventListener?.('loadingdone',reset);
+  for (const query of [forced,reduced,touchStyle,hover]) query.addEventListener?.('change',reset);
 }

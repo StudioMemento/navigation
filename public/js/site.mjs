@@ -5,8 +5,25 @@ const root=document.documentElement;
 const field=document.querySelector('.mm-glyph-field');
 if (field) mountGlyphField(field);
 mountSurfaces();
+const nativeBackdrop=CSS.supports('backdrop-filter','blur(1px)') || CSS.supports('-webkit-backdrop-filter','blur(1px)');
+let foreground=null;
+function frostBehind(dialog) {
+  if (nativeBackdrop || foreground===dialog) return;
+  for (const el of document.querySelectorAll('[data-mm-modal-behind]')) el.removeAttribute('data-mm-modal-behind');
+  foreground=dialog;
+  // Blur sibling subtrees only. A modal may be nested inside the page content.
+  for (let node=dialog; node && node!==document.body; node=node.parentElement) {
+    for (const sibling of node.parentElement.children) {
+      if (sibling!==node && !sibling.matches('script,style,link,template,dialog,.mm-blur'))
+        sibling.setAttribute('data-mm-modal-behind','');
+    }
+  }
+}
 function syncModal() {
-  const open=!!document.querySelector('dialog[open]') || !!document.fullscreenElement || !!document.webkitFullscreenElement || root.dataset.demoExpanded==='true' || root.dataset.overlayOpen==='true';
+  const dialogs=document.querySelectorAll('dialog[open]');
+  const dialog=dialogs[dialogs.length-1] || null;
+  frostBehind(dialog);
+  const open=!!dialog || !!document.fullscreenElement || !!document.webkitFullscreenElement || root.dataset.demoExpanded==='true' || root.dataset.overlayOpen==='true';
   if (root.hasAttribute('data-mm-modal')===open) return;
   root.toggleAttribute('data-mm-modal',open);
   document.dispatchEvent(new Event('memento:modal-visibility'));

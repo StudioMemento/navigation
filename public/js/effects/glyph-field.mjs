@@ -235,7 +235,7 @@ export function mountGlyphField(layer) {
   const coarse=matchMedia('(pointer:coarse)'), saveData=navigator.connection?.saveData;
   const atlas=new Image();
   let field=null, timer=0, frame=0, scrollTimer=0, resizing=0, previous=0, sizeKey='';
-  let tap=null, pointer=null, travelled=0;
+  let pointer=null, travelled=0;
   const still=()=>motion.matches || forced.matches || saveData;
   const blocked=()=>still() || document.hidden || scrollTimer || document.documentElement.hasAttribute('data-mm-modal');
   function stop() { clearTimeout(timer); cancelAnimationFrame(frame); timer=frame=previous=0; }
@@ -290,15 +290,9 @@ export function mountGlyphField(layer) {
     if (distance<200) travelled+=distance;
     while (travelled>26) {travelled-=26;field.stir(pointer.x,pointer.y);}
   },{passive:true});
+  // A real mouse may stir the field. A tap or pen gesture never launches an impulse.
   document.addEventListener('pointerdown',event=>{
-    tap=null;
-    if (!field || blocked() || event.button!==0 || !event.isPrimary || event.target.closest('a,button,input,textarea,select,iframe,canvas,summary,dialog')) return;
-    if (event.pointerType==='mouse') field.impulse(event.clientX,event.clientY);
-    else tap={id:event.pointerId,x:event.clientX,y:event.clientY,at:performance.now()};
+    if (event.pointerType!=='mouse' || !field || blocked() || event.button!==0 || !event.isPrimary) return;
+    if (!event.target.closest('a,button,input,textarea,select,iframe,canvas,summary,dialog')) field.impulse(event.clientX,event.clientY);
   },{passive:true,capture:true});
-  document.addEventListener('pointerup',event=>{
-    if (tap?.id===event.pointerId && !blocked() && performance.now()-tap.at<450 && Math.hypot(event.clientX-tap.x,event.clientY-tap.y)<12) field.impulse(tap.x,tap.y);
-    tap=null;
-  },{passive:true,capture:true});
-  document.addEventListener('pointercancel',()=>{tap=null;},{passive:true});
 }

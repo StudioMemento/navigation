@@ -49,8 +49,10 @@ function arrow(id,label,path) {
 }
 await output('navigation/glyph-field.svg',glyphField());
 await output('navigation/glyph-atlas.svg',glyphAtlas());
-await output('navigation/type-facets.svg',facetTexture(true));
-await output('navigation/type-facets-still.svg',facetTexture(false));
+const facets=facetTexture();
+await output('navigation/type-facets.svg',facets);
+// Keep the reduced-motion asset URL available to tabs opened on the previous release.
+await output('navigation/type-facets-still.svg',facets);
 await output('index.html',frame('home',`<main id="hub" aria-label="Esplora Memento" aria-roledescription="carosello" tabindex="-1"><h1 class="mm-sr">${escape(site.home.heading)}</h1>
 <div id="home-viewport"><div id="scene">${PAGES.map(homeCard).join('\n')}</div></div>${arrow('previous','Sezione precedente','M2 30 30 2 58 30')}${arrow('next','Sezione successiva','M2 2 30 30 58 2')}
 <p id="home-status" class="mm-sr" aria-live="polite" aria-atomic="true"></p></main>`,'/home.css','/js/home.mjs'));
@@ -103,4 +105,4 @@ for(const path of oldPaths) {
 await output('sitemap.xml','<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'+['home',...PAGES.map(p=>p.slug)].map(s=>'<url><loc>'+canonical(s)+'</loc></url>').join('')+'</urlset>');
 await output('robots.txt','User-agent: *\nAllow: /\nSitemap: '+site.origin+'/sitemap.xml');
 await output('404.html',`<!doctype html><html lang="it" data-memento-native="404"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex"><title>Pagina non trovata — Memento</title><link rel="stylesheet" href="/site.css"><link rel="stylesheet" href="/visuals.css"><script type="module" src="/js/site.mjs"></script></head><body>${navigation('home')}<main class="mm-missing"><h1>Pagina non trovata</h1><a href="/">Torna alla home</a></main></body></html>`);
-console.log(`Memento R25.3 · Home + 5 sezioni · ${catalogue.services.length} servizi, ${catalogue.bundles.length} bundle, ${projects.length} progetti.`);
+console.log(`Memento R25.4 · Home + 5 sezioni · ${catalogue.services.length} servizi, ${catalogue.bundles.length} bundle, ${projects.length} progetti.`);

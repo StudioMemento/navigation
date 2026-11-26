@@ -6,8 +6,8 @@
 .clock{--icon:url('icons/clock.svg')}
 .hero{padding-top:clamp(80px,7vw,112px);padding-bottom:clamp(40px,4vw,64px)}
 .hero-title{font-weight:350;line-height:1.01;letter-spacing:0;}
-.hero-line{display:block;width:100%;white-space:nowrap;font-size:18.9cqw;line-height:1.08;letter-spacing:0;padding:.06em .015em .12em;margin-block:-.06em -.12em}
-.hero-line:last-child{margin-top:.025em}
+.hero-line{display:block;width:100%;white-space:nowrap;font-size:18.9cqw;line-height:1.08;letter-spacing:0;padding:.06em .015em .12em;margin-top:-.06em;margin-bottom:-.12em;margin-block:-.06em -.12em}
+.hero-line+.hero-line{margin-top:.025em}
 
 
 
@@ -111,7 +111,7 @@
 .explore-section{padding-top:clamp(80px,9vw,144px);padding-bottom:max(70px,env(safe-area-inset-bottom))}
 .explore-link{display:flex;align-items:center;flex-direction:column;text-align:center;gap:12px}
 .explore-words{display:block;width:100%;line-height:1.01;font-weight:350;letter-spacing:0}
-.explore-line{display:block;width:100%;white-space:nowrap;font-size:19cqw;line-height:1.08;letter-spacing:0;padding:.06em .015em .12em;margin-block:-.06em -.12em}.explore-line:last-child{margin-top:.025em}
+.explore-line{display:block;width:100%;white-space:nowrap;font-size:19cqw;line-height:1.08;letter-spacing:0;padding:.06em .015em .12em;margin-block:-.06em -.12em}.explore-line+.explore-line{margin-top:.025em}
 .explore-chevron{width:min(40cqw,440px);height:auto;aspect-ratio:1;background:#f0ede7;mask-size:contain;-webkit-mask-size:contain;}
 .explore-link:hover .explore-chevron,.explore-link:focus-visible .explore-chevron{background:var(--hover)}
 dialog{padding:0;border:0;background:transparent;color:var(--ink);width:min(90vw,720px);max-height:calc(100dvh - 64px);overflow:visible}.dialog-wrap{position:relative;padding-top:48px}.dialog-card{padding:clamp(24px,5vw,48px);max-height:calc(100dvh - 112px);overflow-y:auto}.dialog-close{position:absolute;right:0;top:0;width:44px;height:44px;display:grid;place-items:center;color:#f3f0ea}.dialog-close:hover{color:var(--hover)}.dialog-card .board-title{font-size:clamp(28px,4vw,44px);margin-bottom:18px}.dialog-card p{font-size:16px;color:#ccc7be;line-height:1.6;margin-block:12px}.dialog-card a{color:#ffa23d;text-decoration:underline;text-underline-offset:4px;overflow-wrap:anywhere}.dialog-card .action{margin-top:22px;text-decoration:none}.preference-row{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:20px 0;border-block:1px solid #4a463e;margin-top:24px;font-size:15px}.preference-row input{width:22px;height:22px;accent-color:var(--amber)}
@@ -180,16 +180,31 @@ html{scrollbar-width:none}html::-webkit-scrollbar{display:none}
   .faq-visual{width:100%;mask-image:linear-gradient(90deg,transparent,#000 42%)}
   .faq-photo{left:-35%;width:150%;max-width:none;object-fit:contain;object-position:center}
 }
-@media(hover:none),(pointer:coarse),(max-width:767px){
-
-  
+@media (hover:hover) {
+  .email-photo,.channel img,.location-photo {
+    filter:grayscale(.5) brightness(.77);
+    transition:filter .48s ease-out;
+  }
+  .email-card:hover .email-photo,.channel:hover img,.location-card:hover .location-photo {
+    filter:grayscale(0) brightness(1.02);
+  }
+  .email-card:focus-visible .email-photo,.channel:focus-visible img,.location-card:focus-visible .location-photo {filter:grayscale(0) brightness(1.02);}
+  .contact-section .mm-photo-glint,.location-section .mm-photo-glint {
+    opacity:.32;mix-blend-mode:screen;pointer-events:none;
+    -webkit-mask-image:radial-gradient(ellipse 32% 54% at var(--photo-x,50%) var(--photo-y,50%),#000,transparent);
+    mask-image:radial-gradient(ellipse 32% 54% at var(--photo-x,50%) var(--photo-y,50%),#000,transparent);
+  }
+}
+@media (prefers-reduced-motion:reduce) {
+  .email-photo,.channel img,.location-photo {transition:none;}
 }
 
 
 html[data-memento-surface="opaque"]{background-color:#000}
 html[data-memento-surface="transparent"]{background-color:transparent}
 
-:root{--memento-content-edge-space:clamp(180px,26svh,300px)}
+:root{--memento-content-edge-space:clamp(180px,26vh,300px)}
+@supports (height:1svh) {:root{--memento-content-edge-space:clamp(180px,26svh,300px)}}
 .hero{padding-top:max(clamp(80px,7vw,112px),calc(var(--memento-content-edge-space) * .85),calc(env(safe-area-inset-top,0px) + 60px))}
 .explore-section{padding-bottom:max(var(--memento-content-edge-space),calc(env(safe-area-inset-bottom,0px) + 80px))}
 .skip-link{z-index:1001}
