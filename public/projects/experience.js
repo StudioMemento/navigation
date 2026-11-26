@@ -24,6 +24,12 @@ export class ExperiencePlayer {
     this.detach();
     this.section = section; this.board = section?.querySelector('.experience-board:not(.is-placeholder)') || null;
     this.data = this.board ? experienceFor(project) : null;
+    this.dialog = this.board?.closest('dialog');
+    if (this.dialog) {
+      this.dialog.oncancel = event => {event.preventDefault(); this.collapse();};
+      this.dialog.onclose = event => {if (this.expanded && !this.native && event.target===this.dialog && !this.dialog.open) this.collapse(true);};
+      this.dialog.onclick = event => {if (event.target===this.dialog) this.collapse();};
+    }
   }
 
   detach() {
@@ -108,6 +114,7 @@ export class ExperiencePlayer {
     const board = this.board;
     if (!board || this.expanded) return;
     if (!this.media) await this.start();
+    if (board !== this.board || this.expanded || !board.isConnected) return;
     this.expanded = true;
     board.querySelector('.experience-exit').hidden = false;
     document.documentElement.dataset.demoExpanded = 'true';
@@ -119,7 +126,8 @@ export class ExperiencePlayer {
     }
     if (!this.native) {
       this.scroll = window.scrollY;
-      board.classList.add('is-expanded');
+      this.dialog.setAttribute('role','dialog');
+      this.dialog.showModal();
       document.documentElement.classList.add('experience-open');
     }
     board.querySelector('.experience-exit').focus({ preventScroll: true });
@@ -135,7 +143,8 @@ export class ExperiencePlayer {
       if (document.fullscreenElement || document.webkitFullscreenElement) exit?.call(document);
     }
     if (!this.native && board) {
-      board.classList.remove('is-expanded');
+      if (this.dialog?.open) this.dialog.close();
+      this.dialog?.setAttribute('role','group');
       document.documentElement.classList.remove('experience-open');
       window.scrollTo({ top: this.scroll ?? window.scrollY, behavior: 'instant' });
     }

@@ -102,13 +102,13 @@ function experienceMarkup(project) {
         <button class="experience-tool" type="button" data-action="experience-expand" aria-label="Espandi ${escapeHTML(x.name)}">${icon('expand')}<span>Espandi</span></button>
       </div>
     </header>
-    <div class="board experience-board cut-frame mm-tab" data-type="${x.type}"${ratio} aria-label="${escapeHTML(x.name)} — ${escapeHTML(x.kind)}" role="group">
+    <dialog class="experience-dialog" role="group" aria-label="${escapeHTML(x.name)}"><div class="board experience-board cut-frame mm-tab" data-type="${x.type}"${ratio} aria-label="${escapeHTML(x.name)} — ${escapeHTML(x.kind)}" role="group">
       <div class="experience-poster">${photo(x.poster, { role: 'poster', lazy: true })}</div>
       <div class="experience-stage"></div>
       <button class="experience-start" type="button" data-action="experience-start"><span class="experience-play">${icon('play')}</span><span class="experience-start-label">${escapeHTML(x.start)}</span></button>
       <p class="experience-status" role="status" hidden></p>
       <button class="experience-exit" type="button" data-action="experience-collapse" hidden aria-label="Riduci">${icon('close')}</button>
-    </div>
+    </div></dialog>
   </section>`;
 }
 

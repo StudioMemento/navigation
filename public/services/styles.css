@@ -710,9 +710,7 @@ dialog {
   color: var(--ink);
   overscroll-behavior: contain;
 }
-dialog::backdrop {
-  background: rgb(3 5 6 / 0.56);
-}
+
 #detail-dialog {
   --popup-space: max(
     120px,
@@ -1230,18 +1228,6 @@ dialog::backdrop {
 
 
 
-.start-rim {
-  position: absolute;
-  z-index: 6;top:0;right:0;bottom:0;left:0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-  overflow: visible;
-  opacity: 0;
-}
-.start-action:is(.is-rim-lit, :focus-visible) .start-rim {
-  opacity: 1;
-}
 @media (max-width: 767px) {
   .carousel-dot {
     width: clamp(32px, 9vw, 44px);
@@ -1350,7 +1336,6 @@ dialog::backdrop {
   }
 
   .start-art,
-  .start-rim,
 
 .slide-visual,
   .bundle-visual,

@@ -190,7 +190,10 @@ model-viewer.experience-media{--poster-color:#000;background:#000}
 .experience-exit{position:absolute;z-index:5;top:max(12px,env(safe-area-inset-top,0px));right:max(12px,env(safe-area-inset-right,0px));width:48px;height:48px;display:grid;place-items:center;border-radius:50%;background:#000b;color:var(--ink);border:1px solid #ffffff38}
 .experience-exit:hover{border-color:var(--amber);color:var(--amber)}
 .experience-board:fullscreen{aspect-ratio:auto;width:100vw;height:100vh;clip-path:none}
-.experience-board.is-expanded{position:fixed;top:0;right:0;bottom:0;left:0;z-index:2000;width:100vw;height:100vh;height:100dvh;aspect-ratio:auto;clip-path:none}
+.experience-dialog {display:block;position:relative;top:auto;right:auto;bottom:auto;left:auto;width:100%;max-width:none;max-height:none;margin:0;padding:0;border:0;background:transparent;color:inherit;overflow:visible;}
+.experience-dialog[open] {position:fixed;top:0;right:0;bottom:0;left:0;margin:auto;width:min(94vw,1720px);height:92vh;height:92dvh;}
+.experience-dialog[open] .experience-board {width:100%;height:100%;aspect-ratio:auto;clip-path:none;}
+
 html.experience-open{overflow:hidden}
 .experience-board.is-placeholder{background:radial-gradient(ellipse at 50% 65%,#191a1b 0%,#070808 60%,#000 100%)}
 .experience-placeholder{position:absolute;top:0;right:0;bottom:0;left:0;padding:var(--board-padding);display:flex;flex-direction:column;justify-content:center;align-items:center;gap:18px;text-align:center}

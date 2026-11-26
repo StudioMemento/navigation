@@ -1,12 +1,21 @@
+import { mountGlyphField } from './effects/glyph-field.mjs';
+import { mountSurfaces } from './effects/surfaces.mjs';
+
 const root=document.documentElement;
-// Follow the device actually used on touchscreens with an attached mouse or trackpad.
-root.toggleAttribute('data-mm-touch',matchMedia('(hover:none)').matches);
-function rememberPointer(event) {
-  root.toggleAttribute('data-mm-touch',event.pointerType==='touch');
+const field=document.querySelector('.mm-glyph-field');
+if (field) mountGlyphField(field);
+mountSurfaces();
+function syncModal() {
+  const open=!!document.querySelector('dialog[open]') || !!document.fullscreenElement || !!document.webkitFullscreenElement || root.dataset.demoExpanded==='true' || root.dataset.overlayOpen==='true';
+  if (root.hasAttribute('data-mm-modal')===open) return;
+  root.toggleAttribute('data-mm-modal',open);
+  document.dispatchEvent(new Event('memento:modal-visibility'));
 }
-for(const type of ['pointerover','pointerdown']) {
-  document.addEventListener(type,rememberPointer,{capture:true,passive:true});
-}
+const modalObserver=new MutationObserver(syncModal);
+modalObserver.observe(document.body,{subtree:true,attributes:true,attributeFilter:['open']});
+modalObserver.observe(root,{attributes:true,attributeFilter:['data-demo-expanded','data-overlay-open']});
+for (const name of ['fullscreenchange','webkitfullscreenchange','memento:overlay-change']) document.addEventListener(name,syncModal);
+syncModal();
 const dock=document.querySelector('.mm-dock');
 dock?.addEventListener('keydown',event=>{
   if(event.ctrlKey||event.metaKey||event.altKey)return;
@@ -34,8 +43,7 @@ function bindScrollCue(rail) {
       range=Math.max(0,total-view);
       height=Math.min(track,Math.max(40,track*view/Math.max(1,total)));
       travel=Math.max(0,track-height);
-      const modal=!!document.fullscreenElement||!!document.querySelector('dialog[open]')||
-        root.dataset.demoExpanded==='true'||root.dataset.overlayOpen==='true'||document.body.classList.contains('modal-open');
+      const modal=root.hasAttribute('data-mm-modal');
       rail.hidden=forced.matches||range<2||modal;
       root.toggleAttribute('data-mm-scroll-cue',!forced.matches&&range>=2);
       thumb.style.height=height+'px';
@@ -85,12 +93,10 @@ function bindScrollCue(rail) {
   window.visualViewport?.addEventListener('resize',measure,{passive:true});
   document.addEventListener('memento:overlay-change',measure);
   document.addEventListener('fullscreenchange',measure);
+  document.addEventListener('memento:modal-visibility',measure);
   forced.addEventListener?.('change',measure);
   if('ResizeObserver' in window) {
     const observer=new ResizeObserver(measure);observer.observe(document.body);if(main)observer.observe(main);
   }
-  const overlays=new MutationObserver(measure);
-  for(const dialog of document.querySelectorAll('dialog'))overlays.observe(dialog,{attributes:true,attributeFilter:['open']});
-  overlays.observe(root,{attributes:true,attributeFilter:['data-demo-expanded','data-overlay-open']});
   measure();
 }
