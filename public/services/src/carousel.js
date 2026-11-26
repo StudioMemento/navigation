@@ -1,4 +1,9 @@
 // Owns horizontal gestures and animation only. Content and routing are callbacks.
+function fade01(value) {
+  const x=Math.max(0,Math.min(1,value));
+  return x*x*(3-2*x);
+}
+
 export class Carousel {
   constructor(
     element,
@@ -183,11 +188,20 @@ export class Carousel {
       // Light and text follow distance continuously, including both sides of a swipe.
       const fade = Math.min(1, amount);
       card.style.setProperty('--slide-focus', (1 - fade * fade * (3 - 2 * fade)).toFixed(4));
-      card.style.opacity = Math.max(0, Math.min(1, (edge - amount) / 0.6, 1 - 0.6 * Math.min(1, amount), 1.65 - amount)).toFixed(4);
+      if (this.interactiveContents) {
+        // Keep the front plate opaque during the swipe. Only its photograph dims.
+        // Leave a short quiet interval between the outgoing and incoming captions.
+        const outer=Math.min(.76,edge*.45);
+        card.style.opacity=(1-fade01((amount-edge+outer)/outer)).toFixed(4);
+        card.style.setProperty('--scene-light',(1-.83*fade01(amount)).toFixed(4));
+        card.style.setProperty('--text-focus',(1-fade01(amount/.48)).toFixed(4));
+      } else {
+        card.style.opacity=Math.max(0,Math.min(1,(edge-amount)/.6,1-.6*Math.min(1,amount),1.65-amount)).toFixed(4);
+      }
       card.style.visibility = amount >= edge ? 'hidden' : 'visible';
       card.style.zIndex = String(100 - Math.round(amount * 20));
       const isActive = index === active;
-      card.dataset.active = String(isActive);
+      if (card.dataset.active !== String(isActive)) card.dataset.active = String(isActive);
       card.tabIndex = isActive ? 0 : -1;
       card.setAttribute('aria-hidden', String(!isActive));
       if (this.interactiveContents)

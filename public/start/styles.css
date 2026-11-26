@@ -186,14 +186,10 @@ html{scrollbar-width:none}html::-webkit-scrollbar{display:none}
     transition:filter .48s ease-out;
   }
   .email-card:hover .email-photo,.channel:hover img,.location-card:hover .location-photo {
-    filter:grayscale(0) brightness(1.02);
+    filter:grayscale(0) brightness(1);
   }
-  .email-card:focus-visible .email-photo,.channel:focus-visible img,.location-card:focus-visible .location-photo {filter:grayscale(0) brightness(1.02);}
-  .contact-section .mm-photo-glint,.location-section .mm-photo-glint {
-    opacity:.32;mix-blend-mode:screen;pointer-events:none;
-    -webkit-mask-image:radial-gradient(ellipse 32% 54% at var(--photo-x,50%) var(--photo-y,50%),#000,transparent);
-    mask-image:radial-gradient(ellipse 32% 54% at var(--photo-x,50%) var(--photo-y,50%),#000,transparent);
-  }
+  .email-card:focus-visible .email-photo,.channel:focus-visible img,.location-card:focus-visible .location-photo {filter:grayscale(0) brightness(1);}
+
 }
 @media (prefers-reduced-motion:reduce) {
   .email-photo,.channel img,.location-photo {transition:none;}

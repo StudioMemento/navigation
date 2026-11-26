@@ -330,12 +330,16 @@ export function createDialogs(bundleCarousel, hooks = {}) {
       await navigator.clipboard.writeText(draft);
       $('#copy-request').textContent = 'Richiesta copiata';
     } catch {
-      $('#copy-request').textContent = 'Seleziona e copia il testo qui sotto';
-      const selection = getSelection();
-      selection.removeAllRanges();
-      const range = document.createRange();
-      range.selectNodeContents($('#request-preview'));
-      selection.addRange(range);
+      let written=false;
+      const supply=event=>{
+        if (!event.clipboardData) return;
+        event.clipboardData.setData('text/plain',draft);
+        event.preventDefault();written=true;
+      };
+      document.addEventListener('copy',supply,true);
+      try {document.execCommand('copy');} catch {} finally {document.removeEventListener('copy',supply,true);}
+      $('#copy-request').textContent=written?'Richiesta copiata':'Apri la richiesta con il pulsante email';
+
     }
   });
   function route() {

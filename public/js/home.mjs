@@ -38,7 +38,8 @@ function draw() {
     const d = relative(i,position,cards.length), p = pose(d,frame);
     card.hidden = !p.visible;
     card.tabIndex = i === active ? 0 : -1;
-    card.setAttribute('aria-hidden',String(i !== active));
+    const hiddenFromFocus=String(i !== active);
+    if (card.getAttribute('aria-hidden')!==hiddenFromFocus) card.setAttribute('aria-hidden',hiddenFromFocus);
     if (!p.visible) continue;
     const image = card.querySelector('img');
     if (!image.hasAttribute('srcset')) { image.srcset = image.dataset.srcset; image.src = image.dataset.src; }
@@ -49,6 +50,7 @@ function draw() {
   dock.forEach((a,i)=>{ if (i===active) a.setAttribute('aria-current','location'); else a.removeAttribute('aria-current'); });
 }
 function commit() {
+  hub.classList.remove('is-moving','is-dragging');
   const active = cards[wrap(Math.round(target), cards.length)];
   status.textContent = active.getAttribute('aria-label');
   history.replaceState(history.state,'','#'+active.dataset.page);
@@ -62,6 +64,7 @@ function animate(stamp) {
   else frameId=requestAnimationFrame(animate);
 }
 function select(value) {
+  hub.classList.add('is-moving');
   target=value;
   if (!frameId) frameId=requestAnimationFrame(animate);
 }
@@ -92,7 +95,7 @@ hub.addEventListener('pointermove',event=>{
   const dy=event.clientY-drag.y;
   if(!drag.moved) {
     if(Math.abs(dy)<8||Math.abs(dy)<Math.abs(event.clientX-drag.x)) return;
-    drag.moved=true; hub.setPointerCapture(event.pointerId); cancelAnimationFrame(frameId); frameId=0; last=0;
+    drag.moved=true; hub.classList.add('is-dragging');hub.setPointerCapture(event.pointerId); cancelAnimationFrame(frameId); frameId=0; last=0;
   }
   const time=performance.now();
   position=drag.start-Math.max(-1,Math.min(1,dy/Math.max(64,frame.height*.85)));

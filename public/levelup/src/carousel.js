@@ -204,7 +204,7 @@ export class Carousel {
       card.style.visibility = amount >= edge ? 'hidden' : 'visible';
       card.style.zIndex = String(100 - Math.round(amount * 20));
       const isActive = index === active;
-      card.dataset.active = String(isActive);
+      if (card.dataset.active !== String(isActive)) card.dataset.active = String(isActive);
       card.tabIndex = isActive ? 0 : -1;
       card.setAttribute('aria-hidden', String(!isActive));
       card.querySelectorAll('[data-slide-control]').forEach(control => { control.inert = !isActive; });

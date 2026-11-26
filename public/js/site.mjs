@@ -6,7 +6,7 @@ const field=document.querySelector('.mm-glyph-field');
 if (field) mountGlyphField(field);
 mountSurfaces();
 const nativeBackdrop=CSS.supports('backdrop-filter','blur(1px)') || CSS.supports('-webkit-backdrop-filter','blur(1px)');
-let foreground=null;
+let foreground=null,lastDialog=null;
 function frostBehind(dialog) {
   if (nativeBackdrop || foreground===dialog) return;
   for (const el of document.querySelectorAll('[data-mm-modal-behind]')) el.removeAttribute('data-mm-modal-behind');
@@ -24,7 +24,8 @@ function syncModal() {
   const dialog=dialogs[dialogs.length-1] || null;
   frostBehind(dialog);
   const open=!!dialog || !!document.fullscreenElement || !!document.webkitFullscreenElement || root.dataset.demoExpanded==='true' || root.dataset.overlayOpen==='true';
-  if (root.hasAttribute('data-mm-modal')===open) return;
+  if (root.hasAttribute('data-mm-modal')===open && lastDialog===dialog) return;
+  lastDialog=dialog;
   root.toggleAttribute('data-mm-modal',open);
   document.dispatchEvent(new Event('memento:modal-visibility'));
 }

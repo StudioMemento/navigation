@@ -23,13 +23,14 @@ const site=await readJSON('templates/site.json');
 const escape=value=>String(value).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]);
 const meta=(slug)=>site.sections.find(page=>page.slug===slug)||site.home;
 const canonical=slug=>site.origin+(slug==='home'?'/':'/'+slug+'/');
+const documentInput='<script src="/js/document-input.js"></script>';
 function sharedHead(slug) {
   const url=canonical(slug),page=meta(slug);
   return `<link rel="canonical" href="${url}"><meta property="og:type" content="website"><meta property="og:site_name" content="Memento Design Studio">
   <meta property="og:title" content="${escape(page.title)}"><meta property="og:description" content="${escape(page.description)}"><meta property="og:url" content="${url}">
   <meta property="og:image" content="${escape(site.sharingImage)}"><meta name="twitter:card" content="summary_large_image">
   <link rel="icon" href="/favicon.svg" type="image/svg+xml"><link rel="preload" as="font" type="font/woff2" crossorigin href="/assets/fonts/InterVariable.woff2">
-  <link rel="stylesheet" href="/site.css"><link rel="stylesheet" href="/visuals.css"><script type="module" src="/js/site.mjs"></script>`;
+  ${documentInput}<link rel="stylesheet" href="/site.css"><link rel="stylesheet" href="/visuals.css"><script type="module" src="/js/site.mjs"></script>`;
 }
 function frame(slug,body,css,js) {
   const page=meta(slug);
@@ -100,9 +101,9 @@ const oldPaths=[
 ];
 for(const path of oldPaths) {
   const dest=historicDestination(path);
-  await output(path+'/index.html',`<!doctype html><html lang="it"><head><meta charset="utf-8"><title>Memento</title><link rel="canonical" href="${site.origin+dest}"><meta name="robots" content="noindex"><meta http-equiv="refresh" content="0;url=${dest}"><script src="/js/redirect.js" data-destination="${dest}"></script></head><body><a href="${dest}">Apri la pagina</a></body></html>`);
+  await output(path+'/index.html',`<!doctype html><html lang="it"><head><meta charset="utf-8"><title>Memento</title><link rel="canonical" href="${site.origin+dest}"><meta name="robots" content="noindex"><meta http-equiv="refresh" content="0;url=${dest}">${documentInput}<script src="/js/redirect.js" data-destination="${dest}"></script></head><body><a href="${dest}">Apri la pagina</a></body></html>`);
 }
 await output('sitemap.xml','<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'+['home',...PAGES.map(p=>p.slug)].map(s=>'<url><loc>'+canonical(s)+'</loc></url>').join('')+'</urlset>');
 await output('robots.txt','User-agent: *\nAllow: /\nSitemap: '+site.origin+'/sitemap.xml');
-await output('404.html',`<!doctype html><html lang="it" data-memento-native="404"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex"><title>Pagina non trovata — Memento</title><link rel="stylesheet" href="/site.css"><link rel="stylesheet" href="/visuals.css"><script type="module" src="/js/site.mjs"></script></head><body>${navigation('home')}<main class="mm-missing"><h1>Pagina non trovata</h1><a href="/">Torna alla home</a></main></body></html>`);
-console.log(`Memento R25.4 · Home + 5 sezioni · ${catalogue.services.length} servizi, ${catalogue.bundles.length} bundle, ${projects.length} progetti.`);
+await output('404.html',`<!doctype html><html lang="it" data-memento-native="404"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex"><title>Pagina non trovata — Memento</title>${documentInput}<link rel="stylesheet" href="/site.css"><link rel="stylesheet" href="/visuals.css"><script type="module" src="/js/site.mjs"></script></head><body>${navigation('home')}<main class="mm-missing"><h1>Pagina non trovata</h1><a href="/">Torna alla home</a></main></body></html>`);
+console.log(`Memento R25.5 · Home + 5 sezioni · ${catalogue.services.length} servizi, ${catalogue.bundles.length} bundle, ${projects.length} progetti.`);

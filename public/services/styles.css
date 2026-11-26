@@ -53,22 +53,7 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-body,
-dialog {
-  -webkit-user-select: none;
-  user-select: none;
-  -webkit-touch-callout: none;
-}
-input,
-textarea,
-select,
-[contenteditable]:not([contenteditable='false']),
-[contenteditable]:not([contenteditable='false']) *,
-#request-preview {
-  -webkit-user-select: text;
-  user-select: text;
-  -webkit-touch-callout: default;
-}
+
 button,
 input,
 textarea,
@@ -774,7 +759,18 @@ dialog {
   overflow: hidden;
 }
 .service-scene {
-  --text-focus: clamp(0, calc((var(--slide-focus, 1) - 0.18) / 0.82), 1);
+  --text-focus:1;
+  background:#050505;
+}
+.service-scene .item-master-art {filter:brightness(var(--scene-light,1));}
+.service-scene .photo-caption-shade {
+  background:linear-gradient(to right,#020203 0%,rgba(2,2,3,.94) 19%,rgba(2,2,3,.74) 38%,rgba(2,2,3,.29) 61%,transparent 89%);
+}
+.service-scene[data-active='false'] .item-master-copy,
+.service-scene[data-active='false'] .bundle-components-content,
+.service-scene[data-active='false'] .item-master-title,
+.service-scene[data-active='false'] .item-master-cta {
+  visibility:hidden;
 }
 .item-master-copy,
 .bundle-components-content,

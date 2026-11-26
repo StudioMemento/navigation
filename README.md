@@ -1,4 +1,4 @@
-# Memento Navigation R25.4
+# Memento Navigation R25.5
 
 Sito statico con home a slider verticale e cinque sezioni. La navbar porta direttamente alle pagine. Il logotipo riapre la home sulla sezione di provenienza.
 
@@ -18,7 +18,7 @@ Estrai lo ZIP e usa come radice del progetto la cartella che contiene `vercel.js
 | LevelUp, demo e confronti | `public/levelup/src/content.js` |
 | Start, contatti e FAQ | `templates/start.json` |
 
-Il foglio `public/site.css` definisce i margini responsive. Il logo e le icone sono in `templates/navigation.mjs` e `templates/nav-icons.mjs`. La geometria vettoriale delle lettere è in `templates/glyphs.svg`. `public/visuals.css` definisce le sfumature del testo, le due maschere di blur ai bordi e lo sfondo dei dialoghi. `public/js/effects/glyph-field.mjs` anima i glifi vettoriali su un canvas. `surfaces.mjs` gestisce puntatore, tocco e tastiera. `type-light.mjs` illumina i tratti delle lettere vicini al puntatore. `edge-light.mjs` conserva la luce lungo i 96 segmenti di ogni contorno attivo. `templates/facet-texture.mjs` genera la trama dei titoli durante la build. Con movimento ridotto il campo e le facce tipografiche restano statici. Ogni sezione ha un proprio foglio per griglie, schede e controlli. Le slide di Services usano un formato 16:9 su tutti i breakpoint. Su telefono i servizi di ciascun bundle si possono espandere sotto il carosello.
+Il foglio `public/site.css` definisce i margini responsive. Il logo e le icone sono in `templates/navigation.mjs` e `templates/nav-icons.mjs`. La geometria vettoriale delle lettere è in `templates/glyphs.svg`. `public/visuals.css` definisce le sfumature del testo, i due livelli di blur per bordo e lo sfondo dei dialoghi. `public/js/effects/glyph-field.mjs` anima i glifi vettoriali su un canvas. `surfaces.mjs` gestisce puntatore, tocco e tastiera. `type-light.mjs` accende il testo nativo con una luce locale e una trama fissa. `edge-light.mjs` conserva la luce lungo i 96 segmenti di ogni contorno attivo e sottrae la sagoma delle card prima di mostrare il bagliore esterno. `templates/facet-texture.mjs` genera la trama dei titoli durante la build. Con movimento ridotto il campo e le facce tipografiche restano statici. Ogni sezione ha un proprio foglio per griglie, schede e controlli. Le slide di Services usano un formato 16:9 su tutti i breakpoint. Su telefono i servizi di ciascun bundle si possono espandere sotto il carosello.
 
 Le fotografie, le illustrazioni e i modelli 3D fanno parte dei contenuti.
 

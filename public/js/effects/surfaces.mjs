@@ -1,41 +1,25 @@
 import { edgeLight } from './edge-light.mjs';
 import { typeLight } from './type-light.mjs';
+import { acceptsLight, surfaceIndex } from './surface-targets.mjs';
 
 // A single passive input stream for both effects, including content added by a carousel or a dialog.
 export function mountSurfaces() {
-  const edges=edgeLight(), ink=typeLight();
+  const cards=surfaceIndex(deckChange), edges=edgeLight(cards), ink=typeLight();
   const forced=matchMedia('(forced-colors:active)'), reduced=matchMedia('(prefers-reduced-motion:reduce)');
   const touchStyle=matchMedia('(hover:none) and (pointer:coarse)');
   let pointer=null, keyboard=null, pressed=null, touchTimer=0;
   let request=0, previous=0, dirty=false;
-  const hover=matchMedia('(hover:hover)');
-  // Screen just the photograph's own pixels under the pointer. Black contributes zero light.
-  let photoCard=null;
-  const glint=new Image();
-  glint.alt='';glint.setAttribute('aria-hidden','true');
-  function photo(card, point) {
-    if (!hover.matches || !card || !point || point.touch || !card.matches('.email-card,.channel,.location-card')) {
-      if (photoCard) {glint.remove();photoCard=null;}
-      return;
-    }
-    if (card!==photoCard) {
-      const image=card.querySelector('img');
-      if (!image) return;
-      glint.className=(image.className+' mm-photo-glint').trim();
-      glint.src=image.currentSrc || image.src;
-      image.after(glint);photoCard=card;
-    }
-    const box=card.getBoundingClientRect();
-    glint.style.setProperty('--photo-x',((point.x-box.left)/box.width*100).toFixed(2)+'%');
-    glint.style.setProperty('--photo-y',((point.y-box.top)/box.height*100).toFixed(2)+'%');
+  function deckChange() {
+    ink.clear();edges.clear();previous=0;
+    if (pointer || keyboard) schedule();
   }
 
   function select() {
     const modal=document.documentElement.hasAttribute('data-mm-modal');
     const target=keyboard || (pointer && document.elementFromPoint(pointer.x,pointer.y));
     const dialog=modal && target ? target.closest('dialog[open]') : null;
-    if (!target || target.closest('.mm-header,.mm-dock') || (modal && !dialog)) {
-      ink.target(null); edges.target(null);photo(null);return;
+    if (!acceptsLight(target) || target.closest('.mm-header,.mm-dock') || (modal && !dialog)) {
+      ink.target(null);edges.target(null);return;
     }
     const card=target.closest('.mm-tab');
     let title=target.closest('.mm-type');
@@ -53,7 +37,6 @@ export function mountSurfaces() {
     }
     ink.target(title,typePoint,!!keyboard,touchStyle.matches);
     edges.target(edgePoint,dialog,keyboard && card);
-    photo(card,keyboard ? typePoint || edgePoint : pointer);
   }
   function frame(now) {
     request=0;
@@ -73,7 +56,7 @@ export function mountSurfaces() {
     clearTimeout(touchTimer);
     cancelAnimationFrame(request);request=previous=0;dirty=false;
     pointer=keyboard=pressed=null;
-    ink.clear();edges.clear();photo(null);
+    ink.clear();edges.clear();
   }
   function release() {pointer=keyboard=null;schedule();}
   function track(event) {
@@ -116,5 +99,5 @@ export function mountSurfaces() {
   for (const event of ['resize','blur','pagehide']) window.addEventListener(event,reset);
   for (const event of ['memento:modal-visibility','visibilitychange']) document.addEventListener(event,reset);
   document.fonts?.addEventListener?.('loadingdone',reset);
-  for (const query of [forced,reduced,touchStyle,hover]) query.addEventListener?.('change',reset);
+  for (const query of [forced,reduced,touchStyle]) query.addEventListener?.('change',reset);
 }

@@ -93,7 +93,7 @@ export class Coverflow {
       // the selected board is in colour; neighbours turn grey and darker with distance (read by the engine too)
       card.style.setProperty('--slide-focus', Math.max(0, 1 - a * .3).toFixed(4));
       const isActive = index === active;
-      card.dataset.active = String(isActive);
+      if (card.dataset.active !== String(isActive)) card.dataset.active = String(isActive);
       card.dataset.distance = String(Math.round(a));
       card.tabIndex = isActive ? 0 : -1;
       card.setAttribute('aria-hidden', String(hidden));

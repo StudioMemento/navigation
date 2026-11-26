@@ -13,6 +13,11 @@
   --memento-safe-top: max(76px, calc(env(safe-area-inset-top, 0px) + 60px));
   --memento-safe-bottom: max(88px, calc(env(safe-area-inset-bottom, 0px) + 72px));
 }
+html[data-memento-native],html[data-memento-native] * {
+  -webkit-touch-callout:none;
+  -webkit-user-select:none;user-select:none;
+}
+html[data-memento-native] input::selection,html[data-memento-native] textarea::selection {background:transparent;color:inherit;}
 html[data-memento-native] {
   --content-width: 60vw;
   scroll-padding: var(--memento-safe-top) 0 var(--memento-safe-bottom);

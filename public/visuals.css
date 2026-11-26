@@ -62,24 +62,34 @@ html[data-memento-native] body { isolation:isolate; }
   .mm-link:not([aria-current]):hover .mm-symbol {opacity:1;filter:grayscale(.75) brightness(calc(1.04 * var(--mm-icon-gain,1)));}
   .mm-link:hover .mm-memento-light {opacity:1;}
 }
-/* One transparent mask per viewport edge. Brand and dock sit above both. */
+/* Both transparent layers sample content underneath the fixed brand and dock. */
 .mm-blur {
-  position:fixed;left:0;right:0;height:clamp(90px,18vh,160px);height:clamp(90px,18svh,160px);
+  position:fixed;left:0;right:0;height:clamp(100px,19vh,190px);height:clamp(100px,19svh,190px);
   z-index:900;pointer-events:none;background:transparent;
-  -webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);
-  -webkit-mask-image:linear-gradient(var(--toward-edge),transparent 12%,#000);
-  mask-image:linear-gradient(var(--toward-edge),transparent 12%,#000);
 }
+.mm-blur::before,.mm-blur::after {
+  content:"";position:absolute;inset:0;top:0;right:0;bottom:0;left:0;pointer-events:none;
+  -webkit-backdrop-filter:blur(var(--radius));backdrop-filter:blur(var(--radius));
+  -webkit-mask-image:linear-gradient(var(--toward-edge),var(--stops));mask-image:linear-gradient(var(--toward-edge),var(--stops));
+}
+.mm-blur::before {--radius:5px;--stops:transparent 0%,rgba(0,0,0,.08) 18%,rgba(0,0,0,.42) 41%,rgba(0,0,0,.84) 67%,#000 88%;}
+.mm-blur::after {--radius:14px;--stops:transparent 27%,rgba(0,0,0,.05) 42%,rgba(0,0,0,.29) 61%,rgba(0,0,0,.76) 82%,#000 100%;}
 .mm-blur-top {top:-1px;--toward-edge:to top;}
 .mm-blur-bottom {bottom:-1px;--toward-edge:to bottom;}
-@media (max-height:520px) {.mm-blur {height:clamp(38px,12vh,62px);}}
+@media (max-width:767px) {.mm-blur {height:clamp(84px,16vh,138px);height:clamp(84px,16svh,138px);}}
+@media (max-height:520px) {.mm-blur {height:clamp(40px,14vh,72px);}}
 html[data-memento-native] dialog[open]::backdrop {
   background:rgba(3,5,6,.68);
   -webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px);
 }
+html[data-memento-native=services] dialog[open]::backdrop {
+  background:rgba(3,4,5,.82);
+  -webkit-backdrop-filter:blur(22px);backdrop-filter:blur(22px);
+}
 @supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))) {
   html[data-mm-modal] [data-mm-modal-behind] {filter:blur(18px);}
   html[data-memento-native] dialog[open]::backdrop {background:rgba(3,5,6,.76);}
+  html[data-memento-native=services] dialog[open]::backdrop {background:rgba(3,4,5,.88);}
 }
 @media (forced-colors:active) {
   .mm-glyph-field,.mm-blur {display:none;}
@@ -88,7 +98,7 @@ html[data-memento-native] dialog[open]::backdrop {
 }
 @media print {.mm-glyph-field,.mm-blur,.mm-dock,.mm-header {display:none;}}
 
-/* Native glyphs remain selectable and retain one continuous vertical gradient on wrapped lines. */
+/* The actual glyphs carry the pigment and the light, including inside transformed slides. */
 @supports ((background-clip:text) or (-webkit-background-clip:text)) {
   html[data-memento-native] .mm-type {
     background:var(--mm-title-ink) 0 0/100% 100% no-repeat;
@@ -97,39 +107,25 @@ html[data-memento-native] dialog[open]::backdrop {
   }
   .mm-type>span {-webkit-text-fill-color:inherit;}
   html[data-memento-native] .mm-type[data-lit] {
-    background-image:var(--ink-paint,var(--mm-title-ink));
-    background-size:100% 100%,var(--ink-tile) var(--ink-tile),100% 100%;
-    background-repeat:no-repeat,repeat,no-repeat;
+    background-image:var(--ink-veil),var(--mm-facets),var(--ink-lenses),var(--ink-ramp);
+    background-size:100% 100%,var(--ink-tile) var(--ink-tile),100% 100%,100% 100%,100% 100%,100% 100%;
+    background-repeat:no-repeat,repeat,no-repeat,no-repeat,no-repeat,no-repeat;
+    text-shadow:0 0 2px var(--ink-corona,transparent);
   }
 }
-.mm-type[data-mm-ink-anchor] {position:relative;}
-.mm-ink-paint {
-  position:absolute;display:block;left:0;right:0;top:0;bottom:0;pointer-events:none;user-select:none;
-  -webkit-mask-image:var(--ink-mask,linear-gradient(transparent,transparent));mask-image:var(--ink-mask,linear-gradient(transparent,transparent));
-}
-@supports not ((mask-image:linear-gradient(black,transparent)) or (-webkit-mask-image:linear-gradient(black,transparent))) {
-  .mm-ink-paint {visibility:hidden;}
-}
-.mm-ink-word,.mm-ink-word::before,.mm-ink-word::after {
-  position:absolute;display:block;left:0;top:0;line-height:normal;white-space:pre;pointer-events:none;
-}
-.mm-ink-word::before,.mm-ink-word::after {content:attr(data-ink-text);color:transparent;-webkit-text-fill-color:transparent;}
-.mm-ink-word::before {text-shadow:0 0 var(--ink-core) rgba(255,177,90,.9),0 0 var(--ink-halo) rgba(255,166,73,.8);}
-.mm-ink-word::after {
-  background-image:var(--mm-facets),linear-gradient(to top,#ffad61 0%,#ffb953 9%,#ffd082 20%,#ffe4b4 32%,#fff2d6 44%);
-  background-size:var(--ink-tile) var(--ink-tile),var(--ink-size);
-  background-repeat:repeat,no-repeat;background-position:var(--ink-position),var(--ink-position);
-  -webkit-background-clip:text;background-clip:text;
-}
-.mm-edge-light {position:fixed;top:0;left:0;z-index:650;pointer-events:none;display:block;}
+::highlight(memento-ember-low) {background-color:transparent;text-shadow:0 0 3px rgba(255,163,59,.38);}
+::highlight(memento-ember-high) {background-color:transparent;text-shadow:0 0 2px rgba(255,223,150,.9),0 0 8px rgba(255,153,43,.74);}
+.mm-edge-plane {position:fixed;top:0;left:0;width:0;height:0;overflow:visible;pointer-events:none;z-index:650;}
+.mm-edge-light {position:absolute;top:0;left:0;pointer-events:none;display:block;}
 .mm-edge-light[hidden] {display:none;}
+[data-mm-outline-anchor] {position:relative;}
 .mm-outline-points {position:absolute!important;top:0;right:0;bottom:0;left:0;display:block!important;visibility:hidden!important;pointer-events:none!important;overflow:visible!important;}
 .mm-outline-points i {position:absolute;display:block;width:0;height:0;padding:0;border:0;margin:0;pointer-events:none;}
 @media (forced-colors:active) {
   html[data-memento-native] .mm-type,html[data-memento-native] .mm-type[data-lit],html[data-memento-native] .mm-type>span {background:none;color:CanvasText;-webkit-text-fill-color:CanvasText;-webkit-text-stroke:0;filter:none;}
-  .mm-edge-light,.mm-ink-paint {display:none;}
+  .mm-edge-plane {display:none;}
 }
-@media print {.mm-edge-light,.mm-ink-paint {display:none;}}
+@media print {.mm-edge-plane {display:none;}}
 
 /* The document keeps native scrolling; the overlay exposes its position and accepts optional desktop input. */
 html[data-mm-scroll-cue] {scrollbar-width:none;}
