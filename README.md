@@ -1,4 +1,4 @@
-# Memento Navigation R26
+# Memento Navigation R27
 
 Sito statico con home a slider verticale e cinque sezioni. La navbar porta direttamente alle pagine. Il logotipo riapre la home sulla sezione di provenienza.
 

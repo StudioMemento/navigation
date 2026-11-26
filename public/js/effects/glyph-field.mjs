@@ -28,6 +28,7 @@ class Backdrop {
     this.wordAt = Math.max(field.time + 2, this.wordAt);
     this.canvas.width = Math.max(1, Math.round(width * dpr));
     this.canvas.height = Math.max(1, Math.round(height * dpr));
+    this.canvas.style.height = height + 'px';
     this.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     this.mask = new Float32Array(cols);
     this.shownLetter = new Int8Array(count).fill(-2);
@@ -145,27 +146,32 @@ export function mountGlyphField(layer) {
   const field = new CellField(atlas);
   let backdrop = null, timer = 0, frame = 0, scrollTimer = 0, resizing = 0, previous = 0, sizeKey = '';
   let pointer = null, travelled = 0;
-  const listeners = {ready:new Set(), impulse:new Set(), pause:new Set()};
+  const listeners = {ready:new Set(), impulse:new Set()};
   const emit = (name, ...args) => { for (const listener of listeners[name]) listener(...args); };
   const still = () => motion.matches || forced.matches || !!saveData;
-  const blocked = () => still() || document.hidden || !!scrollTimer || document.documentElement.hasAttribute('data-mm-modal');
+  const halted = () => still() || document.hidden || document.documentElement.hasAttribute('data-mm-modal');
+  const blocked = () => halted() || !!scrollTimer;
   function stop() { clearTimeout(timer); cancelAnimationFrame(frame); timer = frame = previous = 0; }
   function rest() { stop(); layer.removeAttribute('data-live'); }
   function tick(now) {
     frame = 0;
     if (still()) {rest(); return;}
-    if (blocked() || !backdrop) return;
+    // While the page scrolls the field rests, unless a front is running: it keeps going under the finger.
+    if (halted() || !backdrop || (scrollTimer && !field.waving)) return;
     const dt = previous ? Math.min(.1, (now - previous) / 1000) : 0;
     previous = now;
     field.step(dt, () => backdrop.before(dt));
     timer = setTimeout(() => {timer = 0; frame = requestAnimationFrame(tick);}, 1000 / (coarse.matches ? 18 : 30) - 8);
   }
-  function start() { if (backdrop && !blocked() && !frame && !timer) frame = requestAnimationFrame(tick); }
+  function start() { if (backdrop && !halted() && (!scrollTimer || field.waving) && !frame && !timer) frame = requestAnimationFrame(tick); }
   function resize() {
     resizing = 0;
     if (still()) {rest(); return;}
     if (!atlas.complete || !atlas.naturalWidth) return;
-    const width = document.documentElement.clientWidth, height = innerHeight;
+    const width = document.documentElement.clientWidth, view = innerHeight;
+    // On touch screens the browser bars come and go while scrolling: the field keeps a taller grid instead of
+    // rebuilding (and dropping a running front) every time the viewport height changes.
+    const height = coarse.matches ? Math.max(view + 140, field.cols && field.width === width ? field.height : 0) : view;
     const dpr = Math.min(devicePixelRatio || 1, coarse.matches || width * height > 4e6 ? 1.5 : 2);
     const key = [width, height, dpr].join('/');
     if (!backdrop) {
@@ -183,7 +189,7 @@ export function mountGlyphField(layer) {
     start();
   }
   function requestResize() { if (!resizing) resizing = requestAnimationFrame(resize); }
-  function sync() { if (still()) rest(); else if (blocked()) stop(); else start(); }
+  function sync() { if (still()) rest(); else if (halted()) stop(); else start(); }
   function changePolicy() { if (still()) rest(); else resize(); }
   function impulse(x, y, options = {}) {
     if (!backdrop || blocked()) return false;
@@ -206,8 +212,8 @@ export function mountGlyphField(layer) {
   window.addEventListener('pageshow', requestResize);
   document.addEventListener('scroll', () => {
     if (!backdrop || still()) return;
-    if (!scrollTimer) emit('pause');
-    stop(); clearTimeout(scrollTimer);
+    if (!field.waving) stop();
+    clearTimeout(scrollTimer);
     scrollTimer = setTimeout(() => {scrollTimer = 0; start();}, 180);
   }, {capture:true, passive:true});
   document.addEventListener('pointermove', event => {

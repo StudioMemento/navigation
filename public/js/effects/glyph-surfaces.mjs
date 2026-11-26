@@ -3,12 +3,11 @@ import { acceptsLight, outlineOf } from './surface-targets.mjs';
 
 // The surfaces are windows on the same field of glyphs as the margins: the same grid, the same letters, the same
 // fronts. They stay clean at rest. The pointer leaves a trail of glyphs; a touch sends a torn front across every
-// surface on screen and into the margins. Glyphs are full along the outline and on the black, very faint where a
-// photograph shows its subject, and never over type.
+// surface on screen and into the margins. Once lit, the glyphs of the surfaces travel with the page when it scrolls.
+// Glyphs are full along the outline and on the black, very faint where a photograph shows its subject, never over type.
 const GAIN = {rim:1, panel:.7, photo:.18};
 const RIM = PITCH * 1.6;
 const TRAIL = {radius:110, every:7, burst:6, wave:120, gap:.26, reach:320, power:.55};
-const TAP = {hold:.25, slop:10};
 
 const smoothstep = (a, b, x) => { const t = Math.max(0, Math.min(1, (x - a) / (b - a))); return t * t * (3 - 2 * t); };
 function position(value) {
@@ -101,23 +100,28 @@ export function glyphSurfaces(field, {cards, feed}) {
   const ctx = canvas.getContext('2d');
   let gain = new Float32Array(0), owner = new Int16Array(0), rim = new Uint8Array(0), shown = new Float32Array(0), letters = new Int8Array(0);
   let tabs = [], members = new Map(), hidden = false, hideTimer = 0;
-  let current = null, travel = 0, waveTravel = 0, lastWave = -5, press = null;
+  let current = null, travel = 0, waveTravel = 0, lastWave = -5, anchor = null;
 
+  // The grid of the surfaces is the screen at the moment they were measured; the canvas then follows the page.
+  function shift() { return anchor ? {x:scrollX - anchor.x, y:scrollY - anchor.y} : {x:0, y:0}; }
   function forget() {
     gain.fill(0); owner.fill(0); rim.fill(0);
-    tabs = []; members = new Map();
+    tabs = []; members = new Map(); anchor = null;
   }
   function wipe() {
     if (ctx) ctx.clearRect(0, 0, canvas.width, canvas.height);
     shown.fill(0);
+    canvas.style.transform = '';
   }
   const renderer = {
     resize(f) {
       canvas.width = Math.max(1, Math.round(f.width * f.dpr));
       canvas.height = Math.max(1, Math.round(f.height * f.dpr));
+      canvas.style.height = f.height + 'px';
       ctx?.setTransform(f.dpr, 0, 0, f.dpr, 0, 0);
       gain = new Float32Array(f.count); owner = new Int16Array(f.count); rim = new Uint8Array(f.count); shown = new Float32Array(f.count); letters = new Int8Array(f.count);
-      tabs = []; members = new Map(); current = null;
+      tabs = []; members = new Map(); current = null; anchor = null;
+      canvas.style.transform = '';
     },
     paint(id, cell) {
       if (!ctx) return;
@@ -141,8 +145,8 @@ export function glyphSurfaces(field, {cards, feed}) {
   // Glyphs that light on the outline hand their light to the edge of the surface.
   cells.onIgnite = (id, strength, options) => {
     if (!rim[id] || options.quiet || hidden) return;
-    const tab = tabs[owner[id] - 1];
-    if (tab) feed(tab, cells.x(id), cells.y(id), strength * (options.wave ? .7 : .45));
+    const tab = tabs[owner[id] - 1], off = shift();
+    if (tab) feed(tab, cells.x(id) - off.x, cells.y(id) - off.y, strength * (options.wave ? .7 : .45));
   };
 
   function shade(tab) {
@@ -157,9 +161,11 @@ export function glyphSurfaces(field, {cards, feed}) {
   function map(tab) {
     if (members.has(tab)) return members.get(tab).ids;
     if (!cells.cols) return null;
-    const index = tabs.push(tab), points = outlineOf(tab);
-    const photos = [...tab.querySelectorAll('img,video')].map(photoOf).filter(p => p.box.width && p.box.height);
-    const texts = textRects(tab);
+    if (!anchor) anchor = {x:scrollX, y:scrollY};
+    const off = shift(), move = r => ({left:r.left + off.x, right:r.right + off.x, top:r.top + off.y, bottom:r.bottom + off.y, width:r.width, height:r.height});
+    const index = tabs.push(tab), points = outlineOf(tab).map(p => ({x:p.x + off.x, y:p.y + off.y}));
+    const photos = [...tab.querySelectorAll('img,video')].map(photoOf).filter(p => p.box.width && p.box.height).map(p => ({...p, box:move(p.box)}));
+    const texts = textRects(tab).map(move);
     const xs = points.map(p => p.x), ys = points.map(p => p.y);
     const c0 = Math.max(0, Math.floor((Math.min(...xs) - cells.origin) / PITCH)), c1 = Math.min(cells.cols - 1, Math.floor((Math.max(...xs) - cells.origin) / PITCH));
     const r0 = Math.max(0, Math.floor(Math.min(...ys) / PITCH)), r1 = Math.min(cells.rows - 1, Math.floor(Math.max(...ys) / PITCH));
@@ -188,21 +194,28 @@ export function glyphSurfaces(field, {cards, feed}) {
   }
   function mapVisible() { for (const tab of cards) if (!members.has(tab) && eligible(tab)) map(tab); }
   function show() {
-    clearTimeout(hideTimer);
     if (!hidden) return;
+    clearTimeout(hideTimer);
+    wipe();
     hidden = false;
     canvas.style.opacity = '';
   }
-  // The surfaces moved under the fixed grid (scroll, carousel, dialog): fade what is lit and measure again later.
+  // The surfaces moved under the grid (a carousel, a dialog): fade what is lit and measure again later.
   function release() {
     current = null;
-    if (press) {clearTimeout(press.timer); press = null;}
     forget();
     if (hidden) return;
     hidden = true;
     canvas.style.opacity = '0';
     clearTimeout(hideTimer);
     hideTimer = setTimeout(wipe, 180);
+  }
+  // The page scrolled: the lit glyphs ride along with their surfaces. Far from where they were measured, start over.
+  function scrolled() {
+    if (!anchor) return;
+    const off = shift();
+    if (Math.abs(off.y) > innerHeight * .6 || Math.abs(off.x) > innerWidth * .3) {release(); return;}
+    canvas.style.transform = 'translate3d(' + (-off.x) + 'px,' + (-off.y) + 'px,0)';
   }
   function enter(tab, x, y) {
     const ids = map(tab);
@@ -214,13 +227,14 @@ export function glyphSurfaces(field, {cards, feed}) {
     }
   }
   // The trail: glyphs wake around the pointer and scramble out; every 120 px a small front runs through the surface.
-  function move(tab, x, y, distance) {
+  function move(tab, clientX, clientY, distance) {
     if (!field.ready || field.blocked) return;
     show();
+    const off = shift(), x = clientX + off.x, y = clientY + off.y;
     if (tab !== current) {
       current = null;
       if (!tab || !eligible(tab)) return;
-      enter(tab, x, y);
+      enter(tab, clientX + shift().x, clientY + shift().y);
       field.wake();
       return;
     }
@@ -240,29 +254,20 @@ export function glyphSurfaces(field, {cards, feed}) {
     }
     field.wake();
   }
-  // A real tap (not the start of a scroll) sends one front through every surface on screen and the margins.
-  function tap(x, y) {
+  // A touch, as the finger lands, sends one front through every surface on screen and through the margins.
+  // It keeps running while the page scrolls under the finger.
+  function touch(clientX, clientY) {
     if (!field.ready || field.blocked) return false;
+    return field.impulse(clientX, clientY);
+  }
+  // A front through the whole screen starts from the screen as it is now: measure the surfaces again if the page moved.
+  function realign() {
+    const off = shift();
+    if (off.x || off.y) {forget(); wipe();}
     show();
     mapVisible();
-    return field.impulse(x, y);
   }
-  function pressStart(event) {
-    press = {x:event.clientX, y:event.clientY, sent:false, timer:setTimeout(() => {
-      if (press && !press.sent) {press.sent = true; tap(press.x, press.y);}
-    }, TAP.hold * 1000)};
-  }
-  function pressMove(event) {
-    if (press && Math.hypot(event.clientX - press.x, event.clientY - press.y) > TAP.slop) {clearTimeout(press.timer); press = null;}
-  }
-  function pressEnd(cancelled) {
-    if (!press) return;
-    clearTimeout(press.timer);
-    if (!cancelled && !press.sent) tap(press.x, press.y);
-    press = null;
-  }
-  field.on('impulse', (x, y, options) => { if (!options.quiet && !options.cells) {show(); mapVisible();} });
-  field.on('pause', release);
+  field.on('impulse', (x, y, options) => { if (!options.quiet && !options.cells) realign(); });
   field.on('ready', () => {forget(); wipe(); setTimeout(prepare, 1200);});
-  return {move, release, pressStart, pressMove, pressEnd, mapVisible, map, tap};
+  return {move, release, scrolled, touch, mapVisible, map};
 }

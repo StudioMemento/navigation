@@ -37,10 +37,12 @@ export class CellField {
     this.nextBucket = 0;
     this.lastWave = -5;
     this.waveEnds = [];
+    this.waveUntil = 0;
     this.onIgnite = null;
   }
   get count() { return this.cols * this.rows; }
-  get busy() { return this.active.size > 0 || this.scheduled.size > 0; }
+  // A front is still on its way, or its last cells are still falling.
+  get waving() { return this.time < this.waveUntil; }
   resize(width, height, dpr) {
     this.width = width;
     this.height = height;
@@ -113,6 +115,7 @@ export class CellField {
     }
     const far = Math.min(reach, Math.hypot(Math.max(x, this.width - x), Math.max(y, this.height - y))) || 1;
     if (limited) this.waveEnds.push(this.time + far * 1.22 / WAVE.speed + .05);
+    this.waveUntil = Math.max(this.waveUntil, this.time + far * 1.22 / WAVE.speed + .9);
     const seed = Math.floor(Math.random() * 65535);
     const visit = id => {
       if (Math.random() > (this.base[id] < 0 ? WAVE.share[1] : WAVE.share[0]) * Math.min(1, power)) return;

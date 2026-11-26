@@ -120,24 +120,23 @@ export function mountSurfaces(field) {
     schedule();
   }
   document.addEventListener('pointermove', event => {
-    if (event.pointerType === 'touch' || event.pointerType === 'pen') glyphs?.pressMove(event);
     if ((event.pointerType !== 'touch' && event.pointerType !== 'pen') || pressed) track(event);
   }, {passive:true});
   document.addEventListener('pointerdown', event => {
     if (event.button !== 0 || !event.isPrimary) return;
     clearTimeout(touchTimer);
     pressed = {x:event.clientX, y:event.clientY, drag:false};
-    if ((event.pointerType === 'touch' || event.pointerType === 'pen') && !reduced.matches && !event.target.closest?.('.mm-header,.mm-dock')) glyphs?.pressStart(event);
+    // A finger landing anywhere but the navigation starts a chain reaction through every surface on screen.
+    if ((event.pointerType === 'touch' || event.pointerType === 'pen') && !reduced.matches && !event.target.closest?.('.mm-header,.mm-dock')) glyphs?.touch(event.clientX, event.clientY);
     track(event);
   }, {capture:true, passive:true});
   document.addEventListener('pointerup', event => {
     if (!event.isPrimary) return;
     const dragging = pressed?.drag; pressed = null;
-    if (event.pointerType === 'touch' || event.pointerType === 'pen') glyphs?.pressEnd(dragging);
     if (dragging) {release(); return;}
     if (event.pointerType === 'touch') touchTimer = setTimeout(release, 190);
   }, {capture:true, passive:true});
-  document.addEventListener('pointercancel', () => {glyphs?.pressEnd(true); release(); pressed = null;}, {passive:true});
+  document.addEventListener('pointercancel', () => {release(); pressed = null;}, {passive:true});
   document.addEventListener('pointerout', event => {if (!event.relatedTarget) {glyphs?.move(null); release();}}, {passive:true});
   document.addEventListener('keydown', event => {
     if (['Tab', 'ArrowLeft', 'ArrowRight', 'ArrowDown', 'ArrowUp', 'Home', 'End'].includes(event.key)) {
@@ -146,14 +145,21 @@ export function mountSurfaces(field) {
   }, true);
   document.addEventListener('focusin', event => {if (!pointer) {keyboard = event.target; schedule();}});
   document.addEventListener('focusout', () => {if (keyboard) {keyboard = null; schedule();}});
-  // The light plane moves with the document: scrolling only re-aims it. Glyphs sit on the fixed grid and fade out.
+  // The light and the glyphs of the surfaces move with the document: scrolling only re-aims them.
   document.addEventListener('scroll', event => {
-    if (event.target !== document && event.target !== document.scrollingElement) {edges.fade(); sheen.hide();}
-    else {edges.scrolled(); sheen.hide();}
-    glyphs?.release();
+    sheen.hide();
+    if (event.target !== document && event.target !== document.scrollingElement) {edges.fade(); glyphs?.release();}
+    else {edges.scrolled(); glyphs?.scrolled();}
     schedule();
   }, {capture:true, passive:true});
-  for (const event of ['resize', 'pagehide']) window.addEventListener(event, reset);
+  // A change of width moves every surface; a change of height alone is the browser's bars coming and going.
+  let width = document.documentElement.clientWidth;
+  window.addEventListener('resize', () => {
+    if (document.documentElement.clientWidth === width) return;
+    width = document.documentElement.clientWidth;
+    reset();
+  });
+  window.addEventListener('pagehide', reset);
   window.addEventListener('blur', release);
   for (const event of ['memento:modal-visibility', 'visibilitychange']) document.addEventListener(event, reset);
   document.fonts?.addEventListener?.('loadingdone', () => {ink.clear(); schedule();});
