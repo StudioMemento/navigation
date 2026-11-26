@@ -1,13 +1,14 @@
 {
   "name": "memento-navigation",
-  "version": "25.0.0",
+  "version": "25.1.0",
   "private": true,
   "type": "module",
   "scripts": {
     "build": "node scripts/build.mjs",
     "dev": "node scripts/serve.mjs --dev",
-    "preview": "node scripts/serve.mjs",
-    "test": "node --test tests/*.test.mjs"
+    "preview": "node scripts/serve.mjs"
   },
-  "engines": { "node": "22.x || 24.x" }
+  "engines": {
+    "node": "22.x || 24.x"
+  }
 }

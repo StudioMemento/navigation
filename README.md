@@ -1,26 +1,23 @@
-# Memento Navigation · R25 Clean
+# Memento Navigation R25.1 Clean
 
-Base HTML per la revisione dei contenuti. La Home collega Studio, Services, Projects, LevelUp e Start. Ogni servizio, bundle e progetto ha un indirizzo diretto. Le pagine usano la tipografia e i controlli predefiniti del browser.
+Sito statico con home a slider verticale e cinque sezioni. La navbar porta direttamente alle pagine. Il logotipo riapre la home sulla sezione di provenienza.
 
 ## Deploy su Vercel
 
-Estrai lo ZIP e usa come radice del progetto la cartella che contiene `vercel.json`. La configurazione esegue `node scripts/build.mjs` e pubblica `public/`. Tutti i file di pubblicazione sono già inclusi nell’archivio. La build usa soltanto i moduli standard di Node.
+Estrai lo ZIP e usa come radice del progetto la cartella che contiene `vercel.json` e `package.json`. La configurazione inclusa esegue `node scripts/build.mjs` e pubblica `public/`. Il pacchetto contiene anche le pagine già generate e tutte le risorse locali.
 
-## Lavorare sul content
+## Lavoro sui contenuti
 
-| Contenuto | Sorgente |
+| Area | File principale |
 | --- | --- |
-| Home, navigazione, metadati e Studio | `content/site.json` |
-| Categorie, bundle e tavole dei servizi | `content/services.json` |
-| Portfolio e gallerie | `content/projects.json` |
-| Varianti delle immagini del portfolio | `content/project-images.json` |
-| Benefit, esperienze, confronti e percorso | `content/levelup.json` |
-| Contatti, mappa, FAQ e informative | `content/start.json` |
+| Home e navbar | `templates/home-config.mjs` |
+| Titoli e descrizioni delle pagine | `templates/site.json` |
+| Studio 3D e inquadrature | `public/studio/studio.js` e `public/studio/lib/shots.js` |
+| Servizi, bundle e categorie | `public/services/src/content.js` |
+| Progetti e immagini | `public/projects/projects.json` e `public/projects/images.json` |
+| LevelUp, demo e confronti | `public/levelup/src/content.js` |
+| Start, contatti e FAQ | `templates/start.json` |
 
-I template si trovano in `scripts/`, le fotografie e i modelli nelle cartelle `assets/` di `public/`. Modifica i dati o i template e rigenera le pagine con `npm run build`. Mantieni gli ID di servizi, bundle e progetti quando modifichi i testi. Gli ID sono usati anche dai vecchi link condivisi.
+Il foglio `public/site.css` definisce navbar, colori di base e margini responsive. Ogni sezione ha un proprio foglio per griglie, schede e controlli. Le fotografie, le illustrazioni e i modelli 3D fanno parte dei contenuti.
 
-Per lavorare in locale, esegui `npm run dev` e apri `http://127.0.0.1:5173/`. I salvataggi in `content/` e `scripts/` rigenerano l’HTML. Ricarica la pagina per vedere le modifiche. `npm run preview` serve la copia già generata e `npm test` controlla pagine, ancore e risorse locali.
-
-## Esperienze e interazioni
-
-Studio mostra una copertina, il collegamento al tour 3D separato e i due GLB originali. Nel portfolio e in LevelUp le demo esterne si aprono su richiesta. I confronti prima/dopo sono fotografie distinte. I filtri, la preparazione dell’email, la preferenza di Google Maps e la compatibilità con i vecchi indirizzi a frammento sono gestiti dai moduli in `public/js/`.
+Per lavorare in locale con Node 22 o 24, esegui `npm run dev` e apri `http://localhost:5173/`. Dopo una modifica, `npm run build` rigenera le pagine statiche. I link di dettaglio della R25 sono reindirizzati alle corrispondenti schede interattive.
