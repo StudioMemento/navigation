@@ -60,7 +60,7 @@ export function visionFor(project) {
 }
 
 export function distributedHeading(text, id) {
-  return `<h2 class="display-heading" id="${id}" aria-label="${escapeHTML(text)}"><span class="display-letters gradient-text" aria-hidden="true">${[...text.toUpperCase()].map(letter => `<span>${escapeHTML(letter)}</span>`).join('')}</span></h2>`;
+  return `<h2 class="display-heading" id="${id}" aria-label="${escapeHTML(text)}"><span class="display-letters gradient-text mm-type" aria-hidden="true">${[...text.toUpperCase()].map(letter => `<span>${escapeHTML(letter)}</span>`).join('')}</span></h2>`;
 }
 
 export function thumbMarkup(item, index, active) {
@@ -72,7 +72,7 @@ function galleryMarkup(project, items, active) {
   const many = items.length > 1;
   return `<section class="project-gallery content-width" id="project-gallery" aria-label="Gallery di ${escapeHTML(projectName(project))}">
     <div class="gallery" data-slider="gallery" role="region" aria-roledescription="carosello" aria-label="Immagini del progetto" tabindex="0" style="--gallery-ratio:${ratio.toFixed(4)}">
-      <div class="gallery-stage board cut-frame">
+      <div class="gallery-stage board cut-frame mm-tab">
         ${photo(item.src, { alt: item.alt || projectName(project), role: 'stage', eager: true, className: 'gallery-image' })}
       </div>
       ${many ? `<div class="gallery-nav" style="--count:${items.length}">
@@ -89,7 +89,7 @@ function experienceMarkup(project) {
   if (x === false) return '';
   if (!x) return `<section class="experience-section content-width" id="project-experience" aria-labelledby="experience-heading">
     <header class="section-bar"><h2 class="section-label" id="experience-heading"><span>Experience</span><span class="section-kind">[Formato da definire]</span></h2></header>
-    <div class="board experience-board cut-frame is-placeholder">
+    <div class="board experience-board cut-frame is-placeholder mm-tab">
       <div class="experience-placeholder">${icon('cube')}<p>EXP / VIDEO / 3D</p><span>[Esperienza, film o modello del progetto]</span></div>
     </div>
   </section>`;
@@ -102,7 +102,7 @@ function experienceMarkup(project) {
         <button class="experience-tool" type="button" data-action="experience-expand" aria-label="Espandi ${escapeHTML(x.name)}">${icon('expand')}<span>Espandi</span></button>
       </div>
     </header>
-    <div class="board experience-board cut-frame" data-type="${x.type}"${ratio} aria-label="${escapeHTML(x.name)} — ${escapeHTML(x.kind)}" role="group">
+    <div class="board experience-board cut-frame mm-tab" data-type="${x.type}"${ratio} aria-label="${escapeHTML(x.name)} — ${escapeHTML(x.kind)}" role="group">
       <div class="experience-poster">${photo(x.poster, { role: 'poster', lazy: true })}</div>
       <div class="experience-stage"></div>
       <button class="experience-start" type="button" data-action="experience-start"><span class="experience-play">${icon('play')}</span><span class="experience-start-label">${escapeHTML(x.start)}</span></button>

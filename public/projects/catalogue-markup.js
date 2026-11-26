@@ -10,17 +10,17 @@ const paths = {
 export const icon = name => `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="${paths[name]}"/></svg>`;
 
 export function filtersMarkup() {
-  return `<button type="button" data-action="filter" data-domain="all" aria-label="Tutti i domini" title="Tutti i domini" aria-pressed="true" class="filter-all">${icon('all')}</button>` +
-    Object.entries(domains).map(([id, label]) => `<button type="button" data-action="filter" data-domain="${id}" aria-controls="project-grid" aria-pressed="false">${icon(id)}<span>${label}</span></button>`).join('');
+  return `<button type="button" data-action="filter" data-domain="all" aria-label="Tutti i domini" title="Tutti i domini" aria-pressed="true" class="filter-all mm-tab">${icon('all')}</button>` +
+    Object.entries(domains).map(([id, label]) => `<button class="mm-tab" type="button" data-action="filter" data-domain="${id}" aria-controls="project-grid" aria-pressed="false">${icon(id)}<span>${label}</span></button>`).join('');
 }
 
 export function tileMarkup(project, eager) {
   const role = project.layout === 'wide' ? 'wide' : 'tile';
-  return `<a class="project-tile ${project.layout || 'square'}" href="#slideshow/${project.id}" data-action="open-project" data-id="${project.id}" id="tile-${project.id}" aria-label="Apri progetto ${escapeHTML(projectName(project))}">
+  return `<a class="project-tile ${project.layout || 'square'} mm-tab" href="#slideshow/${project.id}" data-action="open-project" data-id="${project.id}" id="tile-${project.id}" aria-label="Apri progetto ${escapeHTML(projectName(project))}">
     <span class="tile-frame"><span class="tile-visual">${photo(project.cover, { role, eager, lazy: !eager })}</span></span>
     <span class="tile-meta">
       <span class="tile-domains">${project.domains.map(domain => `<span>${domains[domain]}</span>`).join('')}</span>
-      <span class="tile-name">${escapeHTML(project.title)}${project.variant ? `<span class="tile-variant">${escapeHTML(project.variant)}</span>` : ''}</span>
+      <span class="tile-name mm-type">${escapeHTML(project.title)}${project.variant ? `<span class="tile-variant">${escapeHTML(project.variant)}</span>` : ''}</span>
       <span class="tile-arrow">${icon('arrow')}</span>
       <span class="tile-current" aria-hidden="true">In visione</span>
     </span></a>`;

@@ -55,23 +55,24 @@
               class="carousel-controls"
               data-carousel-for="bundle-boards"
             ></div>
+            <details class="bundle-contents"><summary>Servizi inclusi</summary><div id="bundle-includes"></div></details>
           </section>
           <section class="catalogue page-width" id="catalogo" aria-labelledby="catalogue-heading">
             <div class="catalogue-heading">
-              <h2 id="catalogue-heading">Servizi di design.</h2>
+              <h2 class="mm-type" id="catalogue-heading">Servizi di design.</h2>
               <div
                 class="catalogue-filters"
                 role="group"
                 aria-label="Tipo di servizio"
                 data-selected="digital"
               >
-                <button data-medium="digital" aria-pressed="true" aria-controls="catalogue-groups">
+                <button class="mm-tab" data-medium="digital" aria-pressed="true" aria-controls="catalogue-groups">
                   <svg viewBox="0 0 24 24" aria-hidden="true">
                     <rect x="3" y="4" width="18" height="13" rx="2" />
                     <path d="M8 21h8M12 17v4" /></svg
                   ><span>Digitale</span></button
                 ><button
-                  data-medium="physical"
+                  class="mm-tab" data-medium="physical"
                   aria-pressed="false"
                   aria-controls="catalogue-groups"
                 >
@@ -89,7 +90,7 @@
           <section class="start-section page-width" id="finale" aria-labelledby="start-heading">
             <a
               id="start-link"
-              class="start-action"
+              class="start-action mm-tab"
               href="/start/"
               target="_top"
             >
@@ -105,7 +106,7 @@
                   decoding="async"
                 />
               </span>
-              <h2 id="start-heading">
+              <h2 class="mm-type" id="start-heading">
                 <span>Ready to</span> <span>start<span class="start-question">?</span></span>
               </h2>
               <svg class="chevron" viewBox="0 0 48 80" fill="none" aria-hidden="true">
@@ -135,7 +136,7 @@
       </button>
       <div class="lead-heading">
         <span class="eyebrow">LevelUp</span>
-        <h2 id="lead-title">Da dove<br />cominciamo?</h2>
+        <h2 class="mm-type" id="lead-title">Da dove<br />cominciamo?</h2>
         <p>Raccontaci cosa vuoi far crescere.</p>
       </div>
       <form id="lead-form">
@@ -187,7 +188,7 @@
         <p class="form-help">La richiesta si apre nella tua app email. L’invio lo confermi tu.</p>
       </form>
       <div id="lead-result" hidden aria-live="polite">
-        <h3>La tua richiesta è pronta.</h3>
+        <h3 class="mm-type">La tua richiesta è pronta.</h3>
         <p>
           Aprila nella tua app email, oppure copia il testo e scrivici a
           <a href="mailto:info@mementostudio.it">info@mementostudio.it</a>.

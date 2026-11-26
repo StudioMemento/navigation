@@ -1,5 +1,5 @@
 import { catalogue } from './content.js';
-import { getItem, cover, categories, grid, dots } from './render.js';
+import { getItem, cover, categories, grid, dots, includes } from './render.js';
 import { Carousel, bindDots } from './carousel.js';
 import { createDialogs } from './dialogs.js';
 
@@ -16,6 +16,7 @@ const bundleCarousel = new Carousel($('#bundle-boards'), {
   onOpen: (index) => dialogs.open(bundles[index]),
   onSettle: (index) => {
     updateBundle(index);
+    $('#bundle-includes').innerHTML = includes(bundles[index].covers);
     announce(bundles[index].title);
   },
 });

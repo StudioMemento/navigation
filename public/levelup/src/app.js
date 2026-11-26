@@ -7,14 +7,14 @@ const $ = selector => document.querySelector(selector);
 const initialBenefits = $('#benefits .carousel-stage');
 if (!initialBenefits.firstElementChild) initialBenefits.innerHTML = benefitMarkup();
 $('#portfolio .carousel-stage').innerHTML = experiences.map((item,i) => `
-  <article class="showcase-card cut-frame" data-slide="${i}" role="group" aria-roledescription="slide" aria-label="${escape(item.title)}, ${escape(item.categories.join(', '))}">
-    ${image(item)}<ul class="project-category" role="list">${item.categories.map(category=>`<li><span aria-hidden="true">–</span>${escape(category)}</li>`).join('')}</ul>
-    <h3 class="project-name" data-slide-control data-no-swipe><a class="gradient-text" href="${escape(item.url)}" target="_blank" rel="noopener noreferrer" aria-label="Apri ${escape(item.title)} in una nuova scheda">${escape(item.title)}</a></h3>
+  <article class="showcase-card cut-frame mm-tab" data-slide="${i}" role="group" aria-roledescription="slide" aria-label="${escape(item.title)}, ${escape(item.categories.join(', '))}">
+    ${image(item)}<span class="card-shade" aria-hidden="true"></span><ul class="project-category" role="list">${item.categories.map(category=>`<li><span aria-hidden="true">–</span>${escape(category)}</li>`).join('')}</ul>
+    <h3 class="project-name" data-slide-control data-no-swipe><a class="gradient-text mm-type" href="${escape(item.url)}" target="_blank" rel="noopener noreferrer" aria-label="Apri ${escape(item.title)} in una nuova scheda">${escape(item.title)}</a></h3>
     <button class="project-expand" data-slide-control data-no-swipe type="button" data-expand="${i}" aria-controls="demo-panel" aria-haspopup="dialog" aria-label="Espandi ${escape(item.title)}"><img src="assets/icons/maximize.svg" alt="" width="24" height="24"></button>
   </article>`).join('');
 $('#vision-grid').innerHTML = visions.map(item => `
-  <article class="vision-card cut-frame vision-${item.id}" aria-labelledby="vision-${item.id}-title">
-    <div class="vision-copy"><h3 class="gradient-text" id="vision-${item.id}-title">${lines(item.title)}</h3><p>${escape(item.copy)}</p></div>
+  <article class="vision-card cut-frame vision-${item.id} mm-tab" aria-labelledby="vision-${item.id}-title">
+    <div class="vision-copy"><h3 class="gradient-text mm-type" id="vision-${item.id}-title">${lines(item.title)}</h3><p>${escape(item.copy)}</p></div>
     <div class="vision-art"><div class="comparison" id="comparison-${item.id}">
       <img src="${item.after}" srcset="${item.after.replace('.webp','-640.webp')} 640w, ${item.after} 1280w" sizes="${PHONE}50vw, (max-width:767px) 75vw, 600px" alt="${escape(item.alt)}" width="1280" height="1280" loading="lazy" decoding="async" draggable="false">
       <div class="comparison-before"><img src="${item.before}" srcset="${item.before.replace('.webp','-640.webp')} 640w, ${item.before} 1280w" sizes="${PHONE}50vw, (max-width:767px) 75vw, 600px" alt="Lo stesso soggetto come modello di base" width="1280" height="1280" loading="lazy" decoding="async" draggable="false"></div>
@@ -24,7 +24,7 @@ $('#vision-grid').innerHTML = visions.map(item => `
     </div></div>
   </article>`).join('');
 $('#steps-grid').innerHTML = steps.map((item,i) => `
-  <li class="step-card cut-frame"><img class="step-art" src="${item.asset}" srcset="${item.asset.replace('.webp','-768.webp')} 768w, ${item.asset} 1536w" sizes="${PHONE}60vw, (max-width:900px) 90vw, 33vw" alt="" width="1536" height="1024" loading="lazy" decoding="async"><p>${escape(item.copy)}</p><span class="step-number" aria-hidden="true">STEP ${i+1}</span><h3 class="gradient-text">${lines(item.title)}</h3></li>`).join('');
+  <li class="step-card cut-frame mm-tab"><img class="step-art" src="${item.asset}" srcset="${item.asset.replace('.webp','-768.webp')} 768w, ${item.asset} 1536w" sizes="${PHONE}60vw, (max-width:900px) 90vw, 33vw" alt="" width="1536" height="1024" loading="lazy" decoding="async"><p>${escape(item.copy)}</p><span class="step-number" aria-hidden="true">STEP ${i+1}</span><h3 class="gradient-text mm-type">${lines(item.title)}</h3></li>`).join('');
 
 function pagination(root, items, label, select) {
   root.innerHTML = items.map((item,i) => `<button type="button" aria-label="${escape(label(item))}" aria-current="${i===0}" data-index="${i}"><span></span></button>`).join('');

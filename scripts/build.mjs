@@ -1,8 +1,9 @@
 import { readFile, writeFile, mkdir } from 'node:fs/promises';
+import { navigation, glyphField } from '../templates/navigation.mjs';
 import { PAGES } from '../templates/home-config.mjs';
 import { startPage } from '../templates/start.mjs';
 import { catalogue } from '../public/services/src/content.js';
-import { cover, dots, categories, grid } from '../public/services/src/render.js';
+import { cover, dots, categories, grid, includes } from '../public/services/src/render.js';
 import { benefitMarkup } from '../public/levelup/src/benefit-markup.js';
 import { setManifest } from '../public/projects/media.js';
 import { validateProjects } from '../public/projects/catalogue.js';
@@ -26,15 +27,7 @@ function sharedHead(slug) {
   <meta property="og:title" content="${escape(page.title)}"><meta property="og:description" content="${escape(page.description)}"><meta property="og:url" content="${url}">
   <meta property="og:image" content="${escape(site.sharingImage)}"><meta name="twitter:card" content="summary_large_image">
   <link rel="icon" href="/favicon.svg" type="image/svg+xml"><link rel="preload" as="font" type="font/woff2" crossorigin href="/assets/fonts/InterVariable.woff2">
-  <link rel="stylesheet" href="/site.css">`;
-}
-function navigation(slug) {
-  const onHome=slug==='home';
-  return `<header class="mm-header"><a class="mm-brand" href="${onHome?'/':'/#'+slug}" aria-label="Memento — torna alla home"><img src="/navigation/memento-wordmark.svg" alt="Memento" width="1417" height="37"></a></header>
-  <nav class="mm-dock" aria-label="Navigazione principale">${PAGES.map(p=>{
-    const studio=p.slug==='studio',active=p.slug===slug||onHome&&studio;
-    return `<a href="/${p.slug}/" aria-label="${p.label}" title="${p.label}"${active?' aria-current="'+(onHome?'location':'page')+'"':''}><span class="mm-icon"><img src="/navigation/${studio?'memento-original.svg':p.slug+'-nav.webp'}"${studio?' class="mm-studio-icon"':''} alt="" width="40" height="40"></span><span class="mm-name">${p.label}</span></a>`;
-  }).join('')}</nav>`;
+  <link rel="stylesheet" href="/site.css"><link rel="stylesheet" href="/visuals.css"><script type="module" src="/js/site.mjs"></script>`;
 }
 function frame(slug,body,css,js) {
   const page=meta(slug);
@@ -45,19 +38,20 @@ function frame(slug,body,css,js) {
 }
 function homeCard(page,i) {
   const base='/assets/scenes/'+page.slug, small=base+'-768.webp',srcset=small+' 768w, '+base+'-1536.webp 1536w';
-  return `<a class="home-card" href="/${page.slug}/" draggable="false" aria-label="Apri ${page.label}" data-page="${page.slug}" data-title-em="${page.titleEm}" style="--focal:${page.focal}%"${i?' hidden':''}>
+  return `<a class="home-card mm-tab" href="/${page.slug}/" draggable="false" aria-label="Apri ${page.label}" data-page="${page.slug}" data-title-em="${page.titleEm}" style="--focal:${page.focal}%"${i?' hidden':''}>
   <img data-src="${small}" data-srcset="${srcset}" ${i?'':`src="${small}" srcset="${srcset}" sizes="(max-width:767px) 80vw, 60vw" fetchpriority="high"`} alt="${escape(page.alt)}" width="1536" height="1024" decoding="async" draggable="false">
-  <h2 aria-hidden="true">${[...page.title].map(c=>`<span>${c}</span>`).join('')}</h2></a>`;
+  <span class="home-shade" aria-hidden="true"></span><h2 class="mm-type" aria-hidden="true">${[...page.title].map(c=>`<span>${c}</span>`).join('')}</h2></a>`;
 }
 function arrow(id,label,path) {
   return `<button type="button" class="home-arrow" id="${id}" aria-label="${label}" hidden><svg viewBox="0 0 60 32" aria-hidden="true"><path d="${path}"/></svg></button>`;
 }
+await output('navigation/glyph-field.svg',glyphField());
 await output('index.html',frame('home',`<main id="hub" aria-label="Esplora Memento" aria-roledescription="carosello" tabindex="-1"><h1 class="mm-sr">${escape(site.home.heading)}</h1>
 <div id="home-viewport"><div id="scene">${PAGES.map(homeCard).join('\n')}</div></div>${arrow('previous','Sezione precedente','M2 30 30 2 58 30')}${arrow('next','Sezione successiva','M2 2 30 30 58 2')}
 <p id="home-status" class="mm-sr" aria-live="polite" aria-atomic="true"></p></main>`,'/home.css','/js/home.mjs'));
 await output('studio/index.html',frame('studio',await read('templates/studio.html'),'./styles.css','./studio.js'));
 await output('start/index.html',frame('start',startPage(await readJSON('templates/start.json')),'./styles.css','./start.js'));
-const cta=(id,link,href)=>`<section class="mm-ready-section" id="${id}"><a class="mm-ready" id="${link}" href="${href}" aria-label="Ready to start? — Raccontaci la tua idea"><img src="/ready-to-start/sparkle.webp" alt="" width="512" height="512" loading="lazy"><span>Ready to<br>start?</span></a></section>`;
+const cta=(id,link,href)=>`<section class="mm-ready-section" id="${id}"><a class="mm-ready mm-tab" id="${link}" href="${href}" aria-label="Ready to start? — Raccontaci la tua idea"><img src="/ready-to-start/sparkle.webp" alt="" width="512" height="512" loading="lazy"><span class="mm-type">Ready to<br>start?</span></a></section>`;
 function populate(html,id,content) {
   const slot = new RegExp('(<(?:div|nav)\\b[^>]*\\bid="'+id+'"[^>]*>)(\\s*</(?:div|nav)>)');
   if(!slot.test(html))throw Error('Missing slot '+id);
@@ -71,6 +65,7 @@ for(const slug of ['services','projects','levelup']) {
     for(const [id,body] of Object.entries({
       'bundle-boards':'<div class="carousel-stage">'+catalogue.bundles.map(cover).join('')+'</div>',
       'bundle-controls':dots(catalogue.bundles.map(item=>item.title)),
+      'bundle-includes':includes(catalogue.bundles[0].covers),
       'category-sections':categories(), 'catalogue-groups':grid('digital').html
     }))html=populate(html,id,body);
   }
@@ -102,5 +97,5 @@ for(const path of oldPaths) {
 }
 await output('sitemap.xml','<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'+['home',...PAGES.map(p=>p.slug)].map(s=>'<url><loc>'+canonical(s)+'</loc></url>').join('')+'</urlset>');
 await output('robots.txt','User-agent: *\nAllow: /\nSitemap: '+site.origin+'/sitemap.xml');
-await output('404.html',`<!doctype html><html lang="it" data-memento-native="404"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex"><title>Pagina non trovata — Memento</title><link rel="stylesheet" href="/site.css"></head><body>${navigation('home')}<main class="mm-missing"><h1>Pagina non trovata</h1><a href="/">Torna alla home</a></main></body></html>`);
-console.log(`Memento R25.1 · Home + 5 sezioni · ${catalogue.services.length} servizi, ${catalogue.bundles.length} bundle, ${projects.length} progetti.`);
+await output('404.html',`<!doctype html><html lang="it" data-memento-native="404"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex"><title>Pagina non trovata — Memento</title><link rel="stylesheet" href="/site.css"><link rel="stylesheet" href="/visuals.css"><script type="module" src="/js/site.mjs"></script></head><body>${navigation('home')}<main class="mm-missing"><h1>Pagina non trovata</h1><a href="/">Torna alla home</a></main></body></html>`);
+console.log(`Memento R25.2 · Home + 5 sezioni · ${catalogue.services.length} servizi, ${catalogue.bundles.length} bundle, ${projects.length} progetti.`);

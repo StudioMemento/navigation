@@ -1,6 +1,6 @@
 #atelier {position:relative;height:100vh;height:100dvh;overflow:hidden;}
 #studio-stage,#studio-stage>img,#studio-canvas {position:absolute;width:100%;height:100%;inset:0;display:block;}
-#studio-stage>img {object-fit:contain;object-position:center;background:#090909;}
+#studio-stage>img {object-fit:contain;object-position:center;background:transparent;}
 #studio-canvas {touch-action:none;cursor:grab;}
 #studio-canvas:active {cursor:grabbing;}
 #studio-tools,.studio-fallback {position:absolute;bottom:var(--memento-safe-bottom);left:50%;transform:translateX(-50%);z-index:2;text-align:center;max-width:95vw;}

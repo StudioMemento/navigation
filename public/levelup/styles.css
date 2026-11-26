@@ -6,7 +6,7 @@
   --safe-right:max(var(--gutter),env(safe-area-inset-right));
   --page-content:calc(100vw - var(--safe-left) - var(--safe-right));
   --layout-wide:1;--board-ratio:2;--corner-cut:clamp(16px,1.5vw,24px);
-  --title-gradient:linear-gradient(135deg,#f5f3ef 0%,#f5f3ef 34%,#eee1d6 61%,#ffb35e 81%,#ff7d00 100%);
+
   --frame-gradient:linear-gradient(135deg,#d8d1c3c7,#aaa28f66 27%,#716a5e57 62%,#8c694b75 83%,#ff7d00e0);
 }
 *{box-sizing:border-box}
@@ -53,7 +53,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,[tabindex]:focus-visibl
 .benefit-copy h2{position:absolute;top:0;left:0;width:fit-content;font-size:clamp(28px,calc(var(--slide-width)*.043),74px);font-weight:380;line-height:1.1;letter-spacing:-.055em;max-width:100%}
 .benefit-copy h2 span,.vision-copy h3 span,.step-card h3 span{display:block}
 .benefit-copy p{position:absolute;bottom:0;left:0;font-size:clamp(14px,calc(var(--slide-width)*.016),24px);line-height:1.4;color:#c6c2bc;white-space:pre-line;max-width:58%;}
-.benefit-carousel .showcase-card:after{content:'';position:absolute;top:0;right:0;bottom:0;left:0;background:linear-gradient(180deg,#0009,transparent 38%,transparent 62%,#000a),linear-gradient(90deg,#0008,transparent 65%);pointer-events:none}
+.benefit-carousel .card-shade{position:absolute;top:0;right:0;bottom:0;left:0;background:linear-gradient(180deg,#0009,transparent 38%,transparent 62%,#000a),linear-gradient(90deg,#0008,transparent 65%);pointer-events:none}
 .carousel-controls{display:flex;justify-content:center;align-items:center;gap:0;height:44px;margin:12px auto 0;width:min(100% - 16px,640px)}
 .carousel-controls button{width:44px;height:44px;display:grid;place-items:center;padding:0;flex:0 1 44px;min-width:26px}
 .carousel-controls button span{width:5px;height:5px;background:#d8d5d0;opacity:.65;border-radius:50%;}
@@ -66,7 +66,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,[tabindex]:focus-visibl
 .portfolio-carousel{--slide-width:clamp(240px,calc(var(--page-content)*.4),680px);--board-height:calc(var(--slide-width)*.5);--card-inset:clamp(16px,1.4vw,26px);--side-fade:min(var(--safe-left),clamp(36px,6vw,140px));width:100%;margin:0;--corner-cut:clamp(12px,1.2vw,20px)}
 .portfolio-carousel .card-art{object-fit:cover;object-position:center 46%}
 .portfolio-carousel .showcase-card{cursor:pointer;}.portfolio-carousel .showcase-card[data-active=true]{cursor:grab}
-.portfolio-carousel .showcase-card:after{content:'';position:absolute;top:0;right:0;bottom:0;left:0;z-index:1;background:linear-gradient(0deg,#000e,transparent 62%,#0009);pointer-events:none}
+.portfolio-carousel .card-shade{position:absolute;top:0;right:0;bottom:0;left:0;z-index:1;background:linear-gradient(0deg,#000e,transparent 62%,#0009);pointer-events:none}
 .project-category,.project-name,.project-expand{position:absolute;z-index:3;opacity:clamp(0,(var(--slide-focus,1) - .18)/.82,1)}
 .project-category{top:var(--card-inset);left:var(--card-inset);max-width:calc(100% - 2*var(--card-inset) - 26px);margin:0;padding:0;list-style:none;display:grid;gap:2px;font-size:clamp(11px,.9vw,14px);line-height:1.35;color:#ded8ce;pointer-events:none}
 .project-category li{display:grid;grid-template-columns:8px 1fr;gap:5px;align-items:baseline}
@@ -186,7 +186,7 @@ html[data-overlay-scrollbar=true]{scrollbar-width:none}html[data-overlay-scrollb
 .domain-link svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.3;}
 .domain-link:hover{color:var(--amber)}
 .benefit-carousel .card-art{top:50%;right:0;bottom:auto;left:auto;width:68%;height:160%;object-fit:contain;object-position:right center;transform:translateY(-50%)}
-.benefit-carousel .showcase-card:after{background:linear-gradient(90deg,#000 0%,#0009 30%,transparent 59%)}
+.benefit-carousel .card-shade{background:linear-gradient(90deg,#000 0%,#0009 30%,transparent 59%)}
 .benefit-copy h2{max-width:90%}.benefit-copy p{max-width:58%;padding-bottom:0}
 .step-card h3{max-width:calc(100% - 2*var(--step-inset));font-size:clamp(24px,7.5cqw,40px)}
 .step-number{font-size:11px;top:calc(var(--step-inset) + 2px)}

@@ -106,9 +106,9 @@ function bindInput() {
 }
 async function initialize() {
   try {
-    renderer=new T.WebGLRenderer({canvas,antialias:true,powerPreference:'low-power'});
+    renderer=new T.WebGLRenderer({canvas,alpha:true,antialias:true,powerPreference:'low-power'});
     renderer.setPixelRatio(Math.min(devicePixelRatio||1,mobile?1.35:1.75));
-    renderer.setClearColor(0x090909);
+    renderer.setClearColor(0x090909,0);
     scene=new T.Scene();camera=new T.PerspectiveCamera(35,1,.025,90);
     scene.add(new T.HemisphereLight(0xfff5e6,0x67696e,1.8));
     const key=new T.DirectionalLight(0xffeed9,3.0);key.position.set(3,6,3);scene.add(key);

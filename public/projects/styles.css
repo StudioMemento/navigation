@@ -50,10 +50,9 @@ img[data-src]{opacity:0}
 .catalogue-heading :is(h1,h2){font-size:clamp(38px,4.4vw,70px);font-weight:380;letter-spacing:-.04em;line-height:1.1;padding-bottom:.06em}
 .catalogue-heading :is(h1,h2):focus{outline:none}
 .filters{display:flex;align-items:center;gap:5px}
-.filters button{display:flex;align-items:center;justify-content:center;gap:9px;min-height:48px;padding:10px 15px;color:var(--muted);font-size:13px;white-space:nowrap;}
+.filters button{position:relative;--corner-cut:0px;display:flex;align-items:center;justify-content:center;gap:9px;min-height:48px;padding:10px 15px;color:var(--muted);font-size:13px;white-space:nowrap;}
 .filters svg{width:17px;height:17px}
 .filters button[aria-pressed=true]{color:var(--amber);background:#ff7d0014}
-.filters button:hover{color:var(--ink)}
 .filters .filter-all{padding:10px;width:44px;margin-right:5px}
 .project-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:var(--grid-gap);grid-auto-rows:calc((100cqw - 3*var(--grid-gap))/4);grid-auto-flow:row dense}
 .project-tile{position:relative;display:block;min-width:0;--cut:16px}
@@ -79,7 +78,7 @@ img[data-src]{opacity:0}
 @media(hover:hover) and (pointer:fine){
   .project-tile:hover :is(.tile-name,.tile-arrow,.tile-domains){opacity:1;}
 
-  .project-tile:hover .tile-frame{background:#ffffff70}
+  
 }
 
 @media(hover:none){
@@ -119,7 +118,7 @@ img[data-src]{opacity:0}
 .project-title-band{padding-block:clamp(26px,4vw,64px) var(--heading-gap);text-align:center}
 .project-title{width:100%;min-width:0;font-weight:350;line-height:1.14;letter-spacing:-.035em;text-transform:uppercase;white-space:normal;overflow:visible;padding-block:.035em}
 .project-title:focus{outline:none}
-.project-title>.title-line{display:block;width:max-content;max-width:none;margin-left:auto;margin-right:auto;white-space:pre;letter-spacing:-.035em;line-height:inherit;padding-right:.025em;background:var(--title-gradient);background-clip:text;-webkit-background-clip:text;color:transparent;-webkit-text-fill-color:transparent}
+.project-title>.title-line{display:block;width:max-content;max-width:none;margin-left:auto;margin-right:auto;white-space:pre;letter-spacing:-.035em;line-height:inherit;padding-right:.025em;}
 .project-variant{margin-top:clamp(10px,1.5vw,22px);font-size:clamp(12px,1.2vw,18px);letter-spacing:.16em;text-transform:uppercase;color:var(--amber);text-align:center}
 
 

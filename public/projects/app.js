@@ -66,7 +66,7 @@ function markCurrent() {
 
 function coverflowMarkup() {
   return `<div class="coverflow" tabindex="0" role="region" aria-roledescription="carosello" aria-label="Seleziona progetto">
-    ${state.deck.map((project, index) => `<button class="flow-card" type="button" data-index="${index}" data-id="${project.id}" aria-label="${escapeHTML(projectName(project))}"><span class="flow-face"><span class="flow-image">${photo(project.cover, { role: 'flow', lazy: true, eager: project.id === state.active })}</span></span></button>`).join('')}
+    ${state.deck.map((project, index) => `<button class="flow-card mm-tab" type="button" data-index="${index}" data-id="${project.id}" aria-label="${escapeHTML(projectName(project))}"><span class="flow-face"><span class="flow-image">${photo(project.cover, { role: 'flow', lazy: true, eager: project.id === state.active })}</span></span></button>`).join('')}
   </div>`;
 }
 
@@ -86,7 +86,7 @@ const galleryIndex = () => state.gallery.get(state.active) || 0;
 
 function projectContent() {
   const project = current();
-  $('#selected-heading').innerHTML = `<h1 class="project-title" id="selected-title" tabindex="-1" aria-label="${escapeHTML(projectName(project))}">${escapeHTML(project.title)}</h1>${project.variant ? `<p class="project-variant">${escapeHTML(project.variant)}</p>` : ''}`;
+  $('#selected-heading').innerHTML = `<h1 class="project-title mm-type" id="selected-title" tabindex="-1" aria-label="${escapeHTML(projectName(project))}">${escapeHTML(project.title)}</h1>${project.variant ? `<p class="project-variant">${escapeHTML(project.variant)}</p>` : ''}`;
   player.detach();
   unobserveImages($('#project-content'));
   $('#project-content').innerHTML = detailMarkup(project, galleryIndex());
@@ -119,7 +119,7 @@ function renderProject(id) {
     <div id="project-content"></div>
     <section class="project-archive" id="project-archive" aria-labelledby="archive-title">
       <div class="catalogue-frame">
-        <header class="catalogue-heading"><h2 id="archive-title" class="gradient-text">Archivio.</h2><div class="filters-slot" id="archive-filters"></div></header>
+        <header class="catalogue-heading"><h2 id="archive-title" class="gradient-text mm-type">Archivio.</h2><div class="filters-slot" id="archive-filters"></div></header>
         <div id="archive-grid"></div>
       </div>
     </section>`;
