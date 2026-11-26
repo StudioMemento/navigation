@@ -1,8 +1,3 @@
 node_modules/
-dist/
-!apps/studio/dist/
-.ssr/
-.sites/
-.codex/
-*.tar.gz
 .vercel/
+.DS_Store

@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Da dove cominciamo? — Memento</title>
+  <meta name="description" content="Raccontaci cosa vuoi far crescere.">
+  <link rel="icon" href="/favicon.svg">
+  <link rel="canonical" href="https://mementostudio.it/services/richiesta/">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Memento Design Studio">
+  <meta property="og:title" content="Da dove cominciamo? — Memento">
+  <meta property="og:description" content="Raccontaci cosa vuoi far crescere.">
+  <meta property="og:url" content="https://mementostudio.it/services/richiesta/">
+  <meta property="og:image" content="https://framerusercontent.com/images/tlqYX1LPvQTSm1PZk8Qx0KJUneM.jpeg">
+  <meta name="twitter:card" content="summary_large_image">
+  <script type="module" src="/js/lead.js"></script>
+</head>
+<body>
+  <header>
+    <a href="#main">Vai al contenuto</a>
+    <p><a href="/"><img src="/assets/wordmark.svg" width="216" height="37" alt="Memento — Home"></a></p>
+    <nav aria-label="Navigazione principale">
+      <ul>
+      <li><a href="/studio/">Studio</a></li>
+      <li><a href="/services/" aria-current="location">Services</a></li>
+      <li><a href="/projects/">Projects</a></li>
+      <li><a href="/levelup/">LevelUp</a></li>
+      <li><a href="/start/">Start</a></li>
+      </ul>
+    </nav>
+  </header>
+  <main id="main">
+<p><a href="/services/">Tutti i servizi</a></p>
+<h1>Da dove cominciamo?</h1>
+<p>Raccontaci cosa vuoi far crescere.</p>
+<form id="lead-form" data-email="info@mementostudio.it" hidden>
+  <p><label for="lead-goal">Il tuo obiettivo</label><br>
+  <select id="lead-goal" name="goal" required>
+    <option value="" selected disabled>Scegli un punto di partenza</option>
+    <option>Costruire la mia identità</option><option>Lanciare un prodotto o un’attività</option>
+    <option>Migliorare la mia presenza online</option><option>Creare nuovi contenuti</option>
+    <option>Esplorare un’idea insieme</option>
+  </select></p>
+  <p><label>Il tuo nome<br><input name="name" autocomplete="name" maxlength="100" pattern=".*\S.*" required></label></p>
+  <p><label>La tua email<br><input name="email" type="email" autocomplete="email" maxlength="200" required></label></p>
+  <p><label>Qualcosa in più sul progetto<br><textarea name="note" rows="3" maxlength="2000" placeholder="La tua attività, un’idea, quello che hai in mente…"></textarea></label></p>
+  <p id="lead-context" hidden></p>
+  <button type="submit">Prepara email</button>
+  <p>La richiesta si apre nella tua app email. L’invio lo confermi tu.</p>
+</form>
+<section id="lead-result" hidden>
+  <h2>La tua richiesta è pronta.</h2>
+  <p>Aprila nella tua app email, oppure copia il testo e scrivici a <a href="mailto:info@mementostudio.it">info@mementostudio.it</a>.</p>
+  <p><a id="email-link">Apri email</a> <button id="copy-request" type="button">Copia richiesta</button></p>
+  <p id="copy-status" role="status"></p>
+  <p><label>La tua richiesta<br><textarea id="request-preview" rows="9" readonly></textarea></label></p>
+  <button id="edit-request" type="button">Modifica richiesta</button>
+</section>
+<noscript><p>Scrivici a <a href="mailto:info@mementostudio.it">info@mementostudio.it</a>.</p></noscript>
+  </main>
+</body>
+</html>

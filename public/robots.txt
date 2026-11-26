@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://mementostudio.it/sitemap.xml
