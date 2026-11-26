@@ -1,0 +1,17 @@
+<main id="atelier" aria-labelledby="studio-title">
+  <h1 class="mm-sr" id="studio-title">Studio Memento</h1>
+  <div id="studio-stage">
+    <img id="studio-poster" src="/assets/scenes/studio-1536.webp" srcset="/assets/scenes/studio-768.webp 768w, /assets/scenes/studio-1536.webp 1536w" sizes="100vw" alt="Le postazioni di Memento Design Studio">
+    <canvas id="studio-canvas" hidden tabindex="0" aria-label="Tour dello studio. Trascina per guardarti intorno, fai doppio clic per mettere a fuoco un oggetto. Usa le frecce o WASD per muoverti."></canvas>
+  </div>
+  <div id="studio-tools">
+    <p id="studio-message" role="status">Caricamento dello studio 3D…</p>
+    <div id="view-controls" hidden>
+      <label class="mm-sr" for="studio-view">Inquadratura</label><select id="studio-view" aria-label="Inquadratura"></select>
+      <button id="studio-reset" type="button">Vista iniziale</button>
+    </div>
+    <button id="studio-retry" type="button" hidden>Riprova il tour 3D</button>
+  </div>
+  <div id="walk-stick" aria-hidden="true" hidden><span></span></div>
+  <noscript><p class="studio-fallback">Il tour 3D richiede JavaScript. <a href="/#studio">Torna alle sezioni</a>.</p></noscript>
+</main>

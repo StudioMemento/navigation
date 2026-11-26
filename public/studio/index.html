@@ -1,0 +1,26 @@
+<!doctype html><html lang="it" data-memento-native="studio"><head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><meta name="theme-color" content="#090909">
+  <title>Memento / Studio</title><meta name="description" content="Studio Memento. Un&#39;esperienza di materia, luce e movimento.">
+  <link rel="stylesheet" href="./styles.css"><link rel="canonical" href="https://mementostudio.it/studio/"><meta property="og:type" content="website"><meta property="og:site_name" content="Memento Design Studio">
+  <meta property="og:title" content="Memento / Studio"><meta property="og:description" content="Studio Memento. Un&#39;esperienza di materia, luce e movimento."><meta property="og:url" content="https://mementostudio.it/studio/">
+  <meta property="og:image" content="https://framerusercontent.com/images/tlqYX1LPvQTSm1PZk8Qx0KJUneM.jpeg"><meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml"><link rel="preload" as="font" type="font/woff2" crossorigin href="/assets/fonts/InterVariable.woff2">
+  <link rel="stylesheet" href="/site.css"><script type="module" src="./studio.js"></script></head><body><header class="mm-header"><a class="mm-brand" href="/#studio" aria-label="Memento — torna alla home"><img src="/navigation/memento-wordmark.svg" alt="Memento" width="1417" height="37"></a></header>
+  <nav class="mm-dock" aria-label="Navigazione principale"><a href="/studio/" aria-label="Studio" title="Studio" aria-current="page"><span class="mm-icon"><img src="/navigation/memento-original.svg" class="mm-studio-icon" alt="" width="40" height="40"></span><span class="mm-name">Studio</span></a><a href="/services/" aria-label="Services" title="Services"><span class="mm-icon"><img src="/navigation/services-nav.webp" alt="" width="40" height="40"></span><span class="mm-name">Services</span></a><a href="/projects/" aria-label="Projects" title="Projects"><span class="mm-icon"><img src="/navigation/projects-nav.webp" alt="" width="40" height="40"></span><span class="mm-name">Projects</span></a><a href="/levelup/" aria-label="LevelUp" title="LevelUp"><span class="mm-icon"><img src="/navigation/levelup-nav.webp" alt="" width="40" height="40"></span><span class="mm-name">LevelUp</span></a><a href="/start/" aria-label="Start" title="Start"><span class="mm-icon"><img src="/navigation/start-nav.webp" alt="" width="40" height="40"></span><span class="mm-name">Start</span></a></nav><main id="atelier" aria-labelledby="studio-title">
+  <h1 class="mm-sr" id="studio-title">Studio Memento</h1>
+  <div id="studio-stage">
+    <img id="studio-poster" src="/assets/scenes/studio-1536.webp" srcset="/assets/scenes/studio-768.webp 768w, /assets/scenes/studio-1536.webp 1536w" sizes="100vw" alt="Le postazioni di Memento Design Studio">
+    <canvas id="studio-canvas" hidden tabindex="0" aria-label="Tour dello studio. Trascina per guardarti intorno, fai doppio clic per mettere a fuoco un oggetto. Usa le frecce o WASD per muoverti."></canvas>
+  </div>
+  <div id="studio-tools">
+    <p id="studio-message" role="status">Caricamento dello studio 3D…</p>
+    <div id="view-controls" hidden>
+      <label class="mm-sr" for="studio-view">Inquadratura</label><select id="studio-view" aria-label="Inquadratura"></select>
+      <button id="studio-reset" type="button">Vista iniziale</button>
+    </div>
+    <button id="studio-retry" type="button" hidden>Riprova il tour 3D</button>
+  </div>
+  <div id="walk-stick" aria-hidden="true" hidden><span></span></div>
+  <noscript><p class="studio-fallback">Il tour 3D richiede JavaScript. <a href="/#studio">Torna alle sezioni</a>.</p></noscript>
+</main>
+</body></html>
