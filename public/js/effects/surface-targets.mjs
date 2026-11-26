@@ -1,9 +1,47 @@
 const SLIDE='.home-card,.flow-card,.showcase-card[data-slide],.carousel-card[data-slide]';
+const RECT=[['0%','0%'],['100%','0%'],['100%','100%'],['0%','100%']];
 
 export function acceptsLight(el) {
   if (!el?.isConnected || el.closest('[hidden],[inert],dialog:not([open]),.is-moving,.is-dragging')) return false;
   const slide=el.closest(SLIDE);
   return !slide || (slide.tabIndex===0 && slide.dataset.active!=='false' && slide.getAttribute('aria-hidden')!=='true');
+}
+
+// CSS resolves each percentage and cut corner in the card's own coordinate system. Reading these
+// zero-area points after layout gives its actual projection, even while a 3D carousel is moving.
+const outlines=new WeakMap();
+export function outlineOf(card) {
+  const face=card.querySelector(':scope > .tile-frame,:scope > .flow-face,:scope > .home-shade') || card;
+  const style=getComputedStyle(face);
+  if (style.position==='static') face.setAttribute('data-mm-outline-anchor','');
+  const clip=style.clipPath;
+  let entry=outlines.get(card);
+  if (!entry || entry.clip!==clip || !entry.holder.isConnected) {
+    entry?.holder.remove();
+    let vertices=RECT;
+    if (clip?.startsWith('polygon(')) {
+      vertices=clip.slice(8,-1).split(/,(?![^()]*\))/).map(vertex=>vertex.trim().match(/(?:[^\s()]+\([^)]*\)|[^\s]+)/g));
+      if (vertices.some(pair=>!pair || pair.length!==2)) vertices=RECT;
+    }
+    const holder=document.createElement('span');
+    holder.className='mm-outline-points';
+    holder.setAttribute('aria-hidden','true');
+    const markers=vertices.map(([left,top])=>{
+      const marker=document.createElement('i');
+      marker.style.left=left;marker.style.top=top;holder.append(marker);
+      return marker;
+    });
+    face.append(holder);
+    entry={clip,holder,markers};outlines.set(card,entry);
+  }
+  return entry.markers.map(marker=>{
+    const point=marker.getBoundingClientRect();
+    return {x:point.left,y:point.top};
+  });
+}
+
+export function primaryTitle(card) {
+  return card?.querySelector('.mm-type') || null;
 }
 
 // Track actual cards, including decks inserted by a dialog. Proximity is continuous within

@@ -24,6 +24,9 @@ const escape=value=>String(value).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;'
 const meta=(slug)=>site.sections.find(page=>page.slug===slug)||site.home;
 const canonical=slug=>site.origin+(slug==='home'?'/':'/'+slug+'/');
 const documentInput='<script src="/js/document-input.js"></script>';
+// Opening a page, the surfaces appear as one front of glyphs reaches them. Set to false to open them at once.
+const INTRO=true;
+const introOf=slug=>INTRO && ['home','services','projects','levelup','start'].includes(slug) ? ' data-mm-intro' : '';
 function sharedHead(slug) {
   const url=canonical(slug),page=meta(slug);
   return `<link rel="canonical" href="${url}"><meta property="og:type" content="website"><meta property="og:site_name" content="Memento Design Studio">
@@ -34,7 +37,7 @@ function sharedHead(slug) {
 }
 function frame(slug,body,css,js) {
   const page=meta(slug);
-  return `<!doctype html><html lang="it" data-memento-native="${slug}"><head>
+  return `<!doctype html><html lang="it" data-memento-native="${slug}"${introOf(slug)}><head>
   <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><meta name="theme-color" content="#090909">
   <title>${escape(page.title)}</title><meta name="description" content="${escape(page.description)}">
   <link rel="stylesheet" href="${css}">${sharedHead(slug)}<script type="module" src="${js}"></script></head><body>${navigation(slug)}${body}</body></html>`;
@@ -68,7 +71,8 @@ function populate(html,id,content) {
 setManifest(await readJSON('public/projects/images.json'));
 const projects=validateProjects(await readJSON('public/projects/projects.json'));
 for(const slug of ['services','projects','levelup']) {
-  let html=(await read('templates/'+slug+'.html')).replace('<!--global-head-->',sharedHead(slug)).replace('<!--navigation-->',navigation(slug));
+  let html=(await read('templates/'+slug+'.html')).replace('<!--global-head-->',sharedHead(slug)).replace('<!--navigation-->',navigation(slug))
+    .replace(`data-memento-native="${slug}">`,`data-memento-native="${slug}"${introOf(slug)}>`);
   if(slug==='services'){
     for(const [id,body] of Object.entries({
       'bundle-boards':'<div class="carousel-stage">'+catalogue.bundles.map(cover).join('')+'</div>',
@@ -106,4 +110,4 @@ for(const path of oldPaths) {
 await output('sitemap.xml','<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'+['home',...PAGES.map(p=>p.slug)].map(s=>'<url><loc>'+canonical(s)+'</loc></url>').join('')+'</urlset>');
 await output('robots.txt','User-agent: *\nAllow: /\nSitemap: '+site.origin+'/sitemap.xml');
 await output('404.html',`<!doctype html><html lang="it" data-memento-native="404"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex"><title>Pagina non trovata — Memento</title>${documentInput}<link rel="stylesheet" href="/site.css"><link rel="stylesheet" href="/visuals.css"><script type="module" src="/js/site.mjs"></script></head><body>${navigation('home')}<main class="mm-missing"><h1>Pagina non trovata</h1><a href="/">Torna alla home</a></main></body></html>`);
-console.log(`Memento R25.5 · Home + 5 sezioni · ${catalogue.services.length} servizi, ${catalogue.bundles.length} bundle, ${projects.length} progetti.`);
+console.log(`Memento R26 · Home + 5 sezioni · ${catalogue.services.length} servizi, ${catalogue.bundles.length} bundle, ${projects.length} progetti.`);

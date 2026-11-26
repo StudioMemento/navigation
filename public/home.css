@@ -9,6 +9,13 @@ html[data-memento-native=home],html[data-memento-native=home] body { height:100%
 .home-card img { object-fit:cover; object-position:50% var(--focal,55%); }
 .home-shade { content:""; pointer-events:none; background:linear-gradient(to top,#080706aa,transparent 58%); }
 .home-card img,.home-shade { clip-path:polygon(var(--cut,15px) 0,100% 0,100% calc(100% - var(--cut,15px)),calc(100% - var(--cut,15px)) 100%,0 100%,0 var(--cut,15px)); }
+/* The same one-pixel cut frame as every other surface of the site. */
+.home-card::after { content:""; position:absolute; top:0; right:0; bottom:0; left:0; z-index:1; pointer-events:none;
+  background:linear-gradient(135deg,#d8d1c3c7 0%,#aaa28f66 27%,#716a5e57 62%,#8c694b75 83%,#ff7d00e0 100%);
+  clip-path:polygon(evenodd,var(--cut,15px) 0,100% 0,100% calc(100% - var(--cut,15px)),calc(100% - var(--cut,15px)) 100%,0 100%,0 var(--cut,15px),var(--cut,15px) 0,calc(var(--cut,15px) + .4142px) 1px,1px calc(var(--cut,15px) + .4142px),1px calc(100% - 1px),calc(100% - var(--cut,15px) - .4142px) calc(100% - 1px),calc(100% - 1px) calc(100% - var(--cut,15px) - .4142px),calc(100% - 1px) 1px,calc(var(--cut,15px) + .4142px) 1px); }
+/* The neighbouring sections wait in the dark. */
+html[data-memento-native] #scene .home-card[aria-hidden=true] img { filter:grayscale(.5) brightness(.55); }
+.home-card[aria-hidden=true]::after { opacity:.45; }
 .home-card h2 { position:absolute; z-index:1; bottom:var(--card-pad,6%); left:var(--card-pad,6%); right:var(--card-pad,6%); margin:0;
   display:flex; align-items:baseline; justify-content:space-between; color:#f5f2ea; font-size:var(--title-size,7vw); font-weight:280; line-height:.95; pointer-events:none; }
 .home-arrow { position:absolute; z-index:2; left:50%; transform:translate(-50%,-50%); display:grid; place-items:center; width:76px; height:var(--arrow-h,52px);

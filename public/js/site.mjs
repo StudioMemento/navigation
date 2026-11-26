@@ -1,10 +1,13 @@
 import { mountGlyphField } from './effects/glyph-field.mjs';
 import { mountSurfaces } from './effects/surfaces.mjs';
+import { playIntro } from './effects/surface-intro.mjs';
 
 const root=document.documentElement;
-const field=document.querySelector('.mm-glyph-field');
-if (field) mountGlyphField(field);
-mountSurfaces();
+const layer=document.querySelector('.mm-glyph-field');
+// One field of glyphs for the margins and the surfaces: the site's visual DNA.
+const field=layer ? mountGlyphField(layer) : null;
+mountSurfaces(field);
+if (root.getAttribute('data-mm-intro')==='') playIntro(field);
 const nativeBackdrop=CSS.supports('backdrop-filter','blur(1px)') || CSS.supports('-webkit-backdrop-filter','blur(1px)');
 let foreground=null,lastDialog=null;
 function frostBehind(dialog) {

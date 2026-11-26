@@ -23,6 +23,13 @@ function pigment(step,touch) {
   ramps.set(key,colors);return colors;
 }
 
+// The light of a warm title spills a little outside its glyphs: a close rim and a wider, fainter halo.
+function glow(step,em) {
+  if (!step) return 'none';
+  const w=step/64,near=Math.min(6,Math.max(1.5,em*.04)),far=Math.min(18,Math.max(4,em*.12));
+  return 'drop-shadow(0 0 '+near.toFixed(1)+'px rgba(255,150,55,'+(.34*w).toFixed(3)+')) drop-shadow(0 0 '+far.toFixed(1)+'px rgba(255,110,0,'+(.2*w).toFixed(3)+'))';
+}
+
 function readTitle(title,touch) {
   const box=title.getBoundingClientRect(),width=title.offsetWidth || box.width,height=title.offsetHeight || box.height;
   const sx=width/(box.width || 1),sy=height/(box.height || 1);
@@ -41,7 +48,7 @@ function readTitle(title,touch) {
   const em=parseFloat(getComputedStyle(sample).fontSize) || 16;
   title.style.setProperty('--ink-tile',Math.max(18,em*.60).toFixed(1)+'px');
   title.setAttribute('data-lit','');
-  return {title,width,height,words,em,touch,warmth:0,goal:0,last:-1,lenses:'',current:null,
+  return {title,width,height,words,em,touch,warmth:0,goal:0,near:0,last:-1,lenses:'',current:null,
     spots:Array.from({length:3},()=>({x:0,y:0,level:0,age:1,range:null,band:-1}))};
 }
 
@@ -81,19 +88,23 @@ export function typeLight() {
   function remove(state) {
     for (const spot of state.spots) detach(spot);
     state.title.removeAttribute('data-lit');
-    for (const prop of ['--ink-tile','--ink-ramp','--ink-veil','--ink-lenses','--ink-corona']) state.title.style.removeProperty(prop);
+    for (const prop of ['--ink-tile','--ink-ramp','--ink-veil','--ink-lenses','--ink-glow']) state.title.style.removeProperty(prop);
     states.delete(state.title);
   }
-  function target(title,point,keyboard,touch) {
+  // A title takes its whole gradient while its surface is hovered; the lenses follow the pointer over the glyphs.
+  function target(title,point,{keyboard=false,touch=false}={}) {
     const entered=active!==title;
     active=title;
-    if (!title || !point || !acceptsLight(title)) return;
+    if (!title || !acceptsLight(title)) return;
     if (!states.has(title)) {
       if (states.size>=3) remove(states.values().next().value);
       states.set(title,readTitle(title,touch));
     }
     const state=states.get(title),box=title.getBoundingClientRect();
-    let x=(point.x-box.left)*state.width/(box.width || 1),y=(point.y-box.top)*state.height/(box.height || 1);
+    const cold=state.near===0 || state.warmth<.12;
+    state.goal=1;
+    if (!point && !keyboard) {state.near=0;state.current=null;return;}
+    let x=point?(point.x-box.left)*state.width/(box.width || 1):0,y=point?(point.y-box.top)*state.height/(box.height || 1):0;
     if (keyboard && state.words.length) {
       const w=state.words[Math.floor((state.words.length-1)/2)];x=(w.l+w.r)/2;y=(w.t+w.b)/2;
     }
@@ -102,9 +113,8 @@ export function typeLight() {
       const d=Math.hypot(Math.max(w.l-x,0,x-w.r),Math.max(w.t-y,0,y-w.b));
       if (d<gap) {nearest=w;gap=d;}
     }
-    const cold=state.goal===0 || state.warmth<.12;
-    state.goal=Math.max(0,1-gap/Math.max(3,Math.min(7,state.em*.025)));
-    if (!state.goal || !nearest) {state.current=null;return;}
+    state.near=Math.max(0,1-gap/Math.max(3,Math.min(7,state.em*.025)));
+    if (!state.near || !nearest) {state.current=null;return;}
     let spot=null,dist=Math.max(12,state.em*.50);
     for (const s of state.spots) {
       const d=Math.hypot(x-s.x,y-s.y);
@@ -123,19 +133,20 @@ export function typeLight() {
   function frame(dt) {
     let moving=false;
     for (const [title,s] of states) {
-      if (!acceptsLight(title)) {remove(s);continue;}
-      const still=reduced.matches,goal=(title===active?s.goal:0);
+      if (!title.isConnected) {remove(s);continue;}
+      const lit=title===active && acceptsLight(title);
+      const still=reduced.matches,goal=lit?s.goal:0,near=lit?s.near:0;
       s.warmth=approach(s.warmth,goal,dt,still);
       const step=Math.round(s.warmth*64);
       if (step!==s.last) {
         const color=pigment(step,s.touch);s.last=step;
         title.style.setProperty('--ink-ramp',color.base);title.style.setProperty('--ink-veil',color.cover);
-        title.style.setProperty('--ink-corona','rgba(255,171,72,'+(.14*step/64).toFixed(3)+')');
+        title.style.setProperty('--ink-glow',glow(step,s.em));
       }
       const lenses=[];
       let changing=s.warmth!==goal;
       for (const spot of s.spots) {
-        const aim=spot===s.current?goal:0;
+        const aim=spot===s.current?near:0;
         spot.level=approach(spot.level,aim,dt,still);spot.age=Math.min(1,spot.age+dt);
         if (spot.level!==aim || (!still && aim && spot.age<.85)) changing=true;
         const t=spot.age/.13,flash=still?0:t*Math.exp(1-t);
@@ -157,5 +168,7 @@ export function typeLight() {
     return moving;
   }
   function clear(){for (const s of states.values()) remove(s);active=null;}
-  return {target,frame,clear};
+  // Let every lit title cool down on its own instead of switching it off.
+  function cool(){active=null;}
+  return {target,frame,clear,cool};
 }

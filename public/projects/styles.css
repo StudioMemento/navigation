@@ -68,21 +68,22 @@ img[data-src]{opacity:0}
 .tile-arrow{position:absolute;z-index:3;right:19px;top:20px}
 .tile-arrow svg{width:20px;height:20px}
 .tile-domains{position:absolute;z-index:3;left:22px;top:24px;right:53px;display:flex;gap:6px 12px;flex-wrap:wrap;font-size:10px;font-weight:450;letter-spacing:.09em;text-transform:uppercase;}
-.tile-name,.tile-arrow,.tile-domains{opacity:1;transform:none;}
+.tile-name,.tile-arrow,.tile-domains{opacity:0;transform:translateY(4px);transition:opacity .25s,transform .35s var(--ease)}
+.tile-visual img{transition:transform .5s var(--ease),filter .45s ease-out}
+.project-tile:is(:focus-visible,[data-mm-hover]) :is(.tile-name,.tile-arrow,.tile-domains){opacity:1;transform:none}
 .tile-current{position:absolute;z-index:4;top:0;right:0;bottom:0;left:0;display:none;align-items:flex-start;justify-content:flex-start;gap:8px;padding:24px 22px;font-size:10px;font-weight:500;line-height:1;letter-spacing:.12em;text-transform:uppercase;color:var(--amber);pointer-events:none}
 .tile-current::before{content:'';position:absolute;top:0;right:0;bottom:0;left:0;clip-path:var(--frame-ring);background:var(--amber)}
 .project-tile[aria-current=page] .tile-current{display:flex}
 .project-tile[aria-current=page] :is(.tile-arrow,.tile-domains){display:none}
-.project-tile:focus-visible :is(.tile-name,.tile-arrow,.tile-domains){opacity:1;}
 
 @media(hover:hover) and (pointer:fine){
-  .project-tile:hover :is(.tile-name,.tile-arrow,.tile-domains){opacity:1;}
-
-  
+  .project-tile:hover :is(.tile-name,.tile-arrow,.tile-domains){opacity:1;transform:none}
+  .project-tile:is(:hover,[data-mm-hover]) .tile-visual img{transform:scale(1.025)}
+  .project-tile:is(:hover,[data-mm-hover]) .tile-frame{background:#ffffff70}
 }
 
 @media(hover:none){
-  .tile-name,.tile-domains{opacity:1;transform:none}
+  .tile-name,.tile-domains,.tile-arrow{opacity:1;transform:none}
   .tile-domains{font-size:9px;gap:5px 8px}.tile-name{font-size:17px}
 
 }
