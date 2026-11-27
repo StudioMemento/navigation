@@ -1,7 +1,8 @@
-import { deckPose, pagesPose, perspectiveFor, poseTransform, poseBleed } from '/js/effects/deck-pose.mjs';
+import { drumPose, drumEdge, perspectiveFor, poseTransform, poseBleed } from '/js/effects/deck-pose.mjs';
 
 // Owns horizontal gestures and animation only. Content and routing are callbacks.
-// The bundles are a deck in perspective; each category is one card on the padding that turns its pages in depth.
+// Every carousel turns like the Home: the active board on the padding, facing the camera, and one board a side in
+// perspective, edge to edge with it (see deck-pose.mjs).
 
 export class Carousel {
   constructor(
@@ -30,7 +31,7 @@ export class Carousel {
       this.width = width;
       this.height = this.cards[0].offsetHeight || 1;
       this.wide = Number(getComputedStyle(element).getPropertyValue('--layout-wide')) || 0;
-      this.stride = width * (this.fan ? 0.42 : 0.6);
+      this.stride = width * 0.55;
       this.perspective = perspectiveFor(width);
       this.reserveBleed();
       this.render();
@@ -109,13 +110,16 @@ export class Carousel {
     return this.mod(value + this.count / 2) - this.count / 2;
   }
   pose(distance) {
-    return this.fan ? deckPose(distance, this.width) : pagesPose(distance, this.width);
+    return drumPose(distance, this.width, 'wide');
+  }
+  // Cards hide before they wrap around to the other side.
+  get edge() {
+    return Math.min(drumEdge('wide'), this.count / 2 - 0.06);
   }
   reserveBleed() {
     // A CSS mask clips to its box. Reserve the projected envelope for every
     // visible swipe position, using the same pose as render (not a breakpoint).
-    const edge = Math.min(2.7, this.count / 2 - 0.06);
-    const { top, bottom } = poseBleed((d) => this.pose(d), this.width, this.height, this.perspective, edge);
+    const { top, bottom } = poseBleed((d) => this.pose(d), this.width, this.height, this.perspective, this.edge);
     const owner = this.fan ? this.element.closest('.bundle-opening') : this.element;
     for (const [side, amount] of [
       ['top', top],
@@ -129,8 +133,7 @@ export class Carousel {
   }
   render() {
     const active = this.mod(Math.round(this.current));
-    // Hide cards before they wrap, including the four-card VISUAL stack.
-    const edge = Math.min(2.7, this.count / 2 - 0.06);
+    const edge = this.edge;
     this.cards.forEach((card, index) => {
       const distance = this.delta(index - this.current);
       const amount = Math.abs(distance);
@@ -154,8 +157,8 @@ export class Carousel {
       card.style.setProperty('--slide-focus', (1 - fade * fade * (3 - 2 * fade)).toFixed(4));
       card.style.setProperty('--scene-light', pose.light.toFixed(4));
       card.style.setProperty('--text-focus', pose.text.toFixed(4));
-      const visible = this.fan ? amount < edge : amount < 1;
-      card.style.opacity = (visible ? pose.opacity * Math.max(0, Math.min(1, (edge - amount) / .4)) : 0).toFixed(4);
+      const visible = amount < edge;
+      card.style.opacity = (visible ? pose.opacity * Math.max(0, Math.min(1, (edge - amount) / 0.3)) : 0).toFixed(4);
       card.style.visibility = visible ? 'visible' : 'hidden';
       card.style.zIndex = String(100 - Math.round(amount * 20));
       const isActive = index === active;

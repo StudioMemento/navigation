@@ -15,7 +15,7 @@ export const TONE = {warm:0, hot:1, grey:2, light:3};
 // How a lit glyph lives: it rises, scrambles through a few letters, resolves on its own letter of the wall with a
 // short flash, and fades. The wall on its own is slow; the pointer is quicker, never a flicker.
 const LIFE = {
-  ambient:{rise:.35, steps:[2, 3], tempo:[.2, .28], fall:1.2},
+  ambient:{rise:.3, steps:[3, 5], tempo:[.16, .24], fall:1},
   trail:{rise:.06, steps:[4, 6], tempo:[.11, .15], fall:.55},
   wave:{rise:.14, steps:[1, 2], tempo:[.13, .17], fall:[.6, .9]},
   word:{rise:.05, steps:[8, 10], tempo:[.07, .09], fall:.35}

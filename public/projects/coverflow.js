@@ -1,7 +1,7 @@
-import { deckPose, perspectiveFor, poseTransform } from '/js/effects/deck-pose.mjs';
+import { drumPose, drumEdge, drumFit, perspectiveFor, poseTransform } from '/js/effects/deck-pose.mjs';
 
-// The strip of projects is a deck in perspective: the selected board in front, its neighbours behind it, turned with
-// their outer edge toward the camera.
+// The strip of projects turns like the Home: the selected board facing the camera, one board a side turned with its
+// outer edge toward the camera, edge to edge with it (see deck-pose.mjs). The three fit the content.
 
 export class Coverflow {
   constructor(element, { active = 0, onSelect = () => {}, onOpen = () => {}, onRender = () => {}, hydrate = () => {} } = {}) {
@@ -49,13 +49,13 @@ export class Coverflow {
 
   mod(value) { return ((value % this.count) + this.count) % this.count; }
   delta(value) { return this.loop ? this.mod(value + this.count / 2) - this.count / 2 : value; }
-  get edge() { return this.loop ? Math.min(3.6, this.count / 2 - .06) : Infinity; }
+  get edge() { return this.loop ? Math.min(drumEdge('wide'), this.count / 2 - .06) : drumEdge('wide'); }
 
   /** Card width from the width of the content; the deck's step follows the card. */
   measure() {
     const width = document.documentElement.clientWidth || innerWidth;
     const content = this.element.closest('.project-station')?.querySelector('.content-width')?.clientWidth || width * .88;
-    const card = Math.min(640, content * (width < 768 ? .5 : .38));
+    const card = Math.min(640, width < 768 ? content * .5 : drumFit(content, 'wide'));
     this.width = card;
     this.element.style.setProperty('--card-width', `${card.toFixed(2)}px`);
     this.perspective = perspectiveFor(card);
@@ -63,17 +63,17 @@ export class Coverflow {
     this.render();
   }
 
-  pose(distance) { return deckPose(distance, this.width, { compact: true }); }
+  pose(distance) { return drumPose(distance, this.width, 'wide'); }
 
   render() {
     const active = this.mod(Math.round(this.current)), edge = this.edge;
     this.cards.forEach((card, index) => {
       const distance = this.delta(index - this.current), a = Math.abs(distance);
-      const hidden = a >= edge || a > 3.6;
-      if (!hidden && a < 3.7) this.hydrate(card);
+      const hidden = a >= edge;
+      if (a < edge + 1) this.hydrate(card);
       const pose = this.pose(distance);
       card.style.transform = poseTransform(pose, this.perspective);
-      card.style.opacity = (hidden ? 0 : pose.opacity * Math.min(1, Math.max(0, (edge - a) / .4))).toFixed(4);
+      card.style.opacity = (hidden ? 0 : pose.opacity * Math.min(1, Math.max(0, (edge - a) / .3))).toFixed(4);
       card.style.visibility = hidden ? 'hidden' : 'visible';
       card.style.zIndex = String(100 - Math.round(a * 20));
       // the selected board is in colour; neighbours turn grey and darker with distance (read by the engine too)

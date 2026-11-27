@@ -1,9 +1,10 @@
 import { portfolioEdge } from './portfolio-geometry.js';
-import { deckPose, pagesPose, perspectiveFor, poseTransform, poseBleed } from '/js/effects/deck-pose.mjs';
+import { drumPose, drumFit, perspectiveFor, poseTransform, poseBleed } from '/js/effects/deck-pose.mjs';
 
 // Owns horizontal gestures and animation only. Content and routing are callbacks.
-// "Cosa ti rende speciale?" is one card on the padding that turns its pages in depth; the experiences are a deck in
-// perspective, the active one in front and its neighbours behind it.
+// Both carousels turn like the Home: the active card facing the camera, one card a side in perspective, edge to edge
+// with it (see deck-pose.mjs). "Cosa ti rende speciale?" keeps its card on the padding with the neighbours in the
+// margins; the experiences fit the padding, the active card and both neighbours together.
 export class Carousel {
   constructor(
     element,
@@ -27,7 +28,9 @@ export class Carousel {
 
     this.onRender = onRender;
     this.reduced = matchMedia('(prefers-reduced-motion: reduce)');
+    this.compact = matchMedia('(max-width: 767px)');
     this.measure = () => {
+      if (!this.fan) this.fit();
       const width = this.cards[0].offsetWidth || 1;
       if (this.width && this.width !== width && this.pointer)
         this.up({ pointerId: this.pointer.id }, true);
@@ -35,7 +38,7 @@ export class Carousel {
       this.height = this.cards[0].offsetHeight || 1;
       this.wide = Number(getComputedStyle(element).getPropertyValue('--layout-wide')) || 0;
       this.perspective = perspectiveFor(width);
-      this.stride = width * (this.fan ? .6 : .5);
+      this.stride = width * (this.fan ? .55 : .5);
       this.reserveBleed();
       this.render();
     };
@@ -115,10 +118,26 @@ export class Carousel {
     return this.mod(value + this.count / 2) - this.count / 2;
   }
   pose(distance) {
-    return this.fan ? pagesPose(distance, this.width) : deckPose(distance, this.width, { compact: true });
+    return drumPose(distance, this.width, 'wide');
+  }
+  // The experiences: the card width that puts the outer edges of both neighbours on the padding. On a phone the
+  // card keeps its own width (CSS) and the neighbours run into the margins.
+  fit() {
+    if (this.compact.matches) {
+      this.element.style.removeProperty('--slide-width');
+      return;
+    }
+    const probe = document.createElement('div');
+    probe.style.cssText = 'position:absolute;visibility:hidden;height:0;width:var(--page-content)';
+    this.element.append(probe);
+    const room = probe.offsetWidth;
+    probe.remove();
+    if (!room) return;
+    const value = `${Math.max(240, Math.min(680, drumFit(room, 'wide'))).toFixed(2)}px`;
+    if (this.element.style.getPropertyValue('--slide-width') !== value) this.element.style.setProperty('--slide-width', value);
   }
   get edge() {
-    return this.fan ? Math.min(2.7, this.count / 2 - 0.06) : portfolioEdge(this.count);
+    return portfolioEdge(this.count);
   }
   reserveBleed() {
     // A CSS mask clips to its box. Reserve the projected envelope for every
@@ -166,8 +185,8 @@ export class Carousel {
       card.style.setProperty('--slide-focus', (1 - fade * fade * (3 - 2 * fade)).toFixed(4));
       card.style.setProperty('--scene-light', pose.light.toFixed(4));
       card.style.setProperty('--text-focus', pose.text.toFixed(4));
-      const visible = this.fan ? amount < 1 : amount < edge;
-      card.style.opacity = (visible ? pose.opacity * Math.max(0, Math.min(1, (edge - amount) / 0.6)) : 0).toFixed(4);
+      const visible = amount < edge;
+      card.style.opacity = (visible ? pose.opacity * Math.max(0, Math.min(1, (edge - amount) / 0.3)) : 0).toFixed(4);
       card.style.visibility = visible ? 'visible' : 'hidden';
       card.style.zIndex = String(100 - Math.round(amount * 20));
       const isActive = index === active;

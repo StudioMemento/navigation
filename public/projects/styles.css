@@ -268,3 +268,6 @@ html.experience-open{overflow:hidden}
   *,*::before,*::after{scroll-behavior:auto!important}
 
 }
+
+/* R29: a neighbour in perspective is drawn foreshortened, so a 1px ring breaks up on screen; a 2px ring stays whole. */
+.flow-card[data-active=false] .flow-face{--frame-ring:polygon(evenodd,var(--cut) 0,100% 0,100% calc(100% - var(--cut)),calc(100% - var(--cut)) 100%,0 100%,0 var(--cut),var(--cut) 0,calc(var(--cut) + 0.8284px) 2px,2px calc(var(--cut) + 0.8284px),2px calc(100% - 2px),calc(100% - var(--cut) - 0.8284px) calc(100% - 2px),calc(100% - 2px) calc(100% - var(--cut) - 0.8284px),calc(100% - 2px) 2px,calc(var(--cut) + 0.8284px) 2px)}

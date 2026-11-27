@@ -5,8 +5,9 @@ function marginOpacity(distance, margin) {
   const t = clamp((distance - start) / (end - start));
   return 1 - t * t * t * (t * (t * 6 - 15) + 10);
 }
-// The wall on its own: a few slow glitches a second, whatever the size of the screen.
-const AMBIENT = {rate:5, length:[1, 4], gap:[.14, .22], strength:[.3, .6]};
+// The wall on its own keeps decoding, slowly: short runs of glyphs that scramble and settle, about one margin glyph in
+// three hundred a second (8 to 26 runs a second, by the size of the margins).
+const AMBIENT = {density:.0035, rate:[8, 26], length:[1, 5], gap:[.1, .18], strength:[.32, .65]};
 // The pointer in the margins leaves the same trail as on the surfaces.
 const TRAIL = {every:8, radius:115, strength:[.45, .9], wave:170, gap:.4, reach:240, power:.4};
 
@@ -41,6 +42,7 @@ class Backdrop {
       this.mask[col] = marginOpacity(Math.min(x, width - x), this.margin);
       if (this.mask[col] > .12) this.marginCols.push(col);
     }
+    this.rate = Math.max(AMBIENT.rate[0], Math.min(AMBIENT.rate[1], this.marginCols.length * (view / PITCH) * AMBIENT.density));
     this.shownLetter = new Int8Array(count).fill(-1);
     this.shownAlpha = new Float32Array(count);
   }
@@ -144,7 +146,7 @@ class Backdrop {
   before(dt) {
     const field = this.field;
     this.paintWord();
-    for (let n = AMBIENT.rate * dt; n > 0; n--) if (Math.random() < n) this.glitch();
+    for (let n = (this.rate || AMBIENT.rate[0]) * dt; n > 0; n--) if (Math.random() < n) this.glitch();
     if (field.time >= this.wordAt) {this.decrypt(); this.wordAt = field.time + range(16, 30) + 3;}
     // The word announces itself in the margins only, in grey.
     if (this.wordWave && field.time >= this.wordWave.at) {

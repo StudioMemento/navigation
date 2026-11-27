@@ -64,6 +64,8 @@ button:focus-visible,a:focus-visible,input:focus-visible,[tabindex]:focus-visibl
 .experiences-section{padding-block:clamp(36px,5vw,80px);display:block;scroll-margin-top:24px}
 .experiences-section .section-heading{margin-bottom:clamp(20px,2vw,32px)}
 .portfolio-carousel{--slide-width:clamp(240px,calc(var(--page-content)*.4),680px);--board-height:calc(var(--slide-width)*.5);--card-inset:clamp(16px,1.4vw,26px);--side-fade:min(var(--safe-left),clamp(36px,6vw,140px));width:100%;margin:0;--corner-cut:clamp(12px,1.2vw,20px)}
+/* The experiences fit the padding: whatever runs past it (a card coming in or going out) fades within a few px. */
+@media(min-width:768px){.portfolio-carousel{mask-image:linear-gradient(90deg,transparent calc(var(--safe-left) - 56px),#000 var(--safe-left),#000 calc(100% - var(--safe-left)),transparent calc(100% - var(--safe-left) + 56px))}}
 .portfolio-carousel .card-art{object-fit:cover;object-position:center 46%}
 .portfolio-carousel .showcase-card{cursor:pointer;}.portfolio-carousel .showcase-card[data-active=true]{cursor:grab}
 .portfolio-carousel .card-shade{position:absolute;top:0;right:0;bottom:0;left:0;z-index:1;background:linear-gradient(0deg,#000e,transparent 62%,#0009);pointer-events:none}
@@ -201,3 +203,11 @@ html:is([data-memento-navigation=standalone],[data-memento-layout=overlay]) .ope
 html[data-demo-expanded=true] memento-nav{visibility:hidden}
 .skip-link{z-index:1001}
 .demo-play {position:absolute;z-index:3;top:50%;left:50%;transform:translate(-50%,-50%);min-height:44px;background:#151515;color:#fff;border:1px solid #b5a896;padding:.6rem 1rem;}
+
+/* R29: a neighbour in perspective is drawn foreshortened, so a 1px ring breaks up on screen; a 2px ring stays whole. */
+.carousel .showcase-card[data-active=false]{--frame-ring:polygon(evenodd,var(--corner-cut) 0,100% 0,100% calc(100% - var(--corner-cut)),calc(100% - var(--corner-cut)) 100%,0 100%,0 var(--corner-cut),var(--corner-cut) 0,calc(var(--corner-cut) + 0.8284px) 2px,2px calc(var(--corner-cut) + 0.8284px),2px calc(100% - 2px),calc(100% - var(--corner-cut) - 0.8284px) calc(100% - 2px),calc(100% - 2px) calc(100% - var(--corner-cut) - 0.8284px),calc(100% - 2px) 2px,calc(var(--corner-cut) + 0.8284px) 2px)}
+/* Before a carousel is built its first card already sits centred and the others wait. */
+.showcase-card{transform:translate3d(-50%,0,0)}
+.carousel-stage:not([data-positioned])>.showcase-card:not(:first-child){visibility:hidden}
+/* On a phone the cards of "Cosa ti rende speciale?" are tall enough for their title and copy. */
+@media(max-width:767px){.bundle-opening{--intro-ratio:1.2}}

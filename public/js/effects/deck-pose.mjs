@@ -1,44 +1,90 @@
-// The two sliders of the site, shared by Services, LevelUp and Portfolio.
+// The sliders of the site move like the Home: cards in perspective around the active one, which faces the camera.
+// Each neighbour is turned with its outer edge toward the camera and set back, and on screen its inner edge meets the
+// edge of the card before it exactly: no overlap, no gap, at rest and all along a swipe.
 //
-// deck: cards in perspective. The active card is in front; its neighbours stand behind it, partly covered, turned so
-//   that their outer edge comes toward the camera: they read as close, around the active one. Changing card is a move
-//   in depth: the active card steps back and turns aside while the next one comes forward from behind, the two parting
-//   for a moment so they never cross. Never a flat pan.
-// pages: one card on the padding, no neighbours in sight. The next card replaces it in place: the old one recedes and
-//   fades, the new one comes forward; the text arrives last.
-const smooth = (a, b, x) => { const t = Math.max(0, Math.min(1, (x - a) / (b - a))); return t * t * (3 - 2 * t); };
+// The chain is built from its edges. E(u) is where, on screen, the boundary between two cards lands when it is u cards
+// from the centre; a card at distance d spans E(d - ½)…E(d + ½), so two neighbours always share an edge. The turn of
+// each card follows its distance; its depth and position are then solved so that its projected edges land on E.
+//
+// wide: one neighbour a side, out in the margins (the active card keeps the width of its layout).
+// compact: two neighbours a side, more turned; for strips that fit the content (see drumFit).
+const smooth = t => { t = Math.max(0, Math.min(1, t)); return t * t * (3 - 2 * t); };
+const RAD = Math.PI / 180;
+export const PERSPECTIVE = 2.4;
+const DEPTH = .3, STEP_DEPTH = .26;
+const KINDS = {wide:{sides:1, angles:[50]}, compact:{sides:2, angles:[58, 72]}};
+const chains = new Map();
 
-export function deckPose(distance, width, {compact = false} = {}) {
-  const a = Math.abs(distance), s = Math.sign(distance), near = Math.min(a, 1), far = Math.max(0, a - 1);
-  const spread = width * (compact ? .5 : .42), step = width * (compact ? .34 : .3);
-  const part = width * (compact ? .14 : .24) * Math.sin(Math.PI * near);
+// Rest poses in units of the card width: outer[k] is the screen position of the outer edge of the k-th card.
+function chain(kind) {
+  if (chains.has(kind)) return chains.get(kind);
+  const {sides, angles} = KINDS[kind], outer = [.5], turn = [0];
+  for (let k = 1; k <= sides + 3; k++) {
+    const angle = angles[Math.min(k, sides) - 1] * RAD, sin = Math.sin(angle), cos = Math.cos(angle);
+    const z = -(DEPTH + (k - 1) * STEP_DEPTH);
+    // The inner edge (x - cos/2, z - sin/2) projects onto the previous outer edge.
+    const x = outer[k - 1] * (PERSPECTIVE - z + sin / 2) / PERSPECTIVE + cos / 2;
+    outer.push((x + cos / 2) * PERSPECTIVE / (PERSPECTIVE - z - sin / 2));
+    turn.push(angle);
+  }
+  // Monotone cubic through the boundaries (Fritsch–Butland slopes); the centre segment is flat, slope 1.
+  const secant = [1];
+  for (let k = 0; k < outer.length - 1; k++) secant.push(outer[k + 1] - outer[k]);
+  const slope = outer.map((_, k) => {
+    const left = secant[k], right = secant[k + 1] ?? secant[k];
+    return 2 * left * right / (left + right);
+  });
+  const result = {sides, outer, turn, secant, slope};
+  chains.set(kind, result);
+  return result;
+}
+
+// Where the boundary u cards from the centre lands on screen.
+function boundary(u, {outer, secant, slope}) {
+  const v = Math.abs(u), s = Math.sign(u);
+  if (v <= .5) return u;
+  const last = outer.length - 1, k = Math.floor(v - .5), t = v - .5 - k;
+  if (k >= last) return s * (outer[last] + (v - .5 - last) * secant[last]);
+  const t2 = t * t, t3 = t2 * t;
+  return s * ((2 * t3 - 3 * t2 + 1) * outer[k] + (t3 - 2 * t2 + t) * slope[k] +
+    (-2 * t3 + 3 * t2) * outer[k + 1] + (t3 - t2) * slope[k + 1]);
+}
+
+// The turn eases in and keeps going into the rest pose, so the depth solved from it only ever recedes.
+function turnAt(a, {turn}) {
+  const k = Math.min(Math.floor(a), turn.length - 2), t = Math.min(1, a - k);
+  return turn[k] + (turn[k + 1] - turn[k]) * (.4 * smooth(t) + .6 * Math.pow(t, 1.2));
+}
+
+export function drumPose(distance, width, kind = 'wide') {
+  const ch = chain(kind), a = Math.abs(distance), side = Math.sign(distance) || 1;
+  const theta = turnAt(a, ch), yaw = -side * theta;
+  // Projected edges of this card and the turn it has: solve its centre (x, z).
+  const left = boundary(distance - .5, ch), right = boundary(distance + .5, ch);
+  const cos = Math.cos(yaw), sigma = Math.sin(yaw) / 2, P = PERSPECTIVE;
+  // left·(P - z - σ) = P·(x - cos/2),  right·(P - z + σ) = P·(x + cos/2)
+  const z = P - (P * cos - (left + right) * sigma) / Math.max(1e-6, right - left);
+  const x = (left * (P - z - sigma)) / P + cos / 2;
+  const near = smooth(Math.min(a, 1)), sides = ch.sides;
   return {
-    x: s * (spread * near + step * far + part),
+    x: x * width,
     y: 0,
-    z: -width * ((compact ? .36 : .42) * near + .16 * far),
-    yaw: -s * (40 * near + 12 * Math.min(far, 1.5)),
+    z: z * width,
+    yaw: yaw / RAD,
     scale: 1,
-    opacity: a <= 1.7 ? 1 : Math.max(0, 1 - (a - 1.7) / .8),
-    light: 1 - .55 * smooth(0, 1, a),
-    text: 1 - smooth(0, .45, a)
+    opacity: a <= sides + .25 ? 1 : Math.max(0, 1 - (a - sides - .25) / .5),
+    light: 1 - .4 * near - .1 * smooth(a - 1),
+    text: 1 - smooth(a / .45),
+    visible: a < sides + .75
   };
 }
 
-export function pagesPose(distance, width) {
-  const a = Math.abs(distance), s = Math.sign(distance), t = Math.min(a, 1);
-  return {
-    x: s * width * .045 * t,
-    y: 0,
-    z: -width * .16 * t,
-    yaw: -s * 8 * t,
-    scale: 1,
-    opacity: 1 - smooth(.12, .85, a),
-    light: 1 - .6 * smooth(0, .8, a),
-    text: 1 - smooth(0, .3, a)
-  };
-}
-
-export const perspectiveFor = width => Math.max(900, width * 1.7);
+// The half extent on screen of the active card and its first `sides` neighbours, in card widths.
+export const drumReach = (kind = 'wide', sides = KINDS[kind].sides) => chain(kind).outer[sides];
+export const drumEdge = (kind = 'wide') => KINDS[kind].sides + .75;
+// The card width that makes the strip (active card and every neighbour) exactly as wide as `room`.
+export const drumFit = (room, kind = 'compact') => room / 2 / drumReach(kind);
+export const perspectiveFor = width => width * PERSPECTIVE;
 
 // One transform: centred on its slot, projected around its own centre.
 export function poseTransform(pose, perspective) {
@@ -51,7 +97,7 @@ export function poseBleed(poseAt, width, height, perspective, edge) {
   let top = 0, bottom = 0;
   for (let sample = 0; sample <= 80; sample++) {
     const pose = poseAt((sample / 80) * edge);
-    const toward = pose.z + (width * pose.scale / 2) * Math.abs(Math.sin(pose.yaw * Math.PI / 180));
+    const toward = pose.z + (width * pose.scale / 2) * Math.abs(Math.sin(pose.yaw * RAD));
     const half = (height * pose.scale / 2) * perspective / Math.max(1, perspective - toward);
     top = Math.max(top, half - height / 2 - pose.y);
     bottom = Math.max(bottom, half - height / 2 + pose.y);

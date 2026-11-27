@@ -116,4 +116,4 @@ await output('404.html',`<!doctype html><html lang="it" data-memento-native="404
   <main class="mm-missing" id="main"><h1 class="mm-sr">Pagina non trovata (errore 404)</h1><canvas class="mm-missing-code" aria-hidden="true"></canvas>
   <section class="mm-missing-card mm-tab" aria-labelledby="missing-title"><h2 class="mm-type" id="missing-title">Questa pagina non esiste.</h2>
   <p>Forse si è spostata, o il link non è più valido. Riparti da qui:</p><nav class="mm-missing-links" aria-label="Sezioni del sito">${exits}</nav></section></main></body></html>`);
-console.log(`Memento R28 · Home + 5 sezioni · ${catalogue.services.length} servizi, ${catalogue.bundles.length} bundle, ${projects.length} progetti.`);
+console.log(`Memento R29 · Home + 5 sezioni · ${catalogue.services.length} servizi, ${catalogue.bundles.length} bundle, ${projects.length} progetti.`);

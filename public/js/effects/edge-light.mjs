@@ -4,7 +4,7 @@ import { acceptsLight, acceptsHint, isSlide, outlineOf } from './surface-targets
 // The glow belongs to the surface that emits it: it is cut by that surface only, and it lies over whatever is
 // around it, neighbouring slides included. Each surface keeps 96 segments of light with a short memory,
 // so the light flows along the edge and fades. The glow is soft, so it is painted at half resolution.
-const BINS = 96, STEP = 8, GLOW_STEP = 12, TILE = 256, LEVELS = 10, GLOW_SCALE = .5;
+const BINS = 96, STEP = 8, GLOW_STEP = 8, TILE = 256, LEVELS = 10, GLOW_SCALE = .5;
 const GLOW = {near:{sigma:5, peak:.2}, far:{sigma:40, peak:.2}, radius:120, from:.02};
 const LIGHT = {
   base: .12,            // the whole outline of the surface under the pointer: filament only
@@ -211,7 +211,9 @@ function painter() {
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       ctx.globalCompositeOperation = 'lighter';
       ctx.lineWidth = 1.15;
-      ctx.lineCap = 'round';
+      // Butt ends: the segments of the filament abut exactly, so where the level changes (or a tile ends) there is
+      // neither a bright dot (two round caps added together) nor a gap.
+      ctx.lineCap = 'butt';
       for (const state of states.values()) {
         const p = state.path;
         if (p.right + R < x0 || p.left - R > x0 + TILE || p.bottom + R < y0 || p.top - R > y0 + TILE) continue;
@@ -245,7 +247,8 @@ function painter() {
             const t = step * (n + .5), level = Math.max(state.base, power(e.start + t));
             if (level < .004) continue;
             const x = e.x + t * e.ux, y = e.y + t * e.uy;
-            if (x + 2 < x0 || x - 2 > x0 + TILE || y + 2 < y0 || y - 2 > y0 + TILE) continue;
+            const reach = step / 2 + 2;
+            if (x + reach < x0 || x - reach > x0 + TILE || y + reach < y0 || y - reach > y0 + TILE) continue;
             const index = Math.min(LEVELS - 1, Math.floor(Math.min(1, level) * LEVELS));
             const path = cores[index] || (cores[index] = new Path2D());
             path.moveTo(x - e.ux * step / 2, y - e.uy * step / 2);
