@@ -242,6 +242,9 @@ function changeGallery(index) {
   const image = $('.gallery-image', view), item = items[selected];
   // one element: the engine follows its 'load' and swaps the texture when the new bitmap is ready
   setPhoto(image, item.src, { alt: item.alt || projectName(project), role: 'stage' });
+  // the empty part of the fixed stage is filled by the same picture, blurred
+  const fill = $('.gallery-fill', view);
+  if (fill) setPhoto(fill, item.src, { role: 'thumb' });
   updateThumbs();
   preloadNeighbours();
   announce(`Immagine ${selected + 1} di ${items.length}`);

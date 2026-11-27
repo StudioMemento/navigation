@@ -49,7 +49,31 @@ html[data-memento-native] .catalogue-frame .mm-ready-section {width:100%;}
 .mm-ready img { position:absolute; right:0; top:0; width:62%; height:100%; object-fit:contain; z-index:-1; }
 .mm-ready span { display:block; }
 @media (prefers-reduced-motion:reduce) { html[data-memento-native] {scroll-behavior:auto} }
-.mm-missing {padding:20vh 10vw;} .mm-missing a {color:var(--accent);}
+/* The 404: the number written by the wall, and a card with every way back. */
+.mm-missing {
+  box-sizing:border-box;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:clamp(28px,6vh,64px);
+  width:var(--content-width);min-height:100vh;min-height:100svh;margin:0 auto;padding:var(--memento-safe-top) 0 var(--memento-safe-bottom);
+}
+.mm-missing-code {display:block;max-width:100%;cursor:crosshair;}
+.mm-missing-card {
+  --cut:clamp(14px,1.4vw,22px);
+  position:relative;box-sizing:border-box;width:100%;padding:clamp(22px,3.2vw,48px);background:#0b0b0b;
+  clip-path:polygon(var(--cut) 0,100% 0,100% calc(100% - var(--cut)),calc(100% - var(--cut)) 100%,0 100%,0 var(--cut));
+}
+.mm-missing-card::before {
+  content:"";position:absolute;top:0;right:0;bottom:0;left:0;pointer-events:none;background:var(--frame-gradient);
+  clip-path:polygon(evenodd,var(--cut) 0,100% 0,100% calc(100% - var(--cut)),calc(100% - var(--cut)) 100%,0 100%,0 var(--cut),var(--cut) 0,calc(var(--cut) + .4142px) 1px,1px calc(var(--cut) + .4142px),1px calc(100% - 1px),calc(100% - var(--cut) - .4142px) calc(100% - 1px),calc(100% - 1px) calc(100% - var(--cut) - .4142px),calc(100% - 1px) 1px,calc(var(--cut) + .4142px) 1px);
+}
+.mm-missing-card h2 {margin:0 0 .45em;font-size:clamp(28px,3.4vw,56px);font-weight:340;letter-spacing:-.045em;line-height:1.05;padding-bottom:.06em;}
+.mm-missing-card p {margin:0 0 1.6em;max-width:34em;color:#aaa69f;font-size:clamp(15px,1.15vw,18px);line-height:1.45;}
+.mm-missing-links {display:flex;flex-wrap:wrap;gap:8px;}
+.mm-missing-links a {
+  --chip:7px;display:inline-flex;align-items:center;min-height:44px;padding:0 18px;color:var(--paper);text-decoration:none;font-size:15px;
+  background:#ffffff0d;clip-path:polygon(var(--chip) 0,100% 0,100% calc(100% - var(--chip)),calc(100% - var(--chip)) 100%,0 100%,0 var(--chip));
+  transition:color .25s ease-out,background-color .25s ease-out;
+}
+.mm-missing-links a:hover {color:#ffa23d;background:#ff7d001c;}
+.mm-missing-links a:focus-visible {outline-offset:-2px;}
 
 html[data-memento-native=projects],html[data-memento-native=services],html[data-memento-native=levelup],html[data-memento-native=start] {scrollbar-width:thin;}
 html[data-memento-native]::-webkit-scrollbar {display:block;width:6px;}

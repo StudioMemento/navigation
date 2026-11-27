@@ -1,6 +1,9 @@
-import { portfolioStride, portfolioPose, portfolioEdge } from './portfolio-geometry.js';
+import { portfolioEdge } from './portfolio-geometry.js';
+import { deckPose, pagesPose, perspectiveFor, poseTransform, poseBleed } from '/js/effects/deck-pose.mjs';
 
 // Owns horizontal gestures and animation only. Content and routing are callbacks.
+// "Cosa ti rende speciale?" is one card on the padding that turns its pages in depth; the experiences are a deck in
+// perspective, the active one in front and its neighbours behind it.
 export class Carousel {
   constructor(
     element,
@@ -31,12 +34,8 @@ export class Carousel {
       this.width = width;
       this.height = this.cards[0].offsetHeight || 1;
       this.wide = Number(getComputedStyle(element).getPropertyValue('--layout-wide')) || 0;
-      this.perspective = 1100 + 900 * this.wide;
-      // R21: the site's margins are forced; the portfolio's first neighbours reach the edges of the screen, not of
-      // the content (edge to edge)
-      this.stride = this.fan
-        ? width * .83
-        : portfolioStride(element.clientWidth, width, element.clientWidth, this.perspective);
+      this.perspective = perspectiveFor(width);
+      this.stride = width * (this.fan ? .6 : .5);
       this.reserveBleed();
       this.render();
     };
@@ -116,45 +115,22 @@ export class Carousel {
     return this.mod(value + this.count / 2) - this.count / 2;
   }
   pose(distance) {
-    if (!this.fan) return portfolioPose(distance, this.stride, this.height);
-    const amount = Math.abs(distance);
-    const wide = this.wide;
-    // Neighbours tuck behind at rest, then open around the layer handoff.
-    const bow = amount < 1 ? Math.sin(Math.PI * amount) * this.width * (0.08 + 0.12 * wide) : 0;
-    return {
-      x: distance * this.stride + Math.sign(distance) * bow,
-      y: this.fan
-        ? -this.height * (0.035 + 0.03 * wide) * Math.min(amount, 2)
-        : this.height * (0.008 + 0.017 * wide) * Math.min(amount, 2.6),
-      scale: Math.pow(this.fan ? 0.88 : 0.97 - 0.07 * wide, amount),
-      yaw:
-        -Math.sign(distance) *
-        Math.min(
-          this.fan ? 62 : 22 + 16 * wide,
-          amount * (this.fan ? 32 + 16 * wide : 12 + 12 * wide),
-        ),
-    };
+    return this.fan ? pagesPose(distance, this.width) : deckPose(distance, this.width, { compact: true });
+  }
+  get edge() {
+    return this.fan ? Math.min(2.7, this.count / 2 - 0.06) : portfolioEdge(this.count);
   }
   reserveBleed() {
     // A CSS mask clips to its box. Reserve the projected envelope for every
     // visible swipe position, using the same pose as render (not a breakpoint).
-    const edge = this.fan ? Math.min(2.7, this.count / 2 - 0.06) : portfolioEdge(this.count);
-    let top = 0;
-    let bottom = 0;
-    for (let sample = 0; sample <= 80; sample++) {
-      const { y, scale, yaw } = this.pose((sample / 80) * edge);
-      const depth = (this.width * scale * Math.abs(Math.sin((yaw * Math.PI) / 180))) / 2;
-      const halfHeight = (this.height * scale) / 2 / (1 - depth / this.perspective);
-      top = Math.max(top, halfHeight - this.height / 2 - y);
-      bottom = Math.max(bottom, halfHeight - this.height / 2 + y);
-    }
+    const { top, bottom } = poseBleed((d) => this.pose(d), this.width, this.height, this.perspective, this.edge);
     const owner = this.fan ? this.element.closest('.bundle-opening') : this.element;
     for (const [side, amount] of [
       ['top', top],
       ['bottom', bottom],
     ]) {
       const property = `--carousel-bleed-${side}`;
-      const value = `${Math.ceil(amount) + 8}px`;
+      const value = `${Math.ceil(Math.max(0, amount)) + 8}px`;
       if (owner.style.getPropertyValue(property) !== value)
         owner.style.setProperty(property, value);
     }
@@ -162,7 +138,7 @@ export class Carousel {
   render() {
     const active = this.mod(Math.round(this.current));
     // Hidden outer cards recycle beyond the faded reveal, never in the visible arc.
-    const edge = this.fan ? Math.min(2.7, this.count / 2 - 0.06) : portfolioEdge(this.count);
+    const edge = this.edge;
     this.cards.forEach((card, index) => {
       const distance = this.delta(index - this.current);
       const amount = Math.abs(distance);
@@ -183,25 +159,16 @@ export class Carousel {
           delete img.dataset.src;
         });
       }
-      const { x, y, scale, yaw } = this.pose(distance);
-      card.style.transform =
-        'translate3d(calc(-50% + ' +
-        x.toFixed(3) +
-        'px), ' +
-        y.toFixed(3) +
-        'px, 0) perspective(' +
-        this.perspective.toFixed(1) +
-        'px) rotateY(' +
-        yaw.toFixed(3) +
-        'deg) scale(' +
-        scale.toFixed(5) +
-        ')';
+      const pose = this.pose(distance);
+      card.style.transform = poseTransform(pose, this.perspective);
       // Light and text follow distance continuously, including both sides of a swipe.
       const fade = Math.min(1, amount);
       card.style.setProperty('--slide-focus', (1 - fade * fade * (3 - 2 * fade)).toFixed(4));
-      const outerFade = this.fan ? 1 : Math.pow(.25, Math.max(0, amount - 1));
-      card.style.opacity = (outerFade * Math.max(0, Math.min(1, (edge - amount) / 0.6, 1 - .58 * Math.min(1, amount), 1.8 - amount))).toFixed(4);
-      card.style.visibility = amount >= edge ? 'hidden' : 'visible';
+      card.style.setProperty('--scene-light', pose.light.toFixed(4));
+      card.style.setProperty('--text-focus', pose.text.toFixed(4));
+      const visible = this.fan ? amount < 1 : amount < edge;
+      card.style.opacity = (visible ? pose.opacity * Math.max(0, Math.min(1, (edge - amount) / 0.6)) : 0).toFixed(4);
+      card.style.visibility = visible ? 'visible' : 'hidden';
       card.style.zIndex = String(100 - Math.round(amount * 20));
       const isActive = index === active;
       if (card.dataset.active !== String(isActive)) card.dataset.active = String(isActive);
@@ -210,7 +177,7 @@ export class Carousel {
       card.querySelectorAll('[data-slide-control]').forEach(control => { control.inert = !isActive; });
       if (this.interactiveContents)
         (card.querySelector('.popup-card-scroll') || card).inert = !isActive;
-      card.style.pointerEvents = amount >= edge ? 'none' : 'auto';
+      card.style.pointerEvents = visible ? 'auto' : 'none';
     });
     if (active !== this.active) {
       this.active = active;

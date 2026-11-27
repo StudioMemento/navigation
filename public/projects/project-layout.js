@@ -73,6 +73,7 @@ function galleryMarkup(project, items, active) {
   return `<section class="project-gallery content-width" id="project-gallery" aria-label="Gallery di ${escapeHTML(projectName(project))}">
     <div class="gallery" data-slider="gallery" role="region" aria-roledescription="carosello" aria-label="Immagini del progetto" tabindex="0" style="--gallery-ratio:${ratio.toFixed(4)}">
       <div class="gallery-stage board cut-frame mm-tab">
+        ${photo(item.src, { role: 'thumb', className: 'gallery-fill' }).replace('<img', '<img aria-hidden="true"')}
         ${photo(item.src, { alt: item.alt || projectName(project), role: 'stage', eager: true, className: 'gallery-image' })}
       </div>
       ${many ? `<div class="gallery-nav" style="--count:${items.length}">

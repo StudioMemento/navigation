@@ -1,18 +1,18 @@
-import { acceptsLight, outlineOf } from './surface-targets.mjs';
+import { acceptsLight, acceptsHint, isSlide, outlineOf } from './surface-targets.mjs';
 
-// Light lives on the outline of a surface: a thin bright filament on the edge and a soft glow outside it.
+// Light lives on the outline of a surface: a thin bright filament on the edge and a soft, wide glow outside it.
 // The glow belongs to the surface that emits it: it is cut by that surface only, and it lies over whatever is
 // around it, neighbouring slides included. Each surface keeps 96 segments of light with a short memory,
-// so the light flows along the edge and fades.
-const BINS = 96, STEP = 8, TILE = 256, LEVELS = 10;
-const GLOW = {near:{sigma:4, peak:.45}, far:{sigma:18, peak:.34}, radius:56, from:.1};
+// so the light flows along the edge and fades. The glow is soft, so it is painted at half resolution.
+const BINS = 96, STEP = 8, GLOW_STEP = 12, TILE = 256, LEVELS = 10, GLOW_SCALE = .5;
+const GLOW = {near:{sigma:5, peak:.2}, far:{sigma:40, peak:.2}, radius:120, from:.02};
 const LIGHT = {
-  base: .14,            // the whole outline of the surface under the pointer: filament only
-  reach: 320,           // px from the edge at which the hovered surface still lights its nearest segment
-  floor: .4,            // the nearest segment never drops below this while the surface is hovered
-  near: 230,            // neighbours light only within this distance, on the side facing the pointer
-  neighbour: .25,
-  rise: .12, fall: .42  // seconds
+  base: .12,            // the whole outline of the surface under the pointer: filament only
+  reach: 380,           // px from the edge at which the hovered surface still lights its nearest segment
+  floor: .35,           // the nearest segment never drops below this while the surface is hovered
+  near: 440,            // the hint: other surfaces on screen light within this distance, on the side facing the pointer
+  neighbour: .3,
+  rise: .14, fall: .5   // seconds
 };
 function smooth(t) { t = Math.max(0, Math.min(1, t)); return t*t*t*(t*(t*6-15)+10); }
 
@@ -43,6 +43,24 @@ function nearestOnPath(path, x, y) {
   }
   return {gap, at, px, py};
 }
+// The nearest point of each edge, nearest first, until one is not covered by another surface.
+function visibleNearest(card, path, x, y) {
+  const cx = (path.left + path.right) / 2, cy = (path.top + path.bottom) / 2;
+  const candidates = path.edges.map(e => {
+    const t = Math.max(0, Math.min(e.len, (x - e.x) * e.ux + (y - e.y) * e.uy));
+    const px = e.x + t * e.ux, py = e.y + t * e.uy;
+    return {gap:Math.hypot(x - px, y - py), at:e.start + t, px, py};
+  }).sort((a, b) => a.gap - b.gap);
+  const plane = document.querySelector('.mm-edge-plane')?.getBoundingClientRect() || {left:0, top:0};
+  for (const c of candidates) {
+    const inward = Math.min(1, 4 / Math.max(1, Math.hypot(cx - c.px, cy - c.py)));
+    const hx = c.px + plane.left + (cx - c.px) * inward, hy = c.py + plane.top + (cy - c.py) * inward;
+    if (hx < 0 || hy < 0 || hx > innerWidth || hy > innerHeight) continue;
+    const hit = document.elementFromPoint(hx, hy);
+    if (!hit || card.contains(hit)) return c;
+  }
+  return null;
+}
 function inside(path, x, y) {
   let hit = false;
   const p = path.points;
@@ -63,12 +81,12 @@ function along(path, at, spread, gain, into, add = false) {
 // The glow brush: two gaussians whose amplitude is divided by the stamping step, so a straight edge of full
 // power sums to the same soft profile however densely it is stamped: no blobs where stamps pile up.
 function makeGlow() {
-  const R = GLOW.radius, scale = 2, canvas = document.createElement('canvas');
+  const R = GLOW.radius, scale = 1, canvas = document.createElement('canvas');
   canvas.width = canvas.height = 2 * R * scale;
   const ctx = canvas.getContext('2d');
   if (!ctx) return null;
   const img = ctx.createImageData(canvas.width, canvas.height);
-  const amp = g => g.peak * STEP / (g.sigma * Math.sqrt(2 * Math.PI));
+  const amp = g => g.peak * GLOW_STEP / (g.sigma * Math.sqrt(2 * Math.PI));
   const a1 = amp(GLOW.near), a2 = amp(GLOW.far);
   for (let row = 0; row < canvas.height; row++) {
     const y = (row + .5) / scale - R;
@@ -78,15 +96,28 @@ function makeGlow() {
       const near = a1 * Math.exp(-d / (2 * GLOW.near.sigma ** 2)), far = a2 * Math.exp(-d / (2 * GLOW.far.sigma ** 2));
       const alpha = (near + far) * (1 - smooth((r - R * .7) / (R * .3)));
       if (alpha < .5 / 255) continue;
-      const i = 4 * (row * canvas.width + col), hot = near / (near + far);
-      img.data[i] = 255; img.data[i + 1] = Math.round(118 + 70 * hot); img.data[i + 2] = Math.round(20 + 60 * hot); img.data[i + 3] = 255 * Math.min(1, alpha);
+      // White light: the stamps add up without drifting in hue; the tile is tinted once, after.
+      const i = 4 * (row * canvas.width + col);
+      img.data[i] = img.data[i + 1] = img.data[i + 2] = 255; img.data[i + 3] = 255 * Math.min(1, alpha);
     }
   }
   ctx.putImageData(img, 0, 0);
   return canvas;
 }
 
+// Everything but the surfaces in front: the light of a slide behind them is clipped by them (even-odd).
+function exclusion(covers) {
+  const path = new Path2D();
+  path.rect(-1e6, -1e6, 2e6, 2e6);
+  for (const cover of covers) {
+    cover.points.forEach((p, i) => { if (!i) path.moveTo(p.x, p.y); else path.lineTo(p.x, p.y); });
+    path.closePath();
+  }
+  return path;
+}
+
 // Only tiles that hold light have a backing store; only tiles whose light changed are painted again.
+// Each tile is two canvases: the glow at half resolution under the filament at full resolution.
 // Tiles never reach past the page: a glow near the edge never makes the page wider or longer.
 function painter() {
   const tiles = new Map(), spare = [];
@@ -102,7 +133,7 @@ function painter() {
     return plane.getBoundingClientRect();
   }
   function drop(key, tile) {
-    tile.canvas.remove(); tiles.delete(key);
+    tile.canvas.remove(); tile.halo.remove(); tiles.delete(key);
     if (spare.length < 6) spare.push(tile);
   }
   function clear() { for (const [key, tile] of tiles) drop(key, tile); }
@@ -118,12 +149,19 @@ function painter() {
     if (host !== document.body) return {width:host.clientWidth, height:host.clientHeight};
     let bottom = 0;
     for (const child of host.children) {
-      if (child === plane || child.matches('script,style,dialog:not([open])')) continue;
+      if (child === plane || child.matches('script,style,dialog:not([open]),.mm-glyph-field,.mm-glyph-surface')) continue;
       const style = getComputedStyle(child);
       if (style.position === 'fixed' || style.display === 'none') continue;
       bottom = Math.max(bottom, child.getBoundingClientRect().bottom - plane.getBoundingClientRect().top + parseFloat(style.marginBottom || 0));
     }
     return {width:document.documentElement.clientWidth, height:Math.max(bottom, innerHeight)};
+  }
+  function size(canvas, width, height, scale) {
+    const w = Math.max(1, Math.round(width * scale)), h = Math.max(1, Math.round(height * scale));
+    if (canvas.width !== w || canvas.height !== h) {
+      canvas.width = w; canvas.height = h;
+      canvas.style.width = width + 'px'; canvas.style.height = height + 'px';
+    }
   }
   function tileOf(col, row, dpr, room) {
     const key = col + ',' + row;
@@ -133,26 +171,23 @@ function painter() {
     if (!tile) {
       tile = spare.pop();
       if (!tile) {
-        const canvas = document.createElement('canvas');
-        canvas.className = 'mm-edge-light';
-        tile = {canvas, ctx:canvas.getContext('2d')};
+        const canvas = document.createElement('canvas'), halo = document.createElement('canvas');
+        canvas.className = halo.className = 'mm-edge-light';
+        tile = {canvas, halo, ctx:canvas.getContext('2d'), hctx:halo.getContext('2d')};
       }
       tiles.set(key, tile);
-      plane.append(tile.canvas);
-      tile.canvas.style.transform = 'translate(' + col * TILE + 'px,' + row * TILE + 'px)';
+      plane.append(tile.halo, tile.canvas);
+      tile.canvas.style.transform = tile.halo.style.transform = 'translate(' + col * TILE + 'px,' + row * TILE + 'px)';
     }
-    const w = Math.round(width * dpr), h = Math.round(height * dpr);
-    if (tile.canvas.width !== w || tile.canvas.height !== h) {
-      tile.canvas.width = w; tile.canvas.height = h;
-      tile.canvas.style.width = width + 'px'; tile.canvas.style.height = height + 'px';
-    }
+    size(tile.canvas, width, height, dpr);
+    size(tile.halo, width, height, GLOW_SCALE);
     return tile;
   }
   // states: surfaces with light; view: the visible part of the plane; dirty: tile keys to paint again.
   function paint(states, view, dirty, all) {
     if (!glow) glow = makeGlow();
     if (!glow || !plane) return;
-    const dpr = Math.round(TILE * Math.min(window.devicePixelRatio || 1, 1.5)) / TILE, R = GLOW.radius;
+    const dpr = Math.round(TILE * Math.min(window.devicePixelRatio || 1, 1.5)) / TILE, R = GLOW.radius, g = GLOW_SCALE;
     const want = new Set();
     for (const state of states.values()) {
       const p = state.path;
@@ -169,51 +204,72 @@ function painter() {
       if (!all && tiles.has(key) && !dirty.has(key)) continue;
       const [col, row] = key.split(',').map(Number);
       const tile = tileOf(col, row, dpr, room);
-      if (!tile?.ctx) continue;
-      const {ctx} = tile, x0 = col * TILE, y0 = row * TILE;
-      ctx.setTransform(1, 0, 0, 1, 0, 0);
-      ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-      ctx.globalCompositeOperation = 'lighter';
-      const cores = Array.from({length:LEVELS}, () => null);
-      for (const state of states.values()) {
-        const p = state.path;
-        if (p.right + R < x0 || p.left - R > x0 + TILE || p.bottom + R < y0 || p.top - R > y0 + TILE) continue;
-        ctx.save();
-        ctx.setTransform(dpr, 0, 0, dpr, -x0 * dpr, -y0 * dpr);
-        ctx.clip(p.outside, 'evenodd');
-        for (const e of p.edges) {
-          const count = Math.ceil(e.len / STEP), step = e.len / count;
-          for (let n = 0; n < count; n++) {
-            const t = step * (n + .5), bin = (e.start + t) * BINS / p.length;
-            const i = Math.floor(bin) % BINS, f = bin - Math.floor(bin);
-            const power = state.energy[i] * (1 - f) + state.energy[(i + 1) % BINS] * f;
-            if (power < .004) continue;
-            const x = e.x + t * e.ux, y = e.y + t * e.uy;
-            if (x + R < x0 || x - R > x0 + TILE || y + R < y0 || y - R > y0 + TILE) continue;
-            if (power > GLOW.from) {
-              ctx.globalAlpha = Math.min(1, (power - GLOW.from) / (1 - GLOW.from));
-              ctx.setTransform(dpr * e.ux, dpr * e.uy, -dpr * e.uy, dpr * e.ux, dpr * (x - x0), dpr * (y - y0));
-              ctx.drawImage(glow, -R, -R, R * 2, R * 2);
-            }
-            const level = Math.min(LEVELS - 1, Math.floor(Math.min(1, power) * LEVELS));
-            const path = cores[level] || (cores[level] = new Path2D());
-            path.moveTo(x - e.ux * step / 2 - x0, y - e.uy * step / 2 - y0);
-            path.lineTo(x + e.ux * step / 2 - x0, y + e.uy * step / 2 - y0);
-          }
-        }
-        ctx.restore();
-      }
+      if (!tile?.ctx || !tile.hctx) continue;
+      const {ctx, hctx} = tile, x0 = col * TILE, y0 = row * TILE;
+      for (const c of [ctx, hctx]) {c.setTransform(1, 0, 0, 1, 0, 0); c.clearRect(0, 0, c.canvas.width, c.canvas.height);}
+      hctx.globalCompositeOperation = 'lighter';
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       ctx.globalCompositeOperation = 'lighter';
       ctx.lineWidth = 1.15;
       ctx.lineCap = 'round';
-      cores.forEach((path, level) => {
-        if (!path) return;
-        const power = (level + .5) / LEVELS;
-        ctx.globalAlpha = Math.min(1, .12 + power * 1.05);
-        ctx.strokeStyle = power > .55 ? '#ffd9ad' : '#ffa23d';
-        ctx.stroke(path);
-      });
+      for (const state of states.values()) {
+        const p = state.path;
+        if (p.right + R < x0 || p.left - R > x0 + TILE || p.bottom + R < y0 || p.top - R > y0 + TILE) continue;
+        const power = t => {
+          const bin = t * BINS / p.length, i = Math.floor(bin) % BINS, f = bin - Math.floor(bin);
+          return state.energy[i] * (1 - f) + state.energy[(i + 1) % BINS] * f;
+        };
+        // A slide behind another one keeps its light behind it too.
+        const hidden = state.covers?.length ? exclusion(state.covers) : null;
+        hctx.save();
+        hctx.setTransform(g, 0, 0, g, -x0 * g, -y0 * g);
+        hctx.clip(p.outside, 'evenodd');
+        if (hidden) hctx.clip(hidden, 'evenodd');
+        for (const e of p.edges) {
+          const count = Math.ceil(e.len / GLOW_STEP), step = e.len / count;
+          for (let n = 0; n < count; n++) {
+            const t = step * (n + .5), level = power(e.start + t);
+            if (level <= GLOW.from) continue;
+            const x = e.x + t * e.ux, y = e.y + t * e.uy;
+            if (x + R < x0 || x - R > x0 + TILE || y + R < y0 || y - R > y0 + TILE) continue;
+            hctx.globalAlpha = Math.min(1, (level - GLOW.from) / (1 - GLOW.from));
+            hctx.setTransform(g * e.ux, g * e.uy, -g * e.uy, g * e.ux, g * (x - x0), g * (y - y0));
+            hctx.drawImage(glow, -R, -R, R * 2, R * 2);
+          }
+        }
+        hctx.restore();
+        const cores = Array.from({length:LEVELS}, () => null);
+        for (const e of p.edges) {
+          const count = Math.ceil(e.len / STEP), step = e.len / count;
+          for (let n = 0; n < count; n++) {
+            const t = step * (n + .5), level = Math.max(state.base, power(e.start + t));
+            if (level < .004) continue;
+            const x = e.x + t * e.ux, y = e.y + t * e.uy;
+            if (x + 2 < x0 || x - 2 > x0 + TILE || y + 2 < y0 || y - 2 > y0 + TILE) continue;
+            const index = Math.min(LEVELS - 1, Math.floor(Math.min(1, level) * LEVELS));
+            const path = cores[index] || (cores[index] = new Path2D());
+            path.moveTo(x - e.ux * step / 2, y - e.uy * step / 2);
+            path.lineTo(x + e.ux * step / 2, y + e.uy * step / 2);
+          }
+        }
+        ctx.save();
+        ctx.setTransform(dpr, 0, 0, dpr, -x0 * dpr, -y0 * dpr);
+        if (hidden) ctx.clip(hidden, 'evenodd');
+        cores.forEach((path, level) => {
+          if (!path) return;
+          const value = (level + .5) / LEVELS;
+          ctx.globalAlpha = Math.min(.9, .1 + value * .95);
+          ctx.strokeStyle = value > .55 ? '#ffd9ad' : '#ffa23d';
+          ctx.stroke(path);
+        });
+        ctx.restore();
+      }
+      hctx.globalAlpha = 1;
+      hctx.setTransform(1, 0, 0, 1, 0, 0);
+      hctx.globalCompositeOperation = 'source-in';
+      hctx.fillStyle = '#ff8f2a';
+      hctx.fillRect(0, 0, hctx.canvas.width, hctx.canvas.height);
+      hctx.globalCompositeOperation = 'source-over';
       ctx.globalAlpha = 1;
     }
   }
@@ -233,7 +289,7 @@ export function edgeLight(cards, wake) {
   function stateOf(card) {
     let state = states.get(card);
     if (!state) {
-      state = {energy:new Float32Array(BINS), next:new Float32Array(BINS), target:new Float32Array(BINS), dirty:new Uint8Array(BINS), peak:0};
+      state = {energy:new Float32Array(BINS), next:new Float32Array(BINS), target:new Float32Array(BINS), dirty:new Uint8Array(BINS), peak:0, base:0, baseAim:0};
       states.set(card, state);
     }
     state.path = geometry(card);
@@ -250,32 +306,49 @@ export function edgeLight(cards, wake) {
     if (fading) return;
     anchor(dialog);
     changed = true;
-    for (const state of states.values()) state.target.fill(0);
+    for (const state of states.values()) {state.target.fill(0); state.baseAim = 0;}
     if (!point || document.fullscreenElement) return;
     const x = point.x - origin.left, y = point.y - origin.top;
     for (const card of cards) {
       if (!card.isConnected || (dialog ? !dialog.contains(card) : card.closest('dialog'))) continue;
-      if (!acceptsLight(card) || (card !== primary && !neighbours)) continue;
+      if (card === primary ? !acceptsLight(card) : (!neighbours || !acceptsHint(card))) continue;
       const b = card.getBoundingClientRect(), reach = card === primary ? LIGHT.reach : LIGHT.near;
       if (!b.width || !b.height) continue;
       if (point.x < b.left - reach || point.x > b.right + reach || point.y < b.top - reach || point.y > b.bottom + reach) continue;
       const state = stateOf(card), path = state.path;
-      const {gap, at, px, py} = nearestOnPath(path, x, y);
+      const {gap, at} = nearestOnPath(path, x, y);
+      state.covers = null;
       if (card === primary) {
-        state.target.fill(LIGHT.base);
-        along(path, at, Math.min(240, Math.max(60, path.length * .2)), LIGHT.floor + (1 - LIGHT.floor) * (1 - smooth(gap / LIGHT.reach)), state.target);
+        // The whole outline holds a thin filament; only the segment near the pointer glows.
+        state.baseAim = LIGHT.base;
+        along(path, at, Math.min(520, Math.max(90, path.length * .16)), LIGHT.floor + (1 - LIGHT.floor) * (1 - smooth(gap / LIGHT.reach)), state.target);
       } else {
-        if (inside(path, x, y) || gap >= LIGHT.near) continue;
-        // A cut corner may be physically behind another surface.
-        const cx = (path.left + path.right) / 2, cy = (path.top + path.bottom) / 2;
-        const inward = Math.min(1, 4 / Math.max(1, Math.hypot(cx - px, cy - py)));
-        const hit = document.elementFromPoint(px + origin.left + (cx - px) * inward, py + origin.top + (cy - py) * inward);
-        if (hit && !card.contains(hit)) continue;
-        along(path, at, Math.min(150, Math.max(40, path.length * .12)), LIGHT.neighbour * (1 - smooth(gap / LIGHT.near)), state.target);
+        // The hint: soft from afar, clearer near the edge; a pointer over the surface touches its nearest edge.
+        const touching = inside(path, x, y);
+        if (!touching && gap >= LIGHT.near) continue;
+        // Part of the outline may be behind another surface: the hint goes to the nearest edge that can be seen.
+        const seen = visibleNearest(card, path, x, y);
+        if (!seen) continue;
+        const distance = touching ? 0 : seen.gap;
+        if (distance >= LIGHT.near) continue;
+        state.covers = coversOf(card);
+        along(path, seen.at, Math.min(360, Math.max(60, path.length * .12)), LIGHT.neighbour * (1 - smooth(distance / LIGHT.near)), state.target);
       }
     }
   }
   // Light handed to an outline by the glyph field: it rises at once and fades with the outline's own memory.
+  // The active slides that stand in front of a neighbouring slide.
+  function coversOf(card) {
+    if (!isSlide(card)) return null;
+    const b = card.getBoundingClientRect(), covers = [];
+    for (const other of cards) {
+      if (other === card || !isSlide(other) || !acceptsLight(other) || !other.isConnected) continue;
+      const o = other.getBoundingClientRect();
+      if (o.right < b.left || o.left > b.right || o.bottom < b.top || o.top > b.bottom) continue;
+      covers.push(geometry(other));
+    }
+    return covers;
+  }
   function feed(card, clientX, clientY, strength) {
     if (fading || !acceptsLight(card) || (card.closest('dialog') && parent === document.body)) return;
     const state = stateOf(card), path = state.path;
@@ -291,7 +364,12 @@ export function edgeLight(cards, wake) {
     const fall = Math.exp(-dt / LIGHT.fall), rise = 1 - Math.exp(-dt / LIGHT.rise), flow = Math.min(.14, dt * 2);
     for (const [card, state] of states) {
       // A surface that stops taking light (a carousel moving on) lets its light go.
-      if (!acceptsLight(card)) state.target.fill(0);
+      if (!acceptsHint(card)) {state.target.fill(0); state.baseAim = 0;}
+      const base = state.baseAim >= state.base ? state.base + (state.baseAim - state.base) * rise : Math.max(state.baseAim, state.base * fall);
+      const settled = reduced.matches || Math.abs(base - state.baseAim) < .002 ? state.baseAim : base;
+      if (Math.abs(settled - state.base) > .0005) {state.dirty.fill(1); changed = true;}
+      if (settled !== state.baseAim) moving = true;
+      state.base = settled;
       let max = 0;
       for (let i = 0; i < BINS; i++) {
         const before = state.energy[i], aim = state.target[i];
@@ -305,7 +383,7 @@ export function edgeLight(cards, wake) {
       }
       const old = state.energy; state.energy = state.next; state.next = old;
       state.peak = Math.max(max, state.peak * Math.exp(-dt / 1.5));
-      if (max < .004 && !state.target.some(p => p > .004)) {states.delete(card); changed = all = true;}
+      if (max < .004 && state.base < .004 && !state.baseAim && !state.target.some(p => p > .004)) {states.delete(card); changed = all = true;}
     }
     if (changed) {
       const R = GLOW.radius;

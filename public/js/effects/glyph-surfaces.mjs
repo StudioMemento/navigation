@@ -1,15 +1,17 @@
-import { PITCH, range } from './glyph-cells.mjs';
+import { PITCH, range, shiftCanvas, shiftArray } from './glyph-cells.mjs';
 import { acceptsLight, outlineOf } from './surface-targets.mjs';
 
-// The surfaces are windows on the same field of glyphs as the margins: the same grid, the same letters, the same
-// fronts. They stay clean at rest. The pointer leaves a trail of glyphs; a touch sends a torn front across every
-// surface on screen and into the margins. Once lit, the glyphs of the surfaces travel with the page when it scrolls.
-// Glyphs are full along the outline and on the black, very faint where a photograph shows its subject, never over type.
-const GAIN = {rim:1, panel:.7, photo:.18};
+// The surfaces are windows on the same wall of glyphs as the margins: the same grid, the same letters, the same
+// fronts. They stay clean at rest: only what the pointer (or a finger) wakes shows on them, never the slow glitches
+// of the wall. The pointer leaves a trail of glyphs; a touch or a click sends a torn front across every surface on
+// screen and into the margins. Glyphs are full along the outline and on the black, faint over a photograph, never
+// over type. Everything is measured in page coordinates, so the glyphs stay on their surface while the page scrolls.
+const GAIN = {rim:.7, panel:.42, photo:.1};
 const RIM = PITCH * 1.6;
-const TRAIL = {radius:110, every:7, burst:6, wave:120, gap:.26, reach:320, power:.55};
+const TRAIL = {radius:110, every:7, burst:6, wave:150, gap:.4, reach:260, power:.35};
 
 const smoothstep = (a, b, x) => { const t = Math.max(0, Math.min(1, (x - a) / (b - a))); return t * t * (3 - 2 * t); };
+const page = () => ({x:window.scrollX || 0, y:window.scrollY || 0});
 function position(value) {
   const named = {left:0, top:0, center:.5, right:1, bottom:1};
   return value in named ? named[value] : value.endsWith('%') ? parseFloat(value) / 100 : .5;
@@ -32,9 +34,10 @@ function sample(img, done) {
     done(src);
   }).catch(() => {});
 }
-function photoOf(img) {
-  const box = img.getBoundingClientRect(), style = getComputedStyle(img), [px = '50%', py = '50%'] = style.objectPosition.split(' ');
-  return {img, src:img.currentSrc || img.src, box, fit:style.objectFit, px:position(px), py:position(py), nw:img.naturalWidth || box.width, nh:img.naturalHeight || box.height};
+function photoOf(img, at) {
+  const r = img.getBoundingClientRect(), style = getComputedStyle(img), [px = '50%', py = '50%'] = style.objectPosition.split(' ');
+  const box = {left:r.left + at.x, right:r.right + at.x, top:r.top + at.y, bottom:r.bottom + at.y, width:r.width, height:r.height};
+  return {img, src:img.currentSrc || img.src, box, fit:style.objectFit, px:position(px), py:position(py), nw:img.naturalWidth || r.width, nh:img.naturalHeight || r.height};
 }
 function photoGain(photos, x, y) {
   for (const p of photos) {
@@ -55,13 +58,13 @@ function photoGain(photos, x, y) {
   return -1;
 }
 
-function textRects(tab) {
+function textRects(tab, at) {
   const rects = [], walker = document.createTreeWalker(tab, NodeFilter.SHOW_TEXT), range = document.createRange();
   while (walker.nextNode()) {
     const node = walker.currentNode;
     if (!node.data.trim() || node.parentElement?.closest('[hidden],.mm-sr,.sr-only')) continue;
     range.selectNodeContents(node);
-    for (const r of range.getClientRects()) if (r.width && r.height) rects.push(r);
+    for (const r of range.getClientRects()) if (r.width && r.height) rects.push({left:r.left + at.x, right:r.right + at.x, top:r.top + at.y, bottom:r.bottom + at.y});
   }
   return rects;
 }
@@ -93,45 +96,54 @@ function eligible(tab) {
 }
 
 export function glyphSurfaces(field, {cards, feed}) {
-  const cells = field.cells, canvas = document.createElement('canvas');
-  canvas.className = 'mm-glyph-surface';
-  canvas.setAttribute('aria-hidden', 'true');
-  document.body.append(canvas);
+  const cells = field.cells, layer = document.createElement('div'), canvas = document.createElement('canvas');
+  layer.className = 'mm-glyph-surface';
+  layer.setAttribute('aria-hidden', 'true');
+  layer.append(canvas);
+  document.body.append(layer);
   const ctx = canvas.getContext('2d');
   let gain = new Float32Array(0), owner = new Int16Array(0), rim = new Uint8Array(0), shown = new Float32Array(0), letters = new Int8Array(0);
   let tabs = [], members = new Map(), hidden = false, hideTimer = 0;
-  let current = null, travel = 0, waveTravel = 0, lastWave = -5, anchor = null;
+  let current = null, travel = 0, waveTravel = 0, lastWave = -5;
 
-  // The grid of the surfaces is the screen at the moment they were measured; the canvas then follows the page.
-  function shift() { return anchor ? {x:scrollX - anchor.x, y:scrollY - anchor.y} : {x:0, y:0}; }
   function forget() {
     gain.fill(0); owner.fill(0); rim.fill(0);
-    tabs = []; members = new Map(); anchor = null;
+    tabs = []; members = new Map();
   }
   function wipe() {
     if (ctx) ctx.clearRect(0, 0, canvas.width, canvas.height);
     shown.fill(0);
-    canvas.style.transform = '';
   }
   const renderer = {
     resize(f) {
       canvas.width = Math.max(1, Math.round(f.width * f.dpr));
       canvas.height = Math.max(1, Math.round(f.height * f.dpr));
       canvas.style.height = f.height + 'px';
+      canvas.style.top = f.anchorTop + 'px';
       ctx?.setTransform(f.dpr, 0, 0, f.dpr, 0, 0);
       gain = new Float32Array(f.count); owner = new Int16Array(f.count); rim = new Uint8Array(f.count); shown = new Float32Array(f.count); letters = new Int8Array(f.count);
-      tabs = []; members = new Map(); current = null; anchor = null;
-      canvas.style.transform = '';
+      tabs = []; members = new Map(); current = null;
+    },
+    // The live window moved along the wall: the glyphs and their surfaces keep their place on the page.
+    shift(rows, f) {
+      shiftCanvas(canvas, rows, f);
+      canvas.style.top = f.anchorTop + 'px';
+      for (const array of [gain, owner, rim, shown, letters]) shiftArray(array, rows, f.cols, 0);
+      const offset = rows * f.cols, count = f.count;
+      for (const entry of members.values()) {
+        entry.ids = entry.ids.map(id => id - offset).filter(id => id >= 0 && id < count);
+        entry.stale = true;
+      }
     },
     paint(id, cell) {
       if (!ctx) return;
       const g = gain[id];
-      let alpha = g && !cell.quiet && !hidden ? Math.min(1, cell.level * g) : 0;
+      let alpha = g && cell.surface && !hidden ? Math.min(1, cell.level * g) : 0;
       if (alpha < .008) alpha = 0;
       const before = shown[id];
       if (alpha === before && !alpha) return;
       if (alpha && Math.abs(alpha - before) < (alpha > before ? .006 : .015) && cell.letter === letters[id]) return;
-      cells.stamp(ctx, id, cell.letter, alpha, cell.hot);
+      cells.stamp(ctx, id, cell.letter, alpha, cell.tone);
       shown[id] = alpha;
       letters[id] = cell.letter;
     },
@@ -142,43 +154,46 @@ export function glyphSurfaces(field, {cards, feed}) {
     }
   };
   field.addRenderer(renderer);
-  // Glyphs that light on the outline hand their light to the edge of the surface.
-  cells.onIgnite = (id, strength, options) => {
-    if (!rim[id] || options.quiet || hidden) return;
-    const tab = tabs[owner[id] - 1], off = shift();
-    if (tab) feed(tab, cells.x(id) - off.x, cells.y(id) - off.y, strength * (options.wave ? .7 : .45));
+  // Only the glyphs woken by a pointer or a finger hand their light to the edge they touch.
+  cells.onIgnite = (id, strength, cell) => {
+    if (!cell.feed || !rim[id] || hidden) return;
+    const tab = tabs[owner[id] - 1];
+    if (tab) feed(tab, cells.x(id), cells.y(id), strength * (cell.life === 'wave' ? .35 : .3));
   };
 
   function shade(tab) {
     const entry = members.get(tab);
     if (!entry) return;
     for (const id of entry.ids) {
-      const photo = rim[id] ? -1 : photoGain(entry.photos, cells.x(id), cells.y(id));
+      if (owner[id] !== entry.index) continue;
+      const photo = rim[id] ? -1 : photoGain(entry.photos, cells.x(id), cells.docY(id));
       gain[id] = rim[id] ? GAIN.rim : photo >= 0 ? photo : GAIN.panel;
     }
   }
   function sampled(src) { for (const [tab, entry] of members) if (entry.photos.some(p => p.src === src)) shade(tab); }
+  function unmap(entry) { for (const id of entry.ids) if (owner[id] === entry.index) {owner[id] = 0; gain[id] = 0; rim[id] = 0;} }
   function map(tab) {
-    if (members.has(tab)) return members.get(tab).ids;
+    const known = members.get(tab);
+    if (known && !known.stale) return known.ids;
     if (!cells.cols) return null;
-    if (!anchor) anchor = {x:scrollX, y:scrollY};
-    const off = shift(), move = r => ({left:r.left + off.x, right:r.right + off.x, top:r.top + off.y, bottom:r.bottom + off.y, width:r.width, height:r.height});
-    const index = tabs.push(tab), points = outlineOf(tab).map(p => ({x:p.x + off.x, y:p.y + off.y}));
-    const photos = [...tab.querySelectorAll('img,video')].map(photoOf).filter(p => p.box.width && p.box.height).map(p => ({...p, box:move(p.box)}));
-    const texts = textRects(tab).map(move);
+    if (known) unmap(known);
+    const at = page(), index = known ? known.index : tabs.push(tab);
+    const points = outlineOf(tab).map(p => ({x:p.x + at.x, y:p.y + at.y}));
+    const photos = [...tab.querySelectorAll('img:not([aria-hidden=true]),video')].map(img => photoOf(img, at)).filter(p => p.box.width && p.box.height);
+    const texts = textRects(tab, at);
     const xs = points.map(p => p.x), ys = points.map(p => p.y);
-    const c0 = Math.max(0, Math.floor((Math.min(...xs) - cells.origin) / PITCH)), c1 = Math.min(cells.cols - 1, Math.floor((Math.max(...xs) - cells.origin) / PITCH));
-    const r0 = Math.max(0, Math.floor(Math.min(...ys) / PITCH)), r1 = Math.min(cells.rows - 1, Math.floor(Math.max(...ys) / PITCH));
+    const c0 = Math.max(0, Math.floor(Math.min(...xs) / PITCH)), c1 = Math.min(cells.cols - 1, Math.floor(Math.max(...xs) / PITCH));
+    const r0 = Math.max(0, Math.floor((Math.min(...ys) - cells.anchorTop) / PITCH)), r1 = Math.min(cells.rows - 1, Math.floor((Math.max(...ys) - cells.anchorTop) / PITCH));
     const list = [];
     for (let row = r0; row <= r1; row++) for (let col = c0; col <= c1; col++) {
-      const id = row * cells.cols + col, x = cells.x(id), y = cells.y(id);
+      const id = row * cells.cols + col, x = cells.x(id), y = cells.docY(id);
       if (owner[id] || !insidePolygon(points, x, y) || within(texts, x, y, 3)) continue;
       owner[id] = index;
       rim[id] = edgeDistance(points, x, y) < RIM ? 1 : 0;
       list.push(id);
     }
     const ids = Int32Array.from(list);
-    members.set(tab, {ids, photos});
+    members.set(tab, {ids, photos, index, stale:false});
     shade(tab);
     for (const p of photos) if (p.img instanceof HTMLImageElement) sample(p.img, sampled);
     return ids;
@@ -192,53 +207,47 @@ export function glyphSurfaces(field, {cards, feed}) {
       if (queue.length) idle(next, {timeout:2000});
     })();
   }
-  function mapVisible() { for (const tab of cards) if (!members.has(tab) && eligible(tab)) map(tab); }
+  function mapVisible() { for (const tab of cards) if ((!members.has(tab) || members.get(tab).stale) && eligible(tab)) map(tab); }
   function show() {
     if (!hidden) return;
     clearTimeout(hideTimer);
     wipe();
     hidden = false;
-    canvas.style.opacity = '';
+    layer.style.opacity = '';
   }
-  // The surfaces moved under the grid (a carousel, a dialog): fade what is lit and measure again later.
+  // The surfaces moved under the wall (a carousel, a dialog, a new view): fade what is lit and measure again later.
   function release() {
     current = null;
     forget();
     if (hidden) return;
     hidden = true;
-    canvas.style.opacity = '0';
+    layer.style.opacity = '0';
     clearTimeout(hideTimer);
     hideTimer = setTimeout(wipe, 180);
-  }
-  // The page scrolled: the lit glyphs ride along with their surfaces. Far from where they were measured, start over.
-  function scrolled() {
-    if (!anchor) return;
-    const off = shift();
-    if (Math.abs(off.y) > innerHeight * .6 || Math.abs(off.x) > innerWidth * .3) {release(); return;}
-    canvas.style.transform = 'translate3d(' + (-off.x) + 'px,' + (-off.y) + 'px,0)';
   }
   function enter(tab, x, y) {
     const ids = map(tab);
     current = tab; travel = 0; waveTravel = 0;
     if (!ids?.length) return;
+    const index = members.get(tab).index;
     for (let n = 0; n < TRAIL.burst; n++) {
       const a = range(0, 6.283), r = 28 * Math.sqrt(Math.random()), id = cells.cellAt(x + r * Math.cos(a), y + r * Math.sin(a));
-      if (id >= 0 && owner[id] === tabs.indexOf(tab) + 1) cells.ignite(id, range(.6, .95));
+      if (id >= 0 && owner[id] === index) cells.ignite(id, range(.6, .95), {life:'trail', warm:true, feed:true});
     }
   }
-  // The trail: glyphs wake around the pointer and scramble out; every 120 px a small front runs through the surface.
-  function move(tab, clientX, clientY, distance) {
+  // The trail: glyphs wake around the pointer and decode; every 150 px a small front runs through the surface.
+  function move(tab, x, y, distance) {
     if (!field.ready || field.blocked) return;
     show();
-    const off = shift(), x = clientX + off.x, y = clientY + off.y;
     if (tab !== current) {
       current = null;
       if (!tab || !eligible(tab)) return;
-      enter(tab, clientX + shift().x, clientY + shift().y);
+      enter(tab, x, y);
       field.wake();
       return;
     }
-    const ids = members.get(tab)?.ids, index = tabs.indexOf(tab) + 1;
+    if (!tab) return;
+    const ids = map(tab), index = members.get(tab)?.index;
     if (!ids?.length) return;
     travel += Math.min(distance, 200);
     waveTravel += Math.min(distance, 200);
@@ -246,28 +255,22 @@ export function glyphSurfaces(field, {cards, feed}) {
       travel -= TRAIL.every;
       const a = range(0, 6.283), r = TRAIL.radius * Math.sqrt(Math.random());
       const id = cells.cellAt(x + r * Math.cos(a), y + r * Math.sin(a));
-      if (id >= 0 && owner[id] === index && Math.random() < 1 - (r / TRAIL.radius) ** 2) cells.ignite(id, range(.45, .9));
+      if (id >= 0 && owner[id] === index && Math.random() < 1 - (r / TRAIL.radius) ** 2) cells.ignite(id, range(.45, .9), {life:'trail', warm:true, feed:true});
     }
     if (waveTravel >= TRAIL.wave && cells.time - lastWave >= TRAIL.gap) {
       waveTravel = 0; lastWave = cells.time;
-      cells.impulse(x, y, {cells:ids, power:TRAIL.power, reach:TRAIL.reach, limited:false});
+      cells.impulse(x, y, {cells:ids, power:TRAIL.power, reach:TRAIL.reach, limited:false, feed:true});
     }
     field.wake();
   }
-  // A touch, as the finger lands, sends one front through every surface on screen and through the margins.
-  // It keeps running while the page scrolls under the finger.
+  // A touch sends one front through every surface on screen and through the margins.
   function touch(clientX, clientY) {
     if (!field.ready || field.blocked) return false;
-    return field.impulse(clientX, clientY);
+    return field.impulse(clientX, clientY, {feed:true, power:.85});
   }
-  // A front through the whole screen starts from the screen as it is now: measure the surfaces again if the page moved.
-  function realign() {
-    const off = shift();
-    if (off.x || off.y) {forget(); wipe();}
-    show();
-    mapVisible();
-  }
+  // A front through the whole screen: surfaces on screen that were never measured are measured now.
+  function realign() { show(); mapVisible(); }
   field.on('impulse', (x, y, options) => { if (!options.quiet && !options.cells) realign(); });
   field.on('ready', () => {forget(); wipe(); setTimeout(prepare, 1200);});
-  return {move, release, scrolled, touch, mapVisible, map};
+  return {move, release, scrolled() {}, touch, mapVisible, map};
 }

@@ -1,7 +1,7 @@
 import { edgeLight } from './edge-light.mjs';
 import { typeLight } from './type-light.mjs';
 import { glyphSurfaces } from './glyph-surfaces.mjs';
-import { acceptsLight, outlineOf, primaryTitle, surfaceIndex } from './surface-targets.mjs';
+import { acceptsLight, acceptsHint, outlineOf, primaryTitle, surfaceIndex } from './surface-targets.mjs';
 
 // A soft light under the pointer on the hovered surface: a light, not a tint. Black stays black (soft-light).
 function sheenLayer() {
@@ -28,6 +28,7 @@ function sheenLayer() {
 }
 
 // One passive input stream for every surface effect, including content added by a carousel or a dialog.
+// On a phone there is no hover: the square at the centre of the screen is the pointer, and scrolling moves it.
 export function mountSurfaces(field) {
   const cards = surfaceIndex(deckChange), ink = typeLight();
   const edges = edgeLight(cards, schedule);
@@ -36,7 +37,7 @@ export function mountSurfaces(field) {
   const forced = matchMedia('(forced-colors:active)'), reduced = matchMedia('(prefers-reduced-motion:reduce)');
   const touchStyle = matchMedia('(hover:none) and (pointer:coarse)'), fine = matchMedia('(hover:hover) and (pointer:fine)');
   let pointer = null, keyboard = null, pressed = null, touchTimer = 0, hovered = null;
-  let request = 0, previous = 0, dirty = false;
+  let request = 0, previous = 0, dirty = false, focused = new Set(), settle = 0;
 
   function hover(card) {
     if (hovered === card) return;
@@ -44,20 +45,54 @@ export function mountSurfaces(field) {
     hovered = card;
     card?.setAttribute('data-mm-hover', '');
   }
-  // A carousel moved or a deck changed: light leaves with a short fade, never in one frame.
+  // A carousel moved, a deck changed or a view was swapped: light leaves with a short fade, never in one frame.
   function deckChange() {
     ink.cool();
     edges.fade();
     glyphs?.release();
     sheen.hide();
     hover(null);
+    unfocus();
     if (pointer || keyboard) schedule();
+    clearTimeout(settle);
+    if (touchStyle.matches) settle = setTimeout(() => {dirty = true; schedule(true);}, 260);
+  }
+  // The phone's square of focus: about as tall as the screen is wide, at its centre.
+  function square() {
+    const side = Math.min(innerWidth, innerHeight * .62);
+    return {top:(innerHeight - side) / 2, bottom:(innerHeight + side) / 2, x:innerWidth / 2, y:innerHeight / 2};
+  }
+  function unfocus() {
+    for (const card of focused) card.removeAttribute('data-mm-hover');
+    focused = new Set();
+  }
+  // The surfaces whose centre is in the square take the hover state; the nearest one warms its title and edge.
+  function focus() {
+    const modal = document.documentElement.hasAttribute('data-mm-modal');
+    const zone = square(), inside = [];
+    if (!modal) for (const card of cards) {
+      if (!acceptsLight(card) || card.closest('dialog,.mm-header,.mm-dock')) continue;
+      const b = card.getBoundingClientRect();
+      if (!b.width || !b.height || b.bottom < 0 || b.top > innerHeight) continue;
+      const cy = (b.top + b.bottom) / 2, cx = (b.left + b.right) / 2;
+      if ((cy >= zone.top && cy <= zone.bottom) || (b.top <= zone.y && b.bottom >= zone.y)) inside.push({card, d:Math.abs(cy - zone.y) + .2 * Math.abs(cx - zone.x)});
+    }
+    inside.sort((a, b) => a.d - b.d);
+    const next = new Set(inside.slice(0, 4).map(entry => entry.card));
+    for (const card of focused) if (!next.has(card)) card.removeAttribute('data-mm-hover');
+    for (const card of next) card.setAttribute('data-mm-hover', '');
+    focused = next;
+    const lead = inside[0]?.card || null;
+    ink.target(lead ? primaryTitle(lead) : null, null, {touch:true});
+    edges.target(lead ? {x:zone.x, y:zone.y} : null, {primary:lead, neighbours:false});
   }
   function select() {
+    if (touchStyle.matches && !keyboard) {focus(); return;}
     const modal = document.documentElement.hasAttribute('data-mm-modal');
     const target = keyboard || (pointer && document.elementFromPoint(pointer.x, pointer.y));
     const dialog = modal && target ? target.closest('dialog[open]') : null;
-    if (!target || !acceptsLight(target) || target.closest('.mm-header,.mm-dock') || (modal && !dialog)) {
+    // Over a neighbouring slide there is no hover, but its edges may still take the hint of light.
+    if (!target || !acceptsHint(target) || target.closest('.mm-header,.mm-dock') || (modal && !dialog)) {
       ink.target(null); edges.target(null); sheen.hide(); hover(null);
       return;
     }
@@ -92,17 +127,22 @@ export function mountSurfaces(field) {
     if (titleMoving || edgesMoving) request = requestAnimationFrame(frame);
     else previous = 0;
   }
-  function schedule() {
-    dirty = dirty || !!(pointer || keyboard);
+  function schedule(always = false) {
+    dirty = dirty || always || !!(pointer || keyboard) || touchStyle.matches;
     if (!request) request = requestAnimationFrame(frame);
   }
   function reset() {
     clearTimeout(touchTimer);
     cancelAnimationFrame(request); request = previous = 0; dirty = false;
     pointer = keyboard = pressed = null;
-    ink.clear(); edges.clear(); glyphs?.release(); sheen.hide(); hover(null);
+    ink.clear(); edges.clear(); glyphs?.release(); sheen.hide(); hover(null); unfocus();
+    if (touchStyle.matches) schedule(true);
   }
-  function release() { pointer = keyboard = null; ink.target(null); edges.target(null); sheen.hide(); hover(null); schedule(); }
+  function release() {
+    pointer = keyboard = null;
+    if (!touchStyle.matches) {ink.target(null); edges.target(null); sheen.hide(); hover(null);}
+    schedule();
+  }
   function track(event) {
     if (!event.isPrimary && event.isPrimary !== undefined) return;
     const touch = event.pointerType === 'touch' || event.pointerType === 'pen';
@@ -113,6 +153,7 @@ export function mountSurfaces(field) {
     }
     const distance = pointer ? Math.hypot(event.clientX - pointer.x, event.clientY - pointer.y) : 0;
     keyboard = null; pointer = {x:event.clientX, y:event.clientY, touch};
+    if (touch && touchStyle.matches) {pointer = null; return;}
     if (glyphs && !touch && !reduced.matches) {
       const at = document.elementFromPoint(pointer.x, pointer.y), card = at?.closest('.mm-tab');
       glyphs.move(card && !document.documentElement.hasAttribute('data-mm-modal') ? card : null, pointer.x, pointer.y, distance);
@@ -152,6 +193,14 @@ export function mountSurfaces(field) {
     else {edges.scrolled(); glyphs?.scrolled();}
     schedule();
   }, {capture:true, passive:true});
+  // A view swapped by hiding its parent (the Portfolio's grid and project) lets its light go at once.
+  new MutationObserver(records => {
+    if (records.some(r => r.oldValue !== r.target.getAttribute('hidden') && !r.target.matches('.home-card') && (r.target.matches('.mm-tab') || r.target.querySelector('.mm-tab')))) deckChange();
+  }).observe(document.body, {subtree:true, attributes:true, attributeFilter:['hidden'], attributeOldValue:true});
+  if (touchStyle.matches) {
+    schedule(true);
+    window.addEventListener('load', () => schedule(true), {once:true});
+  }
   // A change of width moves every surface; a change of height alone is the browser's bars coming and going.
   let width = document.documentElement.clientWidth;
   window.addEventListener('resize', () => {

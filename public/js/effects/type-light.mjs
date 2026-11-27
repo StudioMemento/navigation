@@ -1,33 +1,32 @@
 import { acceptsLight } from './surface-targets.mjs';
 
-// All pigment is clipped to the original text. Native highlight ranges add a small
-// contour to the hottest glyphs in browsers that support them, without another layout.
-const STOPS=[[0,232,102,26],[9,255,125,0],[20,255,179,94],[32,255,217,173],[44,255,239,220]];
+// All pigment is clipped to the original text. At rest a title is grey, darker at its foot (the same stops as
+// --mm-title-ink in visuals.css); its surface under the pointer warms it towards amber, rising from the foot.
+// The pointer itself only adds soft lenses of light: continuous, never one letter switched on at a time.
+const INK=[[0,111,107,102],[14,140,135,129],[30,185,180,173],[46,221,217,211],[62,240,237,232]];
+const LIT=[[0,226,98,24],[14,255,125,0],[30,255,168,76],[46,255,210,160],[62,255,236,216]];
 const ramps=new Map();
 const clearLens='linear-gradient(transparent,transparent)';
 
-function pigment(step,touch) {
-  const key=step+(touch?100:0);
-  if (ramps.has(key)) return ramps.get(key);
-  const energy=step/64,chroma=touch?1:.3+.7*energy;
-  const veil=(1-.87*energy).toFixed(3);
+function pigment(step) {
+  if (ramps.has(step)) return ramps.get(step);
+  const energy=step/64,veil=(1-.8*energy).toFixed(3);
   const base=[],cover=[];
-  for (const [stop,r,g,b] of STOPS) {
-    const grey=.299*r+.587*g+.114*b;
-    const rgb=[r,g,b].map(v=>Math.round(grey+(v-grey)*chroma)).join(',');
+  INK.forEach(([stop,...grey],i)=>{
+    const rgb=grey.map((v,c)=>Math.round(v+(LIT[i][c+1]-v)*energy)).join(',');
     base.push('rgb('+rgb+') '+stop+'%');
     cover.push('rgba('+rgb+','+veil+') '+stop+'%');
-  }
+  });
   const gradient=stops=>'linear-gradient(to top,'+stops.join(',')+')';
   const colors={cover:gradient(cover),base:gradient(base)};
-  ramps.set(key,colors);return colors;
+  ramps.set(step,colors);return colors;
 }
 
-// The light of a warm title spills a little outside its glyphs: a close rim and a wider, fainter halo.
+// The light of a warm title spills just outside its glyphs: one short, faint halo.
 function glow(step,em) {
   if (!step) return 'none';
-  const w=step/64,near=Math.min(6,Math.max(1.5,em*.04)),far=Math.min(18,Math.max(4,em*.12));
-  return 'drop-shadow(0 0 '+near.toFixed(1)+'px rgba(255,150,55,'+(.34*w).toFixed(3)+')) drop-shadow(0 0 '+far.toFixed(1)+'px rgba(255,110,0,'+(.2*w).toFixed(3)+'))';
+  const w=step/64,near=Math.min(5,Math.max(1.2,em*.03));
+  return 'drop-shadow(0 0 '+near.toFixed(1)+'px rgba(255,140,40,'+(.16*w).toFixed(3)+'))';
 }
 
 function readTitle(title,touch) {
@@ -49,51 +48,24 @@ function readTitle(title,touch) {
   title.style.setProperty('--ink-tile',Math.max(18,em*.60).toFixed(1)+'px');
   title.setAttribute('data-lit','');
   return {title,width,height,words,em,touch,warmth:0,goal:0,near:0,last:-1,lenses:'',current:null,
-    spots:Array.from({length:3},()=>({x:0,y:0,level:0,age:1,range:null,band:-1}))};
+    spots:Array.from({length:3},()=>({x:0,y:0,level:0}))};
 }
 
-function glyphRange(word,point,fraction) {
-  let index=word.start+Math.floor(fraction*(word.end-word.start));
-  const caret=document.caretPositionFromPoint?.(point.x,point.y);
-  if (caret?.offsetNode===word.node) index=caret.offset;
-  else if (!caret) {
-    const pos=document.caretRangeFromPoint?.(point.x,point.y);
-    if (pos?.startContainer===word.node) index=pos.startOffset;
-  }
-  index=Math.max(word.start,Math.min(word.end-1,index));
-  const range=document.createRange();
-  range.setStart(word.node,Math.max(word.start,index-1));
-  range.setEnd(word.node,Math.min(word.end,index+2));
-  return range;
-}
-function approach(now,aim,dt,still) {
+function approach(now,aim,dt,still,up=.22,down=.9) {
   if (still || Math.abs(aim-now)<.004) return aim;
-  const seconds=aim>now ? .16 : .90;
-  return aim+(now-aim)*Math.exp(-dt/seconds);
+  return aim+(now-aim)*Math.exp(-dt/(aim>now ? up : down));
 }
 
 export function typeLight() {
   const reduced=matchMedia('(prefers-reduced-motion: reduce)'),states=new Map();
-  const bands=[];
-  if (globalThis.CSS?.highlights && typeof Highlight==='function') {
-    for (const suffix of ['low','high']) {
-      const band=new Highlight();CSS.highlights.set('memento-ember-'+suffix,band);bands.push(band);
-    }
-  }
   let active=null;
-  function detach(spot) {
-    if (spot.band>=0) bands[spot.band].delete(spot.range);
-    spot.band=-1;
-  }
   function remove(state) {
-    for (const spot of state.spots) detach(spot);
     state.title.removeAttribute('data-lit');
     for (const prop of ['--ink-tile','--ink-ramp','--ink-veil','--ink-lenses','--ink-glow']) state.title.style.removeProperty(prop);
     states.delete(state.title);
   }
   // A title takes its whole gradient while its surface is hovered; the lenses follow the pointer over the glyphs.
   function target(title,point,{keyboard=false,touch=false}={}) {
-    const entered=active!==title;
     active=title;
     if (!title || !acceptsLight(title)) return;
     if (!states.has(title)) {
@@ -101,7 +73,6 @@ export function typeLight() {
       states.set(title,readTitle(title,touch));
     }
     const state=states.get(title),box=title.getBoundingClientRect();
-    const cold=state.near===0 || state.warmth<.12;
     state.goal=1;
     if (!point && !keyboard) {state.near=0;state.current=null;return;}
     let x=point?(point.x-box.left)*state.width/(box.width || 1):0,y=point?(point.y-box.top)*state.height/(box.height || 1):0;
@@ -113,22 +84,17 @@ export function typeLight() {
       const d=Math.hypot(Math.max(w.l-x,0,x-w.r),Math.max(w.t-y,0,y-w.b));
       if (d<gap) {nearest=w;gap=d;}
     }
-    state.near=Math.max(0,1-gap/Math.max(3,Math.min(7,state.em*.025)));
+    // The lens gathers as the pointer comes near the letters, and is full over them.
+    const t=Math.min(1,gap/Math.max(24,state.em*.6));
+    state.near=1-t*t*(3-2*t);
     if (!state.near || !nearest) {state.current=null;return;}
     let spot=null,dist=Math.max(12,state.em*.50);
     for (const s of state.spots) {
       const d=Math.hypot(x-s.x,y-s.y);
       if ((s.level || s===state.current) && d<dist) {spot=s;dist=d;}
     }
-    if (!spot) {spot=state.spots.reduce((a,b)=>a.level<=b.level?a:b);detach(spot);spot.level=0;spot.range=null;}
-    if (entered || (cold && spot!==state.current)) spot.age=0;
+    if (!spot) {spot=state.spots.reduce((a,b)=>a.level<=b.level?a:b);spot.level=0;}
     spot.x=x;spot.y=y;state.current=spot;
-    if (bands.length) {
-      const range=glyphRange(nearest,{x:box.left+x*box.width/state.width,y:box.top+y*box.height/state.height},(x-nearest.l)/(nearest.r-nearest.l || 1));
-      if (!spot.range || spot.range.startContainer!==range.startContainer || spot.range.startOffset!==range.startOffset || spot.range.endOffset!==range.endOffset) {
-        detach(spot);spot.range=range;
-      }
-    }
   }
   function frame(dt) {
     let moving=false;
@@ -139,7 +105,7 @@ export function typeLight() {
       s.warmth=approach(s.warmth,goal,dt,still);
       const step=Math.round(s.warmth*64);
       if (step!==s.last) {
-        const color=pigment(step,s.touch);s.last=step;
+        const color=pigment(step);s.last=step;
         title.style.setProperty('--ink-ramp',color.base);title.style.setProperty('--ink-veil',color.cover);
         title.style.setProperty('--ink-glow',glow(step,s.em));
       }
@@ -147,19 +113,15 @@ export function typeLight() {
       let changing=s.warmth!==goal;
       for (const spot of s.spots) {
         const aim=spot===s.current?near:0;
-        spot.level=approach(spot.level,aim,dt,still);spot.age=Math.min(1,spot.age+dt);
-        if (spot.level!==aim || (!still && aim && spot.age<.85)) changing=true;
-        const t=spot.age/.13,flash=still?0:t*Math.exp(1-t);
-        const gain=Math.min(1,spot.level*(.96+.70*flash));
-        if (spot.range) {
-          const band=gain>.55?1:gain>.14?0:-1;
-          if (band!==spot.band) {detach(spot);if (band>=0) bands[band].add(spot.range);spot.band=band;}
-        }
+        spot.level=approach(spot.level,aim,dt,still,.3,1.1);
+        if (spot.level!==aim) changing=true;
+        // A wide, soft lens: the light passes over the letters without ever switching one on by itself.
+        const gain=Math.min(1,spot.level*.72);
         if (gain<.004) {lenses.push(clearLens);continue;}
-        const radius=Math.max(26,s.em*1.25).toFixed(1)+'px '+Math.max(17,s.em*.73).toFixed(1)+'px';
+        const radius=Math.max(40,s.em*2.1).toFixed(1)+'px '+Math.max(26,s.em*1.25).toFixed(1)+'px';
         const origin=spot.x.toFixed(1)+'px '+spot.y.toFixed(1)+'px';
-        const tint=(rgb,a)=>'rgba('+rgb+','+(a*gain).toFixed(2)+')';
-        lenses.push('radial-gradient(ellipse '+radius+' at '+origin+','+tint('255,251,217',1)+' 0%,'+tint('255,220,116',.96)+' 23%,'+tint('255,164,45',.60)+' 51%,'+tint('255,142,38',.13)+' 78%,transparent)');
+        const tint=(rgb,a)=>'rgba('+rgb+','+(a*gain).toFixed(3)+')';
+        lenses.push('radial-gradient(ellipse '+radius+' at '+origin+','+tint('255,244,214',.62)+' 0%,'+tint('255,214,140',.46)+' 26%,'+tint('255,170,70',.24)+' 54%,'+tint('255,140,40',.06)+' 80%,transparent)');
       }
       const result=lenses.join(',');
       if (result!==s.lenses) {title.style.setProperty('--ink-lenses',result);s.lenses=result;}

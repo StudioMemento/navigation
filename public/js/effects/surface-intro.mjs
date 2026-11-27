@@ -1,4 +1,4 @@
-// Opening a page: one front of glyphs leaves the logotype and every surface on screen appears as it is reached.
+// Opening a page: one front of grey glyphs leaves the logotype and every surface on screen appears as it is reached.
 // The document holds the surfaces back with a CSS gate that releases on its own, so nothing stays hidden.
 const FRONT = 1150, FADE = 420, WAIT = 600;
 
@@ -18,7 +18,7 @@ export function playIntro(field) {
       tab.animate([{opacity:0, offset:0}], {duration:FADE, delay:Math.hypot(dx, dy) / FRONT * 1000 + 60, easing:'cubic-bezier(.22,1,.36,1)', fill:'backwards'});
     }
     open();
-    if (field?.ready) field.impulse(x, y);
+    if (field?.ready) field.impulse(x, y, {warm:false, surface:true, feed:false, speed:FRONT, limited:false, reach:2400});
   }
   // Wait for the field (a small atlas) at most a moment; the surfaces never wait for it.
   (function wait() {

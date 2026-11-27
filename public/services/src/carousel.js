@@ -1,8 +1,7 @@
+import { deckPose, pagesPose, perspectiveFor, poseTransform, poseBleed } from '/js/effects/deck-pose.mjs';
+
 // Owns horizontal gestures and animation only. Content and routing are callbacks.
-function fade01(value) {
-  const x=Math.max(0,Math.min(1,value));
-  return x*x*(3-2*x);
-}
+// The bundles are a deck in perspective; each category is one card on the padding that turns its pages in depth.
 
 export class Carousel {
   constructor(
@@ -31,8 +30,8 @@ export class Carousel {
       this.width = width;
       this.height = this.cards[0].offsetHeight || 1;
       this.wide = Number(getComputedStyle(element).getPropertyValue('--layout-wide')) || 0;
-      this.stride = width * (this.fan ? 0.83 : 0.89);
-      this.perspective = 1100 + 900 * this.wide;
+      this.stride = width * (this.fan ? 0.42 : 0.6);
+      this.perspective = perspectiveFor(width);
       this.reserveBleed();
       this.render();
     };
@@ -110,44 +109,20 @@ export class Carousel {
     return this.mod(value + this.count / 2) - this.count / 2;
   }
   pose(distance) {
-    const amount = Math.abs(distance);
-    const wide = this.wide;
-    // Neighbours tuck behind at rest, then open around the layer handoff.
-    const bow = amount < 1 ? Math.sin(Math.PI * amount) * this.width * (0.08 + 0.12 * wide) : 0;
-    return {
-      x: distance * this.stride + Math.sign(distance) * bow,
-      y: this.fan
-        ? -this.height * (0.035 + 0.03 * wide) * Math.min(amount, 2)
-        : this.height * (0.008 + 0.017 * wide) * Math.min(amount, 2.6),
-      scale: Math.pow(this.fan ? 0.88 : 0.97 - 0.07 * wide, amount),
-      yaw:
-        -Math.sign(distance) *
-        Math.min(
-          this.fan ? 62 : 22 + 16 * wide,
-          amount * (this.fan ? 32 + 16 * wide : 12 + 12 * wide),
-        ),
-    };
+    return this.fan ? deckPose(distance, this.width) : pagesPose(distance, this.width);
   }
   reserveBleed() {
     // A CSS mask clips to its box. Reserve the projected envelope for every
     // visible swipe position, using the same pose as render (not a breakpoint).
     const edge = Math.min(2.7, this.count / 2 - 0.06);
-    let top = 0;
-    let bottom = 0;
-    for (let sample = 0; sample <= 80; sample++) {
-      const { y, scale, yaw } = this.pose((sample / 80) * edge);
-      const depth = (this.width * scale * Math.abs(Math.sin((yaw * Math.PI) / 180))) / 2;
-      const halfHeight = (this.height * scale) / 2 / (1 - depth / this.perspective);
-      top = Math.max(top, halfHeight - this.height / 2 - y);
-      bottom = Math.max(bottom, halfHeight - this.height / 2 + y);
-    }
+    const { top, bottom } = poseBleed((d) => this.pose(d), this.width, this.height, this.perspective, edge);
     const owner = this.fan ? this.element.closest('.bundle-opening') : this.element;
     for (const [side, amount] of [
       ['top', top],
       ['bottom', bottom],
     ]) {
       const property = `--carousel-bleed-${side}`;
-      const value = `${Math.ceil(amount) + 8}px`;
+      const value = `${Math.ceil(Math.max(0, amount)) + 8}px`;
       if (owner.style.getPropertyValue(property) !== value)
         owner.style.setProperty(property, value);
     }
@@ -172,33 +147,16 @@ export class Carousel {
           delete img.dataset.src;
         });
       }
-      const { x, y, scale, yaw } = this.pose(distance);
-      card.style.transform =
-        'translate3d(calc(-50% + ' +
-        x.toFixed(3) +
-        'px), ' +
-        y.toFixed(3) +
-        'px, 0) perspective(' +
-        this.perspective.toFixed(1) +
-        'px) rotateY(' +
-        yaw.toFixed(3) +
-        'deg) scale(' +
-        scale.toFixed(5) +
-        ')';
+      const pose = this.pose(distance);
+      card.style.transform = poseTransform(pose, this.perspective);
       // Light and text follow distance continuously, including both sides of a swipe.
       const fade = Math.min(1, amount);
       card.style.setProperty('--slide-focus', (1 - fade * fade * (3 - 2 * fade)).toFixed(4));
-      if (this.interactiveContents) {
-        // Keep the front plate opaque during the swipe. Only its photograph dims.
-        // Leave a short quiet interval between the outgoing and incoming captions.
-        const outer=Math.min(.76,edge*.45);
-        card.style.opacity=(1-fade01((amount-edge+outer)/outer)).toFixed(4);
-        card.style.setProperty('--scene-light',(1-.83*fade01(amount)).toFixed(4));
-        card.style.setProperty('--text-focus',(1-fade01(amount/.48)).toFixed(4));
-      } else {
-        card.style.opacity=Math.max(0,Math.min(1,(edge-amount)/.6,1-.6*Math.min(1,amount),1.65-amount)).toFixed(4);
-      }
-      card.style.visibility = amount >= edge ? 'hidden' : 'visible';
+      card.style.setProperty('--scene-light', pose.light.toFixed(4));
+      card.style.setProperty('--text-focus', pose.text.toFixed(4));
+      const visible = this.fan ? amount < edge : amount < 1;
+      card.style.opacity = (visible ? pose.opacity * Math.max(0, Math.min(1, (edge - amount) / .4)) : 0).toFixed(4);
+      card.style.visibility = visible ? 'visible' : 'hidden';
       card.style.zIndex = String(100 - Math.round(amount * 20));
       const isActive = index === active;
       if (card.dataset.active !== String(isActive)) card.dataset.active = String(isActive);
@@ -206,7 +164,7 @@ export class Carousel {
       card.setAttribute('aria-hidden', String(!isActive));
       if (this.interactiveContents)
         (card.querySelector('.popup-card-scroll') || card).inert = !isActive;
-      card.style.pointerEvents = amount >= edge ? 'none' : 'auto';
+      card.style.pointerEvents = visible ? 'auto' : 'none';
     });
     if (active !== this.active) {
       this.active = active;

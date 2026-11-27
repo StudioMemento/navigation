@@ -1,4 +1,4 @@
-# Memento Navigation R27
+# Memento Navigation R28
 
 Sito statico con home a slider verticale e cinque sezioni. La navbar porta direttamente alle pagine. Il logotipo riapre la home sulla sezione di provenienza.
 
@@ -22,19 +22,22 @@ Il foglio `public/site.css` definisce i margini responsive. Il logo e le icone s
 
 ## Effetti: il linguaggio dello sfondo
 
-Lo sfondo di glifi è il DNA visivo del sito. Margini e superfici condividono la stessa griglia di lettere MΞMΞNTO.
+Lo sfondo di glifi è il DNA visivo del sito. Margini e superfici condividono la stessa griglia di lettere MΞMΞNTO, che è una parete: appartiene al documento e scorre con il contenuto. A riposo il sito è monocromo; l'ambra compare solo dove c'è il cursore. Su telefono il quadrato al centro dello schermo fa da cursore: è a colori e la superficie che ci passa prende lo stato di hover; sopra e sotto il colore si desatura gradualmente.
 
 | File | Ruolo |
 | --- | --- |
-| `public/js/effects/glyph-cells.mjs` | La griglia condivisa: celle, cifratura, spegnimento, impulso strappato |
-| `public/js/effects/glyph-field.mjs` | I margini: campo a riposo, glitch, scia del cursore, parola decifrata, impulso al click |
-| `public/js/effects/glyph-surfaces.mjs` | Le superfici: scia di glifi sotto il puntatore, impulso al tocco su tutte le superfici, luce consegnata al bordo |
-| `public/js/effects/edge-light.mjs` | Il filo di luce sul contorno e il suo alone esterno; segue il documento durante lo scroll |
-| `public/js/effects/type-light.mjs` | I titoli: gradiente caldo con la superficie in hover, lenti sulle lettere, alone |
-| `public/js/effects/surfaces.mjs` | Un solo flusso di input per tutti gli effetti, lo stato `data-mm-hover` e la luce morbida sulla foto |
-| `public/js/effects/surface-intro.mjs` | L'apertura: un fronte di glifi parte dal logotipo e scopre le superfici |
+| `public/js/effects/glyph-tile.mjs` | La tessera della parete a riposo: la build la disegna in SVG, il campo vivo legge le stesse lettere |
+| `public/js/effects/glyph-cells.mjs` | La griglia condivisa: finestra viva sulla parete, vita dei glifi (cifratura, decodifica sulla lettera della parete, spegnimento), fronte strappato |
+| `public/js/effects/glyph-field.mjs` | I margini: glitch lenti in grigio, scia del cursore in ambra, parola decifrata, fronte al click |
+| `public/js/effects/glyph-surfaces.mjs` | Le superfici: solo i glifi del cursore o del dito, mai i glitch della parete; luce consegnata al bordo |
+| `public/js/effects/edge-light.mjs` | Il filo di luce sul contorno e il bagliore ampio e morbido (a mezza risoluzione); il cenno sulle superfici vicine, anche dietro la slide attiva |
+| `public/js/effects/type-light.mjs` | I titoli: grigi a riposo, caldi dal basso con la superficie in hover, lenti morbide e continue |
+| `public/js/effects/surfaces.mjs` | Un solo flusso di input per tutti gli effetti, lo stato `data-mm-hover`, il quadrato di fuoco su telefono |
+| `public/js/effects/surface-intro.mjs` | L'apertura: un fronte di glifi grigi parte dal logotipo e scopre le superfici |
+| `public/js/effects/deck-pose.mjs` | Gli slider: `deck` (card in prospettiva, vicine dietro e inclinate verso la camera) e `pages` (una card sul padding che cambia pagina in profondità) |
+| `public/js/missing.mjs` | La 404: il numero scritto dalla parete |
 
-L'apertura si spegne con `INTRO=false` in `scripts/build.mjs`. `templates/facet-texture.mjs` genera la trama dei titoli durante la build. Con movimento ridotto il campo e le facce tipografiche restano statici e le superfici non mostrano glifi. Ogni sezione ha un proprio foglio per griglie, schede e controlli. Le slide di Services usano un formato 16:9 su tutti i breakpoint. Su telefono i servizi di ciascun bundle si possono espandere sotto il carosello.
+L'apertura si spegne con `INTRO=false` in `scripts/build.mjs`. `templates/facet-texture.mjs` genera la trama dei titoli durante la build. Con movimento ridotto la parete resta statica e le superfici non mostrano glifi. Ogni sezione ha un proprio foglio per griglie, schede e controlli. Le slide di Services usano un formato 16:9 su tutti i breakpoint. Su telefono i servizi di ciascun bundle si possono espandere sotto il carosello. La galleria del Portfolio ha un palco fisso sul padding: l'immagine si adatta dentro e la stessa immagine, sfocata, riempie lo spazio vuoto.
 
 Le fotografie, le illustrazioni e i modelli 3D fanno parte dei contenuti.
 

@@ -1,10 +1,21 @@
 const SLIDE='.home-card,.flow-card,.showcase-card[data-slide],.carousel-card[data-slide]';
 const RECT=[['0%','0%'],['100%','0%'],['100%','100%'],['0%','100%']];
 
+export function isSlide(el) { return !!el?.closest(SLIDE); }
+
 export function acceptsLight(el) {
   if (!el?.isConnected || el.closest('[hidden],[inert],dialog:not([open]),.is-moving,.is-dragging')) return false;
   const slide=el.closest(SLIDE);
   return !slide || (slide.tabIndex===0 && slide.dataset.active!=='false' && slide.getAttribute('aria-hidden')!=='true');
+}
+
+// The hint of light reaches every surface that can be seen, the neighbouring slides of a carousel included.
+export function acceptsHint(el) {
+  if (!el?.isConnected || el.closest('[hidden],[inert],dialog:not([open]),.is-moving,.is-dragging')) return false;
+  const slide=el.closest(SLIDE);
+  if (!slide) return true;
+  const style=getComputedStyle(slide);
+  return style.visibility!=='hidden' && parseFloat(style.opacity)>.12;
 }
 
 // CSS resolves each percentage and cut corner in the card's own coordinate system. Reading these

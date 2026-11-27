@@ -1,5 +1,7 @@
-const SCALES = [1, .84, .68, .54];
-const smooth = t => t * t * (3 - 2 * t);
+import { deckPose, perspectiveFor, poseTransform } from '/js/effects/deck-pose.mjs';
+
+// The strip of projects is a deck in perspective: the selected board in front, its neighbours behind it, turned with
+// their outer edge toward the camera.
 
 export class Coverflow {
   constructor(element, { active = 0, onSelect = () => {}, onOpen = () => {}, onRender = () => {}, hydrate = () => {} } = {}) {
@@ -49,34 +51,19 @@ export class Coverflow {
   delta(value) { return this.loop ? this.mod(value + this.count / 2) - this.count / 2 : value; }
   get edge() { return this.loop ? Math.min(3.6, this.count / 2 - .06) : Infinity; }
 
-  /** Card width and the four reference positions of V42, from the width of the content. */
+  /** Card width from the width of the content; the deck's step follows the card. */
   measure() {
     const width = document.documentElement.clientWidth || innerWidth;
     const content = this.element.closest('.project-station')?.querySelector('.content-width')?.clientWidth || width * .88;
     const card = Math.min(640, content * (width < 768 ? .5 : .38));
     this.width = card;
     this.element.style.setProperty('--card-width', `${card.toFixed(2)}px`);
-    const edge = content / 2 - card * SCALES[2] / 2;
-    this.positions = [0, edge * .54, edge, content / 2 + card * SCALES[3] * .3];
-    this.stride = Math.max(40, this.positions[1]);
+    this.perspective = perspectiveFor(card);
+    this.stride = Math.max(40, card * .5);
     this.render();
   }
 
-  pose(distance) {
-    const a = Math.abs(distance), s = Math.sign(distance), P = this.positions;
-    let x, scale;
-    if (a <= 3) {
-      const i = Math.min(2, Math.floor(a)), t = a - i;
-      x = P[i] + (P[i + 1] - P[i]) * t;
-      scale = SCALES[i] + (SCALES[i + 1] - SCALES[i]) * t;
-    } else {
-      x = P[3] + (P[3] - P[2]) * (a - 3);
-      scale = Math.max(.3, SCALES[3] - .14 * (a - 3));
-    }
-    // fully readable up to the second pair, the outer pair at about half, then gone well before it recycles
-    const opacity = a <= 2 ? 1 : a <= 3 ? 1 - .52 * smooth(a - 2) : Math.max(0, .48 * (1 - (a - 3) / .6));
-    return { x: s * x, scale, opacity };
-  }
+  pose(distance) { return deckPose(distance, this.width, { compact: true }); }
 
   render() {
     const active = this.mod(Math.round(this.current)), edge = this.edge;
@@ -84,10 +71,9 @@ export class Coverflow {
       const distance = this.delta(index - this.current), a = Math.abs(distance);
       const hidden = a >= edge || a > 3.6;
       if (!hidden && a < 3.7) this.hydrate(card);
-      const { x, scale, opacity } = this.pose(distance);
-      card.style.transform = `translate3d(calc(-50% + ${x.toFixed(3)}px), 0, 0) scale(${scale.toFixed(5)})`;
-      const fade = Math.min(1, a);
-      card.style.opacity = (hidden ? 0 : opacity * Math.min(1, Math.max(0, (edge - a) / .4))).toFixed(4);
+      const pose = this.pose(distance);
+      card.style.transform = poseTransform(pose, this.perspective);
+      card.style.opacity = (hidden ? 0 : pose.opacity * Math.min(1, Math.max(0, (edge - a) / .4))).toFixed(4);
       card.style.visibility = hidden ? 'hidden' : 'visible';
       card.style.zIndex = String(100 - Math.round(a * 20));
       // the selected board is in colour; neighbours turn grey and darker with distance (read by the engine too)

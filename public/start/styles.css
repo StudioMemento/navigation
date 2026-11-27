@@ -57,7 +57,7 @@
 .faq-item summary{list-style:none;cursor:pointer;position:relative;display:flex;align-items:center;justify-content:space-between;gap:24px;min-height:76px;padding:20px 0;font-size:clamp(19px,2.1cqw,28px);line-height:1.3;letter-spacing:-.035em;font-weight:400;color:#e8e5df;}
 .faq-item summary::-webkit-details-marker{display:none}
 .faq-item summary::marker{content:''}
-.faq-item summary:hover,.faq-item[open] summary{color:#ffa23d}
+.faq-item[open] summary{color:var(--mm-mark)}.faq-item summary:hover{color:#ffa23d}
 .faq-toggle{position:relative;flex:0 0 auto;width:22px;height:22px}
 .faq-toggle .icon{position:absolute;top:0;right:0;bottom:0;left:0;width:22px;height:22px}
 .faq-toggle .minus{display:none}
@@ -92,7 +92,7 @@
 .map-frame iframe{display:block;width:100%;height:100%;border:0;color-scheme:normal;}
 
 .map-intro{position:absolute;top:0;right:0;bottom:0;left:0;display:flex;align-items:center;justify-content:center;flex-direction:column;padding:24px}
-.map-intro>.icon{width:36px;height:36px;color:var(--hover);margin-bottom:12px}
+.map-intro>.icon{width:36px;height:36px;color:#bdb6ac;margin-bottom:12px}
 .map-intro p{font-size:36px;font-weight:350;letter-spacing:-.055em}
 .legal-section{padding-top:24px}
 .legal-card{padding:clamp(28px,3.6cqw,46px)}
@@ -103,7 +103,7 @@
 .legal-group button{position:relative;padding:15px 0;display:flex;width:100%;align-items:center;justify-content:space-between;gap:16px;min-height:54px;font-size:16px;line-height:1.35;letter-spacing:-.025em;text-align:left;}
 .legal-group button::after{content:"";position:absolute;top:auto;right:0;bottom:0;left:0;height:1px;background:linear-gradient(90deg,#e3d7c32a,#e3d7c30a 80%,transparent)}
 .legal-group button:hover,.legal-email:hover{color:var(--hover)}
-.legal-group .icon{width:19px;height:19px;color:var(--hover)}
+.legal-group .icon{width:19px;height:19px;color:#bdb6ac}
 .legal-studio{display:flex;flex-direction:column;align-items:flex-start}
 .legal-studio p{font-size:20px;font-weight:400;letter-spacing:-.025em;margin:12px 0 8px}
 .legal-email{font-size:16px;line-height:1.5;letter-spacing:-.02em;color:#c6c2bc;padding:6px 0;overflow-wrap:anywhere}
@@ -182,7 +182,7 @@ html{scrollbar-width:none}html::-webkit-scrollbar{display:none}
 }
 @media (hover:hover) {
   .email-photo,.channel img,.location-photo {
-    filter:grayscale(.5) brightness(.77);
+    filter:grayscale(1) brightness(.77);
     transition:filter .48s ease-out;
   }
   .email-card:hover .email-photo,.channel:hover img,.location-card:hover .location-photo {
