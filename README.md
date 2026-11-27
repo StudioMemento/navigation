@@ -1,4 +1,4 @@
-# Memento Navigation R29
+# Memento Navigation R30
 
 Sito statico con home a slider verticale e cinque sezioni. La navbar porta direttamente alle pagine. Il logotipo riapre la home sulla sezione di provenienza.
 
@@ -18,7 +18,7 @@ Estrai lo ZIP e usa come radice del progetto la cartella che contiene `vercel.js
 | LevelUp, demo e confronti | `public/levelup/src/content.js` |
 | Start, contatti e FAQ | `templates/start.json` |
 
-Il foglio `public/site.css` definisce i margini responsive. Il logo e le icone sono in `templates/navigation.mjs` e `templates/nav-icons.mjs`: icone a linea in grigio su tessere di vetro satinato; la pagina attiva ha una luce ambra dal basso. La geometria vettoriale delle lettere è in `templates/glyphs.svg`. `public/visuals.css` definisce le sfumature del testo, i due livelli di blur per bordo, lo sfondo dei dialoghi, il colore delle foto a riposo e in hover e il cancello dell'apertura.
+Il foglio `public/site.css` definisce i margini responsive. Il logo e le icone sono in `templates/navigation.mjs` e `templates/nav-icons.mjs`: icone in negativo, il simbolo ritagliato in una piastra di metallo satinato con il taglio delle card (in alto a sinistra e in basso a destra); la pagina attiva prende una luce ambra dal basso. La geometria vettoriale delle lettere è in `templates/glyphs.svg`. `public/visuals.css` definisce le sfumature del testo, i due livelli di blur per bordo, lo sfondo dei dialoghi, il colore delle foto a riposo e in hover e il cancello dell'apertura.
 
 ## Effetti: il linguaggio dello sfondo
 
@@ -30,12 +30,11 @@ Lo sfondo di glifi è il DNA visivo del sito. Margini e superfici condividono la
 | `public/js/effects/glyph-cells.mjs` | La griglia condivisa: finestra viva sulla parete, vita dei glifi (cifratura, decodifica sulla lettera della parete, spegnimento), fronte strappato |
 | `public/js/effects/glyph-field.mjs` | I margini: decodifica lenta e continua in grigio (8–26 gruppi al secondo secondo l'ampiezza dei margini), scia del cursore in ambra, parola decifrata, fronte al click |
 | `public/js/effects/glyph-surfaces.mjs` | Le superfici: solo i glifi del cursore o del dito, mai i glitch della parete; luce consegnata al bordo |
-| `public/js/effects/edge-light.mjs` | Il filo di luce sul contorno e il bagliore ampio e morbido (a mezza risoluzione); il cenno sulle superfici vicine, anche dietro la slide attiva |
+| `public/js/effects/edge-light.mjs` | Il filo di luce sul contorno e il bagliore morbido (a mezza risoluzione), solo nello spazio vuoto: mai dentro una card. Il bagliore sfuma quasi linearmente, a strisce per lato e calotte agli angoli, senza banding; il cenno sulle superfici vicine |
 | `public/js/effects/type-light.mjs` | I titoli: grigi a riposo, caldi dal basso con la superficie in hover, lenti morbide e continue |
 | `public/js/effects/surfaces.mjs` | Un solo flusso di input per tutti gli effetti, lo stato `data-mm-hover`, il quadrato di fuoco su telefono |
 | `public/js/effects/surface-intro.mjs` | L'apertura: un fronte di glifi grigi parte dal logotipo e scopre le superfici |
 | `public/js/effects/deck-pose.mjs` | Gli slider, come il tamburo della Home: la card attiva di fronte, una vicina per lato inclinata verso la camera e a filo (bordo contro bordo, anche durante lo swipe); `drumFit` fa stare la striscia nel padding |
-| `public/js/smooth-scroll.mjs` | Lo scroll morbido della rotella: la pagina scivola verso il traguardo; touch, zoom, scroller interni, dialoghi e movimento ridotto restano nativi |
 | `public/js/missing.mjs` | La 404: il numero scritto dalla parete |
 
 L'apertura si spegne con `INTRO=false` in `scripts/build.mjs`. `templates/facet-texture.mjs` genera la trama dei titoli durante la build. Con movimento ridotto la parete resta statica e le superfici non mostrano glifi. Ogni sezione ha un proprio foglio per griglie, schede e controlli. Le slide di Services usano un formato 16:9 su tutti i breakpoint. Le esperienze di LevelUp e la striscia del Portfolio stanno nel padding: card attiva e vicine insieme. Su telefono i servizi di ciascun bundle si possono espandere sotto il carosello. La galleria del Portfolio ha un palco fisso sul padding: l'immagine si adatta dentro e la stessa immagine, sfocata, riempie lo spazio vuoto.

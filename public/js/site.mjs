@@ -1,7 +1,6 @@
 import { mountGlyphField } from './effects/glyph-field.mjs';
 import { mountSurfaces } from './effects/surfaces.mjs';
 import { playIntro } from './effects/surface-intro.mjs';
-import { smoothScroll } from './smooth-scroll.mjs';
 
 const root=document.documentElement;
 const layer=document.querySelector('.mm-glyph-field');
@@ -9,7 +8,6 @@ const layer=document.querySelector('.mm-glyph-field');
 const field=layer ? mountGlyphField(layer) : null;
 mountSurfaces(field);
 if (root.getAttribute('data-mm-intro')==='') playIntro(field);
-smoothScroll();
 const nativeBackdrop=CSS.supports('backdrop-filter','blur(1px)') || CSS.supports('-webkit-backdrop-filter','blur(1px)');
 let foreground=null,lastDialog=null;
 function frostBehind(dialog) {

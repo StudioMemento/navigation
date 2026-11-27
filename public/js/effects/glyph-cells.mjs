@@ -65,7 +65,8 @@ export class CellField {
   resize(width, view, dpr) {
     this.width = width;
     this.view = view;
-    this.pad = Math.ceil(view * .15 / PITCH) * PITCH;
+    // A margin of 30% above and below: the window moves every third of a screen, not on every notch of the wheel.
+    this.pad = Math.ceil(view * .3 / PITCH) * PITCH;
     this.height = Math.ceil((view + 2 * this.pad) / PITCH) * PITCH;
     this.dpr = dpr;
     this.cols = Math.ceil(width / PITCH);
@@ -235,17 +236,19 @@ export class CellField {
 export function shiftCanvas(canvas, rows, field) {
   const ctx = canvas.getContext('2d');
   if (!ctx) return;
-  const dy = -rows * PITCH * field.dpr;
-  if (Math.abs(dy) >= canvas.height) {ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.clearRect(0, 0, canvas.width, canvas.height); ctx.setTransform(field.dpr, 0, 0, field.dpr, 0, 0); return;}
-  const scratch = shiftCanvas.scratch || (shiftCanvas.scratch = document.createElement('canvas'));
-  scratch.width = canvas.width; scratch.height = canvas.height;
-  const s = scratch.getContext('2d');
-  s.drawImage(canvas, 0, 0);
+  const dy = -rows * PITCH * field.dpr, w = canvas.width, h = canvas.height;
+  ctx.save();
   ctx.setTransform(1, 0, 0, 1, 0, 0);
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-  ctx.drawImage(scratch, 0, dy);
-  ctx.setTransform(field.dpr, 0, 0, field.dpr, 0, 0);
-  scratch.width = scratch.height = 1;
+  if (Math.abs(dy) >= h) ctx.clearRect(0, 0, w, h);
+  else {
+    // One copy of the canvas onto itself (no scratch canvas), then the uncovered band is cleared.
+    ctx.globalCompositeOperation = 'copy';
+    if (dy < 0) ctx.drawImage(canvas, 0, -dy, w, h + dy, 0, 0, w, h + dy);
+    else ctx.drawImage(canvas, 0, 0, w, h - dy, 0, dy, w, h - dy);
+    ctx.globalCompositeOperation = 'source-over';
+    if (dy < 0) ctx.clearRect(0, h + dy, w, -dy); else ctx.clearRect(0, 0, w, dy);
+  }
+  ctx.restore();
 }
 // Moves per-cell arrays of a window by whole rows.
 export function shiftArray(array, rows, cols, empty = 0) {
