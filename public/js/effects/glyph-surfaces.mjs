@@ -103,7 +103,7 @@ export function glyphSurfaces(field, {cards, feed}) {
   document.body.append(layer);
   const ctx = canvas.getContext('2d');
   let gain = new Float32Array(0), owner = new Int16Array(0), rim = new Uint8Array(0), shown = new Float32Array(0), letters = new Int8Array(0);
-  let tabs = [], members = new Map(), hidden = false, hideTimer = 0;
+  let tabs = [], members = new Map(), hidden = false;
   let current = null, travel = 0, waveTravel = 0, lastWave = -5;
 
   function forget() {
@@ -158,7 +158,7 @@ export function glyphSurfaces(field, {cards, feed}) {
   cells.onIgnite = (id, strength, cell) => {
     if (!cell.feed || !rim[id] || hidden) return;
     const tab = tabs[owner[id] - 1];
-    if (tab) feed(tab, cells.x(id), cells.y(id), strength * (cell.life === 'wave' ? .35 : .3));
+    if (tab) feed(tab, strength * (cell.life === 'wave' ? .35 : .3));
   };
 
   function shade(tab) {
@@ -200,30 +200,26 @@ export function glyphSurfaces(field, {cards, feed}) {
   }
   // Photographs near the screen are sampled while the page is idle, so the first hover finds them ready.
   function prepare() {
-    const idle = window.requestIdleCallback || (fn => setTimeout(fn, 200));
-    const queue = [...cards].flatMap(tab => [...tab.querySelectorAll('img')]);
-    (function next(deadline) {
-      while (queue.length && (!deadline || deadline.timeRemaining() > 2)) sample(queue.shift(), sampled);
-      if (queue.length) idle(next, {timeout:2000});
-    })();
+    const idle = window.requestIdleCallback || (fn => setTimeout(() => fn(null), 80));
+    const queue = [...new Set([...cards].flatMap(tab => [...tab.querySelectorAll('img')]))];
+    function next(deadline) {
+      let remaining = 3;
+      while (queue.length && remaining-- && (!deadline || deadline.didTimeout || deadline.timeRemaining() > 2)) sample(queue.pop(),sampled);
+      if (queue.length) idle(next,{timeout:1000});
+    }
+    if (queue.length) idle(next,{timeout:1000});
   }
   function mapVisible() { for (const tab of cards) if ((!members.has(tab) || members.get(tab).stale) && eligible(tab)) map(tab); }
   function show() {
     if (!hidden) return;
-    clearTimeout(hideTimer);
-    wipe();
     hidden = false;
-    layer.style.opacity = '';
   }
-  // The surfaces moved under the wall (a carousel, a dialog, a new view): fade what is lit and measure again later.
+  // Page-aligned glyph cells are invalid as soon as their slide moves.
   function release() {
-    current = null;
-    forget();
     if (hidden) return;
     hidden = true;
-    layer.style.opacity = '0';
-    clearTimeout(hideTimer);
-    hideTimer = setTimeout(wipe, 180);
+    current = null;
+    if (members.size) {forget();wipe();}
   }
   function enter(tab, x, y) {
     const ids = map(tab);
@@ -238,15 +234,15 @@ export function glyphSurfaces(field, {cards, feed}) {
   // The trail: glyphs wake around the pointer and decode; every 150 px a small front runs through the surface.
   function move(tab, x, y, distance) {
     if (!field.ready || field.blocked) return;
+    if (!tab) {current = null;return;}
     show();
     if (tab !== current) {
       current = null;
-      if (!tab || !eligible(tab)) return;
+      if (!eligible(tab)) return;
       enter(tab, x, y);
       field.wake();
       return;
     }
-    if (!tab) return;
     const ids = map(tab), index = members.get(tab)?.index;
     if (!ids?.length) return;
     travel += Math.min(distance, 200);
@@ -272,5 +268,5 @@ export function glyphSurfaces(field, {cards, feed}) {
   function realign() { show(); mapVisible(); }
   field.on('impulse', (x, y, options) => { if (!options.quiet && !options.cells) realign(); });
   field.on('ready', () => {forget(); wipe(); setTimeout(prepare, 1200);});
-  return {move, release, scrolled() {}, touch, mapVisible, map};
+  return {move,release,touch};
 }

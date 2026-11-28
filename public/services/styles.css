@@ -35,15 +35,15 @@ section[id] {scroll-margin-top:24px;}
 .showcase-card,.service-card,.start-action,.catalogue-filters,.component-thumbnail {
   --corner-cut:clamp(16px, 1.5vw, 24px);
   --frame-ring:polygon(evenodd, var(--corner-cut) 0, 100% 0, 100% calc(100% - var(--corner-cut)), calc(100% - var(--corner-cut)) 100%, 0 100%, 0 var(--corner-cut), var(--corner-cut) 0, calc(var(--corner-cut) + 0.4142px) 1px, 1px calc(var(--corner-cut) + 0.4142px), 1px calc(100% - 1px), calc(100% - var(--corner-cut) - 0.4142px) calc(100% - 1px), calc(100% - 1px) calc(100% - var(--corner-cut) - 0.4142px), calc(100% - 1px) 1px, calc(var(--corner-cut) + 0.4142px) 1px);
-  clip-path:polygon(var(--corner-cut) 0, 100% 0, 100% calc(100% - var(--corner-cut)), calc(100% - var(--corner-cut)) 100%, 0 100%, 0 var(--corner-cut));
+  --face-clip:polygon(var(--corner-cut) 0, 100% 0, 100% calc(100% - var(--corner-cut)), calc(100% - var(--corner-cut)) 100%, 0 100%, 0 var(--corner-cut));
 }
+.showcase-card>.mm-slide-face,.service-card,.start-action,.catalogue-filters,.component-thumbnail {clip-path:var(--face-clip);}
 .showcase-card::before,.service-card::before,.start-action::before,.catalogue-filters::before,.component-thumbnail::before {
   content:'';position:absolute;top:0;right:0;bottom:0;left:0;z-index:6;pointer-events:none;background:var(--frame-gradient);
   clip-path:var(--frame-ring);
 }
 .showcase-card::before {opacity:calc(0.22 + var(--slide-focus, 1) * 0.78);}
 :is(.showcase-card, .service-card, .start-action):focus-visible {outline-offset:-5px;}
-.card-surface {position:absolute;top:0;right:0;bottom:0;left:0;z-index:0;pointer-events:none;background:#000;}
 .slide-visual,.bundle-visual,.item-master-art {
   position:absolute;top:0;right:0;bottom:0;left:0;z-index:1;width:100%;height:100%;max-width:none;overflow:hidden;
   pointer-events:none;
@@ -63,11 +63,10 @@ section[id] {scroll-margin-top:24px;}
 .carousel.is-dragging {cursor:grabbing;}
 .carousel-stage {position:relative;width:100%;height:var(--board-height);isolation:isolate;}
 .carousel-card {
-  position:absolute;left:50%;top:0;width:var(--slide-width);height:100%;aspect-ratio:16 / 9;overflow:hidden;background:#000;
+  position:absolute;left:50%;top:0;width:var(--slide-width);height:100%;aspect-ratio:16 / 9;
   backface-visibility:hidden;contain:layout style;text-align:left;transform-origin:center;cursor:inherit;
   transform:translate3d(-50%,0,0);
 }
-.carousel.is-moving .carousel-card {will-change:transform;}
 .carousel-card * {touch-action:pan-y pinch-zoom;}
 .service-carousel,#bundle-boards {
   --outer-fade:min(max(0px, calc((100cqw - var(--slide-width)) * 0.43)), clamp(36px, 6vw, 140px));
@@ -221,7 +220,7 @@ dialog {color:var(--ink);overscroll-behavior:contain;}
   position:relative;isolation:isolate;display:flex;flex-direction:column;align-items:stretch;min-height:100%;
   padding:var(--master-inset);gap:clamp(16px, calc(var(--slide-width) * 0.024), 24px);overflow:hidden;
 }
-.service-scene {--text-focus:1;background:#050505;}
+.service-scene {--text-focus:1;}
 .service-scene .item-master-art {filter:brightness(var(--scene-light,1));}
 .service-scene .photo-caption-shade {
   background:linear-gradient(to right,#020203 0%,rgba(2,2,3,.94) 19%,rgba(2,2,3,.74) 38%,rgba(2,2,3,.29) 61%,transparent 89%);
@@ -391,7 +390,7 @@ dialog {color:var(--ink);overscroll-behavior:contain;}
   .start-art {width:45%;height:130%;right:8%;top:-15%;}
 }
 @media (prefers-reduced-motion: reduce) {
-  *,*::before,.carousel.is-moving .carousel-card {will-change:auto;}
+  *,*::before {will-change:auto;}
 }
 @media (forced-colors: active) {
   .start-art,.slide-visual,.bundle-visual,.item-master-art img,.service-carousel,#bundle-boards,.service-visual,.service-card::before {
@@ -439,10 +438,6 @@ dialog {color:var(--ink);overscroll-behavior:contain;}
 }
 @supports not (aspect-ratio: 1 / 1) {
   .service-card {height:0;padding-bottom:100%;}
-}
-/* A neighbour in perspective is drawn foreshortened, so a 1px ring breaks up on screen; a 2px ring stays whole. */
-.carousel .showcase-card[data-active='false'] {
-  --frame-ring:polygon(evenodd,var(--corner-cut) 0,100% 0,100% calc(100% - var(--corner-cut)),calc(100% - var(--corner-cut)) 100%,0 100%,0 var(--corner-cut),var(--corner-cut) 0,calc(var(--corner-cut) + 0.8284px) 2px,2px calc(var(--corner-cut) + 0.8284px),2px calc(100% - 2px),calc(100% - var(--corner-cut) - 0.8284px) calc(100% - 2px),calc(100% - 2px) calc(100% - var(--corner-cut) - 0.8284px),calc(100% - 2px) 2px,calc(var(--corner-cut) + 0.8284px) 2px);
 }
 /* Before a carousel is built (it is built as it comes into view) its first board already sits centred and the others wait. */
 .carousel-stage:not([data-positioned]) > .carousel-card:not(:first-child) {visibility:hidden;}

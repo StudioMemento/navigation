@@ -36,9 +36,10 @@ button:focus-visible,a:focus-visible,input:focus-visible,[tabindex]:focus-visibl
 .vision-section,.steps-section {padding-block:clamp(58px,7vw,120px);}
 .cut-frame {
   position:relative;
-  clip-path:polygon(var(--corner-cut) 0,100% 0,100% calc(100% - var(--corner-cut)),calc(100% - var(--corner-cut)) 100%,0 100%,0 var(--corner-cut));
+  --face-clip:polygon(var(--corner-cut) 0,100% 0,100% calc(100% - var(--corner-cut)),calc(100% - var(--corner-cut)) 100%,0 100%,0 var(--corner-cut));
   --frame-ring:polygon(evenodd,var(--corner-cut) 0,100% 0,100% calc(100% - var(--corner-cut)),calc(100% - var(--corner-cut)) 100%,0 100%,0 var(--corner-cut),var(--corner-cut) 0,calc(var(--corner-cut) + .4142px) 1px,1px calc(var(--corner-cut) + .4142px),1px calc(100% - 1px),calc(100% - var(--corner-cut) - .4142px) calc(100% - 1px),calc(100% - 1px) calc(100% - var(--corner-cut) - .4142px),calc(100% - 1px) 1px,calc(var(--corner-cut) + .4142px) 1px);
 }
+.cut-frame:not([data-slide]),.showcase-card>.mm-slide-face {clip-path:var(--face-clip);}
 .cut-frame::before {
   content:'';position:absolute;top:0;right:0;bottom:0;left:0;z-index:8;pointer-events:none;clip-path:var(--frame-ring);
   background:var(--frame-gradient);
@@ -55,8 +56,8 @@ button:focus-visible,a:focus-visible,input:focus-visible,[tabindex]:focus-visibl
 }
 .carousel-stage {height:var(--board-height);position:relative;isolation:isolate;overflow:visible;}
 .showcase-card {
-  position:absolute;top:0;left:50%;width:var(--slide-width);height:var(--board-height);background:#000;transform-origin:center;
-  cursor:grab;will-change:transform;overflow:hidden;transform:translate3d(-50%,0,0);
+  position:absolute;top:0;left:50%;width:var(--slide-width);height:var(--board-height);transform-origin:center;
+  cursor:grab;transform:translate3d(-50%,0,0);
 }
 .showcase-card:active {cursor:grabbing;}
 .showcase-card::before {opacity:calc(.22 + .78*var(--slide-focus,1));}
@@ -320,14 +321,10 @@ html[data-demo-expanded=true] {overflow:hidden;}
   .vision-copy h3 {font-size:clamp(25px,3.6cqw,32px);}
   .vision-copy p {font-size:14px;}
 }
-html[data-demo-expanded=true] memento-nav {visibility:hidden;}
+
 .demo-play {
   position:absolute;z-index:3;top:50%;left:50%;transform:translate(-50%,-50%);min-height:44px;background:#151515;color:#fff;
   border:1px solid #b5a896;padding:.6rem 1rem;
-}
-/* A neighbour in perspective is drawn foreshortened, so a 1px ring breaks up on screen; a 2px ring stays whole. */
-.carousel .showcase-card[data-active=false] {
-  --frame-ring:polygon(evenodd,var(--corner-cut) 0,100% 0,100% calc(100% - var(--corner-cut)),calc(100% - var(--corner-cut)) 100%,0 100%,0 var(--corner-cut),var(--corner-cut) 0,calc(var(--corner-cut) + 0.8284px) 2px,2px calc(var(--corner-cut) + 0.8284px),2px calc(100% - 2px),calc(100% - var(--corner-cut) - 0.8284px) calc(100% - 2px),calc(100% - 2px) calc(100% - var(--corner-cut) - 0.8284px),calc(100% - 2px) 2px,calc(var(--corner-cut) + 0.8284px) 2px);
 }
 /* Before a carousel is built its first card already sits centred and the others wait. */
 .carousel-stage:not([data-positioned])>.showcase-card:not(:first-child) {visibility:hidden;}

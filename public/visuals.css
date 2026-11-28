@@ -1,5 +1,5 @@
 /* Shared visual layer. All navigation remains ordinary document links. */
-@property --mm-lit {syntax:'<number>';inherits:true;initial-value:0;}
+@property --mm-warm {syntax:'<number>';inherits:false;initial-value:0;}
 html[data-memento-native] {
   --mm-rail:min(320px,calc(100vw - 40px));
   --mm-amber:#ff7d00;
@@ -11,13 +11,11 @@ html[data-memento-native] {
   --mm-title-lit:linear-gradient(to top,#e2621a 0%,#ff7d00 14%,#ffa84c 30%,#ffd2a0 46%,#ffecd8 62%,#ffecd8 100%);
   /* Every cut frame is neutral at rest and takes its amber corner under the pointer. */
   --frame-gradient:linear-gradient(135deg,#d6d5d2c7 0%,#a3a29f66 27%,#6b6a6857 62%,#7b7a7875 83%,#b9b8b5cc 100%);
-  --frame-gradient-lit:linear-gradient(135deg,#d8d1c3c7 0%,#aaa28f66 27%,#716a5e57 62%,#8c694b75 83%,#ff7d00e0 100%);
   --title-gradient:var(--mm-title-ink);
   --title-gradient-warm:var(--mm-title-lit);
   --category-gradient:var(--mm-title-ink);
 }
 @media (max-width:767px) { html[data-memento-native] {--mm-rail:80vw;} }
-html[data-memento-native] .mm-tab[data-mm-hover] {--frame-gradient:var(--frame-gradient-lit);}
 html[data-memento-native] body { isolation:isolate; position:relative; min-height:100vh; }
 
 /* The wall of glyphs belongs to the document and scrolls with it. Its letters at rest are one repeated tile; the
@@ -35,7 +33,7 @@ html[data-memento-native] body { isolation:isolate; position:relative; min-heigh
 .mm-glyph-field:not([data-live]) canvas {visibility:hidden;}
 .mm-glyph-field::before {
   content:"";position:absolute;top:0;right:0;bottom:0;left:0;
-  background:url("/navigation/glyph-field.svg?v=28") 0 0/276px 348px repeat;
+  background:url("/navigation/glyph-field.svg") 0 0/276px 348px repeat;
   -webkit-mask-image:var(--fade-mask);mask-image:var(--fade-mask);
 }
 @keyframes mm-wall-in {from {opacity:0;}}
@@ -51,42 +49,40 @@ html[data-memento-native] body { isolation:isolate; position:relative; min-heigh
 }
 .mm-letter-row {display:flex;align-items:center;justify-content:space-between;width:100%;height:11px;}
 .mm-glyph {display:block;flex:none;height:11px;width:calc(11px * var(--glyph-aspect));fill:currentColor;overflow:visible;}
+/* The link owns the hit area. Its inset plate and vector share an optical centre. */
 .mm-dock {
-  bottom:max(10px,env(safe-area-inset-bottom,0px));width:calc(var(--mm-rail) + 12px);
-  display:flex;align-items:center;justify-content:space-between;margin:0;padding:0;pointer-events:none;
+  bottom:calc(env(safe-area-inset-bottom,0px) + clamp(6px,1.2svh,14px));
+  display:flex;align-items:center;gap:clamp(3px,.65vw,11px);width:max-content;max-width:100%;
+  margin:0;padding:0;pointer-events:none;
 }
 .mm-dock .mm-link {
-  position:relative;display:grid;place-items:center;flex:0 1 56px;min-width:52px;height:58px;
-  padding:0;border:0;background:transparent;pointer-events:auto;color:#f5f4f2;text-decoration:none;touch-action:manipulation;
+  display:grid;place-items:center;width:46px;height:46px;flex:none;padding:0;border:0;
+  pointer-events:auto;background:transparent;color:#fff;text-decoration:none;touch-action:manipulation;
 }
-.mm-defs {position:absolute;width:0;height:0;overflow:hidden;}
-/* The dock: plates of satin glass cut like the cards, the symbols cut out of them (templates/nav-icons.mjs). The glass
-   is semi-transparent and frosted; where the browser can, it also refracts what lies behind it, bent at its bevel.
-   At rest the plates are clear glass; the current page takes amber light from below, as does the plate under the
-   pointer (--mm-lit). */
-.mm-tile {--mm-lit:0;position:relative;display:block;width:52px;height:52px;transition:--mm-lit .35s ease-out;}
-.mm-link[aria-current] .mm-tile,.mm-link:active .mm-tile {--mm-lit:1;}
-@media (hover:hover) and (pointer:fine) { .mm-link:hover .mm-tile {--mm-lit:1;} }
-.mm-tile::before,.mm-tile::after {content:"";position:absolute;pointer-events:none;border-radius:50%;filter:blur(4px);}
-.mm-tile::before {left:10%;right:10%;top:72%;height:44%;background:radial-gradient(closest-side,#0000009e,transparent);}
-.mm-tile::after {left:12%;right:12%;bottom:-9px;height:17px;opacity:var(--mm-lit);
-  background:radial-gradient(closest-side,#ff8f24c4,#ff7d0038 62%,transparent);}
-.mm-glass,.mm-glass-light,.mm-glass-rim {position:absolute;top:0;right:0;bottom:0;left:0;display:block;}
-.mm-glass {
-  -webkit-mask:var(--mm-symbol) 0 0/100% 100% no-repeat;mask:var(--mm-symbol) 0 0/100% 100% no-repeat;
-  -webkit-backdrop-filter:blur(5px) brightness(1.16) saturate(1.3);backdrop-filter:blur(5px) brightness(1.16) saturate(1.3);
-  background:
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='52' height='52'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.95' numOctaves='2' seed='7' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .1 0'/%3E%3C/filter%3E%3Crect width='52' height='52' filter='url(%23n)'/%3E%3C/svg%3E") 0 0/52px 52px,
-    linear-gradient(to bottom,#ffffff21,transparent 40%),
-    linear-gradient(155deg,#ffffff26 0%,#ffffff10 40%,#ffffff08 62%,#ffffff17 100%);
+.mm-tile {
+  --tile-cut:8px;--plate:polygon(var(--tile-cut) 0,100% 0,100% calc(100% - var(--tile-cut)),calc(100% - var(--tile-cut)) 100%,0 100%,0 var(--tile-cut));
+  position:relative;isolation:isolate;display:grid;place-items:center;width:40px;height:40px;
 }
-html[data-mm-refract] .mm-glass {-webkit-backdrop-filter:url(#mm-refract) blur(3px) brightness(1.16) saturate(1.3);backdrop-filter:url(#mm-refract) blur(3px) brightness(1.16) saturate(1.3);}
-.mm-glass-light {opacity:var(--mm-lit);background:radial-gradient(120% 82% at 50% 116%,#ffc480f2,#ff8f24b8 34%,#ff7d0033 66%,transparent);}
-.mm-glass-rim {
-  pointer-events:none;
-  clip-path:polygon(evenodd,11px 0,100% 0,100% calc(100% - 11px),calc(100% - 11px) 100%,0 100%,0 11px,11px 0,11.4142px 1px,1px 11.4142px,1px calc(100% - 1px),calc(100% - 11.4142px) calc(100% - 1px),calc(100% - 1px) calc(100% - 11.4142px),calc(100% - 1px) 1px,11.4142px 1px);
-  background:linear-gradient(135deg,transparent 52%,rgb(255 154 60 / calc(var(--mm-lit) * .95)) 100%),
-    linear-gradient(135deg,#ffffffc7 0%,#ffffff2e 36%,#ffffff12 62%,#ffffff4d 100%);
+.mm-tile::before,.mm-tile::after {
+  content:"";position:absolute;inset:0;clip-path:var(--plate);pointer-events:none;
+}
+.mm-tile::before {background:linear-gradient(136deg,#8b8a87,#383837 44%,#555451);}
+.mm-tile::after {
+  --tile-cut:7.4px;inset:1px;background:linear-gradient(148deg,#363635ef,#191918ef 55%,#252523f5);
+  -webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);
+}
+.mm-dock .mm-nav-icon {
+  position:relative;z-index:1;display:block;width:30px;height:30px;fill:currentColor;stroke:none;
+}
+.mm-dock .mm-link[aria-current] {color:var(--mm-amber);}
+.mm-link[aria-current] .mm-tile::before {background:linear-gradient(140deg,#8d7561,#534135 55%,#d17b32);}
+@media (hover:hover) and (pointer:fine) {
+  .mm-link:hover .mm-tile::after {background:linear-gradient(148deg,#424241ef,#232322ef 55%,#31312ff5);}
+}
+@media (max-width:767px) {
+  .mm-dock .mm-link {width:44px;height:44px;}
+  .mm-tile {width:38px;height:38px;}
+  .mm-dock .mm-nav-icon {width:28px;height:28px;}
 }
 .mm-brand:focus-visible,.mm-link:focus-visible {outline:1px solid #fff;outline-offset:3px;border-radius:4px;}
 
@@ -136,7 +132,6 @@ html[data-memento-native=services] dialog[open]::backdrop {background:rgba(3,4,5
   html[data-mm-modal] [data-mm-modal-behind] {filter:blur(18px);}
   html[data-memento-native] dialog[open]::backdrop {background:rgba(3,5,6,.76);}
   html[data-memento-native=services] dialog[open]::backdrop {background:rgba(3,4,5,.88);}
-  .mm-glass {background-color:#2a2928e6;}
 }
 
 /* The actual glyphs carry the pigment and the light, including inside transformed slides. */
@@ -148,23 +143,34 @@ html[data-memento-native=services] dialog[open]::backdrop {background:rgba(3,4,5
   }
   .mm-type>span {-webkit-text-fill-color:inherit;}
   html[data-memento-native] .mm-type[data-lit] {
-    background-image:var(--ink-veil),var(--mm-facets),var(--ink-lenses),var(--ink-ramp);
-    background-size:100% 100%,var(--ink-tile) var(--ink-tile),100% 100%,100% 100%,100% 100%,100% 100%;
-    background-repeat:no-repeat,repeat,no-repeat,no-repeat,no-repeat,no-repeat;
-    filter:var(--ink-glow,none);
+    --veil:calc(1 - var(--mm-warm));
+    --ink-cover:linear-gradient(to top,
+      rgb(111 107 102 / var(--veil)) 0%,rgb(140 135 129 / var(--veil)) 14%,rgb(185 180 173 / var(--veil)) 30%,
+      rgb(221 217 211 / var(--veil)) 46%,rgb(240 237 232 / var(--veil)) 62%,rgb(240 237 232 / var(--veil)) 100%);
+    --lens:radial-gradient(ellipse 1.8em 1.1em at var(--ink-x) var(--ink-y),#fff2d578,transparent);
+    background-image:var(--ink-cover),var(--lens),var(--mm-facets),var(--mm-title-lit);
+    background-size:100% 100%,100% 100%,var(--ink-tile) var(--ink-tile),100% 100%;
+    background-repeat:no-repeat,no-repeat,repeat,no-repeat;
+    filter:drop-shadow(0 0 .026em rgb(255 140 40 / calc(var(--mm-warm) * .19)));
+    transition:--mm-warm .14s ease-out;
   }
 }
 
-/* The light of the outlines (edge-light.mjs) and the glyphs over the surfaces (glyph-surfaces.mjs). */
-.mm-edge-plane {position:absolute;top:0;left:0;width:0;height:0;overflow:visible;pointer-events:none;z-index:650;}
-.mm-edge-light {position:absolute;top:0;left:0;pointer-events:none;display:block;}
-.mm-edge-light[hidden] {display:none;}
-[data-mm-outline-anchor] {position:relative;}
-.mm-outline-points {position:absolute!important;top:0;right:0;bottom:0;left:0;display:block!important;visibility:hidden!important;pointer-events:none!important;overflow:visible!important;}
-.mm-outline-points i {position:absolute;display:block;width:0;height:0;padding:0;border:0;margin:0;pointer-events:none;}
-.mm-glyph-surface {position:absolute;top:0;right:0;bottom:0;left:0;z-index:640;pointer-events:none;overflow:hidden;transition:opacity .18s ease-out;}
+/* A slide and its light share one transform, z-order and carousel mask. */
+.mm-slide-face {position:absolute;inset:0;display:block;overflow:hidden;background:#000;}
+.showcase-card[data-slide],.flow-card {pointer-events:none;}
+.showcase-card[data-slide]>.mm-slide-face,.flow-card>.flow-face {pointer-events:auto;}
+.mm-static-edge {position:absolute;left:0;top:0;pointer-events:none;z-index:7;}
+svg.mm-edge {
+  position:absolute;inset:0;z-index:12;display:block;box-sizing:border-box;width:100%;height:100%;max-width:none;
+  overflow:visible;pointer-events:none;fill:none;stroke:none;opacity:0;transition:opacity .13s ease-out;
+}
+.mm-glyph-surface {position:absolute;inset:0;z-index:640;pointer-events:none;overflow:hidden;}
 .mm-glyph-surface canvas {position:absolute;left:0;top:0;display:block;width:100%;}
-@media (prefers-reduced-motion:reduce) { .mm-glyph-surface {display:none;} }
+@media (prefers-reduced-motion:reduce) {
+  .mm-glyph-surface {display:none;}
+  html[data-memento-native] .mm-type[data-lit],svg.mm-edge {transition:none;}
+}
 
 /* Surfaces at rest are black and white on a desk; the one under the pointer shows its colour. On a phone the square
    of focus does the same with one gradient of saturation (.mm-focus). */
@@ -201,10 +207,10 @@ html[data-memento-native][data-mm-scroll-cue]::-webkit-scrollbar {display:none;w
 @media (pointer:coarse) { .mm-scrollbar {width:5px;pointer-events:none;} .mm-scrollbar-thumb {right:2px;} }
 
 @media (forced-colors:active) {
-  .mm-glyph-field,.mm-blur,.mm-focus,.mm-glyph-surface,.mm-edge-plane,.mm-scrollbar,.mm-tile::before,.mm-tile::after,.mm-glass-light {display:none;}
-  .mm-tile {forced-color-adjust:none;}
-  .mm-glass {-webkit-backdrop-filter:none;backdrop-filter:none;background:ButtonText;}
+  .mm-glyph-field,.mm-blur,.mm-focus,.mm-glyph-surface,.mm-edge,.mm-static-edge,.mm-scrollbar,.mm-tile::before,.mm-tile::after {display:none;}
+  .mm-dock .mm-link {color:LinkText;}
+  .mm-dock .mm-link[aria-current] {color:Highlight;}
   .mm-link[aria-current] {outline:2px solid Highlight;}
   html[data-memento-native] .mm-type,html[data-memento-native] .mm-type[data-lit],html[data-memento-native] .mm-type>span {background:none;color:CanvasText;-webkit-text-fill-color:CanvasText;-webkit-text-stroke:0;filter:none;}
 }
-@media print {.mm-glyph-field,.mm-blur,.mm-focus,.mm-dock,.mm-header,.mm-glyph-surface,.mm-edge-plane,.mm-scrollbar {display:none;}}
+@media print {.mm-glyph-field,.mm-blur,.mm-focus,.mm-dock,.mm-header,.mm-glyph-surface,.mm-edge,.mm-static-edge,.mm-scrollbar {display:none;}}

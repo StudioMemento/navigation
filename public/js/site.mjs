@@ -6,9 +6,6 @@ const root=document.documentElement;
 const layer=document.querySelector('.mm-glyph-field');
 // One field of glyphs for the margins and the surfaces: the site's visual DNA. The Studio feeds it too.
 export const field=layer ? mountGlyphField(layer) : null;
-// The glass of the dock refracts what is behind it where the browser renders SVG filters on a backdrop (Chromium);
-// elsewhere it stays frosted.
-if (navigator.userAgentData?.brands?.some(brand=>/Chromium/.test(brand.brand))) root.setAttribute('data-mm-refract','');
 mountSurfaces(field);
 if (root.getAttribute('data-mm-intro')==='') playIntro(field);
 const nativeBackdrop=CSS.supports('backdrop-filter','blur(1px)') || CSS.supports('-webkit-backdrop-filter','blur(1px)');

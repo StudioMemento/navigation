@@ -1,9 +1,10 @@
 import { layout, pose, relative, nearest, wrap, dragSnap, slideStep, queuedStep, wheelStep, titleSize } from './home-model.mjs';
-import { setSlideDepth } from './effects/surface-targets.mjs';
+import { setDeckMoving } from './effects/surface-targets.mjs';
 
 const hub = document.querySelector('#hub');
 const scene = document.querySelector('#scene');
 const cards = [...scene.querySelectorAll('a')];
+const faces = cards.map(card => ({card,image:card.querySelector('img'),title:card.querySelector('h2')}));
 const dock = [...document.querySelectorAll('.mm-dock a')];
 const previous = document.querySelector('#previous');
 const next = document.querySelector('#next');
@@ -15,7 +16,7 @@ function hashIndex() {
   return cards.findIndex(card => card.dataset.page === (slug === 'memento' ? 'studio' : slug));
 }
 let position = Math.max(0, hashIndex()), target = position, velocity = 0;
-let frame, frameId = 0, last = 0, drag = null, suppressClick = false;
+let frame, frameId = 0, last = 0, drag = null, suppressClick = false, activeIndex = -1;
 function measure() {
   const height = window.visualViewport && visualViewport.scale === 1 ? Math.min(innerHeight, visualViewport.height) : innerHeight;
   const root = document.documentElement;
@@ -35,24 +36,27 @@ function measure() {
 }
 function draw() {
   const active = wrap(Math.round(position), cards.length);
-  for (const [i,card] of cards.entries()) {
-    const d = relative(i,position,cards.length), p = pose(d,frame);
-    setSlideDepth(card,Math.abs(d));
-    card.hidden = !p.visible;
-    card.tabIndex = i === active ? 0 : -1;
-    const hiddenFromFocus=String(i !== active);
-    if (card.getAttribute('aria-hidden')!==hiddenFromFocus) card.setAttribute('aria-hidden',hiddenFromFocus);
+  for (const [i,{card,image,title}] of faces.entries()) {
+    const distance = relative(i,position,cards.length), amount = Math.abs(distance), p = pose(distance,frame);
+    if (card.hidden === p.visible) card.hidden = !p.visible;
+    if (activeIndex !== active) {
+      card.tabIndex = i === active ? 0 : -1;
+      card.setAttribute('aria-hidden',String(i !== active));
+      if (i === active) dock[i].setAttribute('aria-current','location');
+      else dock[i].removeAttribute('aria-current');
+    }
     if (!p.visible) continue;
-    const image = card.querySelector('img');
-    if (!image.hasAttribute('srcset')) { image.srcset = image.dataset.srcset; image.src = image.dataset.src; }
+    if (!image.hasAttribute('srcset')) {image.srcset = image.dataset.srcset; image.src = image.dataset.src;}
     card.style.transform = 'translate(-50%,-50%) translate3d(0,'+p.y+'px,'+p.z+'px) rotateX('+p.angle+'rad)';
-    card.style.opacity = String(1 - .63 * Math.min(1,Math.abs(d)));
-    card.querySelector('h2').style.opacity = String(Math.max(0,1-2*Math.abs(d)));
+    const rim = Math.min(1,(1.75-amount)/.5);
+    card.style.opacity = String((1-.63*Math.min(1,amount))*rim);
+    title.style.opacity = String(Math.max(0,1-2*amount));
   }
-  dock.forEach((a,i)=>{ if (i===active) a.setAttribute('aria-current','location'); else a.removeAttribute('aria-current'); });
+  activeIndex = active;
 }
 function commit() {
-  hub.classList.remove('is-moving','is-dragging');
+  hub.classList.remove('is-dragging');
+  setDeckMoving(hub,false);
   const active = cards[wrap(Math.round(target), cards.length)];
   status.textContent = active.getAttribute('aria-label');
   history.replaceState(history.state,'','#'+active.dataset.page);
@@ -66,7 +70,7 @@ function animate(stamp) {
   else frameId=requestAnimationFrame(animate);
 }
 function select(value) {
-  hub.classList.add('is-moving');
+  setDeckMoving(hub,true);
   target=value;
   if (!frameId) frameId=requestAnimationFrame(animate);
 }
@@ -97,19 +101,23 @@ hub.addEventListener('pointermove',event=>{
   const dy=event.clientY-drag.y;
   if(!drag.moved) {
     if(Math.abs(dy)<8||Math.abs(dy)<Math.abs(event.clientX-drag.x)) return;
-    drag.moved=true; hub.classList.add('is-dragging');hub.setPointerCapture(event.pointerId); cancelAnimationFrame(frameId); frameId=0; last=0;
+    drag.moved=true; drag.start=position; drag.last=position;
+    hub.classList.add('is-dragging');setDeckMoving(hub,true);
+    hub.setPointerCapture(event.pointerId);cancelAnimationFrame(frameId);frameId=0;last=0;
   }
   const time=performance.now();
   position=drag.start-Math.max(-1,Math.min(1,dy/Math.max(64,frame.height*.85)));
   drag.speed=(position-drag.last)*1000/Math.max(12,time-drag.time); drag.last=position; drag.time=time;
-  draw();
+  if (!frameId) frameId=requestAnimationFrame(()=>{frameId=0;draw();});
 });
 function endDrag(event) {
   if(!drag||drag.id!==event.pointerId) return;
   const pointer=drag; drag=null;
   if(!pointer.moved) return;
+  cancelAnimationFrame(frameId); frameId=0;
   suppressClick=true;
   const speed=performance.now()-pointer.time<140?pointer.speed:0;
+  velocity=Math.max(-5,Math.min(5,speed));
   select(dragSnap(pointer.start,position,speed,event.type==='pointercancel'));
   setTimeout(()=>{suppressClick=false;},0);
 }

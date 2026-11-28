@@ -23,6 +23,7 @@ const site=await readJSON('templates/site.json');
 const escape=value=>String(value).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]);
 const meta=(slug)=>site.sections.find(page=>page.slug===slug)||site.home;
 const canonical=slug=>site.origin+(slug==='home'?'/':'/'+slug+'/');
+const favicon='<link rel="icon" href="/favicon.svg?v=32" type="image/svg+xml">';
 const documentInput='<script src="/js/document-input.js"></script>';
 // Opening a page, the surfaces appear as one front of glyphs reaches them. Set to false to open them at once.
 const INTRO=true;
@@ -32,7 +33,7 @@ function sharedHead(slug) {
   return `<link rel="canonical" href="${url}"><meta property="og:type" content="website"><meta property="og:site_name" content="Memento Design Studio">
   <meta property="og:title" content="${escape(page.title)}"><meta property="og:description" content="${escape(page.description)}"><meta property="og:url" content="${url}">
   <meta property="og:image" content="${escape(site.sharingImage)}"><meta name="twitter:card" content="summary_large_image">
-  <link rel="icon" href="/favicon.svg" type="image/svg+xml"><link rel="preload" as="font" type="font/woff2" crossorigin href="/assets/fonts/InterVariable.woff2">
+  ${favicon}<link rel="preload" as="font" type="font/woff2" crossorigin href="/assets/fonts/InterVariable.woff2">
   ${documentInput}<link rel="stylesheet" href="/site.css"><link rel="stylesheet" href="/visuals.css"><script type="module" src="/js/site.mjs"></script>`;
 }
 function frame(slug,body,css,js,head='') {
@@ -109,15 +110,15 @@ const oldPaths=[
 ];
 for(const path of oldPaths) {
   const dest=historicDestination(path);
-  await output(path+'/index.html',`<!doctype html><html lang="it"><head><meta charset="utf-8"><title>Memento</title><link rel="canonical" href="${site.origin+dest}"><meta name="robots" content="noindex"><meta http-equiv="refresh" content="0;url=${dest}">${documentInput}<script src="/js/redirect.js" data-destination="${dest}"></script></head><body><a href="${dest}">Apri la pagina</a></body></html>`);
+  await output(path+'/index.html',`<!doctype html><html lang="it"><head><meta charset="utf-8"><title>Memento</title>${favicon}<link rel="canonical" href="${site.origin+dest}"><meta name="robots" content="noindex"><meta http-equiv="refresh" content="0;url=${dest}">${documentInput}<script src="/js/redirect.js" data-destination="${dest}"></script></head><body><a href="${dest}">Apri la pagina</a></body></html>`);
 }
 await output('sitemap.xml','<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'+['home',...PAGES.map(p=>p.slug)].map(s=>'<url><loc>'+canonical(s)+'</loc></url>').join('')+'</urlset>');
 await output('robots.txt','User-agent: *\nAllow: /\nSitemap: '+site.origin+'/sitemap.xml');
 // The 404: the number written by the wall of glyphs, and a card with the way back to every section.
 const exits=[{slug:'',label:'Home'},...PAGES].map(page=>`<a href="/${page.slug?page.slug+'/':''}">${escape(page.label)}</a>`).join('');
 await output('404.html',`<!doctype html><html lang="it" data-memento-native="404"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><meta name="theme-color" content="#090909"><meta name="robots" content="noindex"><title>Pagina non trovata — Memento</title>
-  <link rel="icon" href="/favicon.svg" type="image/svg+xml"><link rel="preload" as="font" type="font/woff2" crossorigin href="/assets/fonts/InterVariable.woff2">${documentInput}<link rel="stylesheet" href="/site.css"><link rel="stylesheet" href="/visuals.css"><script type="module" src="/js/site.mjs"></script><script type="module" src="/js/missing.mjs"></script></head><body>${navigation('404')}
+  ${favicon}<link rel="preload" as="font" type="font/woff2" crossorigin href="/assets/fonts/InterVariable.woff2">${documentInput}<link rel="stylesheet" href="/site.css"><link rel="stylesheet" href="/visuals.css"><script type="module" src="/js/site.mjs"></script><script type="module" src="/js/missing.mjs"></script></head><body>${navigation('404')}
   <main class="mm-missing" id="main"><h1 class="mm-sr">Pagina non trovata (errore 404)</h1><canvas class="mm-missing-code" aria-hidden="true"></canvas>
   <section class="mm-missing-card mm-tab" aria-labelledby="missing-title"><h2 class="mm-type" id="missing-title">Questa pagina non esiste.</h2>
   <p>Forse si è spostata, o il link non è più valido. Riparti da qui:</p><nav class="mm-missing-links" aria-label="Sezioni del sito">${exits}</nav></section></main></body></html>`);
-console.log(`Memento R31 · Home + 5 sezioni · ${catalogue.services.length} servizi, ${catalogue.bundles.length} bundle, ${projects.length} progetti.`);
+console.log(`Memento R32 · Home + 5 sezioni · ${catalogue.services.length} servizi, ${catalogue.bundles.length} bundle, ${projects.length} progetti.`);

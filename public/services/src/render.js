@@ -23,7 +23,6 @@ function image(name, profile, { deferred = true, eager = false, className = '' }
   const prefix = deferred ? 'data-' : '';
   return `<img class="${className}" ${prefix}src="${photo.src}" ${prefix}srcset="${photo.srcset}" sizes="${sizes[profile]}" width="${photo.width}" height="${photo.height}" alt="" draggable="false" decoding="async" ${eager ? 'fetchpriority="high" loading="eager"' : 'loading="lazy"'}>`;
 }
-const surface = '<span class="card-surface" aria-hidden="true"></span>';
 const titleLines = (lines) =>
   `<span class="item-master-gradient mm-type">${lines.map((line) => `<span class="item-master-title-line">${escape(line)} </span>`).join('')}</span>`;
 const copyLines = (lines) =>
@@ -61,7 +60,7 @@ export function cover(item, index) {
   const content = bundle
     ? `<div class="bundle-layout"><div class="bundle-summary"><span class="bundle-kicker">Bundle di servizi</span><p class="bundle-intro">${escape(item.slides[0].copy[0])}</p>${includes(item.covers)}</div><h2 class="bundle-title">${titleLines(item.slides[0].title)}</h2></div>`
     : `<span class="slide-description">${item.slides[0].copy.map((line) => `<span>${escape(line)}</span>`).join('')}</span><span class="slide-title mm-type">${balancedTitle(item.title)}</span>`;
-  return `<a ${bundle ? `id="percorso-${item.id}"` : ''} href="#${bundle ? 'bundle' : 'servizio'}/${item.id}" draggable="false" class="carousel-card showcase-card mm-tab${bundle ? ' bundle-board' : ''}"  data-slide="${index}" data-item="${item.id}" aria-label="Scopri ${bundle ? 'il bundle ' : ''}${escape(item.title)}${bundle ? ': ' + escape(item.includes) : ''}" tabindex="${index === 0 ? 0 : -1}">${surface}${photo}<span class="photo-caption-shade" aria-hidden="true"></span>${content}</a>`;
+  return `<a ${bundle ? `id="percorso-${item.id}"` : ''} href="#${bundle ? 'bundle' : 'servizio'}/${item.id}" draggable="false" class="carousel-card showcase-card mm-tab${bundle ? ' bundle-board' : ''}" data-slide="${index}" data-item="${item.id}" aria-label="Scopri ${bundle ? 'il bundle ' : ''}${escape(item.title)}${bundle ? ': ' + escape(item.includes) : ''}" tabindex="${index === 0 ? 0 : -1}"><div class="mm-slide-face">${photo}<span class="photo-caption-shade" aria-hidden="true"></span>${content}</div></a>`;
 }
 export function categories() {
   return catalogue.categories
@@ -101,7 +100,7 @@ function board(item, slide, index) {
     slide.action === 'start'
       ? `<a class="item-master-cta" href="${catalogue.config.startUrl}" target="_top" aria-label="${escape(slide.cta)}: vai a Start"><span>${escape(slide.cta)}</span>${icon()}</a>`
       : '';
-  return `<section class="carousel-card showcase-card service-scene scene-${slide.key} mm-tab"  data-slide="${index}" aria-label="${escape(slide.label)}" tabindex="${index === 0 ? 0 : -1}"><div class="popup-card-scroll"><div class="popup-card-body">${surface}${artwork}${copy}<${heading} class="item-master-title" style="--title-units:${slide.titleUnits}" ${index === 0 ? 'id="detail-title"' : ''} tabindex="-1">${titleLines(slide.title)}</${heading}>${cta}</div></div></section>`;
+  return `<section class="carousel-card showcase-card service-scene scene-${slide.key} mm-tab" data-slide="${index}" aria-label="${escape(slide.label)}" tabindex="${index === 0 ? 0 : -1}"><div class="mm-slide-face"><div class="popup-card-scroll"><div class="popup-card-body">${artwork}${copy}<${heading} class="item-master-title" style="--title-units:${slide.titleUnits}" ${index === 0 ? 'id="detail-title"' : ''} tabindex="-1">${titleLines(slide.title)}</${heading}>${cta}</div></div></div></section>`;
 }
 export function detail(item, parent = null) {
   return `<article class="service-deck item-master${item.kind === 'bundle' ? ' bundle-master' : ''}" role="region" aria-roledescription="slideshow" aria-label="${escape(item.title)}">${parent ? `<div class="service-deck-topline"><a href="#bundle/${parent.id}" class="back-link" data-back-bundle="${parent.id}" aria-label="Torna a ${escape(parent.title)}">${icon('caret-left')}</a></div>` : ''}<div class="carousel service-carousel popup-carousel" role="region" aria-roledescription="carosello" aria-label="Tavole di ${escape(item.title)}"><div class="carousel-stage">${item.slides.map((slide, index) => board(item, slide, index)).join('')}</div></div><nav class="service-deck-controls" aria-label="Tavole ${item.kind === 'bundle' ? 'del bundle' : 'del servizio'}">${dots(

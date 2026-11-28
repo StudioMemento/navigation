@@ -1,66 +1,50 @@
-# Memento Navigation R31
+# Memento Navigation R32
 
-Sito statico di mementostudio.it: una home a slider verticale e cinque sezioni (Studio, Services, Projects, LevelUp, Start). La navbar porta direttamente alle pagine; il logotipo riapre la home sulla sezione di provenienza.
+Sito statico di mementostudio.it con una home a scorrimento verticale e cinque sezioni. La navbar apre Studio, Services, Projects, Level Up e Start. Il logotipo riporta alla home sulla sezione di provenienza.
 
-## Deploy su Vercel
+## Avvio e pubblicazione
 
-Estrai lo ZIP e usa come radice del progetto la cartella che contiene `vercel.json` e `package.json`. Vercel esegue `node scripts/build.mjs` e pubblica `public/`. Il pacchetto contiene già le pagine generate, lo Studio compilato e tutte le risorse locali. La cartella `studio-web/` (sorgenti dello Studio 3D) non viene caricata su Vercel (`.vercelignore`).
+Estrai lo ZIP e usa come radice la cartella che contiene `vercel.json` e `package.json`. Vercel esegue `node scripts/build.mjs` e pubblica `public/`. Il pacchetto include le pagine generate, lo Studio compilato e le risorse locali.
 
-## Lavoro in locale
+Per lavorare in locale usa Node 22 o 24. `npm run dev` avvia il sito su `http://localhost:5173/`. `npm run build` rigenera le pagine dai template. Dopo modifiche allo Studio 3D, `npm run build:studio` compila lo Studio con Vite e rigenera le pagine.
 
-Con Node 22 o 24: `npm run dev` e apri `http://localhost:5173/`. Dopo una modifica a template o contenuti, `npm run build` rigenera le pagine statiche. Dopo una modifica allo Studio 3D, `npm run build:studio` ricompila lo Studio con Vite e rigenera le pagine.
+## Contenuti
 
-## Dove stanno i contenuti
-
-| Area | File principale |
+| Area | Sorgenti |
 | --- | --- |
-| Home e navbar | `templates/home-config.mjs` |
-| Titoli e descrizioni delle pagine | `templates/site.json` |
-| Studio 3D (modello, reveal, comandi) | `studio-web/` e `templates/studio.html` |
-| Servizi, bundle e categorie | `public/services/src/content.js` |
-| Progetti e immagini | `public/projects/projects.json` e `public/projects/images.json` |
-| LevelUp, demo e confronti | `public/levelup/src/content.js` |
+| Home e navigazione | `templates/home-config.mjs`, `templates/navigation.mjs`, `templates/nav-icons.mjs` |
+| Favicon e monogramma del dock | `public/favicon.svg` |
+| Titoli e metadati | `templates/site.json` |
+| Studio 3D | `studio-web/`, `templates/studio.html` |
+| Servizi e bundle | `public/services/src/content.js` |
+| Progetti e immagini | `public/projects/projects.json`, `public/projects/images.json` |
+| Esperienze e confronti | `public/levelup/src/content.js` |
 | Start, contatti e FAQ | `templates/start.json` |
 
-`public/site.css` definisce i margini responsive (`--content-width`), `public/visuals.css` lo strato visivo comune: sfumature dei titoli, blur graduale, navbar, luce dei bordi, parete di glifi, monocromo a riposo. Ogni sezione ha un proprio foglio per griglie, schede e controlli.
+## Navbar e layout
 
-## Navbar
+`public/site.css` definisce i margini responsive, `public/visuals.css` il dock e gli effetti condivisi. I cinque simboli vettoriali sono bianchi. La sezione corrente prende l’arancione `#ff7d00`. La piastra misura 40 px su desktop e 38 px su telefono, con un’area interattiva rispettivamente di 46 e 44 px. Il dock rispetta la safe area inferiore. Il blur graduale sopra e sotto il contenuto usa cinque livelli da 1 a 16 px.
 
-Il logo e le icone sono in `templates/navigation.mjs` e `templates/nav-icons.mjs`. Ogni icona è una piastra di vetro satinato (52 px) con il taglio delle card in alto a sinistra e in basso a destra e il simbolo ritagliato. Il vetro è semitrasparente e smerigliato; dove il browser lo consente (Chromium) rifrange anche ciò che sta dietro, piegandolo lungo lo smusso. La mappa di rifrazione è calcolata in build e inserita nella pagina. La pagina attiva prende una luce ambra dal basso, come la piastra sotto il cursore.
+## Slider e luce
 
-## Blur graduale
+Services, Projects e Level Up usano `public/js/slider.mjs` per trascinamento, touch, rotella orizzontale, tastiera e selezione. Il trascinamento segue il puntatore al ritmo del rendering. Al rilascio una molla raccorda posizione e velocità. La posa delle card in prospettiva è definita in `public/js/effects/deck-pose.mjs`. La home usa lo stesso stato di movimento per il suo slider verticale.
 
-Sotto il logotipo e sopra la navbar: cinque livelli per lato, ognuno con il doppio del blur del precedente (da 1 a 16 px), ciascuno su una propria fascia con ingresso e uscita graduali. Il blur cresce in modo continuo verso il bordo dello schermo, senza gradini.
+La faccia ritagliata e il bordo luminoso di una slide condividono la trasformazione e l’ordine di sovrapposizione della card. La faccia opaca copre i bordi posteriori e il bagliore si estende all’esterno del contorno. Durante il gesto la luce si attenua e riprende sulla posizione finale. In Level Up il player carica la demo selezionata quando lo slider si ferma. Il comando di apertura esplicito la carica subito.
 
-## Slider
-
-Un solo motore per tutti gli slider di Services, LevelUp e Projects: `public/js/slider.mjs` (gesti, molla, rotella, tastiera, punti). Le pose sono in `public/js/effects/deck-pose.mjs`: la card attiva di fronte, una vicina per lato inclinata verso la camera e infilata un po' dietro l'attiva. La sovrapposizione si apre solo nella seconda metà del passaggio: a metà movimento le due card si incontrano a filo, così il cambio di quella in primo piano non si vede. La home (`public/js/home.mjs`) ha il suo tamburo verticale con la stessa logica.
-
-## Effetti: il linguaggio dello sfondo
-
-Lo sfondo di glifi è il DNA visivo del sito. Margini e superfici condividono la stessa griglia di lettere MΞMΞNTO, che è una parete: appartiene al documento e scorre con il contenuto. A riposo il sito è monocromo e la parete continua a decodificarsi lentamente; l'ambra compare solo dove c'è il cursore (e sotto l'icona della pagina attiva). Su telefono il quadrato al centro dello schermo fa da cursore.
-
-| File | Ruolo |
+| File in `public/js/effects/` | Funzione |
 | --- | --- |
-| `public/js/effects/glyph-tile.mjs` | La tessera della parete a riposo: la build la disegna in SVG, il campo vivo legge le stesse lettere |
-| `public/js/effects/glyph-cells.mjs` | La griglia condivisa: finestra viva sulla parete, vita dei glifi, fronte strappato |
-| `public/js/effects/glyph-field.mjs` | I margini: decodifica lenta, scia del cursore in ambra, parola decifrata, fronte al click |
-| `public/js/effects/glyph-surfaces.mjs` | Le superfici: solo i glifi del cursore o del dito; luce consegnata al bordo |
-| `public/js/effects/edge-light.mjs` | Il filo di luce sul contorno e un bagliore intenso e corto (due esponenziali, entro 40 px), solo nello spazio vuoto. Una slide dietro un'altra tiene dietro tutta la sua luce. La luce segue la card mentre lo slider si muove |
-| `public/js/effects/type-light.mjs` | I titoli: grigi a riposo, caldi dal basso con la superficie in hover |
-| `public/js/effects/surfaces.mjs` | Un solo flusso di input per tutti gli effetti e lo stato `data-mm-hover`, che passa senza interruzioni da una slide alla successiva |
-| `public/js/effects/surface-targets.mjs` | Quali superfici prendono luce, il loro contorno sullo schermo e l'ordine in profondità delle slide |
-| `public/js/effects/surface-intro.mjs` | L'apertura: un fronte di glifi grigi parte dal logotipo e scopre le superfici |
-| `public/js/missing.mjs` | La 404: il numero scritto dalla parete |
+| `edge-light.mjs` | Disegna il filo e l’alone sul contorno locale della card |
+| `type-light.mjs` | Misura le parole e dosa l’ambra in funzione della distanza del cursore |
+| `surface-targets.mjs` | Tiene traccia di superfici e titoli visibili e del ritaglio della faccia |
+| `surfaces.mjs` | Coordina puntatore, focus da tastiera, area centrale su touch e finestre di dialogo |
+| `glyph-tile.mjs`, `glyph-cells.mjs` | Definiscono la griglia di lettere condivisa |
+| `glyph-field.mjs`, `glyph-surfaces.mjs` | Animano i margini e le scie sulle superfici |
+| `surface-intro.mjs` | Rivela le superfici all’apertura della pagina |
 
-L'apertura si spegne con `INTRO=false` in `scripts/build.mjs`. `templates/facet-texture.mjs` genera la trama dei titoli durante la build. Con movimento ridotto la parete resta statica e le superfici non mostrano glifi.
+`templates/facet-texture.mjs` genera la trama dei titoli. `INTRO` in `scripts/build.mjs` controlla il reveal iniziale. Con la preferenza di movimento ridotto la parete resta statica e gli slider passano direttamente alla selezione.
 
-## Studio 3D
+## Studio e Start
 
-`studio-web/` contiene lo Studio isometrico (StudioWeb): modello GLB meshopt con illuminazione già calcolata, reveal, orbita ortografica (200° in orizzontale e in verticale), zoom 88–116%. WebGL 2 dove c'è, altrimenti un worker con WebAssembly, altrimenti il poster. Vite lo compila in `public/studio/app/` con nomi a hash (cache immutabile); `scripts/build.mjs` legge il manifest e scrive `public/studio/index.html`. Lo Studio usa la navbar, il logotipo e la parete di glifi del sito (`/js/site.mjs`): avvicinando il cursore al contorno del modello la parete risponde. Procedura di bake e fonti dei materiali: `studio-web/studio/pipeline/`.
+Lo Studio isometrico usa il modello GLB con illuminazione precalcolata. I renderer WebGL e WebAssembly condividono modello e comandi di orbita. Il poster copre i dispositivi senza un renderer disponibile. I sorgenti e la procedura di bake sono in `studio-web/` e gli asset compilati in `public/studio/app/`. La configurazione Vercel esclude i sorgenti 3D dal caricamento della build statica.
 
-## Start
-
-La mappa di Google è in modalità scura: il riquadro è invertito e le tinte sono riportate al loro colore, così la mappa siede scura sulla pagina.
-
-Le fotografie, le illustrazioni e i modelli 3D fanno parte dei contenuti. I link di dettaglio storici sono reindirizzati alle corrispondenti schede interattive.
+Start presenta i canali di contatto, le FAQ e la mappa scura. I percorsi storici dei servizi e dei progetti rimandano alle schede interattive corrispondenti.

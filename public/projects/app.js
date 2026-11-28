@@ -76,16 +76,16 @@ function buildSelector() {
   $('#project-selector').innerHTML = coverflowMarkup();
   const active = Math.max(0, state.deck.findIndex(project => project.id === state.active));
   coverflow = new Slider($('.coverflow', view), {
-    cards: '.flow-card', loop: 'auto', active, stride: .5, bleed: null, hideNeighbours: false,
-    // The selected board is in colour; neighbours turn grey and darker with distance.
-    focus: distance => Math.max(0, 1 - Math.abs(distance) * .3),
+    cards: '.flow-card', loop: 'auto', active, stride: .5, hideNeighbours: false,
+    focus: null,
     // The card width follows the content: the three boards fit it.
     fit: ({element}) => {
       const width = document.documentElement.clientWidth || innerWidth;
       const content = element.closest('.project-station')?.querySelector('.content-width')?.clientWidth || width * .88;
-      element.style.setProperty('--card-width', Math.min(640, width < 768 ? content * .5 : drumFit(content, 'wide')).toFixed(2) + 'px');
+      const size = Math.min(640, width < 768 ? content * .5 : drumFit(content, 'wide')).toFixed(2) + 'px';
+      if (element.style.getPropertyValue('--card-width') !== size) element.style.setProperty('--card-width', size);
     },
-    onSelect: index => showProject(state.deck[index].id),
+    onCommit: index => showProject(state.deck[index].id),
     onOpen: () => goTo('project-gallery'),
     hydrate: card => $$('img[data-src]', card).forEach(hydrate),
   });
@@ -95,7 +95,11 @@ const galleryIndex = () => state.gallery.get(state.active) || 0;
 
 function projectContent() {
   const project = current();
-  $('#selected-heading').innerHTML = `<h1 class="project-title mm-type" id="selected-title" tabindex="-1" aria-label="${escapeHTML(projectName(project))}">${escapeHTML(project.title)}</h1>${project.variant ? `<p class="project-variant">${escapeHTML(project.variant)}</p>` : ''}`;
+  const title = $('#selected-title'), variant = $('#selected-variant');
+  title.setAttribute('aria-label',projectName(project));
+  title.textContent = project.title;
+  variant.textContent = project.variant || '';
+  variant.hidden = !project.variant;
   player.detach();
   unobserveImages($('#project-content'));
   $('#project-content').innerHTML = detailMarkup(project, galleryIndex());
@@ -123,7 +127,9 @@ function renderProject(id) {
   document.body.dataset.view = 'slideshow';
   view.innerHTML = `<header class="project-station" id="project-station">
       <div class="selector-band" id="project-selector"></div>
-      <div class="project-title-band content-width" id="selected-heading"></div>
+      <div class="project-title-band content-width" id="selected-heading">
+        <h1 class="project-title mm-type" id="selected-title" tabindex="-1"></h1><p class="project-variant" id="selected-variant" hidden></p>
+      </div>
     </header>
     <div id="project-content"></div>
     <section class="project-archive" id="project-archive" aria-labelledby="archive-title">

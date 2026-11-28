@@ -1,5 +1,5 @@
-import { drumPose, drumEdge, perspectiveFor, poseTransform, poseBleed, poseLayer } from './effects/deck-pose.mjs';
-import { setSlideDepth } from './effects/surface-targets.mjs';
+import { drumPose, drumEdge, perspectiveFor, poseTransform, poseBleed } from './effects/deck-pose.mjs';
+import { setDeckMoving } from './effects/surface-targets.mjs';
 
 // The one slider engine of the site (Services, LevelUp, the Portfolio strip). It owns horizontal gestures, the
 // spring and the pose of every card (deck-pose.mjs); content and routing are callbacks.
@@ -19,7 +19,6 @@ import { setSlideDepth } from './effects/surface-targets.mjs';
 //   onSettle    the active slide changed, during the move
 //   onCommit    the cards came to rest
 //   onOpen      the active slide was clicked
-//   onRender    every frame
 const ease = t => { t = Math.max(0, Math.min(1, t)); return t * t * (3 - 2 * t); };
 function hydrateImages(card) {
   for (const img of card.querySelectorAll('img')) {
@@ -29,13 +28,13 @@ function hydrateImages(card) {
     img.loading = 'eager';
   }
 }
-const OMEGA = 1 / 145;
+const OMEGA = 1 / 95;
 
 export class Slider {
   constructor(element, {
     cards = ':scope > .carousel-stage > *', loop = true, active = 0, stride = .55, fit = null, bleed,
     hideNeighbours = true, focus = distance => 1 - ease(Math.min(1, Math.abs(distance))), interactiveContents = false,
-    hydrate = hydrateImages, onSelect = () => {}, onSettle = () => {}, onCommit = () => {}, onOpen = () => {}, onRender = () => {}
+    hydrate = hydrateImages, onSelect = () => {}, onSettle = () => {}, onCommit = () => {}, onOpen = () => {}
   } = {}) {
     this.element = element;
     this.cards = [...element.querySelectorAll(cards)];
@@ -48,7 +47,12 @@ export class Slider {
     this.focusOf = focus;
     this.interactiveContents = interactiveContents;
     this.hydrate = hydrate;
-    Object.assign(this, {onSelect, onSettle, onCommit, onOpen, onRender});
+    this.items = this.cards.map(card => ({
+      card, inner:interactiveContents ? card.querySelector('.popup-card-scroll') : null,
+      controls:[...card.querySelectorAll('[data-slide-control]')], visible:null, active:null, hydrated:false
+    }));
+    this.saveData = !!navigator.connection?.saveData;
+    Object.assign(this, {onSelect, onSettle, onCommit, onOpen});
     this.current = this.target = this.active = active;
     this.velocity = this.raf = 0;
     this.pointer = this.motion = this.wheelGesture = null;
@@ -93,9 +97,11 @@ export class Slider {
   measure() {
     this.fit?.(this);
     const width = this.cards[0]?.offsetWidth || 1;
+    const height = this.cards[0]?.offsetHeight || 1;
+    if (this.width === width && this.height === height) return;
     if (this.width && this.width !== width && this.pointer) this.up({pointerId:this.pointer.id}, true);
     this.width = width;
-    this.height = this.cards[0]?.offsetHeight || 1;
+    this.height = height;
     this.stride = Math.max(40, width * this.strideShare);
     this.perspective = perspectiveFor(width);
     this.reserveBleed();
@@ -106,65 +112,68 @@ export class Slider {
     if (!this.bleed) return;
     const {top, bottom} = poseBleed(d => this.pose(d), this.width, this.height, this.perspective, this.edge);
     for (const [side, amount] of [['top', top], ['bottom', bottom]]) {
-      const property = '--carousel-bleed-' + side, value = Math.ceil(Math.max(0, amount)) + 8 + 'px';
+      const property = '--carousel-bleed-' + side, value = Math.ceil(Math.max(0, amount)) + 24 + 'px';
       if (this.bleed.style.getPropertyValue(property) !== value) this.bleed.style.setProperty(property, value);
     }
   }
   render() {
     const active = this.mod(Math.round(this.current)), edge = this.edge;
-    this.cards.forEach((card, index) => {
-      const distance = this.delta(index - this.current), amount = Math.abs(distance);
+    for (const [index,item] of this.items.entries()) {
+      const {card} = item, distance = this.delta(index-this.current), amount = Math.abs(distance);
       const visible = amount < edge, isActive = index === active;
-      if (amount < (navigator.connection?.saveData ? .6 : edge + .55)) this.hydrate(card);
+      if (!item.hydrated && amount < (this.saveData ? .6 : edge+.55)) {
+        this.hydrate(card);
+        item.hydrated = true;
+      }
+      if (item.active !== isActive || item.visible !== visible) {
+        card.style.visibility = visible ? 'visible' : 'hidden';
+        card.setAttribute('aria-hidden',String(this.hideNeighbours ? !isActive : !visible));
+        if (item.active !== isActive) {
+          card.dataset.active = String(isActive);
+          card.tabIndex = isActive ? 0 : -1;
+          if (isActive) card.setAttribute('aria-current','true'); else card.removeAttribute('aria-current');
+          if (item.inner) item.inner.inert = !isActive;
+          for (const control of item.controls) control.inert = !isActive;
+          item.active = isActive;
+        }
+        item.visible = visible;
+      }
+      if (!visible) continue;
       const pose = this.pose(distance);
-      card.style.transform = poseTransform(pose, this.perspective);
-      card.style.opacity = (visible ? pose.opacity * Math.max(0, Math.min(1, (edge - amount) / .3)) : 0).toFixed(4);
-      card.style.visibility = visible ? 'visible' : 'hidden';
-      card.style.pointerEvents = visible ? 'auto' : 'none';
-      card.style.zIndex = poseLayer(distance);
-      // Light and text follow distance continuously, including both sides of a swipe.
-      card.style.setProperty('--slide-focus', this.focusOf(distance).toFixed(4));
-      card.style.setProperty('--scene-light', pose.light.toFixed(4));
-      card.style.setProperty('--text-focus', pose.text.toFixed(4));
-      setSlideDepth(card, amount);
-      if (card.dataset.active !== String(isActive)) card.dataset.active = String(isActive);
-      card.tabIndex = isActive ? 0 : -1;
-      card.setAttribute('aria-hidden', String(this.hideNeighbours ? !isActive : !visible));
-      if (isActive) card.setAttribute('aria-current', 'true'); else card.removeAttribute('aria-current');
-      if (this.interactiveContents) (card.querySelector('.popup-card-scroll') || card).inert = !isActive;
-      card.querySelectorAll('[data-slide-control]').forEach(control => { control.inert = !isActive; });
-    });
-    if (active !== this.active) {
-      this.active = active;
-      this.onSettle(active);
+      card.style.transform = poseTransform(pose,this.perspective);
+      card.style.zIndex = String(isActive ? 4 : 3-Math.floor(amount));
+      card.style.opacity = String(Math.min(pose.opacity, Math.min(1,(edge-amount)/.35)));
+      if (this.focusOf) card.style.setProperty('--slide-focus',this.focusOf(distance).toFixed(3));
+      if (item.inner) {
+        card.style.setProperty('--scene-light',pose.light.toFixed(3));
+        card.style.setProperty('--text-focus',pose.text.toFixed(3));
+      }
     }
-    this.onRender();
+    if (active !== this.active) {this.active = active; this.onSettle(active);}
   }
   requestFrame() {
     if (this.raf || this.suspended) return;
-    this.element.classList.add('is-moving');
+    setDeckMoving(this.element,true);
     this.previous = performance.now();
     this.raf = requestAnimationFrame(now => this.frame(now));
   }
   frame(now) {
     this.raf = 0;
     if (!this.motion) return;
-    const dt = Math.min(40, Math.max(1, now - this.previous));
+    if (this.motion === 'drag') {
+      // Pointer samples are coalesced into one direct pose per displayed frame.
+      this.current = this.target;
+      this.render();
+      return;
+    }
+    const dt = Math.max(0,now-this.previous);
     this.previous = now;
-    if (this.motion.kind === 'drag') {
-      this.current += (this.target - this.current) * (1 - Math.exp(-dt / 32));
-      if (Math.abs(this.current - this.target) < .0001) {
-        this.current = this.target;
-        this.render();
-        this.element.classList.remove('is-moving');
-        return;
-      }
-    } else {
-      // Critical damping preserves position and velocity without snapping or bouncing.
-      const offset = this.current - this.target, mixed = this.velocity + OMEGA * offset, decay = Math.exp(-OMEGA * dt);
-      this.current = this.target + (offset + mixed * dt) * decay;
-      this.velocity = (this.velocity - OMEGA * mixed * dt) * decay;
-      if (Math.abs(this.target - this.current) < .00012 && Math.abs(this.velocity) < .000002) {this.finish(); return;}
+    const offset = this.current-this.target, mixed = this.velocity+OMEGA*offset, decay = Math.exp(-OMEGA*dt);
+    this.current = this.target+(offset+mixed*dt)*decay;
+    this.velocity = (this.velocity-OMEGA*mixed*dt)*decay;
+    if (Math.abs(this.target-this.current)*this.width < .22 && Math.abs(this.velocity)*this.width < .003) {
+      this.finish();
+      return;
     }
     this.render();
     this.raf = requestAnimationFrame(time => this.frame(time));
@@ -176,7 +185,7 @@ export class Slider {
     this.velocity = 0;
     this.motion = null;
     this.render();
-    this.element.classList.remove('is-moving');
+    setDeckMoving(this.element,false);
     this.onCommit(this.active);
     if (this.focusAfterSettle) {
       this.cards[this.active].focus({preventScroll:true});
@@ -184,18 +193,18 @@ export class Slider {
     }
   }
   // Move to the target with the spring; quiet: the destination is not a new choice (a tap, a cancelled drag).
-  settle(velocity = 0, quiet = false) {
+  settle(velocity = this.velocity, quiet = false) {
     if (!this.loop) this.target = Math.max(0, Math.min(this.count - 1, this.target));
     if (!quiet) this.onSelect(this.mod(Math.round(this.target)));
     const gap = this.target - this.current;
     this.velocity = Math.sign(gap) === Math.sign(velocity) ? Math.sign(velocity) * Math.min(Math.abs(velocity), Math.abs(gap) * OMEGA) : 0;
-    this.motion = {kind:'settle'};
-    if (this.reduced.matches) this.finish(); else this.requestFrame();
+    this.motion = 'settle';
+    if (this.reduced.matches || Math.abs(gap) < .00001) this.finish(); else this.requestFrame();
   }
   // silent: the page already shows that slide (no onSelect).
   select(index, {silent = false} = {}) {
     this.target = this.loop ? this.current + this.delta(index - this.current) : index;
-    this.settle(0, silent);
+    this.settle(this.velocity,silent);
   }
   step(direction) {
     if (this.count < 2) return;
@@ -217,11 +226,10 @@ export class Slider {
     if (e.defaultPrevented || e.target.closest('[data-mm-slider]') !== this.element || e.target.closest('input,textarea,select,[contenteditable="true"]')) return;
     if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(e.key)) return;
     e.preventDefault();
+    if (this.cards.includes(e.target)) this.focusAfterSettle = true;
     if (e.key === 'Home') this.select(0);
     else if (e.key === 'End') this.select(this.count - 1);
     else this.step(e.key === 'ArrowRight' ? 1 : -1);
-    // Focus on a slide moves with the selection once the cards have come to rest.
-    if (this.cards.includes(e.target)) this.focusAfterSettle = true;
   }
   wheel(event) {
     if (event.defaultPrevented || event.ctrlKey || event.metaKey || this.pointer || this.count < 2) return;
@@ -266,12 +274,13 @@ export class Slider {
     if (this.interactiveContents && !this.cards.some(c => c.contains(event.target))) return;
     if (this.pointer || event.isPrimary === false || event.button !== 0 || this.count < 2 ||
       event.target.closest('input,textarea,select,[contenteditable="true"],[data-no-swipe]')) return;
-    const origin = Math.round(this.motion?.kind === 'settle' ? this.target : this.current);
+    const origin = Math.round(this.motion === 'settle' ? this.target : this.current);
     this.wheelGesture = null;
     cancelAnimationFrame(this.raf);
     this.raf = 0;
     this.motion = null;
     this.target = this.current;
+    this.velocity = 0;
     this.suppressClick = false;
     this.pointer = {id:event.pointerId, x:event.clientX, y:event.clientY, start:this.current, origin, lastX:event.clientX, lastT:performance.now(), velocity:0, axis:null};
   }
@@ -294,9 +303,8 @@ export class Slider {
     pointer.lastT = now;
     this.target = pointer.start - dx / this.stride;
     if (!this.loop) this.target = Math.max(-.35, Math.min(this.count - .65, this.target));
-    this.motion = {kind:'drag'};
-    if (this.reduced.matches) {this.current = this.target; this.render();}
-    else this.requestFrame();
+    this.motion = 'drag';
+    this.requestFrame();
   }
   up(event, cancelled = false) {
     const pointer = this.pointer;
@@ -313,7 +321,10 @@ export class Slider {
     // A tap or a cancelled drag: the slides return to rest, nothing new is chosen.
     if (pointer.axis !== 'x' || cancelled) {
       if (pointer.axis === 'x') this.holdClicks();
-      if (Math.abs(this.current - pointer.origin) > .0001) {this.target = pointer.origin; this.settle(0, true);}
+      if (this.motion || this.element.classList.contains('is-moving') || Math.abs(this.current-pointer.origin) > .0001) {
+        this.target = pointer.origin;
+        this.settle(0,true);
+      }
       return;
     }
     this.holdClicks();
@@ -342,15 +353,22 @@ export class Slider {
     this.observer.disconnect();
     if (this.pointer && this.element.hasPointerCapture?.(this.pointer.id)) this.element.releasePointerCapture(this.pointer.id);
     this.motion = this.pointer = this.wheelGesture = null;
-    this.element.classList.remove('is-dragging', 'is-moving');
+    this.element.classList.remove('is-dragging');
+    setDeckMoving(this.element,false);
     delete this.element.dataset.mmSlider;
   }
 }
 
 // Dots under a slider: a click selects, the arrow keys move the focus and the selection together.
-export function bindDots(element, slider, {attribute = 'dot', signal} = {}) {
+export function bindDots(element, slider, {attribute = 'dot', state = 'aria-pressed', signal} = {}) {
   const buttons = [...element.querySelectorAll(`[data-${attribute}]`)];
-  const update = index => buttons.forEach((button, i) => button.setAttribute('aria-pressed', String(i === index)));
+  let current = buttons.findIndex(button => button.getAttribute(state) === 'true');
+  const update = index => {
+    if (index === current) return;
+    buttons[current]?.setAttribute(state, 'false');
+    buttons[index]?.setAttribute(state, 'true');
+    current = index;
+  };
   element.addEventListener('click', event => {
     const button = event.target.closest(`[data-${attribute}]`);
     if (button) slider.select(Number(button.getAttribute(`data-${attribute}`)));

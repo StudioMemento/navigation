@@ -1,4 +1,4 @@
-// One mounted frame. Explicit selection starts navigation before the carousel rests.
+// One mounted frame for the settled selection or an explicit request to open the demo.
 // Loading veil hides first paint; fullscreen changes presentation, never DOM parentage.
 export class DemoPlayer {
   constructor({mount,loading,fallback,poster,link,play,panel}) {

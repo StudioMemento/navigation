@@ -32,7 +32,7 @@ function chain(kind) {
   for (let k = 0; k < outer.length - 1; k++) secant.push(outer[k + 1] - outer[k]);
   const slope = outer.map((_, k) => {
     const left = secant[k], right = secant[k + 1] ?? secant[k];
-    return 2 * left * right / (left + right);
+    return k === 0 ? 1 : 2 * left * right / (left + right);
   });
   const result = {sides, outer, turn, secant, slope};
   chains.set(kind, result);
@@ -50,13 +50,18 @@ function boundary(u, {outer, secant, slope}) {
     (-2 * t3 + 3 * t2) * outer[k + 1] + (t3 - t2) * slope[k + 1]);
 }
 
-// The turn eases in and keeps going into the rest pose, so the depth solved from it only ever recedes.
+// The angle has a continuous first derivative at the front and at each side pose.
 function turnAt(a, {turn}) {
   const k = Math.min(Math.floor(a), turn.length - 2), t = Math.min(1, a - k);
-  return turn[k] + (turn[k + 1] - turn[k]) * (.4 * smooth(t) + .6 * Math.pow(t, 1.2));
+  return turn[k] + (turn[k + 1] - turn[k]) * smooth(t);
 }
 // How far a card at distance a tucks behind the cards before it, in steps of OVERLAP.
-const tuck = a => a <= 1 ? smooth((a - .5) / .5) : a;
+function tuck(a) {
+  if (a <= 1) return smooth((a-.5)/.5);
+  if (a >= 2) return a;
+  const t = a-1;
+  return 1+t*t*(2-t);
+}
 
 export function drumPose(distance, width, kind = 'wide') {
   const ch = chain(kind), a = Math.abs(distance), side = Math.sign(distance) || 1;
@@ -80,9 +85,6 @@ export function drumPose(distance, width, kind = 'wide') {
     visible: a < sides + .75
   };
 }
-// The order in front of the camera: the active card first, then each neighbour by distance (z-index).
-export const poseLayer = distance => String(1000 - Math.round(Math.abs(distance) * 200));
-
 // The half extent on screen of the active card and its first `sides` neighbours, in card widths.
 export const drumReach = (kind = 'wide', sides = KINDS[kind].sides) => chain(kind).outer[sides] - OVERLAP * sides;
 export const drumEdge = (kind = 'wide') => KINDS[kind].sides + .75;

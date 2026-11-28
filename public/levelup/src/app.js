@@ -1,6 +1,6 @@
 import { escape, lines, image, benefitMarkup, PHONE } from './benefit-markup.js';
 import { benefits, experiences, visions, steps, contactUrl, serviceUrl } from './content.js';
-import { Slider } from '/js/slider.mjs';
+import { Slider, bindDots } from '/js/slider.mjs';
 import { drumFit } from '/js/effects/deck-pose.mjs';
 import { DemoPlayer } from './player.js';
 
@@ -9,9 +9,9 @@ const initialBenefits = $('#benefits .carousel-stage');
 if (!initialBenefits.firstElementChild) initialBenefits.innerHTML = benefitMarkup();
 $('#portfolio .carousel-stage').innerHTML = experiences.map((item,i) => `
   <article class="showcase-card cut-frame mm-tab" data-slide="${i}" role="group" aria-roledescription="slide" aria-label="${escape(item.title)}, ${escape(item.categories.join(', '))}">
-    ${image(item)}<span class="card-shade" aria-hidden="true"></span><ul class="project-category" role="list">${item.categories.map(category=>`<li><span aria-hidden="true">–</span>${escape(category)}</li>`).join('')}</ul>
-    <h3 class="project-name" data-slide-control data-no-swipe><a class="gradient-text mm-type" href="${escape(item.url)}" target="_blank" rel="noopener noreferrer" aria-label="Apri ${escape(item.title)} in una nuova scheda">${escape(item.title)}</a></h3>
-    <button class="project-expand" data-slide-control data-no-swipe type="button" data-expand="${i}" aria-controls="demo-panel" aria-haspopup="dialog" aria-label="Espandi ${escape(item.title)}"><img src="assets/icons/maximize.svg" alt="" width="24" height="24"></button>
+    <div class="mm-slide-face">${image(item)}<span class="card-shade" aria-hidden="true"></span><ul class="project-category" role="list">${item.categories.map(category=>`<li><span aria-hidden="true">–</span>${escape(category)}</li>`).join('')}</ul>
+    <h3 class="project-name" data-slide-control><a data-no-swipe class="gradient-text mm-type" href="${escape(item.url)}" target="_blank" rel="noopener noreferrer" aria-label="Apri ${escape(item.title)} in una nuova scheda">${escape(item.title)}</a></h3>
+    <button class="project-expand" data-slide-control data-no-swipe type="button" data-expand="${i}" aria-controls="demo-panel" aria-haspopup="dialog" aria-label="Espandi ${escape(item.title)}"><img src="assets/icons/maximize.svg" alt="" width="24" height="24"></button></div>
   </article>`).join('');
 $('#vision-grid').innerHTML = visions.map(item => `
   <article class="vision-card cut-frame vision-${item.id} mm-tab" aria-labelledby="vision-${item.id}-title">
@@ -27,39 +27,33 @@ $('#vision-grid').innerHTML = visions.map(item => `
 $('#steps-grid').innerHTML = steps.map((item,i) => `
   <li class="step-card cut-frame mm-tab"><img class="step-art" src="${item.asset}" srcset="${item.asset.replace('.webp','-768.webp')} 768w, ${item.asset} 1536w" sizes="${PHONE}60vw, (max-width:900px) 90vw, 33vw" alt="" width="1536" height="1024" loading="lazy" decoding="async"><p>${escape(item.copy)}</p><span class="step-number" aria-hidden="true">STEP ${i+1}</span><h3 class="gradient-text mm-type">${lines(item.title)}</h3></li>`).join('');
 
-function pagination(root, items, label, select) {
+function pagination(root, items, label, slider) {
   root.innerHTML = items.map((item,i) => `<button type="button" aria-label="${escape(label(item))}" aria-current="${i===0}" data-index="${i}"><span></span></button>`).join('');
-  root.addEventListener('click', event => { const button=event.target.closest('button'); if(button)select(Number(button.dataset.index)); });
-  root.addEventListener('keydown', event => {
-    if(!['ArrowLeft','ArrowRight','Home','End'].includes(event.key))return;
-    event.preventDefault();
-    let index=Number(event.target.closest('button')?.dataset.index || 0);
-    index=event.key==='Home'?0:event.key==='End'?items.length-1:(index+(event.key==='ArrowRight'?1:-1)+items.length)%items.length;
-    select(index); root.children[index].focus();
-  });
+  return bindDots(root,slider,{attribute:'index',state:'aria-current'});
 }
-function mark(root,index) { [...root.children].forEach((button,i) => button.setAttribute('aria-current',String(i===index))); }
 const openTop = url => { location.assign(url); };
-let benefitsCarousel;
-pagination($('#benefit-dots'),benefits,item=>item.title.join(' '),index=>benefitsCarousel.select(index));
-benefitsCarousel = new Slider($('#benefits'),{onOpen:index=>{openTop(serviceUrl(benefits[index]));},onSettle:index=>{
-  mark($('#benefit-dots'),index); $('#announcement').textContent=benefits[index].title.join(' ');
-}});
+const benefitsCarousel = new Slider($('#benefits'),{
+  onOpen:index => openTop(serviceUrl(benefits[index])),
+  onSettle:index => {
+    markBenefit(index);
+    $('#announcement').textContent=benefits[index].title.join(' ');
+  }
+});
+const markBenefit = pagination($('#benefit-dots'),benefits,item=>item.title.join(' '),benefitsCarousel);
 $('#benefits').addEventListener('keydown',event=>{
   if((event.key==='Enter'||event.key===' ') && event.target.matches('.showcase-card[data-active=true]')) {
     event.preventDefault(); openTop(serviceUrl(benefits[benefitsCarousel.active]));
   }
 });
 
-let selected=0, engaged=null, portfolio;
+let selected=0, engaged=null, portfolio, demoRequested=false;
 const panel=$('#demo-panel'), dialog=$('#demo-dialog');
 const player = new DemoPlayer({mount:$('#frame-mount'),loading:$('#demo-loading'),fallback:$('#demo-fallback'),poster:$('#demo-poster'),link:$('#fallback-link'),play:$('#play-demo'),panel});
-pagination($('#portfolio-dots'),experiences,item=>'Prova '+item.title,index=>portfolio.select(index));
 const selectedExperience = () => experiences[selected];
 function updateSelection(index,announce=true) {
   selected=index;
   const item=selectedExperience();
-  mark($('#portfolio-dots'),index);
+  markExperience(index);
   if(announce) {
     engaged=item;
     $('#announcement').textContent=item.title+'. Demo selezionata sotto il portfolio.';
@@ -68,11 +62,12 @@ function updateSelection(index,announce=true) {
 }
 function commitSelection(index) {
   updateSelection(index,false);
-  if(player.frame)player.load(selectedExperience());
+  if(demoRequested || player.frame) player.load(selectedExperience());
+  demoRequested=false;
 }
 function selectExperience(index) {
   updateSelection(index);
-  player.load(selectedExperience());
+  demoRequested=true;
 }
 function reachDemo() {
   player.load(selectedExperience());
@@ -84,16 +79,13 @@ const compact=matchMedia('(max-width: 767px)');
 function fitPadding(slider) {
   const element=slider.element;
   if(compact.matches) {element.style.removeProperty('--slide-width');return;}
-  const probe=document.createElement('div');
-  probe.style.cssText='position:absolute;visibility:hidden;height:0;width:var(--page-content)';
-  element.append(probe);
-  const room=probe.offsetWidth;
-  probe.remove();
+  const room=element.closest('.experiences-section').querySelector('.page-width').clientWidth;
   if(!room) return;
   const value=Math.max(240,Math.min(680,drumFit(room,'wide'))).toFixed(2)+'px';
   if(element.style.getPropertyValue('--slide-width')!==value) element.style.setProperty('--slide-width',value);
 }
 portfolio=new Slider($('#portfolio'),{active:selected,stride:.5,fit:fitPadding,onSelect:selectExperience,onCommit:commitSelection,onOpen:reachDemo});
+const markExperience = pagination($('#portfolio-dots'),experiences,item=>'Prova '+item.title,portfolio);
 updateSelection(selected,false);
 $('#play-demo').addEventListener('click',reachDemo);
 $('#portfolio').addEventListener('keydown',event=>{

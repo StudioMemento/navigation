@@ -123,15 +123,16 @@ img[data-src] {opacity:0;}
 .selector-band {position:relative;padding-block:12px 10px;isolation:isolate;}
 .coverflow {
   --card-width:min(640px,38vw);--selector-height:calc(var(--card-width) / var(--board-ratio));position:relative;
-  height:var(--selector-height);overflow:clip;touch-action:pan-y pinch-zoom;user-select:none;-webkit-user-select:none;cursor:grab;
+  height:calc(var(--selector-height) + var(--carousel-bleed-top,24px) + var(--carousel-bleed-bottom,24px));
+  margin-block:calc(-1 * var(--carousel-bleed-top,24px)) calc(-1 * var(--carousel-bleed-bottom,24px));overflow:clip;touch-action:pan-y pinch-zoom;user-select:none;-webkit-user-select:none;cursor:grab;
   mask-image:linear-gradient(to right,transparent,#000 var(--safe-left),#000 calc(100% - var(--safe-right)),transparent);
   -webkit-mask-image:linear-gradient(to right,transparent,#000 var(--safe-left),#000 calc(100% - var(--safe-right)),transparent);
 }
 .coverflow:focus-visible {outline:none;}
 .coverflow.is-dragging {cursor:grabbing;}
 .flow-card {
-  position:absolute;left:50%;top:0;width:var(--card-width);height:100%;text-align:left;transform-origin:center;
-  will-change:transform;touch-action:inherit;--cut:clamp(12px,1.2vw,20px);
+  position:absolute;left:50%;top:var(--carousel-bleed-top,24px);width:var(--card-width);height:var(--selector-height);text-align:left;transform-origin:center;
+  touch-action:inherit;--cut:clamp(12px,1.2vw,20px);
 }
 .flow-face {display:block;position:relative;height:100%;background:#000;clip-path:var(--clip);}
 .flow-face::before {
@@ -139,7 +140,6 @@ img[data-src] {opacity:0;}
   pointer-events:none;
 }
 .flow-card[data-active=true] .flow-face::before {background:var(--mm-mark);}
-.flow-card[data-active=true][data-mm-hover] .flow-face::before {background:var(--amber);}
 .flow-image {display:block;height:100%;overflow:hidden;clip-path:var(--clip);}
 .flow-image img {object-position:center;}
 .flow-card:focus-visible {outline:2px solid var(--amber);outline-offset:4px;}
@@ -342,8 +342,4 @@ html.experience-open {overflow:hidden;}
 }
 @media (prefers-reduced-motion:reduce) {
   *,*::before,*::after {scroll-behavior:auto!important;}
-}
-/* A neighbour in perspective is drawn foreshortened, so a 1px ring breaks up on screen; a 2px ring stays whole. */
-.flow-card[data-active=false] .flow-face {
-  --frame-ring:polygon(evenodd,var(--cut) 0,100% 0,100% calc(100% - var(--cut)),calc(100% - var(--cut)) 100%,0 100%,0 var(--cut),var(--cut) 0,calc(var(--cut) + 0.8284px) 2px,2px calc(var(--cut) + 0.8284px),2px calc(100% - 2px),calc(100% - var(--cut) - 0.8284px) calc(100% - 2px),calc(100% - 2px) calc(100% - var(--cut) - 0.8284px),calc(100% - 2px) 2px,calc(var(--cut) + 0.8284px) 2px);
 }

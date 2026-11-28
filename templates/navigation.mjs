@@ -1,6 +1,6 @@
 import { readFile } from 'node:fs/promises';
 import { PAGES } from './home-config.mjs';
-import { iconTile, refractionDefs } from './nav-icons.mjs';
+import { iconTile } from './nav-icons.mjs';
 import { tile, TILE_COLS, TILE_ROWS, TILE_PITCH } from '../public/js/effects/glyph-tile.mjs';
 
 // The same traced alpha-vector shapes supply the masthead and the decorative margin pattern.
@@ -24,7 +24,7 @@ export function navigation(slug) {
     ? '<div class="mm-scrollbar" role="scrollbar" tabindex="0" aria-label="Scorri la pagina" aria-orientation="vertical" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" hidden><span class="mm-scrollbar-thumb" aria-hidden="true"></span></div>' : '';
   // The gradual blur under the logotype and over the dock: five layers a side, each twice the blur of the one before.
   const blur = '<i></i>'.repeat(5);
-  return `<div class="mm-glyph-field" aria-hidden="true"><canvas></canvas></div>${refractionDefs()}
+  return `<div class="mm-glyph-field" aria-hidden="true"><canvas></canvas></div>
   <div class="mm-blur mm-blur-top" aria-hidden="true">${blur}</div><div class="mm-blur mm-blur-bottom" aria-hidden="true">${blur}</div>
   <div class="mm-focus mm-focus-top" aria-hidden="true"></div><div class="mm-focus mm-focus-bottom" aria-hidden="true"></div>
   <header class="mm-header"><a class="mm-brand" href="${home||missing?'/':'/#'+slug}" aria-label="Memento — torna alla home"><span class="mm-letter-row">${mark}</span></a></header>

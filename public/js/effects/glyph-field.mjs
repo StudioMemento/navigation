@@ -1,5 +1,7 @@
 import { CellField, PITCH, WORD, TONE, range, clamp, shiftCanvas, shiftArray } from './glyph-cells.mjs';
 
+import { MOVING } from './surface-targets.mjs';
+
 function marginOpacity(distance, margin) {
   const start = margin * .4, end = Math.max(margin + 20, margin * 1.3);
   const t = clamp((distance - start) / (end - start));
@@ -217,7 +219,7 @@ export function mountGlyphField(layer) {
     return sent;
   }
   atlas.onload = resize;
-  atlas.src = '/navigation/glyph-atlas.svg?v=28';
+  atlas.src = '/navigation/glyph-atlas.svg';
   for (const query of [motion, forced, coarse]) {
     if (query.addEventListener) query.addEventListener('change', changePolicy);
     else query.addListener(changePolicy);
@@ -236,15 +238,10 @@ export function mountGlyphField(layer) {
     const distance = pointer ? Math.hypot(event.clientX - pointer.x, event.clientY - pointer.y) : 0;
     pointer = {x:event.clientX, y:event.clientY};
     // Over a surface, the surface draws the trail.
-    if (event.target?.closest?.('.mm-tab,.mm-header,.mm-dock,dialog')) return;
+    if (event.target?.closest?.('.mm-tab,.mm-header,.mm-dock,dialog,'+MOVING)) return;
     backdrop.trail(pointer.x, pointer.y, distance);
     start();
   }, {passive:true});
-  // A mouse click sends one front from the pointer. Touch is handled by the surfaces.
-  document.addEventListener('pointerdown', event => {
-    if (event.pointerType !== 'mouse' || event.button !== 0 || !event.isPrimary) return;
-    if (!event.target.closest('a,button,input,textarea,select,iframe,canvas,summary,dialog,label')) impulse(event.clientX, event.clientY, {feed:true});
-  }, {passive:true, capture:true});
   return {
     cells: field,
     impulse,
