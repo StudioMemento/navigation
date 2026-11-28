@@ -49,67 +49,68 @@ html[data-memento-native] body { isolation:isolate; position:relative; min-heigh
 }
 .mm-letter-row {display:flex;align-items:center;justify-content:space-between;width:100%;height:11px;}
 .mm-glyph {display:block;flex:none;height:11px;width:calc(11px * var(--glyph-aspect));fill:currentColor;overflow:visible;}
-/* The link owns the hit area. Its inset plate and vector share an optical centre. */
+/* The outer satin edges sit on the same two guides as the first and last logotype glyphs. */
 .mm-dock {
-  bottom:calc(env(safe-area-inset-bottom,0px) + clamp(6px,1.2svh,14px));
-  display:flex;align-items:center;gap:clamp(3px,.65vw,11px);width:max-content;max-width:100%;
+  --plate-size:40px;--hit-size:46px;
+  bottom:calc(env(safe-area-inset-bottom,0px) + clamp(7px,1.25svh,15px));
+  display:flex;align-items:center;justify-content:space-between;width:var(--mm-rail);
   margin:0;padding:0;pointer-events:none;
 }
 .mm-dock .mm-link {
-  display:grid;place-items:center;width:46px;height:46px;flex:none;padding:0;border:0;
-  pointer-events:auto;background:transparent;color:#fff;text-decoration:none;touch-action:manipulation;
+  display:grid;place-items:center;flex:none;width:var(--hit-size);height:var(--hit-size);margin-inline:calc((var(--plate-size) - var(--hit-size))/2);
+  padding:0;border:0;pointer-events:auto;background:transparent;color:#fff;text-decoration:none;touch-action:manipulation;
 }
 .mm-tile {
-  --tile-cut:8px;--plate:polygon(var(--tile-cut) 0,100% 0,100% calc(100% - var(--tile-cut)),calc(100% - var(--tile-cut)) 100%,0 100%,0 var(--tile-cut));
-  position:relative;isolation:isolate;display:grid;place-items:center;width:40px;height:40px;
+  --c:8px;--cut:polygon(var(--c) 0,100% 0,100% calc(100% - var(--c)),calc(100% - var(--c)) 100%,0 100%,0 var(--c));
+  --rim:linear-gradient(143deg,#c1bfb997,#77736f45 44%,#88847d57 83%,#c0bcb682);
+  --glass:linear-gradient(148deg,#393837b5,#222221a3 52%,#181818bf);
+  position:relative;isolation:isolate;display:grid;place-items:center;width:var(--plate-size);height:var(--plate-size);
+  clip-path:var(--cut);background:url('/navigation/satin-grain.png') repeat,var(--glass);
+  -webkit-backdrop-filter:blur(9px);backdrop-filter:blur(9px);
 }
-.mm-tile::before,.mm-tile::after {
-  content:"";position:absolute;inset:0;clip-path:var(--plate);pointer-events:none;
+.mm-tile::before {
+  content:'';position:absolute;inset:0;pointer-events:none;background:var(--rim);
+  clip-path:polygon(evenodd,var(--c) 0,100% 0,100% calc(100% - var(--c)),calc(100% - var(--c)) 100%,0 100%,0 var(--c),var(--c) 0,
+    calc(var(--c) + .414px) 1px,1px calc(var(--c) + .414px),1px calc(100% - 1px),calc(100% - var(--c) - .414px) calc(100% - 1px),
+    calc(100% - 1px) calc(100% - var(--c) - .414px),calc(100% - 1px) 1px,calc(var(--c) + .414px) 1px);
 }
-.mm-tile::before {background:linear-gradient(136deg,#8b8a87,#383837 44%,#555451);}
-.mm-tile::after {
-  --tile-cut:7.4px;inset:1px;background:linear-gradient(148deg,#363635ef,#191918ef 55%,#252523f5);
-  -webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);
-}
-.mm-dock .mm-nav-icon {
-  position:relative;z-index:1;display:block;width:30px;height:30px;fill:currentColor;stroke:none;
-}
+.mm-dock .mm-nav-icon {position:relative;display:block;width:29px;height:29px;fill:currentColor;stroke:none;}
 .mm-dock .mm-link[aria-current] {color:var(--mm-amber);}
-.mm-link[aria-current] .mm-tile::before {background:linear-gradient(140deg,#8d7561,#534135 55%,#d17b32);}
+.mm-link[aria-current] .mm-tile {
+  --glass:radial-gradient(ellipse at 50% 116%,#c267285c,transparent 72%),linear-gradient(149deg,#383531c9,#191817b8);
+  --rim:linear-gradient(140deg,#c4aa8f92,#8263455c 53%,#c0783baa);
+}
 @media (hover:hover) and (pointer:fine) {
-  .mm-link:hover .mm-tile::after {background:linear-gradient(148deg,#424241ef,#232322ef 55%,#31312ff5);}
+  .mm-link:not([aria-current]):hover .mm-tile {--rim:linear-gradient(142deg,#e6e3daa5,#8b837774);--glass:linear-gradient(145deg,#464543c2,#242423b0);}
 }
 @media (max-width:767px) {
-  .mm-dock .mm-link {width:44px;height:44px;}
-  .mm-tile {width:38px;height:38px;}
-  .mm-dock .mm-nav-icon {width:28px;height:28px;}
+  .mm-dock {--plate-size:38px;--hit-size:44px;}
+  .mm-dock .mm-nav-icon {width:27px;height:27px;}
 }
 .mm-brand:focus-visible,.mm-link:focus-visible {outline:1px solid #fff;outline-offset:3px;border-radius:4px;}
 
-/* The gradual blur under the logotype and over the dock. Five layers a side, each twice the blur of the one before
-   (1 to 16 px), each fading in and out over its own band: the blur grows smoothly toward the edge of the screen, with
-   no step for the eye to catch. Every layer only covers its band, so the cost stays that of about two full layers. */
-.mm-blur {
-  --band:clamp(104px,20svh,200px);
-  position:fixed;left:0;right:0;height:var(--band);z-index:900;pointer-events:none;
-}
+/* Overlapping ramps put most of the diffusion right at the viewport edge. */
+.mm-blur {position:fixed;left:0;right:0;z-index:900;pointer-events:none;height:var(--band);}
 .mm-blur i {
-  --ramp:linear-gradient(var(--toward-edge),transparent 0%,#000 33.333%,#000 66.667%,transparent 100%);
-  position:absolute;left:0;right:0;display:block;height:calc((var(--hi) - var(--lo)) * 100%);
+  position:absolute;left:0;right:0;height:calc((var(--hi) - var(--lo)) * 100%);
+  --ramp:linear-gradient(var(--toward-edge),transparent,#000 44%,#000 72%,transparent);
   -webkit-backdrop-filter:blur(var(--radius));backdrop-filter:blur(var(--radius));
   -webkit-mask-image:var(--ramp);mask-image:var(--ramp);
 }
-.mm-blur i:nth-child(1) {--radius:1px;--lo:0;--hi:.5;}
-.mm-blur i:nth-child(2) {--radius:2px;--lo:.16667;--hi:.66667;}
-.mm-blur i:nth-child(3) {--radius:4px;--lo:.33333;--hi:.83333;}
-.mm-blur i:nth-child(4) {--radius:8px;--lo:.5;--hi:1;}
-.mm-blur i:nth-child(5) {--radius:16px;--lo:.66667;--hi:1;--ramp:linear-gradient(var(--toward-edge),transparent 0%,#000 50%,#000 100%);}
-.mm-blur-top {top:-1px;--toward-edge:to top;}
+.mm-blur i:nth-child(1) {--radius:.6px;--lo:0;--hi:.52;}
+.mm-blur i:nth-child(2) {--radius:1.3px;--lo:.16;--hi:.67;}
+.mm-blur i:nth-child(3) {--radius:2.8px;--lo:.34;--hi:.84;}
+.mm-blur i:nth-child(4) {--radius:5.8px;--lo:.5;--hi:1;}
+.mm-blur i:nth-child(5) {--radius:12px;--lo:.68;--hi:1;--ramp:linear-gradient(var(--toward-edge),transparent,#000 75%);}
+.mm-blur-top {top:-1px;--band:clamp(82px,15svh,151px);--toward-edge:to top;}
 .mm-blur-top i {top:calc((1 - var(--hi)) * 100%);}
-.mm-blur-bottom {bottom:-1px;--toward-edge:to bottom;}
+.mm-blur-bottom {bottom:-1px;--band:clamp(88px,16svh,160px);--toward-edge:to bottom;}
 .mm-blur-bottom i {bottom:calc((1 - var(--hi)) * 100%);}
-@media (max-width:767px) { .mm-blur {--band:clamp(88px,17svh,144px);} }
-@media (max-height:520px) { .mm-blur {--band:clamp(44px,15vh,76px);} }
+@media (max-width:767px) {
+  .mm-blur-top {--band:clamp(74px,14svh,116px);}
+  .mm-blur-bottom {--band:clamp(78px,15svh,124px);}
+}
+@media (max-height:520px) { .mm-blur {--band:clamp(40px,13svh,67px);} }
 
 /* On a phone the square at the centre of the screen is in colour; above and below, colour fades out gradually.
    Only saturation changes: the content stays as bright and readable as it is. */
@@ -163,13 +164,14 @@ html[data-memento-native=services] dialog[open]::backdrop {background:rgba(3,4,5
 .mm-static-edge {position:absolute;left:0;top:0;pointer-events:none;z-index:7;}
 svg.mm-edge {
   position:absolute;inset:0;z-index:12;display:block;box-sizing:border-box;width:100%;height:100%;max-width:none;
-  overflow:visible;pointer-events:none;fill:none;stroke:none;opacity:0;transition:opacity .13s ease-out;
+  overflow:visible;pointer-events:none;fill:none;stroke:none;
 }
+.mm-edge-base {opacity:0;transition:opacity .13s ease-out;}
 .mm-glyph-surface {position:absolute;inset:0;z-index:640;pointer-events:none;overflow:hidden;}
 .mm-glyph-surface canvas {position:absolute;left:0;top:0;display:block;width:100%;}
 @media (prefers-reduced-motion:reduce) {
   .mm-glyph-surface {display:none;}
-  html[data-memento-native] .mm-type[data-lit],svg.mm-edge {transition:none;}
+  html[data-memento-native] .mm-type[data-lit],.mm-edge-base {transition:none;}
 }
 
 /* Surfaces at rest are black and white on a desk; the one under the pointer shows its colour. On a phone the square
@@ -191,23 +193,18 @@ svg.mm-edge {
 /* The document keeps native scrolling; the overlay exposes its position and accepts optional desktop input. */
 html[data-mm-scroll-cue] {scrollbar-width:none;}
 html[data-memento-native][data-mm-scroll-cue]::-webkit-scrollbar {display:none;width:0;height:0;}
-.mm-scrollbar {position:fixed;top:6px;right:0;bottom:6px;z-index:950;width:16px;touch-action:none;}
+.mm-scrollbar {position:fixed;top:0;right:0;bottom:0;z-index:950;width:12px;touch-action:none;}
 .mm-scrollbar[hidden] {display:none!important;}
 .mm-scrollbar-thumb {
-  position:absolute;top:0;right:4px;width:2px;min-height:1px;border-radius:4px;pointer-events:none;opacity:.86;
-  background:linear-gradient(to bottom,transparent 0%,rgba(236,231,223,.1) 22%,rgba(236,231,223,.4) 48%,#d9d4cc 85%,#f3efe9 100%);
-  box-shadow:0 4px 9px -3px rgba(236,231,223,.25);
+  position:absolute;top:0;right:0;width:2px;height:100%;pointer-events:none;transform:scaleY(0);transform-origin:top;
+  background:linear-gradient(to bottom,transparent,#bca58c32 42%,#c8915c88 82%,#ffc183);
 }
-.mm-scrollbar:is(.is-scrolling,.is-dragging,:hover,:focus-visible) .mm-scrollbar-thumb {width:3px;opacity:1;}
-.mm-scrollbar:is(:hover,.is-dragging) .mm-scrollbar-thumb {
-  background:linear-gradient(to bottom,transparent 0%,rgba(255,125,0,.12) 22%,rgba(255,125,0,.48) 48%,#ff7d00 85%,#ffb56d 100%);
-  box-shadow:0 4px 9px -3px rgba(255,125,0,.42);
-}
+.mm-scrollbar:is(:hover,:focus-visible,.is-dragging) .mm-scrollbar-thumb {background:linear-gradient(to bottom,transparent,#d69c6938 42%,#ee975493 82%,#ffd1a1);}
 .mm-scrollbar:focus-visible {outline:1px solid #ffb56d;outline-offset:-2px;}
-@media (pointer:coarse) { .mm-scrollbar {width:5px;pointer-events:none;} .mm-scrollbar-thumb {right:2px;} }
-
+@media (pointer:coarse) { .mm-scrollbar {width:2px;pointer-events:none;} }
 @media (forced-colors:active) {
-  .mm-glyph-field,.mm-blur,.mm-focus,.mm-glyph-surface,.mm-edge,.mm-static-edge,.mm-scrollbar,.mm-tile::before,.mm-tile::after {display:none;}
+  .mm-glyph-field,.mm-blur,.mm-focus,.mm-glyph-surface,.mm-edge,.mm-static-edge,.mm-scrollbar,.mm-tile::before {display:none;}
+  .mm-tile {background:Canvas;-webkit-backdrop-filter:none;backdrop-filter:none;}
   .mm-dock .mm-link {color:LinkText;}
   .mm-dock .mm-link[aria-current] {color:Highlight;}
   .mm-link[aria-current] {outline:2px solid Highlight;}

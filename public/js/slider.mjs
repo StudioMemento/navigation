@@ -13,7 +13,6 @@ import { setDeckMoving } from './effects/surface-targets.mjs';
 //   bleed       the element that reserves room above and below for the projected cards (null: none)
 //   hideNeighbours  neighbours are hidden from assistive technology (the strip of the Portfolio keeps them)
 //   focus       (distance) => --slide-focus, 1 on the active slide
-//   interactiveContents  the active slide holds its own links and scrollers (the dialogs of Services)
 //   hydrate     (card) => loads the media of a slide about to be seen
 //   onSelect    the destination is chosen (click, key, wheel, released swipe), while the cards still move
 //   onSettle    the active slide changed, during the move
@@ -33,7 +32,7 @@ const OMEGA = 1 / 95;
 export class Slider {
   constructor(element, {
     cards = ':scope > .carousel-stage > *', loop = true, active = 0, stride = .55, fit = null, bleed,
-    hideNeighbours = true, focus = distance => 1 - ease(Math.min(1, Math.abs(distance))), interactiveContents = false,
+    hideNeighbours = true, focus = distance => 1 - ease(Math.min(1, Math.abs(distance))),
     hydrate = hydrateImages, onSelect = () => {}, onSettle = () => {}, onCommit = () => {}, onOpen = () => {}
   } = {}) {
     this.element = element;
@@ -45,10 +44,9 @@ export class Slider {
     this.bleed = bleed === undefined ? (element.closest('.bundle-opening') && element.classList.contains('bundle-carousel') ? element.closest('.bundle-opening') : element) : bleed;
     this.hideNeighbours = hideNeighbours;
     this.focusOf = focus;
-    this.interactiveContents = interactiveContents;
     this.hydrate = hydrate;
     this.items = this.cards.map(card => ({
-      card, inner:interactiveContents ? card.querySelector('.popup-card-scroll') : null,
+      card,
       controls:[...card.querySelectorAll('[data-slide-control]')], visible:null, active:null, hydrated:false
     }));
     this.saveData = !!navigator.connection?.saveData;
@@ -132,7 +130,6 @@ export class Slider {
           card.dataset.active = String(isActive);
           card.tabIndex = isActive ? 0 : -1;
           if (isActive) card.setAttribute('aria-current','true'); else card.removeAttribute('aria-current');
-          if (item.inner) item.inner.inert = !isActive;
           for (const control of item.controls) control.inert = !isActive;
           item.active = isActive;
         }
@@ -144,10 +141,7 @@ export class Slider {
       card.style.zIndex = String(isActive ? 4 : 3-Math.floor(amount));
       card.style.opacity = String(Math.min(pose.opacity, Math.min(1,(edge-amount)/.35)));
       if (this.focusOf) card.style.setProperty('--slide-focus',this.focusOf(distance).toFixed(3));
-      if (item.inner) {
-        card.style.setProperty('--scene-light',pose.light.toFixed(3));
-        card.style.setProperty('--text-focus',pose.text.toFixed(3));
-      }
+
     }
     if (active !== this.active) {this.active = active; this.onSettle(active);}
   }
@@ -217,7 +211,7 @@ export class Slider {
     if (!card || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.target.closest('[data-no-swipe]')) return;
     if (this.suppressClick) {e.preventDefault(); e.stopImmediatePropagation(); return;}
     const index = this.cards.indexOf(card), here = Math.abs(this.delta(index - this.current)) <= .025;
-    if (here && (this.interactiveContents || e.target.closest('[data-domain-link]'))) return;
+    if (here && e.target.closest('[data-domain-link]')) return;
     e.preventDefault();
     e.stopPropagation();
     if (here) this.onOpen(index); else this.select(index);
@@ -234,7 +228,6 @@ export class Slider {
   wheel(event) {
     if (event.defaultPrevented || event.ctrlKey || event.metaKey || this.pointer || this.count < 2) return;
     if (event.target.closest('[data-mm-slider]') !== this.element || event.target.closest('input,textarea,select,[contenteditable="true"],[data-no-swipe]')) return;
-    if (this.interactiveContents && !this.cards.some(c => c.contains(event.target))) return;
     // Vertical page scrolling and trackpad pinch zoom stay native. Shift with a mouse wheel scrolls sideways.
     const unit = event.deltaMode === 1 ? 16 : event.deltaMode === 2 ? this.width : 1;
     const dx = (event.shiftKey && !event.deltaX ? event.deltaY : event.deltaX) * unit;
@@ -271,7 +264,6 @@ export class Slider {
   }
   down(event) {
     if (event.isPrimary === false && this.pointer) {this.up({pointerId:this.pointer.id}, true); return;}
-    if (this.interactiveContents && !this.cards.some(c => c.contains(event.target))) return;
     if (this.pointer || event.isPrimary === false || event.button !== 0 || this.count < 2 ||
       event.target.closest('input,textarea,select,[contenteditable="true"],[data-no-swipe]')) return;
     const origin = Math.round(this.motion === 'settle' ? this.target : this.current);

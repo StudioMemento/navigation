@@ -97,7 +97,7 @@ class Backdrop {
     }
     if (this.waveTravel >= TRAIL.wave && field.time - (this.lastWave || -5) >= TRAIL.gap) {
       this.waveTravel = 0; this.lastWave = field.time;
-      field.impulse(x, y, {power:TRAIL.power, reach:TRAIL.reach, limited:false, surface:false, feed:false});
+      field.impulse(x, y, {power:TRAIL.power, reach:TRAIL.reach, surface:false, feed:false});
     }
   }
   decrypt() {
@@ -153,7 +153,7 @@ class Backdrop {
     // The word announces itself in the margins only, in grey.
     if (this.wordWave && field.time >= this.wordWave.at) {
       const id = this.wordWave.id;
-      if (id >= 0 && id < field.count) field.impulse(field.x(id), field.y(id), {quiet:true, warm:false, power:.35, reach:700, limited:false});
+      if (id >= 0 && id < field.count) field.impulse(field.x(id), field.y(id), {quiet:true, warm:false, power:.35, reach:700});
       this.wordWave = null;
     }
   }
@@ -166,9 +166,11 @@ export function mountGlyphField(layer) {
   const field = new CellField(atlas);
   let backdrop = null, timer = 0, frame = 0, resizing = 0, previous = 0, sizeKey = '';
   let pointer = null;
+  const pending=[];
+  let lastInput=-Infinity;
   const listeners = {ready:new Set(), impulse:new Set()};
   const emit = (name, ...args) => { for (const listener of listeners[name]) listener(...args); };
-  const still = () => motion.matches || forced.matches || !!saveData;
+  const still = () => motion.matches || forced.matches;
   const halted = () => still() || document.hidden || document.documentElement.hasAttribute('data-mm-modal');
   function stop() { clearTimeout(timer); cancelAnimationFrame(frame); timer = frame = previous = 0; }
   function rest() { stop(); layer.removeAttribute('data-live'); }
@@ -179,7 +181,8 @@ export function mountGlyphField(layer) {
     const dt = previous ? Math.min(.1, (now - previous) / 1000) : 0;
     previous = now;
     field.follow();
-    field.step(dt, () => backdrop.before(dt));
+    field.step(dt,saveData ? null : () => backdrop.before(dt));
+    if(saveData && !field.active.size && !field.scheduled.size){previous=0;return;}
     timer = setTimeout(() => {timer = 0; frame = requestAnimationFrame(tick);}, 1000 / (coarse.matches ? 18 : 30) - 8);
   }
   function start() { if (backdrop && !halted() && !frame && !timer) frame = requestAnimationFrame(tick); }
@@ -204,6 +207,7 @@ export function mountGlyphField(layer) {
       sizeKey = key;
       layer.setAttribute('data-live', '');
       emit('ready');
+      for(const [x,y,options] of pending.splice(0)) impulse(x,y,options);
     }
     start();
   }
@@ -211,7 +215,15 @@ export function mountGlyphField(layer) {
   function sync() { if (still()) rest(); else if (halted()) stop(); else start(); }
   function changePolicy() { if (still()) rest(); else resize(); }
   function impulse(x, y, options = {}) {
-    if (!backdrop || halted()) return false;
+    if (halted()) return false;
+    if (!backdrop) {
+      if(options.input) {pending.push([x,y,options]);if(pending.length>3)pending.shift();}
+      return false;
+    }
+    const now=performance.now();
+    // A tap inside the 3D Studio can also report a model-edge reflection during the same input.
+    if(options.input)lastInput=now;
+    else if(options.feed===undefined && now-lastInput<95)return false;
     field.follow();
     emit('impulse', x, y, options);
     const sent = field.impulse(x, y, options);

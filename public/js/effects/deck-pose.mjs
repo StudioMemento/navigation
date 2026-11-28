@@ -72,7 +72,7 @@ export function drumPose(distance, width, kind = 'wide') {
   // left·(P - z - σ) = P·(x - cos/2),  right·(P - z + σ) = P·(x + cos/2)
   const z = P - (P * cos - (left + right) * sigma) / Math.max(1e-6, right - left);
   const x = (left * (P - z - sigma)) / P + cos / 2;
-  const near = smooth(Math.min(a, 1)), sides = ch.sides;
+  const sides = ch.sides;
   return {
     x: x * width,
     y: 0,
@@ -80,8 +80,6 @@ export function drumPose(distance, width, kind = 'wide') {
     yaw: yaw / RAD,
     scale: 1,
     opacity: a <= sides + .25 ? 1 : Math.max(0, 1 - (a - sides - .25) / .5),
-    light: 1 - .4 * near - .1 * smooth(a - 1),
-    text: 1 - smooth(a / .45),
     visible: a < sides + .75
   };
 }

@@ -36,14 +36,21 @@ function makeEdge(card) {
   const clip = svg('clipPath', {id:id+'-outside', clipPathUnits:'userSpaceOnUse'});
   const exterior = svg('path', {'clip-rule':'evenodd'});
   clip.append(exterior);
-  defs.append(shape,gradient,clip);
+  const flashGradient = svg('radialGradient',{id:id+'-flash',href:'#'+id+'-light',gradientUnits:'userSpaceOnUse'});
+  defs.append(shape,gradient,flashGradient,clip);
   const glow = svg('g', {'clip-path':'url(#'+id+'-outside)'});
   const stroke = (width, opacity) => svg('use', {href:'#'+id, fill:'none', stroke:'url(#'+id+'-light)', 'stroke-linejoin':'round', 'stroke-width':width, opacity});
   for (const [width,opacity] of HALO) glow.append(stroke(width,opacity));
-  const pulse = stroke(3,0);
-  root.append(defs,glow,stroke(1.35,1),pulse);
+  const base=svg('g',{class:'mm-edge-base'});
+  base.append(glow,stroke(1.35,1));
+  const pulse=svg('g',{opacity:0});
+  for(const [width,opacity] of [[6,.14],[2.15,.9]]) {
+    pulse.append(svg('use',{href:'#'+id,fill:'none',stroke:'url(#'+id+'-flash)','stroke-linejoin':'round','stroke-width':width,opacity}));
+  }
+  root.append(defs,base,pulse);
+  const face=faceOf(card);
   let holder = null;
-  if (slideOf(card) === card) {
+  if (slideOf(card) === card || (face!==card && getComputedStyle(card).clipPath==='none')) {
     card.append(root);
   } else {
     holder = document.createElement('span');
@@ -52,7 +59,7 @@ function makeEdge(card) {
     holder.append(root);
     card.parentElement.append(holder);
   }
-  return {card,face:faceOf(card),root,holder,shape,exterior,gradient,pulse,lastPulse:0,key:'',timer:0};
+  return {card,face,root,base,holder,shape,exterior,gradient,flashGradient,pulse,animation:null,lastPulse:0,until:0,key:'',timer:0};
 }
 
 function align(edge, box) {
@@ -77,7 +84,9 @@ function align(edge, box) {
     edge.shape.setAttribute('d',path);
     edge.exterior.setAttribute('d','M-30 -30 H'+(width+30)+' V'+(height+30)+' H-30 Z '+path);
     root.setAttribute('viewBox','0 0 '+width+' '+height);
-    edge.gradient.setAttribute('r',Math.min(350,Math.max(110,Math.min(width,height)*.84)));
+    const radius=Math.min(350,Math.max(110,Math.min(width,height)*.84));
+    edge.gradient.setAttribute('r',radius);
+    edge.flashGradient.setAttribute('r',Math.min(radius,190));
   }
   return true;
 }
@@ -86,24 +95,46 @@ export function edgeLight(cards) {
   const live = new Map();
   function drop(edge) {
     clearTimeout(edge.timer);
+    edge.animation?.cancel();
     (edge.holder || edge.root).remove();
     live.delete(edge.card);
   }
   function fade(edge) {
     if (edge.timer) return;
-    edge.root.style.opacity = '0';
-    edge.timer = setTimeout(() => drop(edge), 165);
+    edge.base.style.opacity='0';
+    edge.timer=setTimeout(()=>drop(edge),Math.max(165,edge.until-performance.now()+20));
   }
-  function paint(card, point, box, strength) {
-    let edge = live.get(card);
-    if (!edge) {edge = makeEdge(card); live.set(card,edge);}
-    clearTimeout(edge.timer); edge.timer = 0;
-    if (!align(edge,box)) {drop(edge);return;}
-    const aim = nearest(edge.points,(point.x-box.left)*edge.width/box.width,(point.y-box.top)*edge.height/box.height);
-    edge.gradient.setAttribute('cx',aim.x.toFixed(2));
-    edge.gradient.setAttribute('cy',aim.y.toFixed(2));
-    const gain = Math.max(.30, 1-aim.gap/390);
-    edge.root.style.opacity = (strength*gain).toFixed(3);
+  function getEdge(card,box) {
+    let edge=live.get(card);
+    if(!edge) {edge=makeEdge(card);live.set(card,edge);}
+    clearTimeout(edge.timer);edge.timer=0;
+    if(align(edge,box))return edge;
+    drop(edge);
+  }
+  function aimAt(edge,box,point,gradient) {
+    const aim=nearest(edge.points,(point.x-box.left)*edge.width/box.width,(point.y-box.top)*edge.height/box.height);
+    gradient.setAttribute('cx',aim.x.toFixed(2));gradient.setAttribute('cy',aim.y.toFixed(2));
+    return aim.gap;
+  }
+  function paint(card,point,box,strength) {
+    const edge=getEdge(card,box);
+    if(!edge)return;
+    const gap=aimAt(edge,box,point,edge.gradient);
+    edge.base.style.opacity=(strength*Math.max(.30,1-gap/390)).toFixed(3);
+  }
+  function finishTargets(next) {
+    for (const [card,edge] of live) {
+      if (!card.isConnected || !available(card)) drop(edge);
+      else if (!next.has(card)) fade(edge);
+    }
+  }
+  function band(matches) {
+    const next=new Set();
+    for(const {card,point,box,strength} of matches) {
+      paint(card,point,box,strength);
+      next.add(card);
+    }
+    finishTargets(next);
   }
   function target(point, {primary=null,scope=null,hints=true} = {}) {
     const next = new Set();
@@ -125,20 +156,34 @@ export function edgeLight(cards) {
         paint(card,point,box,card === primary ? 1 : .32*(1-distance/HINT_RANGE)**2);
       }
     }
-    for (const [card,edge] of live) {
-      if (!card.isConnected || !available(card)) drop(edge);
-      else if (!next.has(card)) fade(edge);
-    }
+    finishTargets(next);
   }
-  function feed(card, strength) {
-    const edge = live.get(card);
-    if (!edge || edge.timer || strength <= .05) return;
-    const now = performance.now();
-    if (now-edge.lastPulse < 160) return;
-    edge.lastPulse = now;
-    edge.pulse.animate?.([{opacity:Math.min(.55,strength)},{opacity:0}],{duration:240,easing:'ease-out'});
+  function pulse(edge,strength,duration) {
+    edge.animation?.cancel();
+    edge.until=performance.now()+duration;
+    edge.animation=edge.pulse.animate?.([{opacity:.03},{opacity:strength,offset:.16},{opacity:0}],{duration,easing:'ease-out'});
   }
+  function flash(card,point,strength=.54) {
+    if(!card || card.closest(MOVING) || !available(card))return;
+    const box=faceOf(card).getBoundingClientRect();
+    if(!box.width || !box.height)return;
+    const edge=getEdge(card,box);
+    if(!edge)return;
+    aimAt(edge,box,point,edge.flashGradient);
+    pulse(edge,strength,340);
+    edge.lastPulse=performance.now();
+  }
+  function feed(card,strength) {
+    const edge=live.get(card);
+    if(!edge || edge.timer || strength<=.05)return;
+    const now=performance.now();
+    if(now<edge.until || now-edge.lastPulse<180)return;
+    edge.lastPulse=now;
+    for(const key of ['cx','cy']) edge.flashGradient.setAttribute(key,edge.gradient.getAttribute(key) || 0);
+    pulse(edge,Math.min(.34,strength),220);
+  }
+  function stopMotion(deck) {for (const [card,edge] of live) if(deck.contains(card)) drop(edge);}
   function clear() {for (const edge of live.values()) drop(edge);}
-  return {target,feed,clear};
+  return {target,band,flash,feed,stopMotion,clear};
 }
 

@@ -255,18 +255,13 @@ export function glyphSurfaces(field, {cards, feed}) {
     }
     if (waveTravel >= TRAIL.wave && cells.time - lastWave >= TRAIL.gap) {
       waveTravel = 0; lastWave = cells.time;
-      cells.impulse(x, y, {cells:ids, power:TRAIL.power, reach:TRAIL.reach, limited:false, feed:true});
+      cells.impulse(x, y, {cells:ids, power:TRAIL.power, reach:TRAIL.reach, feed:true});
     }
     field.wake();
-  }
-  // A touch sends one front through every surface on screen and through the margins.
-  function touch(clientX, clientY) {
-    if (!field.ready || field.blocked) return false;
-    return field.impulse(clientX, clientY, {feed:true, power:.85});
   }
   // A front through the whole screen: surfaces on screen that were never measured are measured now.
   function realign() { show(); mapVisible(); }
   field.on('impulse', (x, y, options) => { if (!options.quiet && !options.cells) realign(); });
   field.on('ready', () => {forget(); wipe(); setTimeout(prepare, 1200);});
-  return {move,release,touch};
+  return {move,release};
 }

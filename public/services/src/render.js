@@ -15,7 +15,7 @@ const sizes = {
   slide:
     '(max-width: 500px) 320px, (max-width: 1023px) calc(100vw - 180px), (min-width: 1900px) 1342px, calc((100vw - 180px) * .78)',
   detail:
-    '(max-width: 500px) 320px, (max-width: 1023px) calc(100vw - 180px), (max-width: 1555px) 656px, (min-width: 2370px) 999px, 42.12vw',
+    '(max-width: 767px) 80vw, (min-width:1600px) and (min-aspect-ratio:21/10) 24vw, (max-width:1279px) 43vw, 37vw',
   thumbnail: '(max-width: 500px) 40px, 80px',
 };
 function image(name, profile, { deferred = true, eager = false, className = '' } = {}) {
@@ -83,28 +83,31 @@ function components(slide) {
   return `<div class="bundle-components-content"><p class="sr-only">${escape(slide.intro)}</p><ul class="bundle-components">${slide.components
     .map(({ id, role }) => {
       const item = getItem(id);
-      return `<li><a href="#servizio/${id}" class="component-row" data-component="${id}"><span class="component-thumbnail">${image(item.cover, 'thumbnail')}</span><span class="component-copy"><strong class="mm-type">${escape(item.title)}</strong><span>${escape(role)}</span></span><span class="component-arrow" aria-hidden="true">${icon()}</span></a></li>`;
+      return `<li><a href="#servizio/${id}" class="component-row" data-component="${id}"><span class="component-thumbnail">${image(item.cover, 'thumbnail', {deferred:false})}</span><span class="component-copy"><strong class="mm-type">${escape(item.title)}</strong><span>${escape(role)}</span></span><span class="component-arrow" aria-hidden="true">${icon()}</span></a></li>`;
     })
     .join('')}</ul><p class="bundle-scope">${escape(slide.scope)}</p></div>`;
 }
-function board(item, slide, index) {
-  const heading = index === 0 ? 'h2' : 'h3';
-  const artworkName = slide.image || (slide.components ? item.cover : null);
-  const artwork = artworkName
-    ? `<div class="item-master-art" aria-hidden="true">${image(artworkName, 'detail')}</div><span class="photo-caption-shade" aria-hidden="true"></span>`
-    : '';
-  const copy = slide.components
-    ? components(slide)
-    : `<div class="item-master-copy">${slide.includes ? '<p class="bundle-kicker">Bundle di servizi</p>' : ''}${slide.steps ? steps(slide.steps) : slide.list ? `<ul class="item-master-list">${slide.list.map((line) => `<li>${escape(line)}</li>`).join('')}</ul>` : copyLines(slide.copy)}${slide.includes ? includes(slide.includes) : ''}</div>`;
-  const cta =
-    slide.action === 'start'
-      ? `<a class="item-master-cta" href="${catalogue.config.startUrl}" target="_top" aria-label="${escape(slide.cta)}: vai a Start"><span>${escape(slide.cta)}</span>${icon()}</a>`
-      : '';
-  return `<section class="carousel-card showcase-card service-scene scene-${slide.key} mm-tab" data-slide="${index}" aria-label="${escape(slide.label)}" tabindex="${index === 0 ? 0 : -1}"><div class="mm-slide-face"><div class="popup-card-scroll"><div class="popup-card-body">${artwork}${copy}<${heading} class="item-master-title" style="--title-units:${slide.titleUnits}" ${index === 0 ? 'id="detail-title"' : ''} tabindex="-1">${titleLines(slide.title)}</${heading}>${cta}</div></div></div></section>`;
+const questions = ['Che cos’è?', 'Cosa ottieni?', 'Come lavoriamo?', 'Cominciamo?'];
+
+function answer(item, slide, index) {
+  const copy = slide.components ? components(slide) : slide.steps ? steps(slide.steps) :
+    slide.list ? `<ul class="answer-list">${slide.list.map(line=>`<li>${escape(line)}</li>`).join('')}</ul>` : copyLines(slide.copy);
+  const subtitle = (slide.list || slide.steps) ? `<h3 class="answer-title mm-type">${escape(slide.title.join(' '))}</h3>` : '';
+  const cta = slide.action === 'start' ? `<a class="answer-cta" href="${escape(catalogue.config.startUrl)}" target="_top">${escape(slide.cta)}${icon()}</a>` : '';
+  const photo = image(slide.image || item.cover, 'detail', {deferred:false,eager:index===0,className:'answer-photo'});
+  return `<section class="detail-section" aria-labelledby="question-${slide.key}">
+    <h2 class="detail-question mm-type" id="question-${slide.key}">${questions[index]}</h2>
+    <div class="answer-frame mm-tab"><div class="answer-face">
+      <div class="answer-art">${photo}</div>
+      <div class="answer-copy">${subtitle}${copy}${slide.includes ? includes(slide.includes) : ''}${cta}</div>
+    </div></div>
+  </section>`;
 }
-export function detail(item, parent = null) {
-  return `<article class="service-deck item-master${item.kind === 'bundle' ? ' bundle-master' : ''}" role="region" aria-roledescription="slideshow" aria-label="${escape(item.title)}">${parent ? `<div class="service-deck-topline"><a href="#bundle/${parent.id}" class="back-link" data-back-bundle="${parent.id}" aria-label="Torna a ${escape(parent.title)}">${icon('caret-left')}</a></div>` : ''}<div class="carousel service-carousel popup-carousel" role="region" aria-roledescription="carosello" aria-label="Tavole di ${escape(item.title)}"><div class="carousel-stage">${item.slides.map((slide, index) => board(item, slide, index)).join('')}</div></div><nav class="service-deck-controls" aria-label="Tavole ${item.kind === 'bundle' ? 'del bundle' : 'del servizio'}">${dots(
-    item.slides.map((slide) => slide.label),
-    'data-scene-dot',
-  )}</nav><span class="sr-only service-deck-status" aria-live="polite"></span></article>`;
+
+export function detail(item, parent = null, backHash = '#catalogo') {
+  const back = parent ? parent.title : 'Servizi';
+  return `<header class="detail-heading">
+    <a class="detail-back" href="${escape(backHash)}" data-detail-back aria-label="Torna a ${escape(back)}">${icon('caret-left')}<span>${escape(back)}</span></a>
+    <h1 class="mm-type" id="detail-title" tabindex="-1">${escape(item.title)}</h1>
+  </header>${item.slides.map((slide,index)=>answer(item,slide,index)).join('')}`;
 }

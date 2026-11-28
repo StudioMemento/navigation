@@ -19,7 +19,7 @@ export function acceptsLight(element) {
   return !slide || (slide.tabIndex === 0 && slide.dataset.active !== 'false' && slide.getAttribute('aria-hidden') !== 'true');
 }
 
-const faceSelector = ':scope > :is(.mm-slide-face,.flow-face,.tile-frame,.home-shade)';
+const faceSelector = ':scope > :is(.mm-slide-face,.flow-face,.tile-frame,.home-shade,.answer-face)';
 export const faceOf = card => card.querySelector(faceSelector) || card;
 
 // Resolve the polygons already used by the stylesheets, in the face's own CSS pixels.

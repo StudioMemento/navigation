@@ -50,50 +50,37 @@ const rail=document.querySelector('.mm-scrollbar');
 if(rail) bindScrollCue(rail);
 function bindScrollCue(rail) {
   const thumb=rail.firstElementChild,forced=matchMedia('(forced-colors:active)');
-  const main=document.querySelector('main');
-  if(main?.id)rail.setAttribute('aria-controls',main.id);
-  let frame=0,geometryChanged=true,range=0,height=0,travel=0,grip=null,idleTimer=0;
-  let previousOffset=-1,previousPercent=-1;
+  let frame=0,geometryChanged=true,range=0,grip=null,previousProgress=-1,previousPercent=-1;
   function paint() {
     frame=0;
     if(geometryChanged) {
       geometryChanged=false;
-      const view=root.clientHeight;
-      const total=document.scrollingElement?.scrollHeight||root.scrollHeight;
-      const track=Math.max(0,innerHeight-12);
-      range=Math.max(0,total-view);
-      height=Math.min(track,Math.max(40,track*view/Math.max(1,total)));
-      travel=Math.max(0,track-height);
-      const modal=root.hasAttribute('data-mm-modal');
-      rail.hidden=forced.matches||range<2||modal;
-      root.toggleAttribute('data-mm-scroll-cue',!forced.matches&&range>=2);
-      thumb.style.height=height+'px';
+      const page=document.scrollingElement || root;
+      range=Math.max(0,page.scrollHeight-root.clientHeight);
+      rail.hidden=forced.matches || range<2 || root.hasAttribute('data-mm-modal');
+      root.toggleAttribute('data-mm-scroll-cue',!forced.matches && range>=2);
+      const main=[...document.querySelectorAll('main[id]')].find(el=>!el.closest('[hidden]'));
+      if(main) rail.setAttribute('aria-controls',main.id);
     }
     if(rail.hidden)return;
-    const progress=Math.min(1,Math.max(0,scrollY/Math.max(1,range)));
-    const offset=Math.round(travel*progress*10)/10,percent=Math.round(100*progress);
-    if(offset!==previousOffset){thumb.style.transform='translateY('+offset+'px)';previousOffset=offset;}
+    const progress=Math.max(0,Math.min(1,scrollY/range)),percent=Math.round(progress*100);
+    if(progress!==previousProgress){thumb.style.transform='scaleY('+progress.toFixed(5)+')';previousProgress=progress;}
     if(percent!==previousPercent){rail.setAttribute('aria-valuenow',String(percent));previousPercent=percent;}
   }
   function schedule(geometry=false) {
-    geometryChanged = geometryChanged || geometry;
+    geometryChanged=geometryChanged||geometry;
     if(!frame)frame=requestAnimationFrame(paint);
   }
-  function measure(){schedule(true);}
-  function scroll() {
-    schedule();rail.classList.add('is-scrolling');
-    clearTimeout(idleTimer);idleTimer=setTimeout(()=>rail.classList.remove('is-scrolling'),650);
-  }
+  const measure=()=>schedule(true), scroll=()=>schedule();
   function jump(y){window.scrollTo({top:Math.max(0,Math.min(range,y)),behavior:'instant'});}
   function atPointer(event){
-    if(!grip||!travel)return;
-    jump((event.clientY-grip.top-grip.offset)*range/travel);
+    if(!grip)return;
+    jump((event.clientY-grip.top)*range/grip.height);
   }
   rail.addEventListener('pointerdown',event=>{
     if(event.button!==0||event.pointerType==='touch'||rail.hidden)return;
-    const top=rail.getBoundingClientRect().top,local=event.clientY-top;
-    const offset=travel*Math.min(1,Math.max(0,scrollY/Math.max(1,range)));
-    grip={id:event.pointerId,top,offset:local>=offset&&local<=offset+height?local-offset:height/2};
+    const box=rail.getBoundingClientRect();
+    grip={id:event.pointerId,top:box.top,height:Math.max(1,box.height)};
     rail.setPointerCapture(event.pointerId);rail.classList.add('is-dragging');atPointer(event);event.preventDefault();
   });
   rail.addEventListener('pointermove',event=>{if(grip?.id===event.pointerId){atPointer(event);event.preventDefault();}});
@@ -113,11 +100,12 @@ function bindScrollCue(rail) {
   window.addEventListener('pageshow',measure);
   window.visualViewport?.addEventListener('resize',measure,{passive:true});
   document.addEventListener('memento:overlay-change',measure);
+  document.addEventListener('memento:view-change',measure);
   document.addEventListener('fullscreenchange',measure);
   document.addEventListener('memento:modal-visibility',measure);
   forced.addEventListener?.('change',measure);
   if('ResizeObserver' in window) {
-    const observer=new ResizeObserver(measure);observer.observe(document.body);if(main)observer.observe(main);
+    const observer=new ResizeObserver(measure);observer.observe(document.body);for(const main of document.querySelectorAll('main'))observer.observe(main);
   }
   measure();
 }

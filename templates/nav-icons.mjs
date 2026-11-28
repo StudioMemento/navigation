@@ -1,20 +1,23 @@
 import { readFile } from 'node:fs/promises';
 
-// Use the same paths as the favicon. The tighter viewBox optically centres the
-// asymmetrically padded original artwork in the dock.
 const favicon = await readFile(new URL('../public/favicon.svg', import.meta.url), 'utf8');
 const monogram = favicon.match(/<(?:path|polygon)\b[^>]*\/>/g).join('').replaceAll(' class="cls-1"', '');
-const icons = {
-  memento: {box:'35 45.5 150 150', art:monogram},
-  services: {art:'<path d="M3 15 13 5h7l4 4-5 5-2-2 3-3-1.5-1.5h-4L6 16l2.5 2.5-2 2L3 17zM8 23l5-5 2 2-3 3 1.5 1.5h4L26 16l-2.5-2.5 2-2L29 15v2L19 27h-7zM10.5 19.5l9-9 2 2-9 9z"/>'},
-  projects: {art:'<path fill-rule="evenodd" d="M2 8.5 5.5 5h8l3.5 3.5H30V23l-4 4H2zM5 12v12h19.8l2.2-2.2V12zm.6-3h7.7l-1.4-1.4H7z"/>'},
-  levelup: {art:'<path d="m12 4 2-2h6v10h10v6l-2 2h-8v8l-2 2h-6V20H2v-6l2-2h8zm3 1v10H5v2h10v10h2V17h10v-2H17V5z" fill-rule="evenodd"/>'},
-  start: {art:'<path fill-rule="evenodd" d="m13.2 3.7 4.1 8.8 8.9 4.2-8.9 4.1-4.1 9.1-4.1-9.1L.3 16.7l8.8-4.2zm0 6.2-2.1 4.6-4.6 2.2 4.6 2.1 2.1 4.6 2.2-4.6 4.6-2.1-4.6-2.2z"/><path d="m25.5 1.3 1.7 4 4 1.8-4 1.7-1.7 4-1.8-4-4-1.7 4-1.8z"/>'}
+// Two inclined loops share one alternating over/under crossing.
+const knot = '<defs><rect id="mm-loop-a" x="2.4" y="8.8" width="19.2" height="6.4" rx="3.2" transform="rotate(45 12 12)"/>'+
+  '<rect id="mm-loop-b" x="2.4" y="8.8" width="19.2" height="6.4" rx="3.2" transform="rotate(-45 12 12)"/>'+
+  '<mask id="mm-loop-break-a" maskUnits="userSpaceOnUse" x="0" y="0" width="24" height="24"><rect width="24" height="24" fill="white" stroke="none"/><path d="m8.2 7.3 3.15 3.15m1.3 3.1 3.15 3.15" stroke="black" stroke-width="3.4"/></mask>'+
+  '</defs><use href="#mm-loop-b"/><use href="#mm-loop-a" mask="url(#mm-loop-break-a)"/>';
+const art = {
+  services:knot,
+  projects:'<path d="M2.9 8.6V6.4c0-.85.65-1.5 1.5-1.5h5.3l2.2 2h7.7c.85 0 1.5.65 1.5 1.5v9.3c0 .85-.65 1.5-1.5 1.5H4.4c-.85 0-1.5-.65-1.5-1.5z"/><path d="M3.2 9.8h17.6"/>',
+  levelup:'<path d="M9.6 3.2h4.8v6.4h6.4v4.8h-6.4v6.4H9.6v-6.4H3.2V9.6h6.4z"/>',
+  start:'<path d="M10.2 5.4c.75 5.05 2.85 7.15 7.9 7.9-5.05.75-7.15 2.85-7.9 7.9-.75-5.05-2.85-7.15-7.9-7.9 5.05-.75 7.15-2.85 7.9-7.9Z"/><path d="M18.9 2.4c.34 2.35 1.38 3.39 3.73 3.73-2.35.34-3.39 1.38-3.73 3.73-.34-2.35-1.38-3.39-3.73-3.73 2.35-.34 3.39-1.38 3.73-3.73Z"/>'
 };
 
 export function iconTile(id) {
-  const icon = icons[id];
-  if (!icon) throw new TypeError('Unknown navigation icon ' + id);
-  return '<span class="mm-tile" aria-hidden="true"><svg class="mm-nav-icon" focusable="false" viewBox="' +
-    (icon.box || '0 0 32 32') + '">' + icon.art + '</svg></span>';
+  const logo = id === 'memento';
+  if (!logo && !art[id]) throw new TypeError('Unknown navigation icon ' + id);
+  const box = logo ? '34.85 45.48 150 150' : '0 0 24 24';
+  const symbol = logo ? monogram : '<g fill="none" stroke="currentColor" stroke-width="1.45" stroke-linejoin="round" stroke-linecap="round">'+art[id]+'</g>';
+  return '<span class="mm-tile" aria-hidden="true"><svg class="mm-nav-icon" viewBox="'+box+'" focusable="false">'+symbol+'</svg></span>';
 }

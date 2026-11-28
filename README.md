@@ -1,4 +1,4 @@
-# Memento Navigation R32
+# Memento Navigation R33
 
 Sito statico di mementostudio.it con una home a scorrimento verticale e cinque sezioni. La navbar apre Studio, Services, Projects, Level Up e Start. Il logotipo riporta alla home sulla sezione di provenienza.
 
@@ -23,7 +23,7 @@ Per lavorare in locale usa Node 22 o 24. `npm run dev` avvia il sito su `http://
 
 ## Navbar e layout
 
-`public/site.css` definisce i margini responsive, `public/visuals.css` il dock e gli effetti condivisi. I cinque simboli vettoriali sono bianchi. La sezione corrente prende l’arancione `#ff7d00`. La piastra misura 40 px su desktop e 38 px su telefono, con un’area interattiva rispettivamente di 46 e 44 px. Il dock rispetta la safe area inferiore. Il blur graduale sopra e sotto il contenuto usa cinque livelli da 1 a 16 px.
+`public/site.css` definisce i margini responsive, `public/visuals.css` il dock e gli effetti condivisi. I cinque simboli vettoriali sono bianchi. La sezione corrente prende l’arancione `#ff7d00`. La piastra misura 40 px su desktop e 38 px su telefono, con un’area interattiva rispettivamente di 46 e 44 px. Le estremità delle piastre satinate si allineano alle estremità del logotipo anche su telefono. Il blur usa cinque fasce progressive da 0,6 a 12 px. Il filo sul bordo destro indica la porzione di pagina percorsa.
 
 ## Slider e luce
 
@@ -42,6 +42,12 @@ La faccia ritagliata e il bordo luminoso di una slide condividono la trasformazi
 | `surface-intro.mjs` | Rivela le superfici all’apertura della pagina |
 
 `templates/facet-texture.mjs` genera la trama dei titoli. `INTRO` in `scripts/build.mjs` controlla il reveal iniziale. Con la preferenza di movimento ridotto la parete resta statica e gli slider passano direttamente alla selezione.
+
+Su touch la fascia centrale illumina in modo continuo le card visibili e i titoli su tutta la larghezza. Un tap genera una piccola onda tra i glifi e un riflesso sul bordo della tab toccata. I tap ravvicinati mantengono il feedback immediato, con un massimo di tre fronti manuali ancora in propagazione.
+
+## Dettagli dei servizi
+
+Ogni servizio e bundle usa la pagina verticale in `public/services/src/render.js`. Le quattro sezioni rispondono a «Che cos’è?», «Cosa ottieni?», «Come lavoriamo?» e «Cominciamo?». I testi, le illustrazioni, le componenti dei bundle e il collegamento a Start provengono dal catalogo. I percorsi `#servizio/` e `#bundle/` supportano i link diretti e la cronologia del browser.
 
 ## Studio e Start
 

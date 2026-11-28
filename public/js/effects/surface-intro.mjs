@@ -18,7 +18,7 @@ export function playIntro(field) {
       tab.animate([{opacity:0, offset:0}], {duration:FADE, delay:Math.hypot(dx, dy) / FRONT * 1000 + 60, easing:'cubic-bezier(.22,1,.36,1)', fill:'backwards'});
     }
     open();
-    if (field?.ready) field.impulse(x, y, {warm:false, surface:true, feed:false, speed:FRONT, limited:false, reach:2400});
+    if (field?.ready) field.impulse(x, y, {warm:false, surface:true, feed:false, speed:FRONT, reach:2400});
   }
   // Wait for the field (a small atlas) at most a moment; the surfaces never wait for it.
   (function wait() {

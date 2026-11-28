@@ -21,7 +21,7 @@ const LIFE = {
   word:{rise:.05, steps:[8, 10], tempo:[.07, .09], fall:.35}
 };
 // A front torn by slow noise: sparse cells reached at their own moment. Calm: slower, sparser, one at a time.
-const WAVE = {speed:600, reach:1600, share:[.34, .08], strength:[.18, .5], far:.55, tear:.22, grain:260, gap:.6, max:1, floor:.22, hot:.02};
+const WAVE = {speed:600, reach:1600, share:[.34, .08], strength:[.18, .5], far:.55, tear:.22, grain:260, floor:.22, hot:.02};
 
 // Stable station-to-station hash.
 export function hash(col, row) {
@@ -53,8 +53,7 @@ export class CellField {
     this.active = new Map();
     this.scheduled = new Map();
     this.nextBucket = 0;
-    this.lastWave = -5;
-    this.waveEnds = [];
+    this.inputWave = 0;
     this.waveUntil = 0;
     this.onIgnite = null;
   }
@@ -76,7 +75,8 @@ export class CellField {
     this.fillBase(0, this.rows);
     this.active.clear();
     this.scheduled.clear();
-    this.waveEnds.length = 0;
+    this.inputWave = 0;
+    this.waveUntil = 0;
     this.nextBucket = Math.floor(this.time * 30);
     // A device-sized sprite sheet: four tones of the five letters. Partial repaints never rasterize an SVG again.
     this.slot = Math.max(1, Math.round(PITCH * dpr));
@@ -167,30 +167,37 @@ export class CellField {
     this.active.set(id, cell);
     this.onIgnite?.(id, strength, cell);
   }
-  impulse(x, y, {power = 1, quiet = false, cells = null, reach = Infinity, limited = true, warm = true, surface = true, feed = true, speed = WAVE.speed} = {}) {
+  impulse(x, y, {power=1, quiet=false, cells=null, reach=Infinity, input=false, warm=true, surface=true, feed=true, speed=WAVE.speed} = {}) {
     if (!this.cols) return false;
-    if (limited) {
-      this.waveEnds = this.waveEnds.filter(end => end > this.time);
-      if (this.time - this.lastWave < WAVE.gap || this.waveEnds.length >= WAVE.max) return false;
-      this.lastWave = this.time;
+    const far = Math.max(1,Math.min(reach,WAVE.reach,Math.hypot(Math.max(x,this.width-x),Math.max(y,this.view-y))));
+    const strength = clamp(power), wave = input ? ++this.inputWave : 0;
+    if (input) {
+      // Only the last three user fronts need future cells. Existing light finishes its natural fade.
+      if (wave>3) for (const [bucket,events] of this.scheduled) {
+        const kept=events.filter(e=>!e.options.wave || e.options.wave>wave-3);
+        if(kept.length) this.scheduled.set(bucket,kept); else this.scheduled.delete(bucket);
+      }
+      const spark={life:'trail',warm,surface,feed,floor:.56};
+      this.ignite(this.cellAt(x,y),strength*.87,spark);
+      for(const [dx,dy] of [[-PITCH,PITCH],[PITCH,-PITCH]]) this.ignite(this.cellAt(x+dx,y+dy),strength*.52,spark);
     }
-    const corner = Math.hypot(Math.max(x, this.width - x), Math.max(y, this.view - y));
-    const far = Math.min(reach, WAVE.reach, corner) || 1;
-    if (limited) this.waveEnds.push(this.time + far * 1.22 / speed + .05);
-    this.waveUntil = Math.max(this.waveUntil, this.time + far * 1.22 / speed + 1.1);
-    const seed = Math.floor(Math.random() * 65535), strength = Math.min(1, power);
-    const options = {life:'wave', quiet, warm, surface, feed, floor:WAVE.floor};
-    const visit = id => {
-      if (Math.random() > (this.base[id] < 0 ? WAVE.share[1] : WAVE.share[0]) * strength) return;
-      const cx = this.x(id), cy = this.y(id), distance = Math.hypot(cx - x, cy - y);
-      if (distance > far) return;
-      const delay = Math.max(0, distance * (1 + WAVE.tear * (2 * tear(cx / WAVE.grain, cy / WAVE.grain, seed) - 1)) + range(-12, 12)) / speed;
-      this.schedule(id, delay, range(...WAVE.strength) * (1 - WAVE.far * distance / far) * strength, {...options, hot:Math.random() < WAVE.hot});
+    this.waveUntil = Math.max(this.waveUntil,this.time + far*1.22/speed + 1.1);
+    const seed=Math.floor(Math.random()*65535);
+    const options={life:'wave',quiet,warm,surface,feed,wave,floor:input ? .38 : WAVE.floor};
+    const visit=id=>{
+      if(Math.random()>(this.base[id]<0 ? WAVE.share[1] : WAVE.share[0])*strength) return;
+      const cx=this.x(id), cy=this.y(id), distance=Math.hypot(cx-x,cy-y);
+      if(distance>far)return;
+      const delay=Math.max(0,distance*(1+WAVE.tear*(2*tear(cx/WAVE.grain,cy/WAVE.grain,seed)-1))+range(-12,12))/speed;
+      this.schedule(id,delay,range(...WAVE.strength)*(1-WAVE.far*distance/far)*strength,{...options,hot:Math.random()<WAVE.hot});
     };
-    if (cells) for (const id of cells) visit(id);
+    if(cells) {for(const id of cells) visit(id);}
     else {
-      const [first, last] = this.visibleRows();
-      for (let id = first * this.cols; id < last * this.cols; id++) visit(id);
+      const [visibleTop,visibleBottom]=this.visibleRows(), rowOrigin=y+scrollTop()-this.anchorTop;
+      const firstRow=Math.max(visibleTop,Math.floor((rowOrigin-far)/PITCH));
+      const endRow=Math.min(visibleBottom,Math.ceil((rowOrigin+far)/PITCH)+1);
+      const firstCol=Math.max(0,Math.floor((x-far)/PITCH)), endCol=Math.min(this.cols,Math.ceil((x+far)/PITCH)+1);
+      for(let row=firstRow;row<endRow;row++) for(let col=firstCol;col<endCol;col++) visit(row*this.cols+col);
     }
     return true;
   }
