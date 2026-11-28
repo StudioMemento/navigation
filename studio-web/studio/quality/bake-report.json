@@ -1,0 +1,2212 @@
+{
+  "sourceSha256": "173816e373616e3eec78d4edcc7f4f067d64598616288f871198fec6e9c7905d",
+  "recipeSha256": "9835c30132a4a9dc24c051278aec9e290ff8d43e64d57a0d4d8d90401acde321",
+  "prototype": false,
+  "primaryUV": "UV_Bake",
+  "atlas": {
+    "architecture": {
+      "size": [
+        2048,
+        2048
+      ],
+      "coveredWithDilation": 0.6217,
+      "gradedTexture": "architecture-2048.webp",
+      "bytes": 91350,
+      "seconds": 107.7
+    },
+    "atelier": {
+      "size": [
+        2048,
+        2048
+      ],
+      "coveredWithDilation": 0.3768,
+      "gradedTexture": "atelier-2048.webp",
+      "bytes": 599014,
+      "seconds": 53.1
+    },
+    "lounge": {
+      "size": [
+        2048,
+        2048
+      ],
+      "coveredWithDilation": 0.4439,
+      "gradedTexture": "lounge-2048.webp",
+      "bytes": 535376,
+      "seconds": 59.4
+    }
+  },
+  "renderer": {
+    "engine": "Blender Cycles CPU",
+    "samples": 80,
+    "bounces": 5,
+    "components": [
+      "direct",
+      "indirect",
+      "diffuse",
+      "glossy",
+      "transmission",
+      "emissions"
+    ],
+    "displayTransform": "AgX - Medium High Contrast",
+    "exposureEV": 0,
+    "webColorSpace": "sRGB · KHR_materials_unlit · display-referred"
+  },
+  "geometry": {
+    "Baked | architecture": {
+      "triangles": 448,
+      "vertices": 514,
+      "texture": "architecture",
+      "bounds": [
+        [
+          -3.348388671875,
+          -0.06345382332801819,
+          -3.1069657802581787
+        ],
+        [
+          3.213287353515625,
+          2.696197986602783,
+          2.041367530822754
+        ]
+      ]
+    },
+    "Baked | atelier": {
+      "triangles": 161359,
+      "vertices": 239958,
+      "texture": "atelier",
+      "bounds": [
+        [
+          -1.8899134397506714,
+          -0.007186321076005697,
+          -3.0394866466522217
+        ],
+        [
+          2.436394214630127,
+          2.371922016143799,
+          1.62367844581604
+        ]
+      ]
+    },
+    "Display | vertical": {
+      "triangles": 4,
+      "vertices": 8,
+      "texture": "vertical",
+      "bounds": [
+        [
+          -1.181915283203125,
+          0.8110659718513489,
+          -2.660064697265625
+        ],
+        [
+          1.953155517578125,
+          1.347870111465454,
+          -2.528510808944702
+        ]
+      ]
+    },
+    "Display | ultrawide": {
+      "triangles": 94,
+      "vertices": 88,
+      "texture": "ultrawide",
+      "bounds": [
+        [
+          -0.8683505058288574,
+          0.867978572845459,
+          -2.71256947517395
+        ],
+        [
+          1.6499525308609009,
+          1.2337944507598877,
+          -2.6676828861236572
+        ]
+      ]
+    },
+    "Display | tv": {
+      "triangles": 2,
+      "vertices": 4,
+      "texture": "tv",
+      "bounds": [
+        [
+          -0.35582733154296875,
+          1.3046268224716187,
+          -2.9167933464050293
+        ],
+        [
+          1.1030044555664062,
+          2.140136957168579,
+          -2.916785955429077
+        ]
+      ]
+    },
+    "Baked | lounge": {
+      "triangles": 144485,
+      "vertices": 175095,
+      "texture": "lounge",
+      "bounds": [
+        [
+          -3.2818603515625,
+          -0.01543414406478405,
+          -3.0355377197265625
+        ],
+        [
+          3.2367141246795654,
+          2.0851292610168457,
+          1.9020235538482666
+        ]
+      ]
+    }
+  },
+  "batches": {
+    "architecture": [
+      "ANGOLO_CAFFE svgMesh1",
+      "PARETE_DISPLAY FONDAMENTA"
+    ],
+    "atelier": [
+      "CHAIR_GIAN POSTAZIONE_GIAN",
+      "POSTAZIONE_GIAN ALEXA",
+      "POSTAZIONE_GIAN DESK_GIAN",
+      "POSTAZIONE_GIAN DISPLAY_27_GIAN",
+      "POSTAZIONE_GIAN KEYBOARD_GIAN",
+      "POSTAZIONE_GIAN MOUSE_GIAN",
+      "POSTAZIONE_GIAN TAPPETINO_GIAN",
+      "POSTAZIONE_GIAN ULTRAWIDE_GIAN",
+      "PC_GIAN",
+      "CHAIR_NURU POSTAZIONE_NURU",
+      "POSTAZIONE_NURU DESK_NURU",
+      "POSTAZIONE_NURU DISPLAY_27_NURU",
+      "POSTAZIONE_NURU FOGLIAME",
+      "POSTAZIONE_NURU KEYBOARD_NURU",
+      "POSTAZIONE_NURU LAVAGNA",
+      "POSTAZIONE_NURU MOUSE_NURU",
+      "polySurface25",
+      "polySurface26",
+      "POSTAZIONE_NURU TAPPETINO_NURU",
+      "POSTAZIONE_NURU ULTRAWIDE_NURU",
+      "PC_NURU",
+      "CONTROLLER:CONTROLLER_PS5 POSTAZIONE_PS5_TV55",
+      "POSTAZIONE_PS5_TV55 CONTROLLER_PS5",
+      "polySurface19",
+      "POSTAZIONE_PS5_TV55 STAND_TV_55",
+      "POSTAZIONE_PS5_TV55 TAVOLO_POSTAZIONE",
+      "POSTAZIONE_PS5_TV55 TV_55",
+      "polySurface35",
+      "polySurface5",
+      "polySurface6",
+      "ZONA_PROGETTAZIONE BOOK_SHELF",
+      "ZONA_PROGETTAZIONE PLANT3",
+      "ZONA_PROGETTAZIONE PORTA_CARTE1",
+      "ZONA_PROGETTAZIONE PORTA_CARTE.001",
+      "ZONA_PROGETTAZIONE SHELF",
+      "polySurface8",
+      "ZONA_PROGETTAZIONE SOFTBOX:STANDSOFTBOX_GRPSoftbox_Arm2",
+      "ZONA_PROGETTAZIONE SOFTBOX:STANDSOFTBOX_GRPSoftbox_Stick",
+      "ZONA_PROGETTAZIONE SONY_FOTOCAMERA",
+      "ZONA_PROGETTAZIONE TAVOLO_DISPENSA",
+      "ZONA_PROGETTAZIONE TRIPOD_ONE",
+      "ZONA_PROGETTAZIONE TRIPOD_TWO",
+      "ZONA_PROGETTAZIONE case_shelf1",
+      "ZONA_PROGETTAZIONE PLANT4",
+      "TELO_SHELF",
+      "LED_SCRIVANIE",
+      "LED_WORKSTATION",
+      "LUCE_LAMPADA_PROGETTAZIONE",
+      "LUCE_SOFTBOX_PROGETTAZIONE",
+      "LED_TV",
+      "LED_PS5",
+      "LUCI_CASSE",
+      "TYPO_LED"
+    ],
+    "lounge": [
+      "ANGOLO_CAFFE COFFE_MACHINE",
+      "ANGOLO_CAFFE DISPENSER",
+      "ANGOLO_CAFFE FRIGORIFERO",
+      "ANGOLO_CAFFE KIT_WHISKY",
+      "ANGOLO_CAFFE MICRONDE",
+      "ANGOLO_CAFFE PIANTINA046011",
+      "ANGOLO_CAFFE PLANT4",
+      "ANGOLO_CAFFE SPECCHIO",
+      "ANGOLO_CAFFE TAPPETINO_COFFEE",
+      "BANCO_CAFFE ANGOLO_CAFFE",
+      "BAR Mesh",
+      "BAR PIANTINA046012",
+      "BAR SEDIA_BAR_ONE",
+      "BAR SEDIA_BAR_TWO",
+      "BAR TAVOLO_BAR",
+      "BAR Untitled:Mesh",
+      "STAND_LAMPADA_SALE",
+      "BOTTIGLIE BOTTIGLIE",
+      "CESTINI pCube2",
+      "CESTINO:Door CESTINI",
+      "DYSON ENTRATA",
+      "ENTRATA PLANT1",
+      "ENTRATA PLANT2",
+      "ENTRATA PLANT:PLANT",
+      "ENTRATA TAVOLINO_DYSON",
+      "ENTRATA ZERBINO_ENTRATA",
+      "FOGLI FOGLI",
+      "FOGLI pPlane7",
+      "DOOR:Plane_001Shape PORTE",
+      "PORTE Plane_001Shape",
+      "SALOTTO POLTRONA_ONE",
+      "SALOTTO POLTRONA_TWO",
+      "SALOTTO TAPPETO_SALOTTO",
+      "SALOTTO TAVOLO_SALOTTO",
+      "PIANTINA SET_PIANTINE",
+      "SET_PIANTINE PIANTINA046010",
+      "SET_PIANTINE PIANTINA046013",
+      "SET_PIANTINE PIANTINA046014",
+      "SET_PIANTINE PIANTINA046015",
+      "SGABELLI SGABELLI",
+      "APPENDINO ZONA_DISPENSER",
+      "ZONA_DISPENSER TAVOLO_APPOGGIA_TUTTO",
+      "LUCE_FARETTO",
+      "FARETTO",
+      "LUCE_LAMPADA_SALOTTO",
+      "LAMPADA_SALE"
+    ]
+  },
+  "triangles": 306392,
+  "primitives": 6,
+  "glbRawBytes": 11881980,
+  "poster": {
+    "dimensions": [
+      1280,
+      850
+    ],
+    "alpha": true,
+    "orthoWidth": 10.05,
+    "cameraBlender": [
+      9,
+      -11,
+      8.16
+    ],
+    "targetBlender": [
+      0,
+      0.48,
+      1.28
+    ],
+    "bytes": 98132
+  },
+  "lighting": {
+    "native_fbx_lights": [],
+    "method": "Cycles area, finite-radius point and soft spot sources at imported physical fixture geometry; source geometry in Blender world metres",
+    "photometry": "Estimated optical wattage, beam spreads and approximate colour temperatures from studio photographs. TV RGB bias is artist-matched in scene-linear Rec.709.",
+    "falloff": "Cycles inverse-square integration over each emitting aperture",
+    "world": {
+      "linear_RGB": [
+        0.82,
+        0.875,
+        1
+      ],
+      "strength": 0.16
+    },
+    "light_count": 46,
+    "lights": [
+      {
+        "source": "LUCI_CEILING_SX",
+        "light": "Ceiling / SX 1",
+        "distribution": "disk",
+        "position_m": [
+          -1.36654,
+          -0.09121,
+          2.68667
+        ],
+        "direction": [
+          0,
+          0,
+          -1
+        ],
+        "width_m": 0.22438,
+        "height_m": null,
+        "power_W": 6.8,
+        "estimated_CCT_K": 3275,
+        "linear_RGB": [
+          1,
+          0.5307,
+          0.21
+        ],
+        "spread_degrees": 125
+      },
+      {
+        "source": "LUCI_CEILING_SX",
+        "light": "Ceiling / SX 2",
+        "distribution": "disk",
+        "position_m": [
+          0.12733,
+          -0.09121,
+          2.68667
+        ],
+        "direction": [
+          0,
+          0,
+          -1
+        ],
+        "width_m": 0.22438,
+        "height_m": null,
+        "power_W": 6.8,
+        "estimated_CCT_K": 3275,
+        "linear_RGB": [
+          1,
+          0.5307,
+          0.21
+        ],
+        "spread_degrees": 125
+      },
+      {
+        "source": "LUCI_CEILING_SX",
+        "light": "Ceiling / SX 3",
+        "distribution": "disk",
+        "position_m": [
+          1.48593,
+          -0.09121,
+          2.68667
+        ],
+        "direction": [
+          0,
+          0,
+          -1
+        ],
+        "width_m": 0.22438,
+        "height_m": null,
+        "power_W": 6.8,
+        "estimated_CCT_K": 3275,
+        "linear_RGB": [
+          1,
+          0.5307,
+          0.21
+        ],
+        "spread_degrees": 125
+      },
+      {
+        "source": "LUCI_CEILING_DX",
+        "light": "Ceiling / DX 1",
+        "distribution": "disk",
+        "position_m": [
+          -1.36654,
+          1.90222,
+          2.68667
+        ],
+        "direction": [
+          0,
+          0,
+          -1
+        ],
+        "width_m": 0.22438,
+        "height_m": null,
+        "power_W": 5.6,
+        "estimated_CCT_K": 3700,
+        "linear_RGB": [
+          1,
+          0.6048,
+          0.3049
+        ],
+        "spread_degrees": 125
+      },
+      {
+        "source": "LUCI_CEILING_DX",
+        "light": "Ceiling / DX 2",
+        "distribution": "disk",
+        "position_m": [
+          0.12733,
+          1.90222,
+          2.68667
+        ],
+        "direction": [
+          0,
+          0,
+          -1
+        ],
+        "width_m": 0.22438,
+        "height_m": null,
+        "power_W": 5.6,
+        "estimated_CCT_K": 3700,
+        "linear_RGB": [
+          1,
+          0.6048,
+          0.3049
+        ],
+        "spread_degrees": 125
+      },
+      {
+        "source": "LUCI_CEILING_DX",
+        "light": "Ceiling / DX 3",
+        "distribution": "disk",
+        "position_m": [
+          1.48593,
+          1.90222,
+          2.68667
+        ],
+        "direction": [
+          0,
+          0,
+          -1
+        ],
+        "width_m": 0.22438,
+        "height_m": null,
+        "power_W": 5.6,
+        "estimated_CCT_K": 3700,
+        "linear_RGB": [
+          1,
+          0.6048,
+          0.3049
+        ],
+        "spread_degrees": 125
+      },
+      {
+        "source": "LUCE_SOFTBOX_PROGETTAZIONE",
+        "light": "Design / octagonal softbox",
+        "distribution": "disk",
+        "position_m": [
+          -1.05249,
+          0.83536,
+          1.66092
+        ],
+        "direction": [
+          0.0254,
+          0.01062,
+          -0.99962
+        ],
+        "width_m": 0.83325,
+        "height_m": null,
+        "power_W": 25,
+        "estimated_CCT_K": 4650,
+        "linear_RGB": [
+          1,
+          0.7478,
+          0.5405
+        ],
+        "spread_degrees": 112
+      },
+      {
+        "source": "LUCE_LAMPADA_PROGETTAZIONE",
+        "light": "Design / linen desk",
+        "distribution": "rectangle",
+        "position_m": [
+          -1.64028,
+          0.09382,
+          1.43533
+        ],
+        "direction": [
+          1,
+          0,
+          0
+        ],
+        "width_m": 0.20955,
+        "height_m": 0.34693,
+        "power_W": 4.3,
+        "estimated_CCT_K": 3150,
+        "linear_RGB": [
+          1,
+          0.5074,
+          0.184
+        ],
+        "spread_degrees": 165
+      },
+      {
+        "source": "LUCE_LAMPADA_PROGETTAZIONE",
+        "light": "Design / linen coffee",
+        "distribution": "rectangle",
+        "position_m": [
+          -1.7617,
+          -0.0276,
+          1.43533
+        ],
+        "direction": [
+          0,
+          -1,
+          0
+        ],
+        "width_m": 0.20955,
+        "height_m": 0.34693,
+        "power_W": 3.7,
+        "estimated_CCT_K": 3150,
+        "linear_RGB": [
+          1,
+          0.5074,
+          0.184
+        ],
+        "spread_degrees": 165
+      },
+      {
+        "source": "LUCE_LAMPADA_PROGETTAZIONE",
+        "light": "Design / linen shelf",
+        "distribution": "rectangle",
+        "position_m": [
+          -1.7617,
+          0.21523,
+          1.43533
+        ],
+        "direction": [
+          0,
+          1,
+          0
+        ],
+        "width_m": 0.20955,
+        "height_m": 0.34693,
+        "power_W": 2,
+        "estimated_CCT_K": 3150,
+        "linear_RGB": [
+          1,
+          0.5074,
+          0.184
+        ],
+        "spread_degrees": 165
+      },
+      {
+        "source": "LUCE_LAMPADA_SALOTTO",
+        "light": "Lounge / shade uplight",
+        "distribution": "disk",
+        "position_m": [
+          2.04028,
+          -1.36853,
+          1.20137
+        ],
+        "direction": [
+          0,
+          0,
+          1
+        ],
+        "width_m": 0.33645,
+        "height_m": null,
+        "power_W": 11,
+        "estimated_CCT_K": 2790,
+        "linear_RGB": [
+          1,
+          0.4361,
+          0.1155
+        ],
+        "spread_degrees": 142
+      },
+      {
+        "source": "LUCE_LAMPADA_SALOTTO",
+        "light": "Lounge / shade downlight",
+        "distribution": "disk",
+        "position_m": [
+          2.04028,
+          -1.36853,
+          0.95248
+        ],
+        "direction": [
+          0,
+          0,
+          -1
+        ],
+        "width_m": 0.3833,
+        "height_m": null,
+        "power_W": 16,
+        "estimated_CCT_K": 2790,
+        "linear_RGB": [
+          1,
+          0.4361,
+          0.1155
+        ],
+        "spread_degrees": 145
+      },
+      {
+        "source": "LUCE_LAMPADA_SALOTTO",
+        "light": "Lounge / linen diffusion",
+        "distribution": "rectangle",
+        "position_m": [
+          1.87617,
+          -1.22818,
+          1.07693
+        ],
+        "direction": [
+          -0.75996,
+          0.64997,
+          0
+        ],
+        "width_m": 0.31516,
+        "height_m": 0.20888,
+        "power_W": 5,
+        "estimated_CCT_K": 2925,
+        "linear_RGB": [
+          1,
+          0.4637,
+          0.1401
+        ],
+        "spread_degrees": 165
+      },
+      {
+        "source": "LUCE_FARETTO",
+        "light": "Lounge / floor spot",
+        "distribution": "spot",
+        "position_m": [
+          2.06296,
+          -1.439,
+          0.05632
+        ],
+        "direction": [
+          0.43486,
+          -0.46106,
+          0.77351
+        ],
+        "width_m": 0.07188,
+        "height_m": null,
+        "power_W": 2.6,
+        "estimated_CCT_K": 3000,
+        "linear_RGB": [
+          1,
+          0.4785,
+          0.1543
+        ],
+        "spread_degrees": 76
+      },
+      {
+        "source": "LAMPADA_SALE",
+        "light": "Bar / diffused salt crystal",
+        "distribution": "point",
+        "position_m": [
+          -0.20223,
+          -1.79121,
+          1.17078
+        ],
+        "direction": null,
+        "width_m": 0.24387,
+        "height_m": null,
+        "power_W": 2.8,
+        "estimated_CCT_K": 1930,
+        "linear_RGB": [
+          1,
+          0.2391,
+          0.002
+        ],
+        "spread_degrees": 360
+      },
+      {
+        "source": "LAMPADA_SALE",
+        "light": "Bar / salt room",
+        "distribution": "rectangle",
+        "position_m": [
+          -0.20223,
+          -1.7141,
+          1.17078
+        ],
+        "direction": [
+          0,
+          0.97014,
+          -0.24254
+        ],
+        "width_m": 0.12832,
+        "height_m": 0.17485,
+        "power_W": 1.4,
+        "estimated_CCT_K": 1900,
+        "linear_RGB": [
+          1,
+          0.2317,
+          0
+        ],
+        "spread_degrees": 165
+      },
+      {
+        "source": "LAMPADA_SALE",
+        "light": "Bar / salt wall",
+        "distribution": "rectangle",
+        "position_m": [
+          -0.20223,
+          -1.86832,
+          1.17078
+        ],
+        "direction": [
+          0,
+          -0.97014,
+          -0.24254
+        ],
+        "width_m": 0.12832,
+        "height_m": 0.17485,
+        "power_W": 0.88,
+        "estimated_CCT_K": 1900,
+        "linear_RGB": [
+          1,
+          0.2317,
+          0
+        ],
+        "spread_degrees": 165
+      },
+      {
+        "source": "LED_WORKSTATION",
+        "light": "Workstations / floor wash",
+        "distribution": "rectangle",
+        "position_m": [
+          0.35275,
+          3.02049,
+          0.02607
+        ],
+        "direction": [
+          0,
+          -0.96421,
+          -0.26516
+        ],
+        "width_m": 4.16729,
+        "height_m": 0.016,
+        "power_W": 15.8357,
+        "estimated_CCT_K": 2450,
+        "linear_RGB": [
+          1,
+          0.3625,
+          0.0609
+        ],
+        "spread_degrees": 165
+      },
+      {
+        "source": "LED_WORKSTATION",
+        "light": "Workstations / skirting",
+        "distribution": "rectangle",
+        "position_m": [
+          0.35275,
+          3.01049,
+          0.03107
+        ],
+        "direction": [
+          0,
+          0.23021,
+          0.97314
+        ],
+        "width_m": 4.16729,
+        "height_m": 0.014,
+        "power_W": 8.7513,
+        "estimated_CCT_K": 2500,
+        "linear_RGB": [
+          1,
+          0.3737,
+          0.0682
+        ],
+        "spread_degrees": 165
+      },
+      {
+        "source": "LED_WORKSTATION",
+        "light": "Workstations / return",
+        "distribution": "rectangle",
+        "position_m": [
+          2.41639,
+          2.58352,
+          0.02607
+        ],
+        "direction": [
+          -0.97664,
+          0,
+          -0.21486
+        ],
+        "width_m": 0.91193,
+        "height_m": 0.014,
+        "power_W": 2.827,
+        "estimated_CCT_K": 2450,
+        "linear_RGB": [
+          1,
+          0.3625,
+          0.0609
+        ],
+        "spread_degrees": 165
+      },
+      {
+        "source": "LED_SCRIVANIE",
+        "light": "Workstations / desk cove 1",
+        "distribution": "rectangle",
+        "position_m": [
+          -0.72171,
+          2.97956,
+          0.74199
+        ],
+        "direction": [
+          0,
+          0.413,
+          0.91073
+        ],
+        "width_m": 1.59568,
+        "height_m": 0.014,
+        "power_W": 9.0954,
+        "estimated_CCT_K": 3060,
+        "linear_RGB": [
+          1,
+          0.4902,
+          0.166
+        ],
+        "spread_degrees": 165
+      },
+      {
+        "source": "LED_SCRIVANIE",
+        "light": "Workstations / desk cove 2",
+        "distribution": "rectangle",
+        "position_m": [
+          1.4818,
+          2.97956,
+          0.74199
+        ],
+        "direction": [
+          0,
+          0.413,
+          0.91073
+        ],
+        "width_m": 1.59568,
+        "height_m": 0.014,
+        "power_W": 9.0954,
+        "estimated_CCT_K": 3060,
+        "linear_RGB": [
+          1,
+          0.4902,
+          0.166
+        ],
+        "spread_degrees": 165
+      },
+      {
+        "source": "LED_SALOTTO",
+        "light": "Lounge / curved skirting 1",
+        "distribution": "rectangle",
+        "position_m": [
+          -0.42441,
+          -1.81092,
+          0.02204
+        ],
+        "direction": [
+          0.1281,
+          0.97581,
+          -0.17715
+        ],
+        "width_m": 1.93298,
+        "height_m": 0.013,
+        "power_W": 2.9961,
+        "estimated_CCT_K": 2475,
+        "linear_RGB": [
+          1,
+          0.3681,
+          0.0645
+        ],
+        "spread_degrees": 165
+      },
+      {
+        "source": "LED_SALOTTO",
+        "light": "Lounge / curved skirting 2",
+        "distribution": "rectangle",
+        "position_m": [
+          0.81746,
+          -1.9494,
+          0.02176
+        ],
+        "direction": [
+          0.04408,
+          0.9832,
+          -0.17715
+        ],
+        "width_m": 0.5695,
+        "height_m": 0.013,
+        "power_W": 0.8827,
+        "estimated_CCT_K": 2475,
+        "linear_RGB": [
+          1,
+          0.3681,
+          0.0645
+        ],
+        "spread_degrees": 165
+      },
+      {
+        "source": "LED_SALOTTO",
+        "light": "Lounge / curved skirting 3",
+        "distribution": "rectangle",
+        "position_m": [
+          1.29777,
+          -1.95048,
+          0.02176
+        ],
+        "direction": [
+          -0.0583,
+          0.98246,
+          -0.17715
+        ],
+        "width_m": 0.39446,
+        "height_m": 0.013,
+        "power_W": 0.6114,
+        "estimated_CCT_K": 2475,
+        "linear_RGB": [
+          1,
+          0.3681,
+          0.0645
+        ],
+        "spread_degrees": 165
+      },
+      {
+        "source": "LED_SALOTTO",
+        "light": "Lounge / curved skirting 4",
+        "distribution": "rectangle",
+        "position_m": [
+          1.66885,
+          -1.90081,
+          0.02176
+        ],
+        "direction": [
+          -0.20906,
+          0.96172,
+          -0.17715
+        ],
+        "width_m": 0.35965,
+        "height_m": 0.013,
+        "power_W": 0.5575,
+        "estimated_CCT_K": 2475,
+        "linear_RGB": [
+          1,
+          0.3681,
+          0.0645
+        ],
+        "spread_degrees": 165
+      },
+      {
+        "source": "LED_SALOTTO",
+        "light": "Lounge / curved skirting 5",
+        "distribution": "rectangle",
+        "position_m": [
+          2.02855,
+          -1.74865,
+          0.02176
+        ],
+        "direction": [
+          -0.51605,
+          0.83804,
+          -0.17715
+        ],
+        "width_m": 0.43945,
+        "height_m": 0.013,
+        "power_W": 0.6811,
+        "estimated_CCT_K": 2475,
+        "linear_RGB": [
+          1,
+          0.3681,
+          0.0645
+        ],
+        "spread_degrees": 165
+      },
+      {
+        "source": "LED_SALOTTO",
+        "light": "Lounge / curved skirting 6",
+        "distribution": "rectangle",
+        "position_m": [
+          2.29548,
+          -1.5434,
+          0.02176
+        ],
+        "direction": [
+          -0.73412,
+          0.6555,
+          -0.17715
+        ],
+        "width_m": 0.24638,
+        "height_m": 0.013,
+        "power_W": 0.3819,
+        "estimated_CCT_K": 2475,
+        "linear_RGB": [
+          1,
+          0.3681,
+          0.0645
+        ],
+        "spread_degrees": 165
+      },
+      {
+        "source": "LED_SALOTTO",
+        "light": "Lounge / curved skirting 7",
+        "distribution": "rectangle",
+        "position_m": [
+          2.43861,
+          -1.34106,
+          0.02176
+        ],
+        "direction": [
+          -0.86034,
+          0.47794,
+          -0.17715
+        ],
+        "width_m": 0.25683,
+        "height_m": 0.013,
+        "power_W": 0.3981,
+        "estimated_CCT_K": 2475,
+        "linear_RGB": [
+          1,
+          0.3681,
+          0.0645
+        ],
+        "spread_degrees": 165
+      },
+      {
+        "source": "LED_SALOTTO",
+        "light": "Lounge / curved skirting 8",
+        "distribution": "rectangle",
+        "position_m": [
+          2.55052,
+          -0.93135,
+          0.02176
+        ],
+        "direction": [
+          -0.9705,
+          0.16357,
+          -0.17715
+        ],
+        "width_m": 0.60978,
+        "height_m": 0.013,
+        "power_W": 0.9452,
+        "estimated_CCT_K": 2475,
+        "linear_RGB": [
+          1,
+          0.3681,
+          0.0645
+        ],
+        "spread_degrees": 165
+      },
+      {
+        "source": "LED_SALOTTO",
+        "light": "Lounge / curved skirting 9",
+        "distribution": "rectangle",
+        "position_m": [
+          2.59825,
+          -0.32403,
+          0.02176
+        ],
+        "direction": [
+          -0.98414,
+          -0.00893,
+          -0.17715
+        ],
+        "width_m": 0.61689,
+        "height_m": 0.013,
+        "power_W": 0.9562,
+        "estimated_CCT_K": 2475,
+        "linear_RGB": [
+          1,
+          0.3681,
+          0.0645
+        ],
+        "spread_degrees": 165
+      },
+      {
+        "source": "LED_TV",
+        "light": "TV / copper side",
+        "distribution": "rectangle",
+        "position_m": [
+          -0.35894,
+          3.00157,
+          1.7184
+        ],
+        "direction": [
+          -0.92916,
+          0.36967,
+          0
+        ],
+        "width_m": 0.76914,
+        "height_m": 0.014,
+        "power_W": 2.75,
+        "estimated_CCT_K": null,
+        "linear_RGB": [
+          1,
+          0.102,
+          0.017
+        ],
+        "spread_degrees": 165
+      },
+      {
+        "source": "LED_TV",
+        "light": "TV / copper crown",
+        "distribution": "rectangle",
+        "position_m": [
+          0.02341,
+          3.00157,
+          2.1497
+        ],
+        "direction": [
+          0,
+          0.40706,
+          0.9134
+        ],
+        "width_m": 0.70035,
+        "height_m": 0.014,
+        "power_W": 1.54,
+        "estimated_CCT_K": null,
+        "linear_RGB": [
+          1,
+          0.102,
+          0.017
+        ],
+        "spread_degrees": 165
+      },
+      {
+        "source": "LED_TV",
+        "light": "TV / indigo side",
+        "distribution": "rectangle",
+        "position_m": [
+          1.10612,
+          3.00157,
+          1.7184
+        ],
+        "direction": [
+          0.92916,
+          0.36967,
+          0
+        ],
+        "width_m": 0.76914,
+        "height_m": 0.014,
+        "power_W": 2.25,
+        "estimated_CCT_K": null,
+        "linear_RGB": [
+          0.2,
+          0.12,
+          0.63
+        ],
+        "spread_degrees": 165
+      },
+      {
+        "source": "LED_TV",
+        "light": "TV / indigo crown",
+        "distribution": "rectangle",
+        "position_m": [
+          0.72377,
+          3.00157,
+          2.1497
+        ],
+        "direction": [
+          0,
+          0.40706,
+          0.9134
+        ],
+        "width_m": 0.70035,
+        "height_m": 0.014,
+        "power_W": 1.26,
+        "estimated_CCT_K": null,
+        "linear_RGB": [
+          0.2,
+          0.12,
+          0.63
+        ],
+        "spread_degrees": 165
+      },
+      {
+        "source": "TYPO_LED",
+        "light": "Shelves / Good Vibes front",
+        "distribution": "rectangle",
+        "position_m": [
+          -1.61722,
+          0.63883,
+          1.23576
+        ],
+        "direction": [
+          0.99166,
+          0,
+          -0.12892
+        ],
+        "width_m": 0.33741,
+        "height_m": 0.18934,
+        "power_W": 0.54,
+        "estimated_CCT_K": 4450,
+        "linear_RGB": [
+          1,
+          0.7203,
+          0.4898
+        ],
+        "spread_degrees": 165
+      },
+      {
+        "source": "TYPO_LED",
+        "light": "Shelves / Good Vibes return",
+        "distribution": "rectangle",
+        "position_m": [
+          -1.63072,
+          0.63883,
+          1.23576
+        ],
+        "direction": [
+          -0.99288,
+          0,
+          0.11915
+        ],
+        "width_m": 0.31717,
+        "height_m": 0.15715,
+        "power_W": 0.36,
+        "estimated_CCT_K": 4550,
+        "linear_RGB": [
+          1,
+          0.7342,
+          0.5152
+        ],
+        "spread_degrees": 165
+      },
+      {
+        "source": "PC_NURU",
+        "light": "Hardware / PC_NURU",
+        "distribution": "rectangle",
+        "position_m": [
+          -1.30465,
+          2.71764,
+          0.9646
+        ],
+        "direction": [
+          0.02872,
+          -0.95743,
+          -0.28723
+        ],
+        "width_m": 0.32079,
+        "height_m": 0.34255,
+        "power_W": 2.2,
+        "estimated_CCT_K": 2150,
+        "linear_RGB": [
+          1,
+          0.2926,
+          0.0228
+        ],
+        "spread_degrees": 165
+      },
+      {
+        "source": "PC_GIAN",
+        "light": "Hardware / PC_GIAN",
+        "distribution": "rectangle",
+        "position_m": [
+          2.13403,
+          2.31548,
+          0.96437
+        ],
+        "direction": [
+          0.02872,
+          -0.95743,
+          -0.28723
+        ],
+        "width_m": 0.21622,
+        "height_m": 0.34254,
+        "power_W": 3.1,
+        "estimated_CCT_K": 7600,
+        "linear_RGB": [
+          0.8144,
+          0.833,
+          1
+        ],
+        "spread_degrees": 165
+      },
+      {
+        "source": "LED_PS5",
+        "light": "Hardware / console indicator",
+        "distribution": "rectangle",
+        "position_m": [
+          0.30305,
+          2.91551,
+          1.04664
+        ],
+        "direction": [
+          0,
+          -1,
+          0
+        ],
+        "width_m": 0.02111,
+        "height_m": 0.02141,
+        "power_W": 0.008,
+        "estimated_CCT_K": 6900,
+        "linear_RGB": [
+          0.9244,
+          0.9012,
+          1
+        ],
+        "spread_degrees": 165
+      },
+      {
+        "source": "LUCI_CASSE",
+        "light": "Hardware / speaker indicator 1",
+        "distribution": "rectangle",
+        "position_m": [
+          -0.9085,
+          2.79156,
+          0.77842
+        ],
+        "direction": [
+          0,
+          -0.98744,
+          -0.15799
+        ],
+        "width_m": 0.03101,
+        "height_m": 0.06614,
+        "power_W": 0.018,
+        "estimated_CCT_K": 6000,
+        "linear_RGB": [
+          1,
+          0.8997,
+          0.8763
+        ],
+        "spread_degrees": 165
+      },
+      {
+        "source": "LUCI_CASSE",
+        "light": "Hardware / speaker indicator 2",
+        "distribution": "rectangle",
+        "position_m": [
+          -0.53175,
+          2.79156,
+          0.77688
+        ],
+        "direction": [
+          0,
+          -0.98744,
+          -0.15799
+        ],
+        "width_m": 0.03101,
+        "height_m": 0.06921,
+        "power_W": 0.018,
+        "estimated_CCT_K": 6000,
+        "linear_RGB": [
+          1,
+          0.8997,
+          0.8763
+        ],
+        "spread_degrees": 165
+      },
+      {
+        "source": "LUCI_CASSE",
+        "light": "Hardware / speaker indicator 3",
+        "distribution": "rectangle",
+        "position_m": [
+          1.33355,
+          2.79156,
+          0.77754
+        ],
+        "direction": [
+          0,
+          -0.98744,
+          -0.15799
+        ],
+        "width_m": 0.03101,
+        "height_m": 0.06614,
+        "power_W": 0.018,
+        "estimated_CCT_K": 6000,
+        "linear_RGB": [
+          1,
+          0.8997,
+          0.8763
+        ],
+        "spread_degrees": 165
+      },
+      {
+        "source": "LUCI_CASSE",
+        "light": "Hardware / speaker indicator 4",
+        "distribution": "rectangle",
+        "position_m": [
+          1.71029,
+          2.79156,
+          0.77601
+        ],
+        "direction": [
+          0,
+          -0.98744,
+          -0.15799
+        ],
+        "width_m": 0.03101,
+        "height_m": 0.06921,
+        "power_W": 0.018,
+        "estimated_CCT_K": 6000,
+        "linear_RGB": [
+          1,
+          0.8997,
+          0.8763
+        ],
+        "spread_degrees": 165
+      },
+      {
+        "source": "VETRO_PORTA",
+        "light": "Entrance / daylight 1",
+        "distribution": "rectangle",
+        "position_m": [
+          3.20256,
+          0.55664,
+          1.46072
+        ],
+        "direction": [
+          -0.97289,
+          -0.08756,
+          -0.21404
+        ],
+        "width_m": 0.87128,
+        "height_m": 2.19776,
+        "power_W": 118.0585,
+        "estimated_CCT_K": 7100,
+        "linear_RGB": [
+          0.8891,
+          0.8797,
+          1
+        ],
+        "spread_degrees": 165
+      },
+      {
+        "source": "VETRO_PORTA",
+        "light": "Entrance / daylight 2",
+        "distribution": "rectangle",
+        "position_m": [
+          3.20256,
+          1.64077,
+          1.46073
+        ],
+        "direction": [
+          -0.97289,
+          -0.08756,
+          -0.21404
+        ],
+        "width_m": 0.70186,
+        "height_m": 2.19776,
+        "power_W": 95.1015,
+        "estimated_CCT_K": 7100,
+        "linear_RGB": [
+          0.8891,
+          0.8797,
+          1
+        ],
+        "spread_degrees": 165
+      }
+    ],
+    "exhibition": [
+      {
+        "name": "Stone underside",
+        "scope": "exterior architectural shell",
+        "type": "rectangular area",
+        "position_m": [
+          -0.65,
+          -1.8,
+          -2.65
+        ],
+        "direction": [
+          0.16,
+          0.46,
+          1
+        ],
+        "size_m": [
+          5.2,
+          3.6
+        ],
+        "power_W": 185,
+        "linear_RGB": [
+          0.85,
+          0.89,
+          1
+        ]
+      },
+      {
+        "name": "Rear exterior",
+        "scope": "exterior architectural shell",
+        "type": "rectangular area",
+        "position_m": [
+          0.75,
+          5.7,
+          2.4
+        ],
+        "direction": [
+          -0.12,
+          -1,
+          -0.15
+        ],
+        "size_m": [
+          3.7,
+          1.8
+        ],
+        "power_W": 58,
+        "linear_RGB": [
+          1,
+          0.82,
+          0.68
+        ]
+      },
+      {
+        "name": "Side exterior",
+        "scope": "exterior architectural shell",
+        "type": "rectangular area",
+        "position_m": [
+          -5.45,
+          0.2,
+          2.55
+        ],
+        "direction": [
+          1,
+          0.13,
+          -0.25
+        ],
+        "size_m": [
+          3.2,
+          1.8
+        ],
+        "power_W": 61,
+        "linear_RGB": [
+          0.81,
+          0.9,
+          1
+        ]
+      }
+    ]
+  },
+  "materials": {
+    "mesh_count": 114,
+    "used_materials": 59,
+    "material_faces": {
+      "satin": 12007,
+      "steel": 16906,
+      "black": 52865,
+      "ebony": 13092,
+      "glass": 1008,
+      "anodised": 43234,
+      "tinted": 2064,
+      "leaf": 17762,
+      "soil": 558,
+      "ivy": 13573,
+      "ceramic": 4666,
+      "leaf2": 15216,
+      "variegated": 2432,
+      "pot": 3796,
+      "mirror": 2,
+      "mat": 96,
+      "cut": 214,
+      "floor": 74,
+      "wall": 694,
+      "ivory": 6424,
+      "execute": 1,
+      "hustle": 1,
+      "grind": 1,
+      "ceiling": 180,
+      "bark": 6404,
+      "leather": 10538,
+      "chrome": 10607,
+      "marble_top": 204,
+      "gun": 23556,
+      "marble": 560,
+      "oak": 602,
+      "bottle": 656,
+      "bottlegreen": 672,
+      "desk": 1226,
+      "rug": 2448,
+      "paper": 1590,
+      "rubber": 7287,
+      "speaker": 1002,
+      "vertical": 4,
+      "ultrawide": 94,
+      "whitePC": 7352,
+      "fanc": 1192,
+      "pcb": 12,
+      "fanw": 1192,
+      "tv": 2,
+      "shade": 1501,
+      "sofa": 11260,
+      "panel": 22,
+      "bookgray": 1294,
+      "bookgreen": 452,
+      "bookred": 498,
+      "nylon": 3132,
+      "ledfloor": 182,
+      "led": 13,
+      "soft": 6,
+      "bias": 12,
+      "ledcool": 52,
+      "tube": 2787,
+      "salt": 3818
+    },
+    "panels": {
+      "POSTAZIONE_GIAN DISPLAY_27_GIAN": {
+        "art": "vertical",
+        "polygons": 2,
+        "size_m": [
+          0.3131,
+          0.5368
+        ],
+        "horizontal": [
+          0.9335,
+          -0.3585,
+          0
+        ]
+      },
+      "POSTAZIONE_GIAN ULTRAWIDE_GIAN": {
+        "art": "ultrawide",
+        "polygons": 47,
+        "size_m": [
+          0.9049,
+          0.3658
+        ],
+        "horizontal": [
+          0.9997,
+          -0.0239,
+          0
+        ]
+      },
+      "POSTAZIONE_NURU DISPLAY_27_NURU": {
+        "art": "vertical",
+        "polygons": 2,
+        "size_m": [
+          0.3133,
+          0.5368
+        ],
+        "horizontal": [
+          0.968,
+          0.2509,
+          0
+        ]
+      },
+      "POSTAZIONE_NURU ULTRAWIDE_NURU": {
+        "art": "ultrawide",
+        "polygons": 47,
+        "size_m": [
+          0.9049,
+          0.3658
+        ],
+        "horizontal": [
+          0.9997,
+          -0.0239,
+          0
+        ]
+      },
+      "POSTAZIONE_PS5_TV55 TV_55": {
+        "art": "tv",
+        "polygons": 2,
+        "size_m": [
+          1.4588,
+          0.8355
+        ],
+        "horizontal": [
+          1,
+          0,
+          0
+        ]
+      }
+    },
+    "meshes": {
+      "ANGOLO_CAFFE COFFE_MACHINE": {
+        "satin": 658,
+        "steel": 372,
+        "black": 632
+      },
+      "ANGOLO_CAFFE DISPENSER": {
+        "ebony": 80,
+        "steel": 68
+      },
+      "ANGOLO_CAFFE FRIGORIFERO": {
+        "satin": 200
+      },
+      "ANGOLO_CAFFE KIT_WHISKY": {
+        "ebony": 12,
+        "glass": 996
+      },
+      "ANGOLO_CAFFE MICRONDE": {
+        "satin": 8944,
+        "anodised": 7859,
+        "steel": 458,
+        "tinted": 1320
+      },
+      "ANGOLO_CAFFE PIANTINA046011": {
+        "leaf": 610,
+        "soil": 14,
+        "ivy": 682,
+        "ceramic": 666,
+        "leaf2": 596
+      },
+      "ANGOLO_CAFFE PLANT4": {
+        "variegated": 642,
+        "leaf2": 271,
+        "leaf": 341,
+        "pot": 576,
+        "soil": 70
+      },
+      "ANGOLO_CAFFE SPECCHIO": {
+        "ebony": 3243,
+        "mirror": 2
+      },
+      "ANGOLO_CAFFE TAPPETINO_COFFEE": {
+        "mat": 12
+      },
+      "ANGOLO_CAFFE svgMesh1": {
+        "cut": 214,
+        "floor": 74
+      },
+      "BANCO_CAFFE ANGOLO_CAFFE": {
+        "ebony": 88
+      },
+      "polySurface15": {
+        "anodised": 1260
+      },
+      "BACKFACE_REVEAL PARETE": {
+        "wall": 250
+      },
+      "BACKFACE_REVEAL SOFFITTO": {
+        "wall": 284
+      },
+      "CONDIZIONATORE BACKFACE_REVEAL": {
+        "ivory": 570,
+        "anodised": 216
+      },
+      "POSTER pCube4": {
+        "anodised": 5,
+        "execute": 1
+      },
+      "POSTER pCube5": {
+        "anodised": 5,
+        "hustle": 1
+      },
+      "pCube3 POSTER": {
+        "anodised": 5,
+        "grind": 1
+      },
+      "PEZZO_PORTA": {
+        "anodised": 72
+      },
+      "PORTA.001": {
+        "anodised": 252
+      },
+      "VETRO_PORTA": {
+        "glass": 12
+      },
+      "LUCI_CEILING_SX": {
+        "ceiling": 90
+      },
+      "LUCI_CEILING_DX": {
+        "ceiling": 90
+      },
+      "BAR Mesh": {
+        "ivy": 2916,
+        "leaf": 3580,
+        "bark": 2116,
+        "leaf2": 3141
+      },
+      "BAR PIANTINA046012": {
+        "leaf": 726,
+        "soil": 14,
+        "ivy": 570,
+        "ceramic": 666,
+        "leaf2": 596
+      },
+      "BAR SEDIA_BAR_ONE": {
+        "leather": 2648,
+        "chrome": 2825,
+        "black": 96
+      },
+      "BAR SEDIA_BAR_TWO": {
+        "leather": 2672,
+        "chrome": 2821,
+        "black": 98
+      },
+      "BAR TAVOLO_BAR": {
+        "marble_top": 28,
+        "gun": 7276,
+        "marble": 76
+      },
+      "BAR Untitled:Mesh": {
+        "ivy": 2923,
+        "leaf": 3569,
+        "bark": 2135,
+        "leaf2": 3137
+      },
+      "STAND_LAMPADA_SALE": {
+        "oak": 90
+      },
+      "BOTTIGLIE BOTTIGLIE": {
+        "bottle": 656,
+        "bottlegreen": 672,
+        "tinted": 560
+      },
+      "CESTINI pCube2": {
+        "gun": 236
+      },
+      "CESTINO:Door CESTINI": {
+        "black": 2016
+      },
+      "DYSON ENTRATA": {
+        "steel": 1756,
+        "satin": 1618,
+        "anodised": 1691
+      },
+      "ENTRATA PLANT1": {
+        "leaf": 430,
+        "leaf2": 252,
+        "ivy": 326,
+        "variegated": 248,
+        "soil": 72,
+        "pot": 644
+      },
+      "ENTRATA PLANT2": {
+        "pot": 644,
+        "leaf2": 301,
+        "ivy": 329,
+        "variegated": 329,
+        "leaf": 307,
+        "soil": 82
+      },
+      "ENTRATA PLANT:PLANT": {
+        "leaf": 430,
+        "leaf2": 252,
+        "ivy": 326,
+        "variegated": 248,
+        "soil": 72,
+        "pot": 644
+      },
+      "ENTRATA TAVOLINO_DYSON": {
+        "desk": 72
+      },
+      "ENTRATA ZERBINO_ENTRATA": {
+        "rug": 88
+      },
+      "FOGLI FOGLI": {
+        "paper": 270
+      },
+      "FOGLI pPlane7": {
+        "paper": 38
+      },
+      "PARETE_DISPLAY FONDAMENTA": {
+        "wall": 160
+      },
+      "DOOR:Plane_001Shape PORTE": {
+        "satin": 266,
+        "steel": 3742,
+        "ebony": 409
+      },
+      "PORTE Plane_001Shape": {
+        "satin": 255,
+        "steel": 3806,
+        "ebony": 392
+      },
+      "CHAIR_GIAN POSTAZIONE_GIAN": {
+        "leather": 2609,
+        "black": 239,
+        "chrome": 910,
+        "rubber": 878
+      },
+      "POSTAZIONE_GIAN ALEXA": {
+        "speaker": 554
+      },
+      "POSTAZIONE_GIAN DESK_GIAN": {
+        "gun": 1765,
+        "ivory": 1804,
+        "anodised": 246,
+        "desk": 582
+      },
+      "POSTAZIONE_GIAN DISPLAY_27_GIAN": {
+        "black": 131,
+        "vertical": 2
+      },
+      "POSTAZIONE_GIAN KEYBOARD_GIAN": {
+        "anodised": 518,
+        "black": 1793,
+        "gun": 882
+      },
+      "POSTAZIONE_GIAN MOUSE_GIAN": {
+        "rubber": 500,
+        "black": 1738
+      },
+      "POSTAZIONE_GIAN TAPPETINO_GIAN": {
+        "mat": 42
+      },
+      "POSTAZIONE_GIAN ULTRAWIDE_GIAN": {
+        "black": 841,
+        "ultrawide": 47
+      },
+      "PC_GIAN": {
+        "gun": 940,
+        "whitePC": 3083,
+        "black": 2756,
+        "rubber": 530,
+        "anodised": 1248,
+        "fanc": 1192,
+        "pcb": 6,
+        "steel": 132,
+        "ivory": 336
+      },
+      "CHAIR_NURU POSTAZIONE_NURU": {
+        "leather": 2609,
+        "black": 239,
+        "chrome": 910,
+        "rubber": 878
+      },
+      "POSTAZIONE_NURU DESK_NURU": {
+        "ivory": 2086,
+        "gun": 2015,
+        "desk": 572,
+        "anodised": 326
+      },
+      "POSTAZIONE_NURU DISPLAY_27_NURU": {
+        "black": 141,
+        "vertical": 2
+      },
+      "POSTAZIONE_NURU FOGLIAME": {
+        "ivy": 2922,
+        "leaf": 3591,
+        "bark": 2153,
+        "leaf2": 3146
+      },
+      "POSTAZIONE_NURU KEYBOARD_NURU": {
+        "anodised": 516,
+        "black": 1793,
+        "gun": 892
+      },
+      "POSTAZIONE_NURU LAVAGNA": {
+        "satin": 26
+      },
+      "POSTAZIONE_NURU MOUSE_NURU": {
+        "rubber": 500,
+        "black": 1738
+      },
+      "polySurface25": {
+        "speaker": 224
+      },
+      "polySurface26": {
+        "speaker": 224
+      },
+      "POSTAZIONE_NURU TAPPETINO_NURU": {
+        "mat": 42
+      },
+      "POSTAZIONE_NURU ULTRAWIDE_NURU": {
+        "black": 841,
+        "ultrawide": 47
+      },
+      "PC_NURU": {
+        "gun": 940,
+        "anodised": 4463,
+        "black": 3092,
+        "rubber": 530,
+        "fanw": 1192,
+        "pcb": 6
+      },
+      "CONTROLLER:CONTROLLER_PS5 POSTAZIONE_PS5_TV55": {
+        "ivory": 814,
+        "black": 634,
+        "rubber": 704
+      },
+      "POSTAZIONE_PS5_TV55 CONTROLLER_PS5": {
+        "ivory": 814,
+        "black": 948,
+        "rubber": 520
+      },
+      "polySurface19": {
+        "whitePC": 4269,
+        "black": 339
+      },
+      "POSTAZIONE_PS5_TV55 STAND_TV_55": {
+        "satin": 40
+      },
+      "POSTAZIONE_PS5_TV55 TAVOLO_POSTAZIONE": {
+        "ebony": 92,
+        "anodised": 800
+      },
+      "POSTAZIONE_PS5_TV55 TV_55": {
+        "black": 182,
+        "tv": 2
+      },
+      "polySurface35": {
+        "shade": 1101,
+        "anodised": 1194,
+        "oak": 512,
+        "chrome": 3141
+      },
+      "SALOTTO POLTRONA_ONE": {
+        "sofa": 5546,
+        "ebony": 988
+      },
+      "SALOTTO POLTRONA_TWO": {
+        "sofa": 5714,
+        "ebony": 1070
+      },
+      "SALOTTO TAPPETO_SALOTTO": {
+        "rug": 2360
+      },
+      "SALOTTO TAVOLO_SALOTTO": {
+        "gun": 4888,
+        "marble": 484,
+        "marble_top": 176
+      },
+      "PIANTINA SET_PIANTINE": {
+        "leaf": 608,
+        "leaf2": 642,
+        "ivy": 634,
+        "soil": 14,
+        "ceramic": 664
+      },
+      "SET_PIANTINE PIANTINA046010": {
+        "leaf": 924,
+        "leaf2": 650,
+        "ceramic": 668,
+        "soil": 14,
+        "ivy": 318
+      },
+      "SET_PIANTINE PIANTINA046013": {
+        "leaf": 978,
+        "soil": 14,
+        "ceramic": 666,
+        "leaf2": 626,
+        "ivy": 246
+      },
+      "SET_PIANTINE PIANTINA046014": {
+        "leaf": 516,
+        "leaf2": 502,
+        "ivy": 526,
+        "soil": 14,
+        "ceramic": 668
+      },
+      "SET_PIANTINE PIANTINA046015": {
+        "leaf": 516,
+        "leaf2": 502,
+        "ivy": 526,
+        "soil": 14,
+        "ceramic": 668
+      },
+      "SGABELLI SGABELLI": {
+        "anodised": 1037,
+        "ebony": 3846
+      },
+      "APPENDINO ZONA_DISPENSER": {
+        "ebony": 2392
+      },
+      "ZONA_DISPENSER TAVOLO_APPOGGIA_TUTTO": {
+        "ebony": 92,
+        "anodised": 800
+      },
+      "polySurface5": {
+        "panel": 2
+      },
+      "polySurface6": {
+        "anodised": 3163,
+        "panel": 4
+      },
+      "ZONA_PROGETTAZIONE BOOK_SHELF": {
+        "bookgray": 1294,
+        "paper": 1282,
+        "bookgreen": 452,
+        "bookred": 498
+      },
+      "ZONA_PROGETTAZIONE PLANT3": {
+        "pot": 644,
+        "leaf2": 301,
+        "ivy": 329,
+        "variegated": 329,
+        "leaf": 307,
+        "soil": 82
+      },
+      "ZONA_PROGETTAZIONE PORTA_CARTE1": {
+        "black": 636
+      },
+      "ZONA_PROGETTAZIONE PORTA_CARTE.001": {
+        "black": 636
+      },
+      "ZONA_PROGETTAZIONE SHELF": {
+        "gun": 2446,
+        "ebony": 296
+      },
+      "polySurface8": {
+        "nylon": 3126,
+        "gun": 1276
+      },
+      "ZONA_PROGETTAZIONE SOFTBOX:STANDSOFTBOX_GRPSoftbox_Arm2": {
+        "anodised": 249
+      },
+      "ZONA_PROGETTAZIONE SOFTBOX:STANDSOFTBOX_GRPSoftbox_Stick": {
+        "anodised": 608
+      },
+      "ZONA_PROGETTAZIONE SONY_FOTOCAMERA": {
+        "black": 2949,
+        "rubber": 2247,
+        "tinted": 184
+      },
+      "ZONA_PROGETTAZIONE TAVOLO_DISPENSA": {
+        "ebony": 92,
+        "anodised": 800
+      },
+      "ZONA_PROGETTAZIONE TRIPOD_ONE": {
+        "anodised": 7828,
+        "steel": 2842,
+        "black": 3856
+      },
+      "ZONA_PROGETTAZIONE TRIPOD_TWO": {
+        "anodised": 8016,
+        "black": 4036,
+        "steel": 2816
+      },
+      "ZONA_PROGETTAZIONE case_shelf1": {
+        "steel": 914,
+        "black": 20465
+      },
+      "ZONA_PROGETTAZIONE PLANT4": {
+        "pot": 644,
+        "leaf2": 301,
+        "variegated": 636,
+        "leaf": 329,
+        "soil": 82
+      },
+      "TELO_SHELF": {
+        "nylon": 6
+      },
+      "LED_SALOTTO": {
+        "ledfloor": 168
+      },
+      "LED_SCRIVANIE": {
+        "led": 12
+      },
+      "LED_WORKSTATION": {
+        "ledfloor": 14
+      },
+      "LUCE_FARETTO": {
+        "led": 1
+      },
+      "FARETTO": {
+        "anodised": 57
+      },
+      "LUCE_LAMPADA_PROGETTAZIONE": {
+        "panel": 16
+      },
+      "LUCE_SOFTBOX_PROGETTAZIONE": {
+        "soft": 6
+      },
+      "LED_TV": {
+        "bias": 12
+      },
+      "LED_PS5": {
+        "ledcool": 36
+      },
+      "LUCI_CASSE": {
+        "ledcool": 16
+      },
+      "LUCE_LAMPADA_SALOTTO": {
+        "shade": 400
+      },
+      "TYPO_LED": {
+        "tube": 2787
+      },
+      "LAMPADA_SALE": {
+        "salt": 3818
+      }
+    }
+  },
+  "seconds": 229.4,
+  "distribution": {
+    "file": "studio.glb",
+    "meshes": 6,
+    "primitives": 6,
+    "triangles": 306392,
+    "bytes": 4523012,
+    "extensions": [
+      "EXT_meshopt_compression",
+      "EXT_texture_webp",
+      "KHR_mesh_quantization"
+    ],
+    "textureSHA256": {
+      "architecture": "b6dd58aa75e290989dc1b16a75b528c7cc953328419dddf6e3b2efc7775cefd9",
+      "atelier": "a22f229b07a8ce4ef11211fb405d4fc9495502d72208e8abbaf6f26f6371e948",
+      "vertical": "9a9ee05493abc32bc15be691a5d2f90fc721e2bd16cb0bfed8d6c2664f255dbd",
+      "ultrawide": "38ccecdb2ace4e3990d76fc7b378821de7dce56a0b3ec34c73327c7cb09b439d",
+      "tv": "175263a44175840517f38b7234ff199e1b9a68fdf1b8ba5d933a51878338cb14",
+      "lounge": "7cfacbfcf3edcf447530158542c84dd6148d02fd3eacd7081f4147e1ad9658e8"
+    }
+  },
+  "roundTripReview": {
+    "method": "Decode the actual meshopt + WebP distribution, round-trip through standard glTF import and render orthographic views. Compare to the baked source with matching camera.",
+    "views": [
+      "iso",
+      "reverse",
+      "underside"
+    ],
+    "opaquePixelDifferencePercentilesRGB": {
+      "median": 0.0,
+      "p90": 3.0,
+      "p95": 7.0,
+      "p99": 26.0
+    },
+    "canvas": [
+      1280,
+      850
+    ],
+    "alphaBounds": [
+      150,
+      37,
+      1116,
+      750
+    ],
+    "verifiedDisplaySourceHashes": {
+      "tv": "175263a44175840517f38b7234ff199e1b9a68fdf1b8ba5d933a51878338cb14",
+      "ultrawide": "38ccecdb2ace4e3990d76fc7b378821de7dce56a0b3ec34c73327c7cb09b439d",
+      "vertical": "9a9ee05493abc32bc15be691a5d2f90fc721e2bd16cb0bfed8d6c2664f255dbd"
+    }
+  }
+}

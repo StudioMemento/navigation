@@ -1,0 +1,44 @@
+{
+  "display_textures": {
+    "tv": {
+      "file": "screens/tv.webp",
+      "bytes": 150512,
+      "rgb_PSNR_dB": 40.69,
+      "luma_SSIM": 0.99224,
+      "sha256": "175263a44175840517f38b7234ff199e1b9a68fdf1b8ba5d933a51878338cb14"
+    },
+    "ultrawide": {
+      "file": "screens/ultrawide.webp",
+      "bytes": 85748,
+      "rgb_PSNR_dB": 40.3,
+      "luma_SSIM": 0.99235,
+      "sha256": "38ccecdb2ace4e3990d76fc7b378821de7dce56a0b3ec34c73327c7cb09b439d"
+    },
+    "vertical": {
+      "file": "screens/vertical.webp",
+      "bytes": 88866,
+      "rgb_PSNR_dB": 38.97,
+      "luma_SSIM": 0.99232,
+      "sha256": "9a9ee05493abc32bc15be691a5d2f90fc721e2bd16cb0bfed8d6c2664f255dbd"
+    }
+  },
+  "source": "Owner PNGs, centered UI-free crops and a single Lanczos resample per panel. Metrics against each uncompressed RGB output before WebP encoding.",
+  "pbr_source_swatches": {
+    "count": 5,
+    "encoding": "lossless VP8L",
+    "compared_to_original_working_swatches": "wall, cloth, pile and marble have identical decoded pixels to the previous uncompressed swatches",
+    "stone": {
+      "source": "DSC06694.JPG",
+      "crop_at_800px_width": [538, 484, 575, 521],
+      "selection": "Interior of a single anthracite tile, away from grout, floor furniture and reflections. Tile joints are authored independently at room scale.",
+      "size": [352, 352],
+      "bytes": 21790,
+      "sha256": "9f03de01ece7da61d8deec3529fa3712e12e9930950c1375b1970fc9b744ac3e"
+    }
+  },
+  "original_framed_prints": {
+    "count": 3,
+    "encoding": "lossless VP8L, rectified directly from owner photograph"
+  },
+  "blender_check": "114 meshes, 59 used materials, 11 WebP images decoded from source"
+}

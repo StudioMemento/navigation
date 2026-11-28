@@ -1,0 +1,78 @@
+{
+  "origin": "https://mementostudio.it",
+  "sharingImage": "https://framerusercontent.com/images/tlqYX1LPvQTSm1PZk8Qx0KJUneM.jpeg",
+  "home": {
+    "title": "Memento — Studio di design & esperienze digitali",
+    "heading": "Memento — Studio di design & esperienze digitali",
+    "description": "Studio di design & esperienze digitali. Esplora Memento."
+  },
+  "sections": [
+    {
+      "slug": "studio",
+      "label": "Studio",
+      "name": "STUDIO",
+      "alt": "Le due postazioni reali dello studio, reinterpretate in carbone e ambra.",
+      "title": "Memento / Studio",
+      "description": "Studio Memento. Un'esperienza di materia, luce e movimento.",
+      "heading": "Studio"
+    },
+    {
+      "slug": "services",
+      "label": "Services",
+      "name": "SERVICES",
+      "alt": "Il tavolo creativo e il softbox dello studio in stile low poly ambra.",
+      "title": "Servizi — Memento Design Studio",
+      "description": "Servizi fisici e digitali. Bundle, web, 3D, video, visual, design e branding. Esplora i servizi e i percorsi Memento per il tuo prossimo progetto.",
+      "heading": "Servizi e percorsi Memento Design Studio"
+    },
+    {
+      "slug": "projects",
+      "label": "Projects",
+      "name": "PROJECTS",
+      "alt": "Tre tavole progettuali e prototipi nell’atelier Memento.",
+      "title": "Portfolio — Memento",
+      "description": "Progetti Memento Design Studio. Web, 3D, video, visual, design e branding.",
+      "heading": "Progetti."
+    },
+    {
+      "slug": "levelup",
+      "label": "LevelUp",
+      "name": "LEVELUP",
+      "alt": "Un portale digitale ispirato allo specchio dello studio.",
+      "title": "LevelUp — Memento Design Studio",
+      "description": "Diamo forma a ciò che rende unico il tuo brand. Esplora le esperienze Memento e immagina il tuo prossimo progetto.",
+      "heading": "Cosa ti rende speciale?"
+    },
+    {
+      "slug": "start",
+      "label": "Start",
+      "name": "START",
+      "alt": "Le due poltrone, il tavolino e la lampada della zona incontro.",
+      "title": "Start — Memento Design Studio",
+      "description": "Raccontaci la tua idea. Contatta Memento Design Studio: web, branding, 3D ed esperienze digitali. Ci trovi a Maniago.",
+      "heading": "LET’S WORK TOGETHER"
+    }
+  ],
+  "studio": {
+    "url": "https://mementostudio.vercel.app/",
+    "galleryProject": "studio",
+    "models": [
+      {
+        "label": "Desktop",
+        "file": "studio-v4-desktop.glb"
+      },
+      {
+        "label": "Mobile",
+        "file": "studio-v4-mobile.glb"
+      }
+    ]
+  },
+  "domains": {
+    "web": "Web",
+    "3d": "3D",
+    "video": "Video",
+    "visual": "Visual",
+    "design": "Design",
+    "branding": "Branding"
+  }
+}

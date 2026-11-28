@@ -1,0 +1,63 @@
+{
+  "_three-rDuzV8cs.js": {
+    "file": "assets/three-rDuzV8cs.js",
+    "name": "three"
+  },
+  "_timing-hLvX874S.js": {
+    "file": "assets/timing-hLvX874S.js",
+    "name": "timing",
+    "assets": [
+      "assets/studio-web-D4gOld-k.glb"
+    ]
+  },
+  "src/scene/viewer.js": {
+    "file": "assets/viewer-BeC5b0xC.js",
+    "name": "viewer",
+    "src": "src/scene/viewer.js",
+    "isDynamicEntry": true,
+    "imports": [
+      "_timing-hLvX874S.js",
+      "_three-rDuzV8cs.js"
+    ],
+    "assets": [
+      "assets/scan-USxQ1DOb.bin"
+    ]
+  },
+  "src/software/viewer.js": {
+    "file": "assets/viewer-chj6AOG1.js",
+    "name": "viewer",
+    "src": "src/software/viewer.js",
+    "isDynamicEntry": true,
+    "imports": [
+      "_timing-hLvX874S.js"
+    ]
+  },
+  "src/studio.js": {
+    "file": "assets/studio-DGLizaaq.js",
+    "name": "studio",
+    "src": "src/studio.js",
+    "isEntry": true,
+    "dynamicImports": [
+      "src/scene/viewer.js",
+      "src/software/viewer.js"
+    ],
+    "css": [
+      "assets/studio-ulDXlfBd.css"
+    ],
+    "assets": [
+      "assets/studio-BgbMGTYm.webp"
+    ]
+  },
+  "studio/model/scan.bin": {
+    "file": "assets/scan-USxQ1DOb.bin",
+    "src": "studio/model/scan.bin"
+  },
+  "studio/model/studio-web.glb": {
+    "file": "assets/studio-web-D4gOld-k.glb",
+    "src": "studio/model/studio-web.glb"
+  },
+  "studio/model/studio.webp": {
+    "file": "assets/studio-BgbMGTYm.webp",
+    "src": "studio/model/studio.webp"
+  }
+}

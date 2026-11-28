@@ -1,0 +1,104 @@
+/* The Studio page: one screen, no scroll. The studio stands between the logotype and the dock; its caption and the
+   view controls sit on the edges of the content column, the wall of glyphs stays in the margins. */
+html[data-memento-native=studio],html[data-memento-native=studio] body {height:100%;overflow:hidden;overscroll-behavior:none;}
+html[data-memento-native=studio] .mm-blur {display:none;}
+.studio-web {
+  --edge:calc((100% - var(--content-width)) / 2);
+  --view-top:max(64px,calc(env(safe-area-inset-top,0px) + 50px));
+  --view-bottom:max(86px,calc(env(safe-area-inset-bottom,0px) + 74px));
+  --tool-ink:#c2bebb;
+  --tool-glass:rgb(17 17 18 / .81);
+  position:relative;height:100vh;height:100dvh;overflow:hidden;isolation:isolate;
+}
+/* A faint warm light under the studio, as in the room. */
+.studio-web::before {
+  content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;
+  background:radial-gradient(ellipse at 51% 50%,#ffffff07 0,#ffffff04 34%,transparent 64%),radial-gradient(ellipse at 49% 70%,#ff7d000b,transparent 47%);
+}
+.studio-icons {position:absolute;width:0;height:0;overflow:hidden;}
+.studio-viewport {
+  position:absolute;top:var(--view-top);right:0;bottom:var(--view-bottom);left:0;isolation:isolate;
+  cursor:grab;touch-action:none;user-select:none;overscroll-behavior:contain;outline-offset:-3px;
+}
+.studio-viewport[data-dragging] {cursor:grabbing;}
+.studio-viewport:focus-visible:not([data-pointer-focus]) {outline:2px solid #ffa23d;}
+.studio-viewport:focus:not(:focus-visible),.studio-viewport[data-pointer-focus] {outline:none;}
+.studio-render,.studio-poster {position:absolute;inset:0;display:block;width:100%;height:100%;}
+.studio-poster {object-fit:contain;}
+.studio-poster[hidden] {display:none;}
+.studio-web:is([data-phase=fallback],[data-phase=lost]) .studio-render {visibility:hidden;}
+.studio-web:is([data-phase=fallback],[data-phase=lost]) .studio-viewport {cursor:default;}
+.studio-ignition {
+  position:absolute;left:50%;top:65%;width:106px;height:26px;pointer-events:none;opacity:0;transform:translate(-50%,-50%);
+  background:radial-gradient(ellipse,#ff7d0052,transparent 68%);transition:opacity .3s;
+}
+.studio-web[data-phase=preparing] .studio-ignition {opacity:.76;animation:studio-breathe 2.1s ease-in-out infinite alternate;}
+@keyframes studio-breathe {to {opacity:.25;transform:translate(-50%,-50%) scale(.78);}}
+/* The software renderer's point of contact (src/software/viewer.js). */
+.contact-light {position:absolute;top:0;left:0;width:152px;height:152px;pointer-events:none;opacity:0;transition:opacity .15s;}
+
+/* Controls: quiet glass pills, warm under the pointer. */
+.studio-tool {
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;min-width:42px;height:42px;padding:0;
+  color:var(--tool-ink);font:inherit;border:1px solid transparent;border-radius:999px;background:transparent;cursor:pointer;
+  -webkit-tap-highlight-color:transparent;touch-action:manipulation;transition:color .18s,background-color .18s,border-color .18s;
+}
+.studio-tool svg {width:17px;height:17px;flex:none;fill:none;stroke:currentColor;stroke-width:1.45;stroke-linecap:round;stroke-linejoin:round;}
+.studio-tool:disabled {opacity:.34;cursor:default;}
+.studio-tool[hidden] {display:none;}
+.studio-tool:focus-visible,.studio-retry:focus-visible {outline:2px solid #ffa23d;outline-offset:3px;}
+@media (hover:hover) and (pointer:fine) { .studio-tool:hover:enabled {color:#ffa23d;background:#262220;} }
+.studio-tool:active:enabled {background:#2f2520;}
+.studio-top,.studio-caption,.studio-view-tools {position:absolute;z-index:3;}
+.studio-top {top:max(10px,env(safe-area-inset-top,0px));right:var(--edge);display:flex;align-items:center;gap:8px;}
+.studio-top .studio-tool {border-color:#ffffff17;background:var(--tool-glass);}
+.studio-text-tool {padding:0 15px;font-size:.875rem;letter-spacing:-.02em;}
+.studio-text-tool svg {width:15px;height:15px;}
+.studio-caption {left:var(--edge);bottom:max(16px,env(safe-area-inset-bottom,0px));max-width:calc(50% - 190px);}
+.studio-title {
+  width:fit-content;margin:0;font:450 clamp(1.55rem,2.1vw,2.5rem)/1.07 Inter,Arial,sans-serif;letter-spacing:-.058em;
+  background:var(--mm-title-ink);-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent;
+  padding-bottom:.06em;
+}
+.studio-hint,.studio-retry {display:flex;align-items:center;gap:7px;margin:6px 0 0;color:#a19c97;font-size:.875rem;letter-spacing:-.015em;}
+.studio-hint[hidden],.studio-retry[hidden],.studio-view-tools[hidden] {display:none;}
+.studio-hint svg {width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:1.45;stroke-linecap:round;stroke-linejoin:round;}
+.studio-retry {padding:4px 0;border:0;background:transparent;font:inherit;font-size:.875rem;text-decoration:underline;text-underline-offset:3px;cursor:pointer;}
+.studio-view-tools {
+  right:var(--edge);bottom:max(18px,calc(env(safe-area-inset-bottom,0px) + 4px));display:flex;align-items:center;gap:1px;padding:2px;
+  border:1px solid #ffffff1b;border-radius:999px;background:var(--tool-glass);
+}
+.studio-view-tools .studio-tool {width:41px;min-width:41px;height:40px;}
+.studio-view-tools [data-action=home] {color:#e2d9d4;}
+.studio-view-tools [data-action=home] svg {width:19px;height:19px;}
+
+/* A phone: the logotype spans the column, so the top tools sit just under it; caption and view controls share the
+   row over the dock. */
+@media (max-width:767px) {
+  .studio-web {--view-top:max(104px,calc(env(safe-area-inset-top,0px) + 92px));--view-bottom:max(146px,calc(env(safe-area-inset-bottom,0px) + 136px));}
+  .studio-top {top:max(54px,calc(env(safe-area-inset-top,0px) + 44px));gap:4px;}
+  .studio-text-tool {width:42px;padding:0;}
+  .studio-text-tool span {display:none;}
+  .studio-caption {bottom:max(82px,calc(env(safe-area-inset-bottom,0px) + 72px));max-width:calc(100% - var(--edge) * 2 - 140px);}
+  .studio-title {font-size:1.8rem;}
+  .studio-hint {margin-top:5px;}
+  .studio-view-tools {bottom:max(84px,calc(env(safe-area-inset-bottom,0px) + 74px));}
+  .studio-tool,.studio-view-tools .studio-tool {width:44px;min-width:44px;height:44px;}
+}
+@media (max-height:520px) and (orientation:landscape) {
+  .studio-web {--view-top:44px;--view-bottom:64px;}
+  .studio-caption {bottom:8px;}
+  .studio-title {font-size:1.25rem;}
+  .studio-hint {font-size:.8rem;margin-top:2px;}
+  .studio-view-tools {bottom:8px;}
+  .studio-tool,.studio-view-tools .studio-tool {width:36px;min-width:36px;height:36px;}
+}
+@media (max-aspect-ratio:9/10) { .studio-poster {transform:scale(1.15);} }
+@media (prefers-reduced-motion:reduce) {
+  .studio-web *,.studio-web *::before {animation:none!important;transition:none!important;}
+  .studio-top [data-action=replay] {display:none;}
+}
+@media (forced-colors:active) {
+  .studio-title {-webkit-text-fill-color:CanvasText;background:none;}
+  .studio-tool,.studio-view-tools {border-color:ButtonText;}
+}

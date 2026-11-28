@@ -1,0 +1,210 @@
+/* Shared visual layer. All navigation remains ordinary document links. */
+@property --mm-lit {syntax:'<number>';inherits:true;initial-value:0;}
+html[data-memento-native] {
+  --mm-rail:min(320px,calc(100vw - 40px));
+  --mm-amber:#ff7d00;
+  /* At rest the site is monochrome; amber lives only where the pointer is. */
+  --mm-mark:#ece7df;
+  --mm-mark-soft:#ece7df33;
+  --mm-facets:url("/navigation/type-facets.svg");
+  --mm-title-ink:linear-gradient(to top,#6f6b66 0%,#8c8781 14%,#b9b4ad 30%,#ddd9d3 46%,#f0ede8 62%,#f0ede8 100%);
+  --mm-title-lit:linear-gradient(to top,#e2621a 0%,#ff7d00 14%,#ffa84c 30%,#ffd2a0 46%,#ffecd8 62%,#ffecd8 100%);
+  /* Every cut frame is neutral at rest and takes its amber corner under the pointer. */
+  --frame-gradient:linear-gradient(135deg,#d6d5d2c7 0%,#a3a29f66 27%,#6b6a6857 62%,#7b7a7875 83%,#b9b8b5cc 100%);
+  --frame-gradient-lit:linear-gradient(135deg,#d8d1c3c7 0%,#aaa28f66 27%,#716a5e57 62%,#8c694b75 83%,#ff7d00e0 100%);
+  --title-gradient:var(--mm-title-ink);
+  --title-gradient-warm:var(--mm-title-lit);
+  --category-gradient:var(--mm-title-ink);
+}
+@media (max-width:767px) { html[data-memento-native] {--mm-rail:80vw;} }
+html[data-memento-native] .mm-tab[data-mm-hover] {--frame-gradient:var(--frame-gradient-lit);}
+html[data-memento-native] body { isolation:isolate; position:relative; min-height:100vh; }
+
+/* The wall of glyphs belongs to the document and scrolls with it. Its letters at rest are one repeated tile; the
+   canvas holds only the glyphs that are alive, in a window around the screen that follows the scroll. */
+.mm-glyph-field {
+  --gutter:calc((100vw - var(--content-width)) / 2);
+  --full:calc(var(--gutter) * .4);
+  --fade:max(calc(var(--gutter) * 1.3),calc(var(--gutter) + 20px));
+  --fade-mask:linear-gradient(to right,#000 var(--full),transparent var(--fade),transparent calc(100% - var(--fade)),#000 calc(100% - var(--full)));
+  position:absolute;top:0;right:0;bottom:0;left:0;z-index:-1;pointer-events:none;overflow:hidden;
+}
+.mm-glyph-field canvas {position:absolute;left:0;top:0;display:block;width:100%;}
+.mm-glyph-field .mm-word-light {position:absolute;pointer-events:none;width:auto;}
+.mm-glyph-field .mm-word-light[hidden] {display:none;}
+.mm-glyph-field:not([data-live]) canvas {visibility:hidden;}
+.mm-glyph-field::before {
+  content:"";position:absolute;top:0;right:0;bottom:0;left:0;
+  background:url("/navigation/glyph-field.svg?v=28") 0 0/276px 348px repeat;
+  -webkit-mask-image:var(--fade-mask);mask-image:var(--fade-mask);
+}
+@keyframes mm-wall-in {from {opacity:0;}}
+@media (prefers-reduced-motion:no-preference) { .mm-glyph-field::before {animation:mm-wall-in .9s ease-out both;} }
+@media (prefers-reduced-motion:reduce) { .mm-glyph-field canvas {visibility:hidden;} }
+
+/* The logotype and the dock share one rail, centred. */
+.mm-header,.mm-dock {position:fixed;left:50%;transform:translateX(-50%);z-index:1000;box-sizing:border-box;}
+.mm-header {top:max(16px,env(safe-area-inset-top,0px));width:var(--mm-rail);}
+.mm-brand {
+  display:flex;align-items:flex-start;box-sizing:border-box;min-height:44px;width:100%;padding:3px 0 0;
+  color:#f5f4f2;text-decoration:none;background:transparent;touch-action:manipulation;
+}
+.mm-letter-row {display:flex;align-items:center;justify-content:space-between;width:100%;height:11px;}
+.mm-glyph {display:block;flex:none;height:11px;width:calc(11px * var(--glyph-aspect));fill:currentColor;overflow:visible;}
+.mm-dock {
+  bottom:max(10px,env(safe-area-inset-bottom,0px));width:calc(var(--mm-rail) + 12px);
+  display:flex;align-items:center;justify-content:space-between;margin:0;padding:0;pointer-events:none;
+}
+.mm-dock .mm-link {
+  position:relative;display:grid;place-items:center;flex:0 1 56px;min-width:52px;height:58px;
+  padding:0;border:0;background:transparent;pointer-events:auto;color:#f5f4f2;text-decoration:none;touch-action:manipulation;
+}
+.mm-defs {position:absolute;width:0;height:0;overflow:hidden;}
+/* The dock: plates of satin glass cut like the cards, the symbols cut out of them (templates/nav-icons.mjs). The glass
+   is semi-transparent and frosted; where the browser can, it also refracts what lies behind it, bent at its bevel.
+   At rest the plates are clear glass; the current page takes amber light from below, as does the plate under the
+   pointer (--mm-lit). */
+.mm-tile {--mm-lit:0;position:relative;display:block;width:52px;height:52px;transition:--mm-lit .35s ease-out;}
+.mm-link[aria-current] .mm-tile,.mm-link:active .mm-tile {--mm-lit:1;}
+@media (hover:hover) and (pointer:fine) { .mm-link:hover .mm-tile {--mm-lit:1;} }
+.mm-tile::before,.mm-tile::after {content:"";position:absolute;pointer-events:none;border-radius:50%;filter:blur(4px);}
+.mm-tile::before {left:10%;right:10%;top:72%;height:44%;background:radial-gradient(closest-side,#0000009e,transparent);}
+.mm-tile::after {left:12%;right:12%;bottom:-9px;height:17px;opacity:var(--mm-lit);
+  background:radial-gradient(closest-side,#ff8f24c4,#ff7d0038 62%,transparent);}
+.mm-glass,.mm-glass-light,.mm-glass-rim {position:absolute;top:0;right:0;bottom:0;left:0;display:block;}
+.mm-glass {
+  -webkit-mask:var(--mm-symbol) 0 0/100% 100% no-repeat;mask:var(--mm-symbol) 0 0/100% 100% no-repeat;
+  -webkit-backdrop-filter:blur(5px) brightness(1.16) saturate(1.3);backdrop-filter:blur(5px) brightness(1.16) saturate(1.3);
+  background:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='52' height='52'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.95' numOctaves='2' seed='7' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .1 0'/%3E%3C/filter%3E%3Crect width='52' height='52' filter='url(%23n)'/%3E%3C/svg%3E") 0 0/52px 52px,
+    linear-gradient(to bottom,#ffffff21,transparent 40%),
+    linear-gradient(155deg,#ffffff26 0%,#ffffff10 40%,#ffffff08 62%,#ffffff17 100%);
+}
+html[data-mm-refract] .mm-glass {-webkit-backdrop-filter:url(#mm-refract) blur(3px) brightness(1.16) saturate(1.3);backdrop-filter:url(#mm-refract) blur(3px) brightness(1.16) saturate(1.3);}
+.mm-glass-light {opacity:var(--mm-lit);background:radial-gradient(120% 82% at 50% 116%,#ffc480f2,#ff8f24b8 34%,#ff7d0033 66%,transparent);}
+.mm-glass-rim {
+  pointer-events:none;
+  clip-path:polygon(evenodd,11px 0,100% 0,100% calc(100% - 11px),calc(100% - 11px) 100%,0 100%,0 11px,11px 0,11.4142px 1px,1px 11.4142px,1px calc(100% - 1px),calc(100% - 11.4142px) calc(100% - 1px),calc(100% - 1px) calc(100% - 11.4142px),calc(100% - 1px) 1px,11.4142px 1px);
+  background:linear-gradient(135deg,transparent 52%,rgb(255 154 60 / calc(var(--mm-lit) * .95)) 100%),
+    linear-gradient(135deg,#ffffffc7 0%,#ffffff2e 36%,#ffffff12 62%,#ffffff4d 100%);
+}
+.mm-brand:focus-visible,.mm-link:focus-visible {outline:1px solid #fff;outline-offset:3px;border-radius:4px;}
+
+/* The gradual blur under the logotype and over the dock. Five layers a side, each twice the blur of the one before
+   (1 to 16 px), each fading in and out over its own band: the blur grows smoothly toward the edge of the screen, with
+   no step for the eye to catch. Every layer only covers its band, so the cost stays that of about two full layers. */
+.mm-blur {
+  --band:clamp(104px,20svh,200px);
+  position:fixed;left:0;right:0;height:var(--band);z-index:900;pointer-events:none;
+}
+.mm-blur i {
+  --ramp:linear-gradient(var(--toward-edge),transparent 0%,#000 33.333%,#000 66.667%,transparent 100%);
+  position:absolute;left:0;right:0;display:block;height:calc((var(--hi) - var(--lo)) * 100%);
+  -webkit-backdrop-filter:blur(var(--radius));backdrop-filter:blur(var(--radius));
+  -webkit-mask-image:var(--ramp);mask-image:var(--ramp);
+}
+.mm-blur i:nth-child(1) {--radius:1px;--lo:0;--hi:.5;}
+.mm-blur i:nth-child(2) {--radius:2px;--lo:.16667;--hi:.66667;}
+.mm-blur i:nth-child(3) {--radius:4px;--lo:.33333;--hi:.83333;}
+.mm-blur i:nth-child(4) {--radius:8px;--lo:.5;--hi:1;}
+.mm-blur i:nth-child(5) {--radius:16px;--lo:.66667;--hi:1;--ramp:linear-gradient(var(--toward-edge),transparent 0%,#000 50%,#000 100%);}
+.mm-blur-top {top:-1px;--toward-edge:to top;}
+.mm-blur-top i {top:calc((1 - var(--hi)) * 100%);}
+.mm-blur-bottom {bottom:-1px;--toward-edge:to bottom;}
+.mm-blur-bottom i {bottom:calc((1 - var(--hi)) * 100%);}
+@media (max-width:767px) { .mm-blur {--band:clamp(88px,17svh,144px);} }
+@media (max-height:520px) { .mm-blur {--band:clamp(44px,15vh,76px);} }
+
+/* On a phone the square at the centre of the screen is in colour; above and below, colour fades out gradually.
+   Only saturation changes: the content stays as bright and readable as it is. */
+.mm-focus {display:none;}
+@media (hover:none) and (pointer:coarse) {
+  .mm-focus {
+    --fade:linear-gradient(var(--toward-edge),transparent 0%,rgba(0,0,0,.18) 22%,rgba(0,0,0,.5) 48%,rgba(0,0,0,.82) 74%,#000 100%);
+    display:block;position:fixed;left:0;right:0;z-index:880;pointer-events:none;
+    height:calc((100svh - min(100vw, 62svh)) / 2 + 56px);
+    -webkit-backdrop-filter:grayscale(1);backdrop-filter:grayscale(1);
+    -webkit-mask-image:var(--fade);mask-image:var(--fade);
+  }
+  .mm-focus-top {top:0;--toward-edge:to top;}
+  .mm-focus-bottom {bottom:0;--toward-edge:to bottom;}
+}
+
+html[data-memento-native] dialog[open]::backdrop {background:rgba(3,5,6,.68);-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px);}
+html[data-memento-native=services] dialog[open]::backdrop {background:rgba(3,4,5,.82);-webkit-backdrop-filter:blur(22px);backdrop-filter:blur(22px);}
+@supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))) {
+  html[data-mm-modal] [data-mm-modal-behind] {filter:blur(18px);}
+  html[data-memento-native] dialog[open]::backdrop {background:rgba(3,5,6,.76);}
+  html[data-memento-native=services] dialog[open]::backdrop {background:rgba(3,4,5,.88);}
+  .mm-glass {background-color:#2a2928e6;}
+}
+
+/* The actual glyphs carry the pigment and the light, including inside transformed slides. */
+@supports ((background-clip:text) or (-webkit-background-clip:text)) {
+  html[data-memento-native] .mm-type {
+    background:var(--mm-title-ink) 0 0/100% 100% no-repeat;
+    -webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent;
+    -webkit-box-decoration-break:slice;box-decoration-break:slice;pointer-events:auto;
+  }
+  .mm-type>span {-webkit-text-fill-color:inherit;}
+  html[data-memento-native] .mm-type[data-lit] {
+    background-image:var(--ink-veil),var(--mm-facets),var(--ink-lenses),var(--ink-ramp);
+    background-size:100% 100%,var(--ink-tile) var(--ink-tile),100% 100%,100% 100%,100% 100%,100% 100%;
+    background-repeat:no-repeat,repeat,no-repeat,no-repeat,no-repeat,no-repeat;
+    filter:var(--ink-glow,none);
+  }
+}
+
+/* The light of the outlines (edge-light.mjs) and the glyphs over the surfaces (glyph-surfaces.mjs). */
+.mm-edge-plane {position:absolute;top:0;left:0;width:0;height:0;overflow:visible;pointer-events:none;z-index:650;}
+.mm-edge-light {position:absolute;top:0;left:0;pointer-events:none;display:block;}
+.mm-edge-light[hidden] {display:none;}
+[data-mm-outline-anchor] {position:relative;}
+.mm-outline-points {position:absolute!important;top:0;right:0;bottom:0;left:0;display:block!important;visibility:hidden!important;pointer-events:none!important;overflow:visible!important;}
+.mm-outline-points i {position:absolute;display:block;width:0;height:0;padding:0;border:0;margin:0;pointer-events:none;}
+.mm-glyph-surface {position:absolute;top:0;right:0;bottom:0;left:0;z-index:640;pointer-events:none;overflow:hidden;transition:opacity .18s ease-out;}
+.mm-glyph-surface canvas {position:absolute;left:0;top:0;display:block;width:100%;}
+@media (prefers-reduced-motion:reduce) { .mm-glyph-surface {display:none;} }
+
+/* Surfaces at rest are black and white on a desk; the one under the pointer shows its colour. On a phone the square
+   of focus does the same with one gradient of saturation (.mm-focus). */
+@media (hover:hover) and (pointer:fine) {
+  html[data-memento-native]:not([data-memento-native=start]) .mm-tab :is(img,video) {filter:grayscale(1);transition:filter .45s ease-out;}
+  html[data-memento-native]:not([data-memento-native=start]) .mm-tab[data-mm-hover] :is(img,video) {filter:grayscale(0);}
+}
+/* The copy of a hovered surface takes a little of its warmth, as light, never as ink. */
+.mm-tab :is(p,li,dd,dt,address,small,time,.tile-domains,.bundle-kicker):not(.mm-type,.mm-type *) {transition:text-shadow .4s ease-out;}
+.mm-tab[data-mm-hover] :is(p,li,dd,dt,address,small,time,.tile-domains,.bundle-kicker):not(.mm-type,.mm-type *) {text-shadow:0 0 12px rgba(255,140,40,.3);}
+
+/* Opening a page: surfaces wait for the front of glyphs. The gate opens by itself if the script never runs. */
+@keyframes mm-intro-gate {from {opacity:0;}}
+@media (prefers-reduced-motion:no-preference) and (scripting:enabled) {
+  html[data-mm-intro=""] .mm-tab:not(.mm-dock *,.mm-header *,dialog *) {animation:mm-intro-gate 2.4s step-end both;}
+}
+
+/* The document keeps native scrolling; the overlay exposes its position and accepts optional desktop input. */
+html[data-mm-scroll-cue] {scrollbar-width:none;}
+html[data-memento-native][data-mm-scroll-cue]::-webkit-scrollbar {display:none;width:0;height:0;}
+.mm-scrollbar {position:fixed;top:6px;right:0;bottom:6px;z-index:950;width:16px;touch-action:none;}
+.mm-scrollbar[hidden] {display:none!important;}
+.mm-scrollbar-thumb {
+  position:absolute;top:0;right:4px;width:2px;min-height:1px;border-radius:4px;pointer-events:none;opacity:.86;
+  background:linear-gradient(to bottom,transparent 0%,rgba(236,231,223,.1) 22%,rgba(236,231,223,.4) 48%,#d9d4cc 85%,#f3efe9 100%);
+  box-shadow:0 4px 9px -3px rgba(236,231,223,.25);
+}
+.mm-scrollbar:is(.is-scrolling,.is-dragging,:hover,:focus-visible) .mm-scrollbar-thumb {width:3px;opacity:1;}
+.mm-scrollbar:is(:hover,.is-dragging) .mm-scrollbar-thumb {
+  background:linear-gradient(to bottom,transparent 0%,rgba(255,125,0,.12) 22%,rgba(255,125,0,.48) 48%,#ff7d00 85%,#ffb56d 100%);
+  box-shadow:0 4px 9px -3px rgba(255,125,0,.42);
+}
+.mm-scrollbar:focus-visible {outline:1px solid #ffb56d;outline-offset:-2px;}
+@media (pointer:coarse) { .mm-scrollbar {width:5px;pointer-events:none;} .mm-scrollbar-thumb {right:2px;} }
+
+@media (forced-colors:active) {
+  .mm-glyph-field,.mm-blur,.mm-focus,.mm-glyph-surface,.mm-edge-plane,.mm-scrollbar,.mm-tile::before,.mm-tile::after,.mm-glass-light {display:none;}
+  .mm-tile {forced-color-adjust:none;}
+  .mm-glass {-webkit-backdrop-filter:none;backdrop-filter:none;background:ButtonText;}
+  .mm-link[aria-current] {outline:2px solid Highlight;}
+  html[data-memento-native] .mm-type,html[data-memento-native] .mm-type[data-lit],html[data-memento-native] .mm-type>span {background:none;color:CanvasText;-webkit-text-fill-color:CanvasText;-webkit-text-stroke:0;filter:none;}
+}
+@media print {.mm-glyph-field,.mm-blur,.mm-focus,.mm-dock,.mm-header,.mm-glyph-surface,.mm-edge-plane,.mm-scrollbar {display:none;}}
